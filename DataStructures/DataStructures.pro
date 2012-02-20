@@ -1,0 +1,40 @@
+#-------------------------------------------------
+#
+# Project created by QtCreator 2012-02-01T11:08:31
+#
+#-------------------------------------------------
+
+QT       -= core gui
+
+TARGET = DataStructures
+TEMPLATE = lib
+
+DEFINES += DATASTRUCTURES_LIBRARY
+
+SOURCES += \
+    longint.cpp \
+    arraylist.cpp
+
+HEADERS +=\
+        DataStructures_global.h \
+    arraylist.h \
+    longint.h
+
+symbian {
+    MMP_RULES += EXPORTUNFROZEN
+    TARGET.UID3 = 0xE1D035E6
+    TARGET.CAPABILITY = 
+    TARGET.EPOCALLOWDLLDATA = 1
+    addFiles.sources = DataStructures.dll
+    addFiles.path = !:/sys/bin
+    DEPLOYMENT += addFiles
+}
+
+unix:!symbian {
+    maemo5 {
+        target.path = /opt/usr/lib
+    } else {
+        target.path = /usr/lib
+    }
+    INSTALLS += target
+}
