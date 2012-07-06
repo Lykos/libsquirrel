@@ -455,6 +455,7 @@ namespace DataStructures {
       throw std::logic_error("Division by zero.");
     }
     LongInt result (zero);
+    LongInt twoPower (one);
     index_type i = size();
     for (index_type i2 = 0; i2 < size(); ++i2) {
       --i;
@@ -578,42 +579,5 @@ namespace DataStructures {
   {
     return i & LOWER_MASK;
   }
-
-  /*void multiply(ArrayList<part_type>& results,
-                index_type results_start,
-                index_type result_end,
-                index_type results_end,
-                ArrayList<part_type>& a,
-                index_type a_start,
-                index_type a_end,
-                ArrayList<part_type>& b,
-                index_type b_start,
-                index_type b_end)
-  {
-    assert(result_end >= results_start);
-    assert(results_end >= result_end);
-    if (a_start >= a_end || b_start >= b_end) {
-      // one is zero
-      for (i = results_start; i < result_end; ++i) {
-        results[i] = 0;
-      }
-    } else if (a_start == a_end - 1 && b_start == b_end - 1) {
-      // simple multiplication
-      assert(result_end - results_start == 2)
-      part_type product = a[a_start] * b[b_start];
-      results[results_start] = lower_half(product);
-      results[results_start + 1] = upper_half(product);
-    } else {
-      index_type max_size = std::max(a_end - a_start, b_end - b_start);
-      index_type part_size = next_higher(max_size / 2);
-      LongInt x0 = lower_part(part_size);
-      LongInt x1 = upper_part(part_size);
-      LongInt y0 = other.lower_part(part_size);
-      LongInt y1 = other.upper_part(part_size);
-      LongInt z2 = x1 * y1;
-      LongInt z0 = x0 * y0;
-      LongInt z1 = (x1 + x0) * (y1 + y0) - z2 - z0;
-    }
-  }*/
 
 }

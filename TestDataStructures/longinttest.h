@@ -44,12 +44,12 @@ private Q_SLOTS:
   void test_times();
   void test_modulo_data();
   void test_modulo();
-  //void test_divided_data();
-  //void test_divided();
+  void test_divided_data();
+  void test_divided();
   void test_left_shift_data();
   void test_left_shift();
-  //void test_right_shift_data();
-  //void test_right_shift();
+  void test_right_shift_data();
+  void test_right_shift();
 };
 
 #endif // LONGINTTEST_H
