@@ -382,43 +382,61 @@ EOS
       end
     end
     # A little complicated because we don't want to have duplicates for 0 because of signs
-    # and we want combinations of random and special, too
-    if special1.delete(0)
-      signs2.each do |sign2|
-        cases += line(0, sign2 * b)
-        limits2.each do |limit2|
-          @number.times do
-            cases += line(0, sign2 * (rand(limit2) + 1))
-          end
-        end
-      end
-    end
-    if special2.delete(0)
-      cases += line(sign1 * a, 0)
-      limits1.each do |limit1|
-        @number.times do
-          cases += line(sign1 * (rand(limit1) + 1), 0)
-        end
-      end       
-    end
-    double_foreach(signs1, signs2) do |sign1, sign2|
-      double_foreach(special1, special2) do |a, b|
-        cases += line(sign1 * a, sign2 * b)
-      end
-    end
-    double_foreach(signs1, signs2) do |sign1, sign2|
-      double_foreach(special1, limits2) do |a, limit2|
+    spec1_0 = special1.delete(0)
+    spec2_0 = special2.delete(0)
+    # special random cases
+    double_foreach(signs1, special1) do |sign1, a|
+      double_foreach(signs2, limits2) do |sign2, limit2|
         @number.times do
           cases += line(sign1 * a, sign2 * (rand(limit2) + 1))
         end
       end
     end
-    double_foreach(signs1, signs2) do |sign1, sign2|
-      double_foreach(limits1, special2) do |limit1, b|
+    # random special cases
+    double_foreach(signs1, limits1) do |sign1, limit1|
+      double_foreach(signs2, special2) do |sign2, b|
         @number.times do
           cases += line(sign1 * (rand(limit1) + 1), b)
         end
       end
+    end
+    # random zero cases
+    if spec2_0
+      double_foreach(signs1, limits1) do |sign1, limit1|
+        @number.times do
+          cases += line(sign1 * (rand(limit1) + 1), 0)
+        end
+      end
+    end
+    # zero random cases
+    if spec1_0
+      double_foreach(signs2, limits2) do |sign2, limit2|
+        @number.times do
+          cases += line(0, sign2 * (rand(limit2) + 1))
+        end
+      end
+    end
+    # special special cases
+    double_foreach(signs1, special1) do |sign1, a|
+      double_foreach(sign2, special2) do |sign2, b|
+        cases += line(sign1 * a, sign2 * b)
+      end
+    end
+    # zero special cases
+    if spec1_0
+      double_foreach(signs2, special2) do |sign2, b|
+        cases += line(0, sign2 * b)
+      end
+    end
+    # special zero cases
+    if spec2_0
+      double_foreach(signs1, special1) do |sign1, a|
+        cases += line(sign1 * a, 0)
+      end
+    end
+    # zero zero case
+    if spec1_0 && spec2_0
+      cases += line(0, 0)
     end
     cases + footer
   end
