@@ -155,13 +155,13 @@ namespace DataStructures {
     result <<= shift_offset;
     return result;
   }
-/*
+
   LongInt LongInt::operator>>(index_type shift_offset) const
   {
     LongInt result(*this);
     result >>= shift_offset;
     return result;
-  }*/
+  }
 
   LongInt LongInt::operator%(const LongInt& other) const
   {
@@ -387,9 +387,12 @@ namespace DataStructures {
     }
     return *this;
   }
-/*
+
   LongInt& LongInt::operator>>=(index_type shift_offset)
   {
+    if (!m_positive) {
+      throw std::logic_error(">> for unsigned types is not implemented yet.");
+    }
     index_type per_part_shift = shift_offset % PART_SIZE;
     index_type part_shift = shift_offset / PART_SIZE;
     part_type keep = 0;
@@ -406,7 +409,7 @@ namespace DataStructures {
       m_content = ArrayList<part_type> (m_content.begin() + part_shift, m_content.end());
     }
     return *this;
-  }*/
+  }
 
   LongInt& LongInt::operator%=(const LongInt& other)
   {
@@ -414,22 +417,22 @@ namespace DataStructures {
       throw std::logic_error("Division by zero.");
     }
     LongInt result (zero);
-    LongInt twoPower (one);
+    LongInt two_power (one);
     if (!other.m_positive) {
-      twoPower += other;
+      two_power += other;
     }
     for (index_type i = 0; i < size(); ++i) {
       for (unsigned int j = 0; j < PART_SIZE; ++j) {
         if ((m_content[i] >> j) & 1) {
           if (m_positive) {
-            result += twoPower;
+            result += two_power;
             if (other.m_positive && result >= other) {
               result -= other;
             } else if (!other.m_positive && result <= other) {
               result -= other;
             }
           } else {
-            result -= twoPower;
+            result -= two_power;
             if (other.m_positive && result < 0) {
               result += other;
             } else if (!other.m_positive && result > 0) {
@@ -437,11 +440,11 @@ namespace DataStructures {
             }
           }
         }
-        twoPower <<= 1;
-        if (other.m_positive && twoPower >= other) {
-          twoPower -= other;
-        } else if (!other.m_positive && twoPower <= other) {
-          twoPower -= other;
+        two_power <<= 1;
+        if (other.m_positive && two_power >= other) {
+          two_power -= other;
+        } else if (!other.m_positive && two_power <= other) {
+          two_power -= other;
         }
       }
     }
@@ -454,36 +457,26 @@ namespace DataStructures {
     if (other == zero) {
       throw std::logic_error("Division by zero.");
     }
+    LongInt divisor (other.abs());
     LongInt result (zero);
-    LongInt twoPower (one);
+    LongInt two_power (one);
+    LongInt active_part (zero);
+    two_power <<= size() * PART_SIZE;
     index_type i = size();
+    // Strange for loop necessary because of unsigned types.
     for (index_type i2 = 0; i2 < size(); ++i2) {
       --i;
       index_type j = PART_SIZE;
       for (unsigned int j2 = 0; j2 < PART_SIZE; ++j2) {
         j--;
+        two_power >>= 1;
+        active_part <<= 1;
         if ((m_content[i] >> j) & 1) {
-          if (m_positive) {
-            result += twoPower;
-            if (other.m_positive && result >= other) {
-              result -= other;
-            } else if (!other.m_positive && result <= other) {
-              result -= other;
-            }
-          } else {
-            result -= twoPower;
-            if (other.m_positive && result < 0) {
-              result += other;
-            } else if (!other.m_positive && result > 0) {
-              result += other;
-            }
-          }
+          active_part += 1;
         }
-        twoPower <<= 1;
-        if (other.m_positive && twoPower >= other) {
-          twoPower -= other;
-        } else if (!other.m_positive && twoPower <= other) {
-          twoPower -= other;
+        if (active_part > divisor) {
+          result += two_power;
+          active_part -= divisor;
         }
       }
     }

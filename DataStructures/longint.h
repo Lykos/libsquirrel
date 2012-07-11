@@ -29,7 +29,7 @@ namespace DataStructures {
     LongInt operator*(const LongInt& other) const;
     LongInt operator/(int other) const;
     LongInt operator<<(index_type shift_offset) const;
-    //LongInt operator>>(index_type shift_offset) const;
+    LongInt operator>>(index_type shift_offset) const;
     LongInt operator%(const LongInt& other) const;
     LongInt operator++(int);
     LongInt& operator++();
@@ -47,7 +47,7 @@ namespace DataStructures {
     LongInt& operator-=(const LongInt& other);
     LongInt& operator*=(const LongInt& other);
     LongInt& operator<<=(index_type shift_offset);
-    //LongInt& operator>>=(index_type shift_offset);
+    LongInt& operator>>=(index_type shift_offset);
     LongInt& operator%=(const LongInt& other);
     LongInt& operator/=(const LongInt& other);
     bool is_positive() const;
