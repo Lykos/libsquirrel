@@ -418,7 +418,7 @@ EOS
     end
     # special special cases
     double_foreach(signs1, special1) do |sign1, a|
-      double_foreach(sign2, special2) do |sign2, b|
+      double_foreach(signs2, special2) do |sign2, b|
         cases += line(sign1 * a, sign2 * b)
       end
     end
