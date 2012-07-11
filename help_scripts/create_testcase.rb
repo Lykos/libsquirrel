@@ -57,7 +57,7 @@ EOS
   end
   
   def evaluate(element)
-    eval("#{@operator}#{element}")
+    eval("#{@operator}(#{element})")
   end
 
   def construct_element(element)
@@ -356,7 +356,7 @@ EOS
   end
   
   def evaluate(left, right)
-    eval("#{left} #{@operator} #{right}")
+    eval("(#{left}) #{@operator} (#{right})")
   end
   
   def line(left, right)

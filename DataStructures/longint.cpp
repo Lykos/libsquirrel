@@ -9,6 +9,7 @@ namespace DataStructures {
   static const int UNSIGNED_LONG_BITS = sizeof(LongInt::part_type) * CHAR_BIT;
   static const int LOWER_BITS = UNSIGNED_LONG_BITS / 2;
   static const LongInt::part_type LOWER_MASK = (1l << (UNSIGNED_LONG_BITS / 2)) - 1;
+  static const unsigned int buffer_size = (LongInt::PART_SIZE * 1233) >> 12;
 
   static const LongInt minus_one (-1);
   static const LongInt zero (0);
@@ -22,6 +23,7 @@ namespace DataStructures {
   static const LongInt eight (8);
   static const LongInt nine (9);
   static const LongInt ten (10);
+  static const LongInt buffer_factor (ten.pow(buffer_size));
 
   static const index_type base (10);
 
@@ -78,37 +80,39 @@ namespace DataStructures {
   {
     m_positive = true;
     bool positive = true;
+    unsigned int start_index = 0;
     m_content.push(0);
     std::string::const_iterator it = numerical_string.begin();
     if (*it == '-') {
       positive = false;
-      it++;
-    } else if (numerical_string[0] == '+') {
-      it++;
+      ++it;
+      ++start_index;
+    } else if (*it == '+') {
+      ++it;
+      ++start_index;
     }
-    for (; it < numerical_string.end(); it++) {
-      operator*=(ten);
-      if (*it == '9') {
-        operator+=(nine);
-      } else if (*it == '8') {
-        operator+=(eight);
-      } else if (*it == '7') {
-        operator+=(seven);
-      } else if (*it == '6') {
-        operator+=(six);
-      } else if (*it == '5') {
-        operator+=(five);
-      } else if (*it == '4') {
-        operator+=(four);
-      } else if (*it == '3') {
-        operator+=(three);
-      } else if (*it == '2') {
-        operator+=(two);
-      } else if (*it == '1') {
-        operator+=(one);
-      } else if (*it != '0') {
+    for (; it < numerical_string.end(); ++it) {
+      if (*it > '9' || *it < '0') {
         throw std::logic_error("Non digit in numerical string.");
       }
+    }
+    unsigned int i;
+    for (i = start_index; i + buffer_size < numerical_string.length(); i += buffer_size) {
+      operator*=(buffer_factor);
+      std::istringstream is (numerical_string.substr(i, buffer_size));
+      part_type part;
+      is >> part;
+      operator+=(part);
+    }
+    unsigned int rest_length = numerical_string.length() - i;
+    if (rest_length > 0) {
+      LongInt ten_pow (ten);
+      ten_pow.pow_eq(rest_length);
+      operator*=(ten_pow);
+      std::istringstream is (numerical_string.substr(i, buffer_size));
+      part_type part;
+      is >> part;
+      operator+=(part);
     }
     m_positive = positive;
   }
@@ -359,9 +363,12 @@ namespace DataStructures {
     }
     LongInt z0 (x0);
     z0 *= y0;
-    LongInt z1 (x1 + x0);
-    z1 *= y1 + y0;
-    z1 -= z0 + z2;
+    x1 += x0;
+    y1 += y0;
+    LongInt z1 (x1);
+    z1 *= y1;
+    z1 -= z0;
+    z1 -= z2;
     m_content = z2.m_content;
     operator<<=(part_size * PART_SIZE);
     operator+=(z1);
@@ -528,7 +535,7 @@ namespace DataStructures {
     index_type i = other.size();
     for (index_type i2 = 0; i2 < other.size(); ++i2) {
       --i;
-      unsigned int j = 0;
+      unsigned int j = PART_SIZE;
       for (unsigned int j2 = 0; j2 < PART_SIZE; ++j2) {
         --j;
         if ((other.m_content[i] >> j) & 1) {
