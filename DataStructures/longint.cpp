@@ -143,6 +143,12 @@ namespace DataStructures {
     return result *= other;
   }
 
+  LongInt LongInt::operator%(const LongInt& other) const
+  {
+    LongInt result(*this);
+    return result %= other;
+  }
+
   LongInt LongInt::operator<<(index_type shift_offset) const
   {
     LongInt result(*this);
@@ -155,10 +161,10 @@ namespace DataStructures {
     return result >>= shift_offset;
   }
 
-  LongInt LongInt::operator%(const LongInt& other) const
+  LongInt LongInt::pow(index_type other) const
   {
     LongInt result(*this);
-    return result %= other;
+    return result.pow_eq(other);
   }
 
   LongInt LongInt::operator/(const LongInt& other) const
@@ -167,10 +173,22 @@ namespace DataStructures {
     return result /= other;
   }
 
-  LongInt LongInt::pow(index_type other) const
+  LongInt LongInt::operator|(const LongInt& other) const
   {
     LongInt result(*this);
-    return result.pow_eq(other);
+    return result |= other;
+  }
+
+  LongInt LongInt::operator^(const LongInt& other) const
+  {
+    LongInt result(*this);
+    return result ^= other;
+  }
+
+  LongInt LongInt::operator&(const LongInt& other) const
+  {
+    LongInt result(*this);
+    return result &= other;
   }
 
   LongInt LongInt::operator++(int)
@@ -372,6 +390,86 @@ namespace DataStructures {
     return *this;
   }
 
+  LongInt& LongInt::operator/=(const LongInt& other)
+  {
+    if (other == zero) {
+      throw std::logic_error("Division by zero.");
+    }
+    // This is necessary because the zero would mess up the rounding towards negative infinity.
+    if (*this == zero) {
+      return *this;
+    }
+    LongInt divisor (other.abs());
+    LongInt result (zero);
+    LongInt two_power (one);
+    LongInt active_part (zero);
+    two_power <<= size() * PART_SIZE;
+    index_type i = size();
+    // Strange for loop necessary because of unsigned types.
+    for (index_type i2 = 0; i2 < size(); ++i2) {
+      --i;
+      index_type j = PART_SIZE;
+      for (unsigned int j2 = 0; j2 < PART_SIZE; ++j2) {
+        j--;
+        two_power >>= 1;
+        active_part <<= 1;
+        if ((m_content[i] >> j) & 1) {
+          active_part += 1;
+        }
+        if (active_part >= divisor) {
+          result += two_power;
+          active_part -= divisor;
+        }
+      }
+    }
+    result.m_positive = m_positive == other.m_positive;
+    // Round to negative infinity hack
+    if (!result.m_positive && active_part != zero) {
+      result -= one;
+    }
+    return operator=(result);
+  }
+
+  LongInt& LongInt::operator%=(const LongInt& other)
+  {
+    if (other == zero) {
+      throw std::logic_error("Division by zero.");
+    }
+    LongInt result (zero);
+    LongInt two_power (one);
+    if (!other.m_positive) {
+      two_power += other;
+    }
+    for (index_type i = 0; i < size(); ++i) {
+      for (unsigned int j = 0; j < PART_SIZE; ++j) {
+        if ((m_content[i] >> j) & 1) {
+          if (m_positive) {
+            result += two_power;
+            if (other.m_positive && result >= other) {
+              result -= other;
+            } else if (!other.m_positive && result <= other) {
+              result -= other;
+            }
+          } else {
+            result -= two_power;
+            if (other.m_positive && result < 0) {
+              result += other;
+            } else if (!other.m_positive && result > 0) {
+              result += other;
+            }
+          }
+        }
+        two_power <<= 1;
+        if (other.m_positive && two_power >= other) {
+          two_power -= other;
+        } else if (!other.m_positive && two_power <= other) {
+          two_power -= other;
+        }
+      }
+    }
+    m_positive = m_positive == other.m_positive;
+    return operator=(result);
+  }
 
   LongInt& LongInt::operator<<=(index_type shift_offset)
   {
@@ -438,87 +536,6 @@ namespace DataStructures {
     return *this;
   }
 
-  LongInt& LongInt::operator%=(const LongInt& other)
-  {
-    if (other == zero) {
-      throw std::logic_error("Division by zero.");
-    }
-    LongInt result (zero);
-    LongInt two_power (one);
-    if (!other.m_positive) {
-      two_power += other;
-    }
-    for (index_type i = 0; i < size(); ++i) {
-      for (unsigned int j = 0; j < PART_SIZE; ++j) {
-        if ((m_content[i] >> j) & 1) {
-          if (m_positive) {
-            result += two_power;
-            if (other.m_positive && result >= other) {
-              result -= other;
-            } else if (!other.m_positive && result <= other) {
-              result -= other;
-            }
-          } else {
-            result -= two_power;
-            if (other.m_positive && result < 0) {
-              result += other;
-            } else if (!other.m_positive && result > 0) {
-              result += other;
-            }
-          }
-        }
-        two_power <<= 1;
-        if (other.m_positive && two_power >= other) {
-          two_power -= other;
-        } else if (!other.m_positive && two_power <= other) {
-          two_power -= other;
-        }
-      }
-    }
-    m_positive = m_positive == other.m_positive;
-    return operator=(result);
-  }
-
-  LongInt& LongInt::operator/=(const LongInt& other)
-  {
-    if (other == zero) {
-      throw std::logic_error("Division by zero.");
-    }
-    // This is necessary because the zero would mess up the rounding towards negative infinity.
-    if (*this == zero) {
-      return *this;
-    }
-    LongInt divisor (other.abs());
-    LongInt result (zero);
-    LongInt two_power (one);
-    LongInt active_part (zero);
-    two_power <<= size() * PART_SIZE;
-    index_type i = size();
-    // Strange for loop necessary because of unsigned types.
-    for (index_type i2 = 0; i2 < size(); ++i2) {
-      --i;
-      index_type j = PART_SIZE;
-      for (unsigned int j2 = 0; j2 < PART_SIZE; ++j2) {
-        j--;
-        two_power >>= 1;
-        active_part <<= 1;
-        if ((m_content[i] >> j) & 1) {
-          active_part += 1;
-        }
-        if (active_part >= divisor) {
-          result += two_power;
-          active_part -= divisor;
-        }
-      }
-    }
-    result.m_positive = m_positive == other.m_positive;
-    // Round to negative infinity hack
-    if (!result.m_positive && active_part != zero) {
-      result -= one;
-    }
-    return operator=(result);
-  }
-
   LongInt& LongInt::pow_eq(index_type other)
   {
     LongInt result (one);
@@ -533,6 +550,21 @@ namespace DataStructures {
       }
     }
     return operator=(result);
+  }
+
+  LongInt& LongInt::operator|=(const LongInt& other)
+  {
+    return *this;
+  }
+
+  LongInt& LongInt::operator^=(const LongInt& other)
+  {
+    return *this;
+  }
+
+  LongInt& LongInt::operator&=(const LongInt& other)
+  {
+    return *this;
   }
 
   bool LongInt::is_positive() const
