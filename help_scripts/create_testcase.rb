@@ -323,12 +323,20 @@ EOS
   def evaluation
     <<EOS
 #{INDENTATION}LongInt copy (left);
-#{INDENTATION}QCOMPARE(left #{@operator} right, result);
+#{INDENTATION}QCOMPARE(#{bin_op(left, right), result);
 #{INDENTATION}QCOMPARE(left, copy);
-#{INDENTATION}copy #{@operator}= right;
+#{INDENTATION}#{bin_op_eq(copy, right)};
 #{INDENTATION}QCOMPARE(copy, result);
 }
 EOS
+  end
+
+  def bin_op(left, right)
+    "#{left} #{@operator} #{right}"
+  end
+
+  def bin_op_eq(left, right)
+    "#{left} #{@operator}= #{right}"
   end
 
   def construct_left(left)
@@ -440,6 +448,27 @@ EOS
     end
     cases + footer
   end
+end
+
+class BinaryMethodGenerator < BinaryGenerator
+
+  def initialize(name, number=2, &evaluation)
+    super(name, nil, number)
+    @evaluation = evaluation
+  end
+
+  def evaluate(left, right)
+    @evaluation.call(left, right)
+  end
+
+  def bin_op(left, right)
+    "#{left}.#{name}(#{right})"
+  end
+
+  def bin_op_eq(left, right)
+    "#{left}.#{name}_eq(#{right})"
+  end
+
 end
 
 class ShiftGenerator < BinaryGenerator
@@ -614,3 +643,5 @@ generator = BinaryGenerator.new("divided", "/")
 puts generator.generate([-1, 1], [-1, 1], [200, 1 << 200], [200, 1 << 200], [0, 1, 2], [1, 2])
 puts
 
+generator = BinaryMethodGenerator.new("pow") { |a, b| a ** b }
+puts generator.generate([-1, 1], [-1, 1], [200, 1 << 200], [200], [0, 1, 2], [0, 1, 2])
