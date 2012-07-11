@@ -27,7 +27,7 @@ namespace DataStructures {
     LongInt operator+(const LongInt& other) const;
     LongInt operator-(const LongInt& other) const;
     LongInt operator*(const LongInt& other) const;
-    LongInt operator/(int other) const;
+    LongInt operator/(const LongInt& other) const;
     LongInt operator<<(index_type shift_offset) const;
     LongInt operator>>(index_type shift_offset) const;
     LongInt operator%(const LongInt& other) const;

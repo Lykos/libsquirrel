@@ -35,7 +35,6 @@ namespace DataStructures {
       return out << longInt.m_content[0];
     } else {
       ArrayList<std::string> digits;
-      std::ostringstream s;
       i.m_positive = true;
       while (i > 0) {
         digits.push((i % base).to_digit());
@@ -44,6 +43,7 @@ namespace DataStructures {
       if (digits.is_empty()) {
         return out << "0";
       }
+      std::ostringstream s;
       while (!digits.is_empty()) {
         s << digits.pop();
       }
@@ -171,7 +171,7 @@ namespace DataStructures {
     return result;
   }
 
-  LongInt LongInt::operator/(int other) const
+  LongInt LongInt::operator/(const LongInt& other) const
   {
     LongInt result(*this);
     result /= other;
@@ -373,15 +373,17 @@ namespace DataStructures {
   {
     index_type per_part_shift = shift_offset % PART_SIZE;
     index_type part_shift = shift_offset / PART_SIZE;
-    part_type keep = 0;
-    for (index_type i = 0; keep != 0 || i < m_content.size(); ++i) {
-      if (i >= m_content.size()) {
-        m_content.push(0);
+    if (per_part_shift != 0) {
+      part_type keep = 0;
+      for (index_type i = 0; keep != 0 || i < m_content.size(); ++i) {
+        if (i >= m_content.size()) {
+          m_content.push(0);
+        }
+        // Or works because exactly the space needed for keep gets shifted away.
+        part_type shifted = (m_content[i] << per_part_shift) | keep;
+        m_content[i] = lower_half(shifted);
+        keep = upper_half(shifted);
       }
-      // Or works because exactly the space needed for keep gets shifted away.
-      part_type shifted = (m_content[i] << per_part_shift) | keep;
-      m_content[i] = lower_half(shifted);
-      keep = upper_half(shifted);
     }
     if (part_shift > 0) {
       m_content = ArrayList<part_type> (part_shift, 0) + m_content;
@@ -391,30 +393,45 @@ namespace DataStructures {
 
   LongInt& LongInt::operator>>=(index_type shift_offset)
   {
+    // Necessary because this could lead to an invalid index while calculating the correction bit in our implementation.
+    if (shift_offset == 0) {
+      return *this;
+    }
     index_type per_part_shift = shift_offset % PART_SIZE;
     index_type part_shift = shift_offset / PART_SIZE;
-    if (part_shift >= size()) {
-      operator=(m_positive ? zero : minus_one);
-    } else {
-      bool extra_bit = ((m_content[part_shift] >> per_part_shift) & 1) && !m_positive;
+    // Handle the case that the number completely disappears, this resolves nasty two complements handling for negative numbers.
+    if (part_shift >= size() || (part_shift == size() - 1 && (1 << per_part_shift) > m_content[part_shift])) {
+      return operator=(m_positive ? zero : minus_one);
+    }
+    // Correction for negative numbers because of two complement semantic
+    bool extra_bit = false;
+    if (!m_positive) {
+      if (per_part_shift == 0) {
+        extra_bit = (m_content[part_shift - 1] >> (PART_SIZE - 1)) & 1;
+      } else {
+        extra_bit = (m_content[part_shift] >> (per_part_shift - 1)) & 1;
+      }
+    }
+    if (per_part_shift > 0) {
       part_type keep = 0;
       index_type j = m_content.size();
-      // The strange for loop is because of the unsigned types.
+      // The strange for loop is necessary because of the unsigned types.
       for (index_type i = 0; i < m_content.size(); ++i) {
         --j;
         // Or works because exactly the space needed for keep gets shifted away.
-        part_type shifted = (m_content[i] << (PART_SIZE - per_part_shift)) | keep;
-        m_content[i] = upper_half(shifted);
+        part_type shifted = (m_content[j] << (PART_SIZE - per_part_shift)) | (keep << PART_SIZE);
+        m_content[j] = upper_half(shifted);
         keep = lower_half(shifted);
       }
-      if (part_shift > 0) {
-        m_content = ArrayList<part_type> (m_content.begin() + part_shift, m_content.end());
-      }
-      // Adding one bit could be made slightly more efficient
-      if (extra_bit) {
-        operator+=(one);
-      }
     }
+    if (part_shift > 0) {
+      m_content = ArrayList<part_type> (m_content.begin() + part_shift, m_content.end());
+    }
+    // Adding one bit could be made slightly more efficient
+    if (extra_bit) {
+      operator-=(one);
+    }
+    remove_zeros();
     return *this;
   }
 
@@ -464,6 +481,10 @@ namespace DataStructures {
     if (other == zero) {
       throw std::logic_error("Division by zero.");
     }
+    // This is necessary because the zero would mess up the rounding towards negative infinity.
+    if (*this == zero) {
+      return *this;
+    }
     LongInt divisor (other.abs());
     LongInt result (zero);
     LongInt two_power (one);
@@ -481,13 +502,17 @@ namespace DataStructures {
         if ((m_content[i] >> j) & 1) {
           active_part += 1;
         }
-        if (active_part > divisor) {
+        if (active_part >= divisor) {
           result += two_power;
           active_part -= divisor;
         }
       }
     }
-    m_positive = m_positive == other.m_positive;
+    result.m_positive = m_positive == other.m_positive;
+    // Round to negative infinity hack
+    if (!result.m_positive && active_part != zero) {
+      result -= one;
+    }
     return operator=(result);
   }
 
@@ -563,7 +588,7 @@ namespace DataStructures {
   {
     std::stringstream s;
     s << m_content[0];
-    // TODO The thing with size is not actually correct, but works for the cases where we use it.
+    // TODO The thing with size is not actually correct, but works for the cases where we use it and this is a private function.
     if (size() > 1 || m_content[0] > 9 || !m_positive) {
       throw std::logic_error("Something that is not a digit has been converted to one.");
     }

@@ -376,27 +376,47 @@ EOS
   
   def generate(signs1, signs2, limits1, limits2, special1, special2)
     cases = header
-    double_foreach(limits1, limits2) do |limit1, limit2|
-      double_foreach(signs1, signs2) do |sign1, sign2|
+    double_foreach(signs1, signs2) do |sign1, sign2|
+      double_foreach(limits1, limits2) do |limit1, limit2|
         cases += generate_n_random(sign1, sign2, limit1, limit2)
       end
     end
     # A little complicated because we don't want to have duplicates for 0 because of signs
+    # and we want combinations of random and special, too
     a_0 = special1.delete(0)
     b_0 = special2.delete(0)
+    if a_0
+      limits2.each do |limit2|
+        number.times do
+          cases += line(0, sign2 * (rand(limit2) + 1))
+        end
+      end
+    end
     double_foreach(signs1, signs2) do |sign1, sign2|
       first = true
       special1.each do |a|
         if b_0
           cases += line(sign1 * a, 0)
+          limits1.each do |limit1|
+            number.times do
+              cases += line(sign1 * (rand(limit1) + 1), 0)
+            end
+          end    
         end
         special2.each do |b|
           cases += line(sign1 * a, sign2 * b)
-          if a_0 && first
-            cases += line(0, sign2 * b)
+          if first
+            if a_0
+              cases += line(0, sign2 * b)
+              limits2.each do |limit2|
+                number.times do
+                  cases += line(0, sign2 * (rand(limit2) + 1))
+                end
+              end
+            end
           end
         end
-      first = false
+        first = false
       end
     end
     cases + footer
@@ -553,7 +573,7 @@ end
  ShiftGenerator.new("left_shift", "<<"),
  ShiftGenerator.new("right_shift", ">>")
 ].each do |generator|
-  puts generator.generate([-1, 1], [1], [200, 1 << 200], [200], [0, 1, 2], [0, 1, 2])
+  puts generator.generate([-1, 1], [1], [200, 1 << 200], [200], [0, 1, 2], [0, 1, 2, 32])
   puts
 end
 
@@ -571,7 +591,7 @@ generator = BinaryGenerator.new("modulo", "%")
 puts generator.generate([-1, 1], [-1, 1], [200, 1 << 200], [200, 1 << 200], [0, 1, 2], [1, 2])
 puts
 
-generator = ShiftGenerator.new("divided", "/")
-puts generator.generate([-1, 1], [-1, 1], [200, 1 << 200], [200, 1 << 31], [0, 1, 2], [1, 2])
+generator = BinaryGenerator.new("divided", "/")
+puts generator.generate([-1, 1], [-1, 1], [200, 1 << 200], [200, 1 << 200], [0, 1, 2], [1, 2])
 puts
 
