@@ -14,14 +14,6 @@ namespace DataStructures {
   static const LongInt minus_one (-1);
   static const LongInt zero (0);
   static const LongInt one (1);
-  static const LongInt two (2);
-  static const LongInt three (3);
-  static const LongInt four (4);
-  static const LongInt five (5);
-  static const LongInt six (6);
-  static const LongInt seven (7);
-  static const LongInt eight (8);
-  static const LongInt nine (9);
   static const LongInt ten (10);
   static const LongInt buffer_factor (ten.pow(buffer_size));
 
@@ -349,6 +341,7 @@ namespace DataStructures {
       return *this;
     }
     bool positive = m_positive;
+    bool other_positive = other.m_positive;
     m_positive = true;
     index_type max_size = std::max(size(), other.size());
     index_type part_size = next_higher(max_size) / 2;
@@ -374,7 +367,7 @@ namespace DataStructures {
     operator+=(z1);
     operator<<=(part_size * PART_SIZE);
     operator+=(z0);
-    m_positive = positive == other.m_positive;
+    m_positive = positive == other_positive;
     remove_zeros();
     return *this;
   }
@@ -528,12 +521,9 @@ namespace DataStructures {
 
   LongInt& LongInt::pow_eq(index_type other)
   {
-    if (other < 0) {
-      throw std::logic_error("Power is only implemented for non-negative exponents.");
-    }
     LongInt result (one);
     unsigned int j = sizeof(index_type) * CHAR_BIT;
-    for (unsigned int j2 = 0; j2 < PART_SIZE; ++j2) {
+    for (unsigned int j2 = 0; j2 < sizeof(index_type) * CHAR_BIT; ++j2) {
       --j;
       if ((other >> j) & 1) {
         result *= *this;
