@@ -132,50 +132,49 @@ namespace DataStructures {
   LongInt LongInt::operator+(const LongInt& other) const
   {
     LongInt result(*this);
-    result += other;
-    return result;
+    return result += other;
   }
 
   LongInt LongInt::operator-(const LongInt& other) const
   {
     LongInt result(*this);
-    result -= other;
-    return result;
+    return result -= other;
   }
 
   LongInt LongInt::operator*(const LongInt& other) const
   {
     LongInt result(*this);
-    result *= other;
-    return result;
+    return result *= other;
   }
 
   LongInt LongInt::operator<<(index_type shift_offset) const
   {
     LongInt result(*this);
-    result <<= shift_offset;
-    return result;
+    return result <<= shift_offset;
   }
 
   LongInt LongInt::operator>>(index_type shift_offset) const
   {
     LongInt result(*this);
-    result >>= shift_offset;
-    return result;
+    return result >>= shift_offset;
   }
 
   LongInt LongInt::operator%(const LongInt& other) const
   {
     LongInt result(*this);
-    result %= other;
-    return result;
+    return result %= other;
   }
 
   LongInt LongInt::operator/(const LongInt& other) const
   {
     LongInt result(*this);
-    result /= other;
-    return result;
+    return result /= other;
+  }
+
+  LongInt LongInt::pow(const LongInt &other) const
+  {
+    LongInt result(*this);
+    return result.pow_eq(other);
   }
 
   LongInt LongInt::operator++(int)
@@ -187,8 +186,7 @@ namespace DataStructures {
 
   LongInt& LongInt::operator++()
   {
-    operator+=(one);
-    return *this;
+    return operator+=(one);
   }
 
   LongInt LongInt::operator--(int)
@@ -200,8 +198,7 @@ namespace DataStructures {
 
   LongInt& LongInt::operator--()
   {
-    operator-=(one);
-    return *this;
+    return operator-=(one);
   }
 
   int LongInt::compareTo(const LongInt& other) const
@@ -400,17 +397,16 @@ namespace DataStructures {
     index_type per_part_shift = shift_offset % PART_SIZE;
     index_type part_shift = shift_offset / PART_SIZE;
     // Handle the case that the number completely disappears, this resolves nasty two complements handling for negative numbers.
-    if (part_shift >= size() || (part_shift == size() - 1 && (1 << per_part_shift) > m_content[part_shift])) {
+    if (part_shift >= size() || (part_shift + 1 == size() && (1u << per_part_shift) > m_content[part_shift])) {
       return operator=(m_positive ? zero : minus_one);
     }
     // Correction for negative numbers because of two complement semantic
     bool extra_bit = false;
     if (!m_positive) {
-      if (per_part_shift == 0) {
-        extra_bit = (m_content[part_shift - 1] >> (PART_SIZE - 1)) & 1;
-      } else {
-        extra_bit = (m_content[part_shift] >> (per_part_shift - 1)) & 1;
+      for (index_type i = 0; i < part_shift && !extra_bit; ++i) {
+        extra_bit = m_content[i] != 0;
       }
+      extra_bit = extra_bit || (m_content[part_shift] & ((1 << per_part_shift) - 1)) != 0;
     }
     if (per_part_shift > 0) {
       part_type keep = 0;
@@ -429,7 +425,7 @@ namespace DataStructures {
     }
     // Adding one bit could be made slightly more efficient
     if (extra_bit) {
-      operator-=(one);
+      operator--();
     }
     remove_zeros();
     return *this;
@@ -512,6 +508,26 @@ namespace DataStructures {
     // Round to negative infinity hack
     if (!result.m_positive && active_part != zero) {
       result -= one;
+    }
+    return operator=(result);
+  }
+
+  LongInt& LongInt::pow_eq(const LongInt &other)
+  {
+    LongInt result (one);
+    index_type i = size();
+    for (index_type i2 = 0; i2 < size(); ++i2) {
+      --i;
+      unsigned int j = 0;
+      for (unsigned int j2 = 0; j2 < PART_SIZE; ++j2) {
+        --j;
+        if ((other.m_content[i] >> j) & 1) {
+          result *= *this;
+        }
+        if (j2 > 0 || i2 > 0) {
+          result *= result;
+        }
+      }
     }
     return operator=(result);
   }
