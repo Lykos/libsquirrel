@@ -175,7 +175,7 @@ namespace DataStructures {
     return result /= other;
   }
 
-  LongInt LongInt::pow(const LongInt &other) const
+  LongInt LongInt::pow(index_type other) const
   {
     LongInt result(*this);
     return result.pow_eq(other);
@@ -526,24 +526,20 @@ namespace DataStructures {
     return operator=(result);
   }
 
-  LongInt& LongInt::pow_eq(const LongInt &other)
+  LongInt& LongInt::pow_eq(index_type other)
   {
     if (other < 0) {
       throw std::logic_error("Power is only implemented for non-negative exponents.");
     }
     LongInt result (one);
-    index_type i = other.size();
-    for (index_type i2 = 0; i2 < other.size(); ++i2) {
-      --i;
-      unsigned int j = PART_SIZE;
-      for (unsigned int j2 = 0; j2 < PART_SIZE; ++j2) {
-        --j;
-        if ((other.m_content[i] >> j) & 1) {
-          result *= *this;
-        }
-        if (j > 0 || i > 0) {
-          result *= result;
-        }
+    unsigned int j = sizeof(index_type) * CHAR_BIT;
+    for (unsigned int j2 = 0; j2 < PART_SIZE; ++j2) {
+      --j;
+      if ((other >> j) & 1) {
+        result *= *this;
+      }
+      if (j > 0) {
+        result *= result;
       }
     }
     return operator=(result);

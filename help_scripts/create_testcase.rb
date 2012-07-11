@@ -450,18 +450,6 @@ EOS
   end
 end
 
-class BinaryMethodGenerator < BinaryGenerator
-
-  def bin_op(left, right)
-    "#{left}.#{@name}(#{right})"
-  end
-
-  def bin_op_eq(left, right)
-    "#{left}.#{@name}_eq(#{right})"
-  end
-
-end
-
 class ShiftGenerator < BinaryGenerator
   
   def construct_right(right)
@@ -470,6 +458,18 @@ class ShiftGenerator < BinaryGenerator
 
   def right_type
     "int"
+  end
+
+end
+
+class BinaryMethodGenerator < ShiftGenerator
+
+  def bin_op(left, right)
+    "#{left}.#{@name}(#{right})"
+  end
+
+  def bin_op_eq(left, right)
+    "#{left}.#{@name}_eq(#{right})"
   end
 
 end

@@ -31,7 +31,7 @@ namespace DataStructures {
     LongInt operator<<(index_type shift_offset) const;
     LongInt operator>>(index_type shift_offset) const;
     LongInt operator%(const LongInt& other) const;
-    LongInt pow(const LongInt& other) const;
+    LongInt pow(index_type other) const;
     LongInt operator++(int);
     LongInt& operator++();
     LongInt operator--(int);
@@ -51,7 +51,7 @@ namespace DataStructures {
     LongInt& operator>>=(index_type shift_offset);
     LongInt& operator%=(const LongInt& other);
     LongInt& operator/=(const LongInt& other);
-    LongInt& pow_eq(const LongInt& other);
+    LongInt& pow_eq(index_type other);
     bool is_positive() const;
     LongInt abs() const;
     static const index_type PART_SIZE = CHAR_BIT * sizeof(part_type) / 2;
