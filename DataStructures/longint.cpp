@@ -352,9 +352,16 @@ namespace DataStructures {
     LongInt x1 (upper_part(part_size));
     LongInt y0 (other.lower_part(part_size));
     LongInt y1 (other.upper_part(part_size));
-    LongInt z2 (x1 * y1);
-    LongInt z0 (x0 * y0);
-    LongInt z1 ((x1 + x0) * (y1 + y0) - z2 - z0);
+    LongInt z2 (zero);
+    if (size() > part_size && other.size() > part_size) {
+      z2 = x1;
+      z2 *= y1;
+    }
+    LongInt z0 (x0);
+    z0 *= y0;
+    LongInt z1 (x1 + x0);
+    z1 *= y1 + y0;
+    z1 -= z0 + z2;
     m_content = z2.m_content;
     operator<<=(part_size * PART_SIZE);
     operator+=(z1);
@@ -514,9 +521,12 @@ namespace DataStructures {
 
   LongInt& LongInt::pow_eq(const LongInt &other)
   {
+    if (other < 0) {
+      throw std::logic_error("Power is only implemented for non-negative exponents.");
+    }
     LongInt result (one);
-    index_type i = size();
-    for (index_type i2 = 0; i2 < size(); ++i2) {
+    index_type i = other.size();
+    for (index_type i2 = 0; i2 < other.size(); ++i2) {
       --i;
       unsigned int j = 0;
       for (unsigned int j2 = 0; j2 < PART_SIZE; ++j2) {
@@ -524,7 +534,7 @@ namespace DataStructures {
         if ((other.m_content[i] >> j) & 1) {
           result *= *this;
         }
-        if (j2 > 0 || i2 > 0) {
+        if (j > 0 || i > 0) {
           result *= result;
         }
       }

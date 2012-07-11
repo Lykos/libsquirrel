@@ -50,6 +50,8 @@ private Q_SLOTS:
   void test_left_shift();
   void test_right_shift_data();
   void test_right_shift();
+  void test_pow_data();
+  void test_pow();
 };
 
 #endif // LONGINTTEST_H
