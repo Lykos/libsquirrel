@@ -10,6 +10,7 @@ namespace DataStructures {
   static const int LOWER_BITS = UNSIGNED_LONG_BITS / 2;
   static const LongInt::part_type LOWER_MASK = (1l << (UNSIGNED_LONG_BITS / 2)) - 1;
 
+  static const LongInt minus_one (-1);
   static const LongInt zero (0);
   static const LongInt one (1);
   static const LongInt two (2);
@@ -390,23 +391,29 @@ namespace DataStructures {
 
   LongInt& LongInt::operator>>=(index_type shift_offset)
   {
-    if (!m_positive) {
-      throw std::logic_error(">> for unsigned types is not implemented yet.");
-    }
     index_type per_part_shift = shift_offset % PART_SIZE;
     index_type part_shift = shift_offset / PART_SIZE;
-    part_type keep = 0;
-    index_type j = m_content.size();
-    // The strange for loop is because of the unsigned types.
-    for (index_type i = 0; i < m_content.size(); ++i) {
-      --j;
-      // Or works because exactly the space needed for keep gets shifted away.
-      part_type shifted = (m_content[i] << (PART_SIZE - per_part_shift)) | keep;
-      m_content[i] = upper_half(shifted);
-      keep = lower_half(shifted);
-    }
-    if (part_shift > 0) {
-      m_content = ArrayList<part_type> (m_content.begin() + part_shift, m_content.end());
+    if (part_shift >= size()) {
+      operator=(m_positive ? zero : minus_one);
+    } else {
+      bool extra_bit = ((m_content[part_shift] >> per_part_shift) & 1) && !m_positive;
+      part_type keep = 0;
+      index_type j = m_content.size();
+      // The strange for loop is because of the unsigned types.
+      for (index_type i = 0; i < m_content.size(); ++i) {
+        --j;
+        // Or works because exactly the space needed for keep gets shifted away.
+        part_type shifted = (m_content[i] << (PART_SIZE - per_part_shift)) | keep;
+        m_content[i] = upper_half(shifted);
+        keep = lower_half(shifted);
+      }
+      if (part_shift > 0) {
+        m_content = ArrayList<part_type> (m_content.begin() + part_shift, m_content.end());
+      }
+      // Adding one bit could be made slightly more efficient
+      if (extra_bit) {
+        operator+=(one);
+      }
     }
     return *this;
   }

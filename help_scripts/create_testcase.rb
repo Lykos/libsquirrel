@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 
 class CaseGenerator
+
+  INDENTATION = "  "
   
   def initialize(name, number=2)
     @name = name
@@ -15,7 +17,7 @@ class CaseGenerator
     cases
   end
   
-    def construct_long_int(element)
+  def construct_long_int(element)
     "LongInt(\"#{element}\")"
   end
 
@@ -32,8 +34,8 @@ class UnaryGenerator < CaseGenerator
     @header ||= <<EOS
 void LongIntTest::test_#{@name}_data()
 {
-QTest::addColumn<LongInt>("element");
-QTest::addColumn<LongInt>("result");
+#{INDENTATION}QTest::addColumn<LongInt>("element");
+#{INDENTATION}QTest::addColumn<LongInt>("result");
 
 EOS
   end
@@ -44,12 +46,12 @@ EOS
 
 void LongIntTest::test_#{@name}()
 {
-QFETCH(LongInt, element);
-QFETCH(LongInt, result);
-LongInt copy (element);
+#{INDENTATION}QFETCH(LongInt, element);
+#{INDENTATION}QFETCH(LongInt, result);
+#{INDENTATION}LongInt copy (element);
 
-QCOMPARE(#{@operator}element, result);
-QCOMPARE(element, copy);
+#{INDENTATION}QCOMPARE(#{@operator}element, result);
+#{INDENTATION}QCOMPARE(element, copy);
 }
 EOS
   end
@@ -75,7 +77,7 @@ EOS
     sep = element.to_s.length > 50 ? "\n" : " "
     element2 = construct_element(element)
     result2 = construct_result(result)
-    "QTest::newRow(\"#{title(element)}\")#{sep}<< #{element2}#{sep}<< #{result2};\n"
+    "#{INDENTATION}QTest::newRow(\"#{title(element)}\")#{sep}<< #{element2}#{sep}<< #{result2};\n"
   end
   
   def generate_random(sign, limit)
@@ -111,14 +113,14 @@ class IncDecGenerator < UnaryGenerator
 
 void LongIntTest::test_#{@name}()
 {
-QFETCH(LongInt, element);
-QFETCH(LongInt, result);
-LongInt copy (element);
+#{INDENTATION}QFETCH(LongInt, element);
+#{INDENTATION}QFETCH(LongInt, result);
+#{INDENTATION}LongInt copy (element);
 
-QCOMPARE(element#{@operator}#{@operator}, copy);
-QCOMPARE(element, result);
-QCOMPARE(#{@operator}#{@operator}copy, result);
-QCOMPARE(copy, result);
+#{INDENTATION}QCOMPARE(element#{@operator}#{@operator}, copy);
+#{INDENTATION}QCOMPARE(element, result);
+#{INDENTATION}QCOMPARE(#{@operator}#{@operator}copy, result);
+#{INDENTATION}QCOMPARE(copy, result);
 }
 EOS
   end
@@ -145,8 +147,8 @@ class ConstructorGenerator < UnaryGenerator
     @header ||= <<EOS
 void LongIntTest::test_#{@name}_data()
 {
-QTest::addColumn<#{@type}>("input");
-QTest::addColumn<bool>("sign");
+#{INDENTATION}QTest::addColumn<#{@type}>("input");
+#{INDENTATION}QTest::addColumn<bool>("sign");
 
 EOS
   end
@@ -157,8 +159,8 @@ EOS
 
 void LongIntTest::test_#{@name}()
 {
-QFETCH(#{@type}, input);
-QFETCH(bool, sign);
+#{INDENTATION}QFETCH(#{@type}, input);
+#{INDENTATION}QFETCH(bool, sign);
 EOS
     @footer ||= @footer1 + evaluation + "QCOMPARE(constructed.is_positive(), sign);\n\}\n"
   end
@@ -169,7 +171,7 @@ EOS
   
   def line(element)
     sep = element.to_s.length > 50 ? "\n" : " "
-    "QTest::newRow(\"#{title(element)}\")#{sep}<< #{construct(element)} << #{element >= 0 ? true : false};\n"
+    "#{INDENTATION}QTest::newRow(\"#{title(element)}\")#{sep}<< #{construct(element)} << #{element >= 0 ? true : false};\n"
   end
   
 end
@@ -190,13 +192,13 @@ class DefaultConstructorGenerator < ConstructorGenerator
   
   def evaluation
     <<EOS
-LongInt constructed (input);
+#{INDENTATION}LongInt constructed (input);
 
-std::ostringstream oss1;
-oss1 << constructed;
-std::ostringstream oss2;
-oss2 << input;
-QCOMPARE(oss1.str(), oss2.str());
+#{INDENTATION}std::ostringstream oss1;
+#{INDENTATION}oss1 << constructed;
+#{INDENTATION}std::ostringstream oss2;
+#{INDENTATION}oss2 << input;
+#{INDENTATION}QCOMPARE(oss1.str(), oss2.str());
 EOS
   end
   
@@ -218,9 +220,9 @@ class CopyConstructorGenerator < ConstructorGenerator
   
   def evaluation
     <<EOS
-LongInt constructed (input);
+#{INDENTATION}LongInt constructed (input);
 
-QCOMPARE(constructed, input);
+#{INDENTATION}QCOMPARE(constructed, input);
 EOS
   end
   
@@ -242,11 +244,11 @@ class StringConstructorGenerator < ConstructorGenerator
   
   def evaluation
     <<EOS
-LongInt constructed (input);
+#{INDENTATION}LongInt constructed (input);
 
-std::ostringstream oss;
-oss << constructed;
-QCOMPARE(oss.str(), input);
+#{INDENTATION}std::ostringstream oss;
+#{INDENTATION}oss << constructed;
+#{INDENTATION}QCOMPARE(oss.str(), input);
 EOS
   end
 
@@ -264,12 +266,12 @@ class AssignGenerator < CopyConstructorGenerator
   
   def evaluation
     <<EOS
-LongInt constructed;
+#{INDENTATION}LongInt constructed;
 
-QCOMPARE(constructed = input, input);
-QCOMPARE(constructed, input);
-QCOMPARE(constructed = constructed, input);
-QCOMPARE(constructed, input);
+#{INDENTATION}QCOMPARE(constructed = input, input);
+#{INDENTATION}QCOMPARE(constructed, input);
+#{INDENTATION}QCOMPARE(constructed = constructed, input);
+#{INDENTATION}QCOMPARE(constructed, input);
 EOS
   end
   
@@ -286,9 +288,9 @@ class BinaryGenerator < CaseGenerator
     <<EOS
 void LongIntTest::test_#{@name}_data()
 {
-QTest::addColumn<#{left_type}>("left");
-QTest::addColumn<#{right_type}>("right");
-QTest::addColumn<#{result_type}>("result");
+#{INDENTATION}QTest::addColumn<#{left_type}>("left");
+#{INDENTATION}QTest::addColumn<#{right_type}>("right");
+#{INDENTATION}QTest::addColumn<#{result_type}>("result");
 
 EOS
   end
@@ -311,20 +313,20 @@ EOS
 
 void LongIntTest::test_#{@name}()
 {
-QFETCH(#{left_type}, left);
-QFETCH(#{right_type}, right);
-QFETCH(#{result_type}, result);
+#{INDENTATION}QFETCH(#{left_type}, left);
+#{INDENTATION}QFETCH(#{right_type}, right);
+#{INDENTATION}QFETCH(#{result_type}, result);
 EOS
     @footer ||= @footer2 + "\n" + evaluation
   end
 
   def evaluation
     <<EOS
-LongInt copy (left);
-QCOMPARE(left #{@operator} right, result);
-QCOMPARE(left, copy);
-copy #{@operator}= right;
-QCOMPARE(copy, result);
+#{INDENTATION}LongInt copy (left);
+#{INDENTATION}QCOMPARE(left #{@operator} right, result);
+#{INDENTATION}QCOMPARE(left, copy);
+#{INDENTATION}copy #{@operator}= right;
+#{INDENTATION}QCOMPARE(copy, result);
 }
 EOS
   end
@@ -357,7 +359,7 @@ EOS
     left2 = construct_left(left)
     right2 = construct_right(right)
     result2 = construct_result(result)
-    "QTest::newRow(\"#{title}\")#{sep1}<< #{left2}#{sep1}<< #{right2}#{sep2}<< #{result2};\n"
+    "#{INDENTATION}QTest::newRow(\"#{title}\")#{sep1}<< #{left2}#{sep1}<< #{right2}#{sep2}<< #{result2};\n"
   end
   
   def generate_random(sign1, sign2, limit1, limit2, b_is_long=true)
@@ -425,28 +427,28 @@ class CompareToGenerator < BinaryGenerator
     
   def evaluation
     <<EOS
-bool larger = false, larger_equal = false, equal = false, smaller_equal = false, smaller = false, unequal = true;
-if (result == 1) {
-  larger = true;
-  larger_equal = true;
-} else if (result == 0) {
-  larger_equal = true;
-  equal = true;
-  smaller_equal = true;
-  unequal = false;
-} else if (result == -1) {
-  smaller_equal = true;
-  smaller = true;
-} else {
-  QFAIL("Invalid result.");
-}
-QCOMPARE(left.compareTo(right), result);
-QCOMPARE(left > right, larger);
-QCOMPARE(left >= right, larger_equal);
-QCOMPARE(left == right, equal);
-QCOMPARE(left <= right, smaller_equal);
-QCOMPARE(left < right, smaller);
-QCOMPARE(left != right, unequal);
+#{INDENTATION}bool larger = false, larger_equal = false, equal = false, smaller_equal = false, smaller = false, unequal = true;
+#{INDENTATION}if (result == 1) {
+#{INDENTATION}#{INDENTATION}larger = true;
+#{INDENTATION}#{INDENTATION}larger_equal = true;
+#{INDENTATION}} else if (result == 0) {
+#{INDENTATION}#{INDENTATION}larger_equal = true;
+#{INDENTATION}#{INDENTATION}equal = true;
+#{INDENTATION}#{INDENTATION}smaller_equal = true;
+#{INDENTATION}#{INDENTATION}unequal = false;
+#{INDENTATION}} else if (result == -1) {
+#{INDENTATION}#{INDENTATION}smaller_equal = true;
+#{INDENTATION}#{INDENTATION}smaller = true;
+#{INDENTATION}} else {
+#{INDENTATION}#{INDENTATION}QFAIL("Invalid result.");
+#{INDENTATION}}
+#{INDENTATION}QCOMPARE(left.compareTo(right), result);
+#{INDENTATION}QCOMPARE(left > right, larger);
+#{INDENTATION}QCOMPARE(left >= right, larger_equal);
+#{INDENTATION}QCOMPARE(left == right, equal);
+#{INDENTATION}QCOMPARE(left <= right, smaller_equal);
+#{INDENTATION}QCOMPARE(left < right, smaller);
+#{INDENTATION}QCOMPARE(left != right, unequal);
 }
 EOS
   end
