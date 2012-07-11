@@ -383,40 +383,41 @@ EOS
     end
     # A little complicated because we don't want to have duplicates for 0 because of signs
     # and we want combinations of random and special, too
-    a_0 = special1.delete(0)
-    b_0 = special2.delete(0)
-    if a_0
-      limits2.each do |limit2|
-        number.times do
-          cases += line(0, sign2 * (rand(limit2) + 1))
+    if special1.delete(0)
+      signs2.each do |sign2|
+        cases += line(0, sign2 * b)
+        limits2.each do |limit2|
+          @number.times do
+            cases += line(0, sign2 * (rand(limit2) + 1))
+          end
+        end
+      end
+    end
+    if special2.delete(0)
+      cases += line(sign1 * a, 0)
+      limits1.each do |limit1|
+        @number.times do
+          cases += line(sign1 * (rand(limit1) + 1), 0)
+        end
+      end       
+    end
+    double_foreach(signs1, signs2) do |sign1, sign2|
+      double_foreach(special1, special2) do |a, b|
+        cases += line(sign1 * a, sign2 * b)
+      end
+    end
+    double_foreach(signs1, signs2) do |sign1, sign2|
+      double_foreach(special1, limits2) do |a, limit2|
+        @number.times do
+          cases += line(sign1 * a, sign2 * (rand(limit2) + 1))
         end
       end
     end
     double_foreach(signs1, signs2) do |sign1, sign2|
-      first = true
-      special1.each do |a|
-        if b_0
-          cases += line(sign1 * a, 0)
-          limits1.each do |limit1|
-            number.times do
-              cases += line(sign1 * (rand(limit1) + 1), 0)
-            end
-          end    
+      double_foreach(limits1, special2) do |limit1, b|
+        @number.times do
+          cases += line(sign1 * (rand(limit1) + 1), b)
         end
-        special2.each do |b|
-          cases += line(sign1 * a, sign2 * b)
-          if first
-            if a_0
-              cases += line(0, sign2 * b)
-              limits2.each do |limit2|
-                number.times do
-                  cases += line(0, sign2 * (rand(limit2) + 1))
-                end
-              end
-            end
-          end
-        end
-        first = false
       end
     end
     cases + footer
