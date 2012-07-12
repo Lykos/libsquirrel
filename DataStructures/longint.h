@@ -67,6 +67,7 @@ namespace DataStructures {
     LongInt lower_part(index_type part_size) const;
     LongInt upper_part(index_type part_size) const;
     int uCompareTo(const LongInt& other) const;
+    LongInt two_complement() const;
     std::string to_digit() const;
     void remove_zeros();
     bool m_positive;

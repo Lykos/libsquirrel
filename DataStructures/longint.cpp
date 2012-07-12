@@ -549,16 +549,24 @@ namespace DataStructures {
 
   LongInt& LongInt::operator|=(const LongInt& other)
   {
+    LongInt my = two_complement();
+    LongInt his = other.two_complement();
+    for (index_type i = 0; i < std::max(size(), other.size()); ++i) {
+      m_content[i] = my.m_content[i] | other.m_content[i];
+    }
+    m_positive = m_positive && other.m_positive;
     return *this;
   }
 
   LongInt& LongInt::operator^=(const LongInt& other)
   {
+    m_positive = other.m_positive ^ other.m_positive;
     return *this;
   }
 
   LongInt& LongInt::operator&=(const LongInt& other)
   {
+    m_positive = other.m_positive || other.m_positive;
     return *this;
   }
 
@@ -628,6 +636,18 @@ namespace DataStructures {
     while (size() > 1 && m_content[size() - 1] == 0) {
       m_content.pop();
     }
+  }
+
+  LongInt inline LongInt::two_complement() const
+  {
+    if (m_positive) {
+      return *this;
+    }
+    LongInt result (*this);
+    for (index_type i = 0; i < size(); ++i) {
+      result.m_content[i] = ~m_content[i];
+    }
+    return ++result;
   }
 
   LongInt::part_type upper_half(LongInt::part_type i)
