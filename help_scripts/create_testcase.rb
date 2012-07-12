@@ -462,7 +462,7 @@ class ShiftGenerator < BinaryGenerator
 
 end
 
-class BinaryMethodGenerator < ShiftGenerator
+class PowerGenerator < ShiftGenerator
 
   def bin_op(left, right)
     "#{left}.#{@name}(#{right})"
@@ -620,7 +620,10 @@ end
  BinaryGenerator.new("plus", "+"),
  BinaryGenerator.new("minus", "-"),
  BinaryGenerator.new("times", "*"),
- CompareToGenerator.new("compare_to", "<=>")
+ CompareToGenerator.new("compare_to", "<=>"),
+ BinaryGenerator.new("bit_or", "|"),
+ BinaryGenerator.new("bit_xor", "^"),
+ BinaryGenerator.new("bit_and", "&")
 ].each do |generator|
   puts generator.generate([-1, 1], [-1, 1], [200, 1 << 200], [200, 1 << 200], [0, 1, 2], [0, 1, 2])
   puts
@@ -634,6 +637,6 @@ generator = BinaryGenerator.new("divided", "/")
 puts generator.generate([-1, 1], [-1, 1], [200, 1 << 200], [200, 1 << 200], [0, 1, 2], [1, 2])
 puts
 
-generator = BinaryMethodGenerator.new("pow", "**", 1) { |a, b| a ** b }
+generator = PowerGenerator.new("pow", "**", 1) { |a, b| a ** b }
 puts generator.generate([-1, 1], [1], [200, 1 << 200], [200], [0, 1, 2], [0, 1, 2])
 puts
