@@ -549,12 +549,35 @@ namespace DataStructures {
 
   LongInt& LongInt::operator|=(const LongInt& other)
   {
-    LongInt my = two_complement();
-    LongInt his = other.two_complement();
+    part_type keep = 0;
+    part_type other_keep = 0;
+    part_type new_keep = 0;
+    bool new_positive = m_positive && other.m_positive;
     for (index_type i = 0; i < std::max(size(), other.size()); ++i) {
-      m_content[i] = my.m_content[i] | other.m_content[i];
+      part_type part, other_part;
+      if (m_positive) {
+        part = i < size() ? m_content[i] : 0;
+      } else {
+        part_type tmp = (i < size() ? ~m_content[i] : (1ul << PART_SIZE) - 1) + keep;
+        part = lower_half(tmp);
+        keep = upper_half(tmp);
+      }
+      if (other.m_positive) {
+        other_part = i < other.size() ? other.m_content[i] : 0;
+      } else {
+        part_type tmp = (i < other.size() ? ~other.m_content[i] : (1ul << PART_SIZE) - 1) + other_keep;
+        other_part = lower_half(tmp);
+        other_keep = upper_half(tmp);
+      }
+      if (new_positive) {
+        m_content[i] = part | other_part;
+      } else {
+        part_type tmp = ~(part | other_part) + new_keep;
+        m_content[i] = lower_half(tmp);
+        new_keep = upper_half(tmp);
+      }
     }
-    m_positive = m_positive && other.m_positive;
+    m_positive = new_positive;
     return *this;
   }
 
