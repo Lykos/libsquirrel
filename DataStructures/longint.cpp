@@ -28,20 +28,26 @@ namespace DataStructures {
     if (i.size() == 1) {
       return out << longInt.m_content[0];
     } else {
-      ArrayList<std::string> digits;
+      ArrayList<std::string> parts;
       i.m_positive = true;
       while (i > 0) {
-        digits.push((i % base).to_digit());
-        i /= base;
+        std::ostringstream s;
+        s << (i % buffer_factor).m_content[0];
+        parts.push(s.str());
+        i /= buffer_factor;
+        if (i > 0) {
+          for (unsigned int j = 0; j < buffer_size - s.str().length(); ++j) {
+            parts.push("0");
+          }
+        }
       }
-      if (digits.is_empty()) {
+      if (parts.is_empty()) {
         return out << "0";
       }
-      std::ostringstream s;
-      while (!digits.is_empty()) {
-        s << digits.pop();
+      while (!parts.is_empty()) {
+        out << parts.pop();
       }
-      return out << s.str();
+      return out;
     }
   }
 
@@ -139,14 +145,123 @@ namespace DataStructures {
 
   LongInt LongInt::operator*(const LongInt& other) const
   {
-    LongInt result(*this);
-    return result *= other;
+
+    if (operator==(zero) || other == zero) {
+      return zero;
+    } else if (other.size() == 1 && size() == 1) {
+      part_type product = m_content[0] * other.m_content[0];
+      LongInt result;
+      result.m_content[0] = lower_half(product);
+      part_type upper = upper_half(product);
+      if (upper > 0) {
+        result.m_content.push(upper);
+      }
+      result.m_positive = m_positive == other.m_positive;
+      return result;
+    }
+    index_type max_size = std::max(size(), other.size());
+    index_type part_size = next_higher(max_size) / 2;
+    LongInt x0 (lower_part(part_size));
+    LongInt x1 (upper_part(part_size));
+    LongInt y0 (other.lower_part(part_size));
+    LongInt y1 (other.upper_part(part_size));
+    LongInt z2 (zero);
+    if (size() > part_size && other.size() > part_size) {
+      z2 = x1 * y1;
+    }
+    LongInt z0 (x0 * y0);
+    x1 += x0;
+    y1 += y0;
+    LongInt z1 (x1 * y1);
+    z1 -= z0;
+    z1 -= z2;
+    z2 <<= part_size * PART_SIZE;
+    z2 += z1;
+    z2 <<= part_size * PART_SIZE;
+    z2 += z0;
+    z2.m_positive = m_positive == other.m_positive;
+    z2.remove_zeros();
+    return z2;
+  }
+
+  LongInt LongInt::operator/(const LongInt& other) const
+  {
+    if (other == zero) {
+      throw std::logic_error("Division by zero.");
+    }
+    // This is necessary because the zero would mess up the rounding towards negative infinity.
+    if (*this == zero) {
+      return *this;
+    }
+    LongInt divisor (other.abs());
+    LongInt result (zero);
+    LongInt two_power (one);
+    LongInt active_part (zero);
+    two_power <<= size() * PART_SIZE;
+    index_type i = size();
+    // Strange for loop necessary because of unsigned types.
+    for (index_type i2 = 0; i2 < size(); ++i2) {
+      --i;
+      index_type j = PART_SIZE;
+      for (unsigned int j2 = 0; j2 < PART_SIZE; ++j2) {
+        j--;
+        two_power >>= 1;
+        active_part <<= 1;
+        if ((m_content[i] >> j) & 1) {
+          active_part += 1;
+        }
+        if (active_part >= divisor) {
+          result += two_power;
+          active_part -= divisor;
+        }
+      }
+    }
+    result.m_positive = m_positive == other.m_positive;
+    // Round to negative infinity hack
+    if (!result.m_positive && active_part != zero) {
+      result -= one;
+    }
+    return result;
   }
 
   LongInt LongInt::operator%(const LongInt& other) const
   {
-    LongInt result(*this);
-    return result %= other;
+    if (other == zero) {
+      throw std::logic_error("Division by zero.");
+    }
+    LongInt result (zero);
+    LongInt two_power (one);
+    if (!other.m_positive) {
+      two_power += other;
+    }
+    for (index_type i = 0; i < size(); ++i) {
+      for (unsigned int j = 0; j < PART_SIZE; ++j) {
+        if ((m_content[i] >> j) & 1) {
+          if (m_positive) {
+            result += two_power;
+            if (other.m_positive && result >= other) {
+              result -= other;
+            } else if (!other.m_positive && result <= other) {
+              result -= other;
+            }
+          } else {
+            result -= two_power;
+            if (other.m_positive && result < 0) {
+              result += other;
+            } else if (!other.m_positive && result > 0) {
+              result += other;
+            }
+          }
+        }
+        two_power <<= 1;
+        if (other.m_positive && two_power >= other) {
+          two_power -= other;
+        } else if (!other.m_positive && two_power <= other) {
+          two_power -= other;
+        }
+      }
+    }
+    return result;
   }
 
   LongInt LongInt::operator<<(index_type shift_offset) const
@@ -165,12 +280,6 @@ namespace DataStructures {
   {
     LongInt result(*this);
     return result.pow_eq(other);
-  }
-
-  LongInt LongInt::operator/(const LongInt& other) const
-  {
-    LongInt result(*this);
-    return result /= other;
   }
 
   LongInt LongInt::operator|(const LongInt& other) const
@@ -344,131 +453,17 @@ namespace DataStructures {
 
   LongInt& LongInt::operator*=(const LongInt& other)
   {
-    if (operator==(zero)) {
-      return *this;
-    } else if (other == zero) {
-      return operator=(LongInt(0));
-    } else if (other.size() == 1 && size() == 1) {
-      part_type product = m_content[0] * other.m_content[0];
-      m_content[0] = lower_half(product);
-      part_type upper = upper_half(product);
-      if (upper > 0) {
-        m_content.push(upper);
-      }
-      m_positive = m_positive == other.m_positive;
-      return *this;
-    }
-    bool positive = m_positive;
-    bool other_positive = other.m_positive;
-    m_positive = true;
-    index_type max_size = std::max(size(), other.size());
-    index_type part_size = next_higher(max_size) / 2;
-    LongInt x0 (lower_part(part_size));
-    LongInt x1 (upper_part(part_size));
-    LongInt y0 (other.lower_part(part_size));
-    LongInt y1 (other.upper_part(part_size));
-    LongInt z2 (zero);
-    if (size() > part_size && other.size() > part_size) {
-      z2 = x1;
-      z2 *= y1;
-    }
-    LongInt z0 (x0);
-    z0 *= y0;
-    x1 += x0;
-    y1 += y0;
-    LongInt z1 (x1);
-    z1 *= y1;
-    z1 -= z0;
-    z1 -= z2;
-    m_content = z2.m_content;
-    operator<<=(part_size * PART_SIZE);
-    operator+=(z1);
-    operator<<=(part_size * PART_SIZE);
-    operator+=(z0);
-    m_positive = positive == other_positive;
-    remove_zeros();
-    return *this;
+    return operator=(operator*(other));
   }
 
   LongInt& LongInt::operator/=(const LongInt& other)
   {
-    if (other == zero) {
-      throw std::logic_error("Division by zero.");
-    }
-    // This is necessary because the zero would mess up the rounding towards negative infinity.
-    if (*this == zero) {
-      return *this;
-    }
-    LongInt divisor (other.abs());
-    LongInt result (zero);
-    LongInt two_power (one);
-    LongInt active_part (zero);
-    two_power <<= size() * PART_SIZE;
-    index_type i = size();
-    // Strange for loop necessary because of unsigned types.
-    for (index_type i2 = 0; i2 < size(); ++i2) {
-      --i;
-      index_type j = PART_SIZE;
-      for (unsigned int j2 = 0; j2 < PART_SIZE; ++j2) {
-        j--;
-        two_power >>= 1;
-        active_part <<= 1;
-        if ((m_content[i] >> j) & 1) {
-          active_part += 1;
-        }
-        if (active_part >= divisor) {
-          result += two_power;
-          active_part -= divisor;
-        }
-      }
-    }
-    result.m_positive = m_positive == other.m_positive;
-    // Round to negative infinity hack
-    if (!result.m_positive && active_part != zero) {
-      result -= one;
-    }
-    return operator=(result);
+    return operator=(operator/(other));
   }
 
   LongInt& LongInt::operator%=(const LongInt& other)
   {
-    if (other == zero) {
-      throw std::logic_error("Division by zero.");
-    }
-    LongInt result (zero);
-    LongInt two_power (one);
-    if (!other.m_positive) {
-      two_power += other;
-    }
-    for (index_type i = 0; i < size(); ++i) {
-      for (unsigned int j = 0; j < PART_SIZE; ++j) {
-        if ((m_content[i] >> j) & 1) {
-          if (m_positive) {
-            result += two_power;
-            if (other.m_positive && result >= other) {
-              result -= other;
-            } else if (!other.m_positive && result <= other) {
-              result -= other;
-            }
-          } else {
-            result -= two_power;
-            if (other.m_positive && result < 0) {
-              result += other;
-            } else if (!other.m_positive && result > 0) {
-              result += other;
-            }
-          }
-        }
-        two_power <<= 1;
-        if (other.m_positive && two_power >= other) {
-          two_power -= other;
-        } else if (!other.m_positive && two_power <= other) {
-          two_power -= other;
-        }
-      }
-    }
-    m_positive = m_positive == other.m_positive;
-    return operator=(result);
+    return operator=(operator%(other));
   }
 
   LongInt& LongInt::operator<<=(index_type shift_offset)
@@ -633,17 +628,6 @@ namespace DataStructures {
     while (size() > 1 && m_content[size() - 1] == 0) {
       m_content.pop();
     }
-  }
-
-  std::string LongInt::to_digit() const
-  {
-    std::stringstream s;
-    s << m_content[0];
-    // TODO The thing with size is not actually correct, but works for the cases where we use it and this is a private function.
-    if (size() > 1 || m_content[0] > 9 || !m_positive) {
-      throw std::logic_error("Something that is not a digit has been converted to one.");
-    }
-    return s.str();
   }
 
   LongInt::part_type upper_half(LongInt::part_type i)
