@@ -50,6 +50,12 @@ private Q_SLOTS:
   void test_left_shift();
   void test_right_shift_data();
   void test_right_shift();
+  void test_bit_or_data();
+  void test_bit_or();
+  void test_bit_xor_data();
+  void test_bit_xor();
+  void test_bit_and_data();
+  void test_bit_and();
   void test_pow_data();
   void test_pow();
 };
