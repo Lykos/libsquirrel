@@ -8,6 +8,7 @@
 #include <ostream>
 #include <sstream>
 #include <stdexcept>
+#include <cassert>
 
 namespace DataStructures {
 
@@ -414,12 +415,16 @@ namespace DataStructures {
     const_iterator begin() const;
     iterator end();
     const_iterator end() const;
+    index_type get_min_capacity() const;
+    void set_min_capacity(index_type min_capacity);
+    index_type get_capacity() const;
   private:
-    static const index_type MIN_CAPACITY;
+    static const index_type DEFAULT_MIN_CAPACITY;
     static const index_type CAPACITY_DECREASE_FACTOR;
     T* m_content;
     index_type m_size;
     index_type m_capacity;
+    index_type m_min_capacity;
     void add_content(const T * const content, index_type insert_position, index_type length);
     void prepare_size(index_type new_size);
     void init_capacity(index_type initial_capacity);
@@ -432,7 +437,7 @@ namespace DataStructures {
   index_type next_lower(index_type k);
 
   template <typename T>
-  const index_type ArrayList<T>::MIN_CAPACITY(16);
+  const index_type ArrayList<T>::DEFAULT_MIN_CAPACITY(16);
 
   template <typename T>
   const index_type ArrayList<T>::CAPACITY_DECREASE_FACTOR(4);
@@ -453,7 +458,8 @@ namespace DataStructures {
 
   template <typename T>
   ArrayList<T>::ArrayList(index_type initial_size, const T& element):
-    m_size(initial_size)
+    m_size(initial_size),
+    m_min_capacity(DEFAULT_MIN_CAPACITY)
   {
     init_capacity(initial_size);
     for (index_type i = 0; i < size(); ++i) {
@@ -463,7 +469,8 @@ namespace DataStructures {
 
   template <typename T>
   ArrayList<T>::ArrayList(const ArrayList<T>::const_iterator& begin, const ArrayList<T>::const_iterator& end):
-    m_size(end - begin)
+    m_size(end - begin),
+    m_min_capacity(DEFAULT_MIN_CAPACITY)
   {
     init_capacity(end - begin);
     index_type i = 0;
@@ -474,7 +481,8 @@ namespace DataStructures {
 
   template <typename T>
   ArrayList<T>::ArrayList(const ArrayList<T>& other):
-    m_size(other.m_size)
+    m_size(other.m_size),
+    m_min_capacity(DEFAULT_MIN_CAPACITY)
   {
     init_capacity(other.m_size);
     add_content(other.m_content, 0, other.m_size);
@@ -634,6 +642,27 @@ namespace DataStructures {
   }
 
   template <typename T>
+  index_type ArrayList<T>::get_min_capacity() const
+  {
+    return m_min_capacity;
+  }
+
+  template <typename T>
+  void ArrayList<T>::set_min_capacity(index_type min_capacity)
+  {
+    m_min_capacity = min_capacity;
+    if (m_capacity < m_min_capacity) {
+      adjust_capacity(m_min_capacity);
+    }
+  }
+
+  template <typename T>
+  index_type ArrayList<T>::get_capacity() const
+  {
+    return m_capacity;
+  }
+
+  template <typename T>
   void ArrayList<T>::add_content(const T * const content, index_type insert_position, index_type length)
   {
     for (index_type i = 0; i < length; i++) {
@@ -660,14 +689,15 @@ namespace DataStructures {
   template <typename T>
   void ArrayList<T>::init_capacity(index_type initial_capacity)
   {
-    m_capacity = std::max(next_higher(initial_capacity), MIN_CAPACITY);
+    m_capacity = std::max(next_higher(initial_capacity), m_min_capacity);
     m_content = new T[m_capacity];
   }
 
   template <typename T>
   void ArrayList<T>::adjust_capacity(index_type new_capacity)
   {
-    new_capacity = std::max(next_higher(new_capacity), MIN_CAPACITY);
+    new_capacity = std::max(next_higher(new_capacity), m_min_capacity);
+    assert(new_capacity >= m_size);
     if (m_capacity != new_capacity) {
       m_capacity = new_capacity;
       T* old_content = m_content;

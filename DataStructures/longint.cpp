@@ -1,7 +1,6 @@
 #include "longint.h"
 #include <cmath>
 #include <sstream>
-#include <iostream>
 #include <cassert>
 
 namespace DataStructures {
@@ -558,25 +557,29 @@ namespace DataStructures {
       if (m_positive) {
         part = i < size() ? m_content[i] : 0;
       } else {
-        part_type tmp = (i < size() ? ~m_content[i] : (1ul << PART_SIZE) - 1) + keep;
+        assert(keep == 0 || keep == 1);
+        part_type tmp = (i < size() ? ~m_content[i] : -1l) + keep;
         part = lower_half(tmp);
-        keep = ~upper_half(tmp);
+        keep = ~upper_half(tmp) & 1;
       }
       if (other.m_positive) {
         other_part = i < other.size() ? other.m_content[i] : 0;
       } else {
-        part_type tmp = (i < other.size() ? ~other.m_content[i] : (1ul << PART_SIZE) - 1) + other_keep;
+        assert(other_keep == 0 || other_keep == 1);
+        part_type tmp = (i < other.size() ? ~other.m_content[i] : -1l) + other_keep;
         other_part = lower_half(tmp);
-        other_keep = ~upper_half(tmp);
+        other_keep = ~upper_half(tmp) & 1;
       }
       part_type new_part;
       if (new_positive) {
         new_part = part | other_part;
       } else {
+        assert(new_keep == 0 || new_keep == 1);
         part_type tmp = ~(part | other_part) + new_keep;
         new_part = lower_half(tmp);
-        new_keep = ~upper_half(tmp);
+        new_keep = ~upper_half(tmp) & 1;
       }
+      assert(keep == 0 && other_keep == 0 && new_keep == 0);
       if (i >= size()) {
         m_content.push(new_part);
       } else {
@@ -679,14 +682,21 @@ namespace DataStructures {
     return ++result;
   }
 
-  LongInt::part_type upper_half(LongInt::part_type i)
+  LongInt::part_type upper_half(LongInt::part_type part)
   {
-    return i >> LOWER_BITS;
+    return part >> LOWER_BITS;
   }
 
-  LongInt::part_type lower_half(LongInt::part_type i)
+  LongInt::part_type lower_half(LongInt::part_type part)
   {
-    return i & LOWER_MASK;
+    return part & LOWER_MASK;
+  }
+
+  LongInt::part_type complement_keep(LongInt::part_type part, LongInt::part_type& keep) {
+    assert(keep == 0 || keep == 1);
+    LongInt::part_type tmp = part + keep;
+    keep = ~upper_half(tmp) & 1;
+    return lower_half(tmp);
   }
 
 }

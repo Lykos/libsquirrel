@@ -74,19 +74,11 @@ namespace DataStructures {
     ArrayList<part_type> m_content;
   };
 
-  LongInt::part_type upper_half(LongInt::part_type i);
+  LongInt::part_type complement_keep(LongInt::part_type part, LongInt::part_type& keep);
 
-  LongInt::part_type lower_half(LongInt::part_type i);
+  LongInt::part_type upper_half(LongInt::part_type part);
 
-  /*void multiply(ArrayList<part_type> results,
-		index_type results_start,
-		index_type results_end,
-		ArrayList<part_type> a,
-		index_type a_start,
-		index_type a_end,
-		ArrayList<part_type> b,
-		index_type b_start,
-        index_type b_end);*/
+  LongInt::part_type lower_half(LongInt::part_type part);
 
 }
 #endif // LONGINT_H
