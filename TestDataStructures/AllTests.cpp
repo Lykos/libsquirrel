@@ -1,6 +1,7 @@
 #include "arraylisttest.h"
 #include "longinttest.h"
 #include <QtTest/QTest>
+#include <iostream>
 
 int main(int argc, char** argv) {
   ArrayListTest array_list_test;

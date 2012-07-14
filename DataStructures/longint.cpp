@@ -392,12 +392,12 @@ namespace DataStructures {
     }
     part_type keep = 0;
     index_type i = 0;
-    while (keep != 0 || i < other.m_content.size()) {
-      if (i >= m_content.size()) {
+    while (keep != 0 || i < other.size()) {
+      if (i >= size()) {
         m_content.push(0);
       }
       part_type sum = m_content[i] + keep;
-      if (i < other.m_content.size()) {
+      if (i < other.size()) {
         sum += other.m_content[i];
       }
       m_content[i] = lower_half(sum);
@@ -422,13 +422,13 @@ namespace DataStructures {
     }
     bool keep = false;
     index_type i = 0;
-    while (keep || i < other.m_content.size()) {
-      if (i >= m_content.size()) {
+    while (keep || i < other.size()) {
+      if (i >= size()) {
         // can only happen if the rest of the other numbers content is 0 because the other number is at most this number.
         break;
       }
       part_type left = m_content[i];
-      part_type right = (i < other.m_content.size()) ? other.m_content[i] : 0;
+      part_type right = (i < other.size()) ? other.m_content[i] : 0;
       if (keep) {
         if (left <= right) {
           // leave keep true
@@ -471,8 +471,8 @@ namespace DataStructures {
     index_type part_shift = shift_offset / PART_SIZE;
     if (per_part_shift != 0) {
       part_type keep = 0;
-      for (index_type i = 0; keep != 0 || i < m_content.size(); ++i) {
-        if (i >= m_content.size()) {
+      for (index_type i = 0; keep != 0 || i < size(); ++i) {
+        if (i >= size()) {
           m_content.push(0);
         }
         // Or works because exactly the space needed for keep gets shifted away.
@@ -509,9 +509,9 @@ namespace DataStructures {
     }
     if (per_part_shift > 0) {
       part_type keep = 0;
-      index_type j = m_content.size();
+      index_type j = size();
       // The strange for loop is necessary because of the unsigned types.
-      for (index_type i = 0; i < m_content.size(); ++i) {
+      for (index_type i = 0; i < size(); ++i) {
         --j;
         // Or works because exactly the space needed for keep gets shifted away.
         part_type shifted = (m_content[j] << (PART_SIZE - per_part_shift)) | (keep << PART_SIZE);
@@ -553,52 +553,62 @@ namespace DataStructures {
     part_type other_keep = !other.m_positive;
     part_type new_keep = !new_positive;
     for (index_type i = 0; i < std::max(size(), other.size()); ++i) {
-      part_type part, other_part;
-      if (m_positive) {
-        part = i < size() ? m_content[i] : 0;
-      } else {
-        assert(keep == 0 || keep == 1);
-        part_type tmp = (i < size() ? ~m_content[i] : -1l) + keep;
-        part = lower_half(tmp);
-        keep = ~upper_half(tmp) & 1;
-      }
-      if (other.m_positive) {
-        other_part = i < other.size() ? other.m_content[i] : 0;
-      } else {
-        assert(other_keep == 0 || other_keep == 1);
-        part_type tmp = (i < other.size() ? ~other.m_content[i] : -1l) + other_keep;
-        other_part = lower_half(tmp);
-        other_keep = ~upper_half(tmp) & 1;
-      }
-      part_type new_part;
-      if (new_positive) {
-        new_part = part | other_part;
-      } else {
-        assert(new_keep == 0 || new_keep == 1);
-        part_type tmp = ~(part | other_part) + new_keep;
-        new_part = lower_half(tmp);
-        new_keep = ~upper_half(tmp) & 1;
-      }
-      assert(keep == 0 && other_keep == 0 && new_keep == 0);
+      part_type part, other_part, new_part;
+      part = complement_keep(m_positive, part_at(i), keep);
+      other_part = complement_keep(other.m_positive, other.part_at(i), other_keep);
+      new_part = complement_keep(new_positive, part | other_part, new_keep);
       if (i >= size()) {
         m_content.push(new_part);
       } else {
         m_content[i] = new_part;
       }
     }
+    assert(keep == 0 && other_keep == 0 && new_keep == 0);
     m_positive = new_positive;
     return *this;
   }
 
   LongInt& LongInt::operator^=(const LongInt& other)
   {
-    m_positive = other.m_positive ^ other.m_positive;
+    bool new_positive = other.m_positive ^ other.m_positive;
+    part_type keep = !m_positive;
+    part_type other_keep = !other.m_positive;
+    part_type new_keep = !new_positive;
+    for (index_type i = 0; i < std::max(size(), other.size()); ++i) {
+      part_type part, other_part, new_part;
+      part = complement_keep(m_positive, part_at(i), keep);
+      other_part = complement_keep(other.m_positive, other.part_at(i), other_keep);
+      new_part = complement_keep(new_positive, part ^ other_part, new_keep);
+      if (i >= size()) {
+        m_content.push(new_part);
+      } else {
+        m_content[i] = new_part;
+      }
+    }
+    assert(keep == 0 && other_keep == 0 && new_keep == 0);
+    m_positive = new_positive;
     return *this;
   }
 
   LongInt& LongInt::operator&=(const LongInt& other)
   {
-    m_positive = other.m_positive || other.m_positive;
+    bool new_positive = other.m_positive || other.m_positive;
+    part_type keep = !m_positive;
+    part_type other_keep = !other.m_positive;
+    part_type new_keep = !new_positive;
+    for (index_type i = 0; i < std::max(size(), other.size()); ++i) {
+      part_type part, other_part, new_part;
+      part = complement_keep(m_positive, part_at(i), keep);
+      other_part = complement_keep(other.m_positive, other.part_at(i), other_keep);
+      new_part = complement_keep(new_positive, part & other_part, new_keep);
+      if (i >= size()) {
+        m_content.push(new_part);
+      } else {
+        m_content[i] = new_part;
+      }
+    }
+    assert(keep == 0 && other_keep == 0 && new_keep == 0);
+    m_positive = new_positive;
     return *this;
   }
 
@@ -621,7 +631,7 @@ namespace DataStructures {
 
   index_type inline LongInt::size() const
   {
-    return m_content.size();
+    return size();
   }
 
   LongInt LongInt::lower_part(index_type part_size) const
@@ -670,33 +680,30 @@ namespace DataStructures {
     }
   }
 
-  LongInt inline LongInt::two_complement() const
+  LongInt::part_type inline LongInt::part_at(index_type i) const
   {
-    if (m_positive) {
-      return *this;
-    }
-    LongInt result (*this);
-    for (index_type i = 0; i < size(); ++i) {
-      result.m_content[i] = ~m_content[i];
-    }
-    return ++result;
+    return i < size() ? m_content[i] : 0l;
   }
 
-  LongInt::part_type upper_half(LongInt::part_type part)
+  LongInt::part_type inline upper_half(LongInt::part_type part)
   {
     return part >> LOWER_BITS;
   }
 
-  LongInt::part_type lower_half(LongInt::part_type part)
+  LongInt::part_type inline lower_half(LongInt::part_type part)
   {
     return part & LOWER_MASK;
   }
 
-  LongInt::part_type complement_keep(LongInt::part_type part, LongInt::part_type& keep) {
-    assert(keep == 0 || keep == 1);
-    LongInt::part_type tmp = part + keep;
-    keep = ~upper_half(tmp) & 1;
-    return lower_half(tmp);
+  LongInt::part_type inline complement_keep(bool positive, LongInt::part_type part, LongInt::part_type& keep) {
+    if (positive) {
+      return part;
+    } else {
+      assert(keep == 0 || keep == 1);
+      LongInt::part_type tmp = ~part + keep;
+      keep = ~upper_half(tmp) & 1;
+      return lower_half(tmp);
+    }
   }
 
 }

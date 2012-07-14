@@ -67,14 +67,13 @@ namespace DataStructures {
     LongInt lower_part(index_type part_size) const;
     LongInt upper_part(index_type part_size) const;
     int uCompareTo(const LongInt& other) const;
-    LongInt two_complement() const;
-    std::string to_digit() const;
     void remove_zeros();
+    part_type part_at(index_type i) const;
     bool m_positive;
     ArrayList<part_type> m_content;
   };
 
-  LongInt::part_type complement_keep(LongInt::part_type part, LongInt::part_type& keep);
+  LongInt::part_type complement_keep(bool positive, LongInt::part_type part, LongInt::part_type& keep);
 
   LongInt::part_type upper_half(LongInt::part_type part);
 
