@@ -1,36 +1,19 @@
-# Next higher two potence
-#
-def h(n)
-  return 0 if n == 0
-  result = 1
-  while result < n
-    result <<= 1
-  end
-  result
-end
+INITIAL_VALUES = [
+                  [0]
+                  [0, 2],
+                  [0, 9, 16],
+                  [0, 20, 29, 38]
+                  ]
 
-# Space usage for result
-#
-def g(m, n)
-  if n > 0 && m > 0
-    m + n
-  else
-    0
-  end
-end
-
-
-# Space usage for calculation
-#
 def f(m, n)
   return f(n, m) if m < n
-  return 0 if n <= 0
-  return 2 if m == 1
-  return 9 if m == 2 && n == 1
-  return 16 if m == 2 && n == 2
-  if n <= h(m) / 2
-    g(h(m) / 2, n) + h(m) / 2 + 1 + f(h(m) / 2 + 1, n)
+  if m <= 3
+    INITIAL_VALUES[m][n]
+  end
+  m2 = (m / 2.0).ceil
+  if n <= m2
+    f(m2 + 1, n) + 2 * m2 + n + 1
   else
-     g(h(m) / 2, h(m) / 2) + g(m - h(m) / 2, n - h(m) / 2) + h(m) + 2 + f(h(m) / 2 + 1, h(m) / 2 + 1)
+    f(m2 + 1, m2 + 1) + m + n + 2 * m2 + 2
   end
 end

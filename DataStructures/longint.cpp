@@ -393,6 +393,7 @@ namespace DataStructures {
     part_type keep = 0;
     index_type i = 0;
     while (keep != 0 || i < other.size()) {
+      assert(keep == 0 || keep == 1);
       if (i >= size()) {
         m_content.push(0);
       }
@@ -423,6 +424,7 @@ namespace DataStructures {
     bool keep = false;
     index_type i = 0;
     while (keep || i < other.size()) {
+      assert(keep == 0 || keep == 1);
       if (i >= size()) {
         // can only happen if the rest of the other numbers content is 0 because the other number is at most this number.
         break;
@@ -631,7 +633,7 @@ namespace DataStructures {
 
   index_type inline LongInt::size() const
   {
-    return size();
+    return m_content.size();
   }
 
   LongInt LongInt::lower_part(index_type part_size) const
@@ -695,7 +697,8 @@ namespace DataStructures {
     return part & LOWER_MASK;
   }
 
-  LongInt::part_type inline complement_keep(bool positive, LongInt::part_type part, LongInt::part_type& keep) {
+  LongInt::part_type inline complement_keep(bool positive, LongInt::part_type part, LongInt::part_type& keep)
+  {
     if (positive) {
       return part;
     } else {
@@ -704,6 +707,37 @@ namespace DataStructures {
       keep = ~upper_half(tmp) & 1;
       return lower_half(tmp);
     }
+  }
+
+  ArrayList<LongInt::part_type>::iterator multiply_parts(ArrayList<LongInt::part_type>::const_iterator a_begin,
+                                                         ArrayList<LongInt::part_type>::const_iterator a_end,
+                                                         ArrayList<LongInt::part_type>::const_iterator b_begin,
+                                                         ArrayList<LongInt::part_type>::const_iterator b_end,
+                                                         ArrayList<LongInt::part_type>::iterator c_begin,
+                                                         ArrayList<LongInt::part_type>::iterator c_end)
+  {
+    if (a_begin <= a_end || b_begin <= b_end) {
+      return c_begin;
+    } else if (a_begin + 1 == a_end && b_begin + 1 == b_end) {
+      assert(c_end - c_begin >= 2);
+      part_type c = *a_begin * *b_begin;
+      *c_begin = lower_half(c);
+      part_type upper = upper_half(c);
+      if (upper > 0) {
+        *(++c_begin) = upper;
+      }
+      return ++c_begin;
+    }
+    index_type part_size = next_higher(std::max(a_end - a_begin, b_end - b_begin)) / 2;
+    ArrayList<LongInt::part_type>::const_iterator x0_begin (a_begin);
+    ArrayList<LongInt::part_type>::const_iterator x0_end (std::min(a_begin + part_size, a_end));
+    ArrayList<LongInt::part_type>::const_iterator x1_begin (x0_end);
+    ArrayList<LongInt::part_type>::const_iterator x1_end (a_end);
+    ArrayList<LongInt::part_type>::const_iterator y0_begin (b_begin);
+    ArrayList<LongInt::part_type>::const_iterator y0_end (std::min(b_begin + part_size, b_end));
+    ArrayList<LongInt::part_type>::const_iterator y1_begin (y0_end);
+    ArrayList<LongInt::part_type>::const_iterator y1_end (b_end);
+
   }
 
 }
