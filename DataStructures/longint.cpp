@@ -385,17 +385,24 @@ namespace DataStructures {
   LongInt& LongInt::operator+=(const LongInt& other)
   {
     if (other.m_positive != m_positive) {
-      return operator-=(-other);
+      subtract(other);
+    } else {
+      add(other);
     }
-    pad_zeros(std::max(other.size(), size()) + 1);
-    add(m_content.begin(), m_content.end(), other.m_content.begin(), other.m_content.end());
-    remove_zeros();
     return *this;
   }
 
-  void LongInt::pad_zeros(index_type new_size)
+  // Treat other number as same sign
+  void inline LongInt::add(const LongInt &other)
   {
-    assert(new_size > size());
+    pad_zeros(std::max(size(), other.size()) + 1);
+    DataStructures::add(m_content.begin(), m_content.end(), other.m_content.begin(), other.m_content.end());
+    remove_zeros();
+  }
+
+  void inline LongInt::pad_zeros(index_type new_size)
+  {
+    assert(new_size >= size());
     ArrayList<part_type>::iterator old_end = m_content.end();
     m_content.prepare_size(new_size);
     for (; old_end < m_content.end(); ++old_end) {
@@ -407,22 +414,28 @@ namespace DataStructures {
 
   LongInt& LongInt::operator-=(const LongInt& other)
   {
-    // Else the trick with negating would result in an endless loop
-    if (other == zero) {
-      return *this;
-    }
     if (other.m_positive != m_positive) {
-      return operator+=(-other);
+      add(other);
+    } else {
+      subtract(other);
     }
+    return *this;
+  }
+
+  // Treat other number as same sign
+  void inline LongInt::subtract(const LongInt &other)
+  {
     if (uCompareTo(other) == -1) {
-      return operator=(-(other - *this));
+      pad_zeros(other.size());
+      DataStructures::subtract(m_content.begin(), m_content.end(), other.m_content.begin(), other.m_content.end(), true);
+      m_positive = !m_positive;
+    } else {
+      DataStructures::subtract(m_content.begin(), m_content.end(), other.m_content.begin(), other.m_content.end());
     }
-    subtract(m_content.begin(), m_content.end(), other.m_content.begin(), other.m_content.end());
     remove_zeros();
     if (size() == 1 && m_content[0] == 0) {
       m_positive = true;
     }
-    return *this;
   }
 
   LongInt& LongInt::operator*=(const LongInt& other)
@@ -743,17 +756,19 @@ namespace DataStructures {
       z1_begin = tmp_y2_end;
     }
     it z1_end = multiply(x2_begin, x2_end, y2_begin, y2_end, z1_begin, c_end);
+    subtract(z1_begin, z1_end, z0_begin, z0_end);
+    subtract(z1_begin, z1_end, z2_begin, z2_end);
     add(c_begin + part_size, c_begin + part_size * 4, z1_begin, z1_end);
     return c_begin + part_size * 4;
   }
 
-  void add(ArrayList<LongInt::part_type>::iterator a_begin,
+  void inline add(ArrayList<LongInt::part_type>::iterator a_begin,
            ArrayList<LongInt::part_type>::iterator a_end,
            ArrayList<LongInt::part_type>::const_iterator b_begin,
            ArrayList<LongInt::part_type>::const_iterator b_end)
   {
-    LongInt::part_type keep = 0;
-    for (; keep != 0 || b_begin < b_end; ++a_begin, ++b_begin) {
+    LongInt::part_type keep = 0l;
+    for (; keep == 1 || b_begin < b_end; ++a_begin, ++b_begin) {
       assert(keep == 0 || keep == 1);
       assert(a_begin < a_end);
       LongInt::part_type sum = *a_begin + keep;
@@ -765,30 +780,40 @@ namespace DataStructures {
     }
   }
 
-  void subtract(ArrayList<LongInt::part_type>::iterator a_begin,
+  void inline subtract(ArrayList<LongInt::part_type>::iterator a_begin,
                 ArrayList<LongInt::part_type>::iterator a_end,
                 ArrayList<LongInt::part_type>::const_iterator b_begin,
-                ArrayList<LongInt::part_type>::const_iterator b_end)
+                ArrayList<LongInt::part_type>::const_iterator b_end,
+                bool exchange)
   {
-    bool keep = false;
-    index_type i = 0;
-    while (keep || i < other.size()) {
+    LongInt::part_type keep = 0l;
+    for (; keep == 1 || b_begin < b_end; ++a_begin, ++b_begin) {
       assert(keep == 0 || keep == 1);
-      assert(i < size()); // could only happen if the rest of the other numbers content is 0 because the other number is at most this number.
-      part_type left = m_content[i];
-      part_type right = other.part_at(i);
-      if (keep) {
+      assert(a_begin < a_end); // Should never happen because a < b
+      LongInt::part_type left = *a_begin;
+      LongInt::part_type right = b_begin < b_end ? *b_begin : 0l;
+      if (exchange) {
+        std::swap(left, right);
+      }
+      if (keep == 1) {
         if (left <= right) {
           // leave keep true
           left += MAX_PART;
         } else {
           --left;
-          keep = false;
+          keep = 0l;
         }
       } else if (left < right) {
         left += MAX_PART + 1;
-        keep = true;
+        keep = 1l;
       }
-      m_content[i++] = left - right;
+      *a_begin = left - right;
     }
   }
+
+  index_type inline space_usage(index_type size_a, index_type size_b)
+  {
+    part_size = size_a - size_a / 2;
+  }
+
+}
