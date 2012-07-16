@@ -1,19 +1,34 @@
-INITIAL_VALUES = [
-                  [0]
-                  [0, 2],
-                  [0, 9, 16],
-                  [0, 20, 29, 38]
-                  ]
+#!/usr/bin/ruby
+
+def g(m, n)
+  m2 = (m / 2.0).ceil
+  z0 = 2 * m2
+  z2 = (n <= m2 ? m2 : 2 * m2)
+  x2 = m2
+  y2 = (n <= m2 ? 0 : m2)
+  z1 = (n2 <= m2 ? f(x2, n) : f(x2, y2) )
+end
 
 def f(m, n)
   return f(n, m) if m < n
-  if m <= 3
-    INITIAL_VALUES[m][n]
-  end
+  return 0 if n <= 0
+  return 2 if m == 1
   m2 = (m / 2.0).ceil
-  if n <= m2
-    f(m2 + 1, n) + 2 * m2 + n + 1
+  z0 = 2 * m2
+  z2 = (n <= m2 ? m2 : 2 * m2)
+  x2 = m2 + 1
+  y2 = (n <= m2 ? 0 : m2 + 1)
+  if m == m2 + 1
+    z1 = (n2 <= m2 ? g(x2, n) : g(x2, y2))
   else
-    f(m2 + 1, m2 + 1) + m + n + 2 * m2 + 2
+    z1 = (n2 <= m2 ? f(x2, n) : f(x2, y2) )
   end
+  z0 + z1 + z2 + x2 + y2
 end
+
+puts "{" + (0..3).collect do |n|
+  "{" + (0..3).collect do |m|
+    f(m, n).to_s
+  end.join(", ") + "}"
+end.join(", ") + "}"
+
