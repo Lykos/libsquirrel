@@ -2,6 +2,7 @@
 #include <cmath>
 #include <sstream>
 #include <cassert>
+#include <iostream>
 
 namespace DataStructures {
 
@@ -707,20 +708,22 @@ namespace DataStructures {
   {
     typedef ArrayList<LongInt::part_type>::const_iterator c_it;
     typedef ArrayList<LongInt::part_type>::iterator it;
-    if (a_begin >= a_end || b_begin >= b_end) {
+    index_type a_size = a_end - a_begin;
+    index_type b_size = b_end - b_begin;
+    if (a_size <= 0 || b_size <= 0) {
       return c_begin;
-    } else if (a_begin + 1 == a_end && b_begin + 1 == b_end) {
+    } else if (a_size == 1 && b_size == 1) {
       assert(c_end - c_begin >= 2);
       LongInt::part_type c = *a_begin * *b_begin;
       *c_begin = lower_half(c);
       LongInt::part_type upper = upper_half(c);
       if (upper > 0) {
         *(++c_begin) = upper;
+      } else if (*c_begin == 0) {
+        --c_begin;
       }
       return ++c_begin;
     }
-    index_type a_size = a_end - a_begin;
-    index_type b_size = b_end - b_begin;
     index_type max_size = std::max(a_size, b_size);
     index_type part_size = max_size - max_size / 2;
     c_it x0_begin (a_begin);
@@ -731,53 +734,96 @@ namespace DataStructures {
     c_it y0_end (std::min(b_begin + part_size, b_end));
     c_it y1_begin (y0_end);
     c_it y1_end (b_end);
-    it z0_begin (c_begin); // Is the first part of the actual result
+    it res_begin (c_begin);
+
+    // z0 = x0 * y0
+    it z0_begin (res_begin); // Is the first part of the actual result
     it z0_end = multiply(x0_begin, x0_end, y0_begin, y0_end, z0_begin, c_end); // z0 = x0 * y0
-    it z2_begin (c_begin + 2 * part_size); // Is the second part of the actual result
-    it z2_end = multiply(x1_begin, x1_end, y1_begin, y1_end, z2_begin, c_end); // z2 = x1 * y1
-    it z1_begin (c_begin + 4 * part_size);
+    // This has to be padded to size at least 2 * part_size because the final result is constructed here
+    for (it iti = z0_end; iti < z0_begin + 2 * part_size; ++iti) {
+      *iti = 0l;
+    }
+
+    // z2 = x1 * y1
+    it z2_begin (std::max(z0_end, z0_begin + 2 * part_size)); // Is the second part of the actual result
+    it z2_end = multiply(x1_begin, x1_end, y1_begin, y1_end, z2_begin, c_end);
+    it res_end (std::max(z2_end, z2_begin + part_size));
+    assert(res_end < c_end); // We need enough space for the result
+    // This has to be padded to size at least part_size
+    for (it iti = z2_end; iti < res_end; ++iti) {
+      *iti = 0l;
+    }
+    it z1_begin (res_end);
+
     // x2 = x0 + x1
-    c_it x2_begin (x0_begin), x2_end (x0_end);
-    if (x1_begin < x1_end) {
-      it tmp_x2_begin (z1_begin);
-      it tmp_x2_end (z1_begin + part_size);
-      copy(tmp_x2_begin, tmp_x2_end, x0_begin, x0_end);
-      *(tmp_x2_end++) = 0l;
-      add(tmp_x2_begin, tmp_x2_end, x1_begin, x1_end);
-      // Take out leading zeroes. Is necessary because else size 3 would result in endless recursion.
-      while (*(tmp_x2_end - 1) == 0) {
-        --tmp_x2_end;
-      }
-      x2_begin = tmp_x2_begin;
-      x2_end = tmp_x2_end;
-      z1_begin = tmp_x2_end;
-    }
+    std::pair<c_it, c_it> x2 = calc_xy2(x0_begin, x0_end, x1_begin, x1_end, z1_begin, c_end);
+    c_it x2_begin (x2.first), x2_end (x2.second);
+
     // y2 = y0 + y1
-    c_it y2_begin (y0_begin), y2_end (y0_end);
-    if (y1_begin < y1_end) {
-      it tmp_y2_begin (z1_begin);
-      it tmp_y2_end (z1_begin + part_size);
-      copy(tmp_y2_begin, tmp_y2_end, y0_begin, y0_end);
-      *(tmp_y2_end++) = 0l;
-      add(tmp_y2_begin, tmp_y2_end, y1_begin, y1_end);
-      while (*(tmp_y2_end - 1) == 0) {
-        --tmp_y2_end;
-      }
-      y2_begin = tmp_y2_begin;
-      y2_end = tmp_y2_end;
-      z1_begin = tmp_y2_end;
-    }
+    std::pair<c_it, c_it> y2 = calc_xy2(y0_begin, y0_end, y1_begin, y1_end, z1_begin, c_end);
+    c_it y2_begin (y2.first), y2_end (y2.second);
+
+    // z1 = x2 * y2 - z0 - z2
     it z1_end = multiply(x2_begin, x2_end, y2_begin, y2_end, z1_begin, c_end);
+    if (z1_end - z1_begin < z0_end - z0_begin) {
+      std::cout << "a = " << LongInt(a_begin, a_end) << std::endl;
+      std::cout << "b = " << LongInt(b_begin, b_end) << std::endl;
+      std::cout << "size_a = " << a_size << std::endl;
+      std::cout << "size_b = " << b_size << std::endl;
+      std::cout << "x0 = " << LongInt(x0_begin, x0_end) << std::endl;
+      std::cout << "x1 = " << LongInt(x1_begin, x1_end) << std::endl;
+      std::cout << "x2 = " << LongInt(x2_begin, x2_end) << std::endl;
+      std::cout << "y0 = " << LongInt(y0_begin, y0_end) << std::endl;
+      std::cout << "y1 = " << LongInt(y1_begin, y1_end) << std::endl;
+      std::cout << "y2 = " << LongInt(y2_begin, y2_end) << std::endl;
+      std::cout << "z0 = " << LongInt(z0_begin, z0_end) << std::endl;
+      std::cout << "z1 = " << LongInt(z1_begin, z1_end) << std::endl;
+      std::cout << "z2 = " << LongInt(z2_begin, z2_end) << std::endl;
+    }
     subtract(z1_begin, z1_end, z0_begin, z0_end);
     subtract(z1_begin, z1_end, z2_begin, z2_end);
-    add(c_begin + part_size, c_begin + part_size * 4, z1_begin, z1_end);
-    return c_begin + part_size * 4;
+    while (z1_end > z1_begin && *(z1_end - 1) == 0) {
+      --z1_end;
+    }
+
+    // Put result together
+    add(z0_begin + part_size, res_end, z1_begin, z1_end);
+    while (res_end > res_begin && *(res_end - 1) == 0) {
+      --res_end;
+    }
+    return res_end;
+  }
+
+  std::pair<ArrayList<LongInt::part_type>::const_iterator, ArrayList<LongInt::part_type>::const_iterator> inline calc_xy2(const ArrayList<LongInt::part_type>::const_iterator& xy0_begin,
+                                                                                                                          const ArrayList<LongInt::part_type>::const_iterator& xy0_end,
+                                                                                                                          const ArrayList<LongInt::part_type>::const_iterator& xy1_begin,
+                                                                                                                          const ArrayList<LongInt::part_type>::const_iterator& xy1_end,
+                                                                                                                          ArrayList<LongInt::part_type>::iterator& c_begin,
+                                                                                                                          const ArrayList<LongInt::part_type>::iterator& c_end)
+  {
+    if (xy1_begin < xy1_end) {
+      index_type part_size = xy0_end - xy0_begin;
+      assert(c_begin + part_size + 1 < c_end); // We need enough space for xy2
+      ArrayList<LongInt::part_type>::iterator xy2_begin (c_begin);
+      ArrayList<LongInt::part_type>::iterator xy2_end (c_begin + part_size);
+      copy(xy2_begin, xy2_end, xy0_begin, xy0_end);
+      *(xy2_end++) = 0l;
+      add(xy2_begin, xy2_end, xy1_begin, xy1_end);
+      // Take out leading zeroes. Is necessary because else size 3 would result in endless recursion.
+      while (*(xy2_end - 1) == 0) {
+        --xy2_end;
+      }
+      c_begin = xy2_end;
+      return make_pair(xy2_begin, xy2_end);
+    } else {
+      return make_pair(xy0_begin, xy0_end);
+    }
   }
 
   void inline add(ArrayList<LongInt::part_type>::iterator a_begin,
-           ArrayList<LongInt::part_type>::iterator a_end,
-           ArrayList<LongInt::part_type>::const_iterator b_begin,
-           ArrayList<LongInt::part_type>::const_iterator b_end)
+                  ArrayList<LongInt::part_type>::iterator a_end,
+                  ArrayList<LongInt::part_type>::const_iterator b_begin,
+                  ArrayList<LongInt::part_type>::const_iterator b_end)
   {
     LongInt::part_type keep = 0l;
     for (; keep == 1 || b_begin < b_end; ++a_begin, ++b_begin) {
@@ -793,10 +839,10 @@ namespace DataStructures {
   }
 
   void inline subtract(ArrayList<LongInt::part_type>::iterator a_begin,
-                ArrayList<LongInt::part_type>::iterator a_end,
-                ArrayList<LongInt::part_type>::const_iterator b_begin,
-                ArrayList<LongInt::part_type>::const_iterator b_end,
-                bool exchange)
+                       ArrayList<LongInt::part_type>::iterator a_end,
+                       ArrayList<LongInt::part_type>::const_iterator b_begin,
+                       ArrayList<LongInt::part_type>::const_iterator b_end,
+                       bool exchange)
   {
     LongInt::part_type keep = 0l;
     for (; keep == 1 || b_begin < b_end; ++a_begin, ++b_begin) {
@@ -823,7 +869,7 @@ namespace DataStructures {
     }
   }
 
-  static const index_type INITIAL_SPACE_USAGE[][4] = {{0}, {0, 2}, {0, 9, 16}, {0, 20, 29, 38}};
+  static const index_type INITIAL_SPACE_USAGE[][4] = {{0, 0, 0, 0}, {0, 2, 11, 28}, {0, 11, 16, 33}, {0, 28, 33, 42}};
 
   index_type inline space_usage(index_type size_a, index_type size_b)
   {
@@ -835,9 +881,9 @@ namespace DataStructures {
     }
     index_type part_size = size_a - size_a / 2;
     if (size_b <= part_size) {
-      return space_usage(part_size + 1, size_b) + 3 * part_size + size_b + 1;
+      return space_usage(part_size + 1, size_b) + 4 * part_size + 1;
     } else {
-      return space_usage(part_size + 1, part_size + 1) + size_a + size_b + 2 * part_size + 2;
+      return space_usage(part_size + 1, part_size + 1) + 6 * part_size + 2;
     }
   }
 

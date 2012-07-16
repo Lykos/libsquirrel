@@ -21,6 +21,7 @@ namespace DataStructures {
     typedef unsigned long long int part_type;
     LongInt(long long int initial = 0);
     LongInt(const LongInt& other);
+    explicit LongInt(ArrayList<part_type>::const_iterator part_begin, ArrayList<part_type>::const_iterator part_end);
     explicit LongInt(const std::string& numerical_string);
     LongInt operator-() const;
     LongInt operator+() const;
@@ -62,7 +63,6 @@ namespace DataStructures {
     LongInt abs() const;
     static const index_type PART_SIZE = CHAR_BIT * sizeof(part_type) / 2;
   private:
-    explicit LongInt(ArrayList<part_type>::const_iterator part_begin, ArrayList<part_type>::const_iterator part_end);
     index_type size() const;
     LongInt lower_part(index_type part_size) const;
     LongInt upper_part(index_type part_size) const;
@@ -88,6 +88,14 @@ namespace DataStructures {
                                                    ArrayList<LongInt::part_type>::const_iterator b_end,
                                                    ArrayList<LongInt::part_type>::iterator c_begin,
                                                    ArrayList<LongInt::part_type>::iterator c_end);
+
+
+  std::pair<ArrayList<LongInt::part_type>::const_iterator, ArrayList<LongInt::part_type>::const_iterator> inline calc_xy2(const ArrayList<LongInt::part_type>::const_iterator& xy0_begin,
+                                                                                                                          const ArrayList<LongInt::part_type>::const_iterator& xy0_end,
+                                                                                                                          const ArrayList<LongInt::part_type>::const_iterator& xy1_begin,
+                                                                                                                          const ArrayList<LongInt::part_type>::const_iterator& xy1_end,
+                                                                                                                          ArrayList<LongInt::part_type>::iterator& c_begin,
+                                                                                                                          const ArrayList<LongInt::part_type>::iterator& c_end);
 
   void add(ArrayList<LongInt::part_type>::iterator a_begin,
            ArrayList<LongInt::part_type>::iterator a_end,

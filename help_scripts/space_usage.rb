@@ -1,12 +1,15 @@
 #!/usr/bin/ruby
 
+MAX = 4
+
 def g(m, n)
   m2 = (m / 2.0).ceil
   z0 = 2 * m2
   z2 = (n <= m2 ? m2 : 2 * m2)
   x2 = m2
   y2 = (n <= m2 ? 0 : m2)
-  z1 = (n2 <= m2 ? f(x2, n) : f(x2, y2) )
+  z1 = (n <= m2 ? f(x2, n) : f(x2, y2) )
+  z0 + z1 + z2 + x2 + y2
 end
 
 def f(m, n)
@@ -19,16 +22,15 @@ def f(m, n)
   x2 = m2 + 1
   y2 = (n <= m2 ? 0 : m2 + 1)
   if m == m2 + 1
-    z1 = (n2 <= m2 ? g(x2, n) : g(x2, y2))
+    z1 = (n <= m2 ? g(x2, n) : g(x2, y2))
   else
-    z1 = (n2 <= m2 ? f(x2, n) : f(x2, y2) )
+    z1 = (n <= m2 ? f(x2, n) : f(x2, y2) )
   end
   z0 + z1 + z2 + x2 + y2
 end
 
-puts "{" + (0..3).collect do |n|
-  "{" + (0..3).collect do |m|
-    f(m, n).to_s
-  end.join(", ") + "}"
-end.join(", ") + "}"
+array = "{" + ((0...MAX).collect do |n|
+  "{" + (0..MAX).collect { |m| f(m, n).to_s }.join(", ") + "}"
+end.join(", ")) + "}"
 
+puts "static const index_type INITIAL_SPACE_USAGE[][#{MAX}] = #{array};"
