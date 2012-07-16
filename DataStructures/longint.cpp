@@ -147,6 +147,9 @@ namespace DataStructures {
   {
     ArrayList<part_type> c (space_usage(size(), other.size()));
     ArrayList<part_type>::const_iterator c_end = multiply(m_content.begin(), m_content.end(), other.m_content.begin(), other.m_content.end(), c.begin(), c.end());
+    if (c_end == c.begin()) {
+      return zero;
+    }
     LongInt z2 (c.begin(), c_end);
     z2.m_positive = m_positive == other.m_positive;
     z2.remove_zeros();
@@ -776,7 +779,7 @@ namespace DataStructures {
       *(xy2_end++) = 0l;
       add(xy2_begin, xy2_end, xy1_begin, xy1_end);
       // Take out leading zeroes. Is necessary because else size 3 would result in endless recursion.
-      while (*(xy2_end - 1) == 0) {
+      while (xy2_end > xy2_begin && *(xy2_end - 1) == 0) {
         --xy2_end;
       }
       c_begin = xy2_end;
