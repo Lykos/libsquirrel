@@ -62,7 +62,7 @@ namespace DataStructures {
     LongInt abs() const;
     static const index_type PART_SIZE = CHAR_BIT * sizeof(part_type) / 2;
   private:
-    explicit LongInt(const ArrayList<part_type>& part);
+    explicit LongInt(ArrayList<part_type>::const_iterator part_begin, ArrayList<part_type>::const_iterator part_end);
     index_type size() const;
     LongInt lower_part(index_type part_size) const;
     LongInt upper_part(index_type part_size) const;

@@ -145,7 +145,7 @@ namespace DataStructures {
   LongInt LongInt::operator*(const LongInt& other) const
   {
 
-    if (operator==(zero) || other == zero) {
+    /*if (operator==(zero) || other == zero) {
       return zero;
     } else if (other.size() == 1 && size() == 1) {
       part_type product = m_content[0] * other.m_content[0];
@@ -177,7 +177,10 @@ namespace DataStructures {
     z2 <<= part_size * PART_SIZE;
     z2 += z1;
     z2 <<= part_size * PART_SIZE;
-    z2 += z0;
+    z2 += z0;*/
+    ArrayList<part_type> c (space_usage(size(), other.size()));
+    ArrayList<part_type>::const_iterator c_end = multiply(m_content.begin(), m_content.end(), other.m_content.begin(), other.m_content.end(), c.begin(), c.end());
+    LongInt z2 (c.begin(), c_end);
     z2.m_positive = m_positive == other.m_positive;
     z2.remove_zeros();
     return z2;
@@ -610,7 +613,9 @@ namespace DataStructures {
     return m_positive ? *this : operator-();
   }
 
-  LongInt::LongInt(const ArrayList<part_type>& content): m_positive(true), m_content(content)
+  LongInt::LongInt(ArrayList<part_type>::const_iterator part_begin, ArrayList<part_type>::const_iterator part_end):
+    m_positive (true),
+    m_content (part_begin, part_end)
   {
     if (m_content.is_empty()) {
       m_content.push(0);
@@ -624,14 +629,12 @@ namespace DataStructures {
 
   LongInt LongInt::lower_part(index_type part_size) const
   {
-    ArrayList<part_type> part (m_content.begin(), std::min(m_content.end(), m_content.begin() + part_size));
-    return LongInt(part);
+    return LongInt (m_content.begin(), std::min(m_content.end(), m_content.begin() + part_size));
   }
 
   LongInt LongInt::upper_part(index_type part_size) const
   {
-    ArrayList<part_type> part (m_content.begin() + part_size, std::max(m_content.end(), m_content.begin() + part_size));
-    return LongInt(part);
+    return LongInt (m_content.begin() + part_size, std::max(m_content.end(), m_content.begin() + part_size));
   }
 
   int LongInt::uCompareTo(const LongInt& other) const
@@ -704,7 +707,7 @@ namespace DataStructures {
   {
     typedef ArrayList<LongInt::part_type>::const_iterator c_it;
     typedef ArrayList<LongInt::part_type>::iterator it;
-    if (a_begin <= a_end || b_begin <= b_end) {
+    if (a_begin >= a_end || b_begin >= b_end) {
       return c_begin;
     } else if (a_begin + 1 == a_end && b_begin + 1 == b_end) {
       assert(c_end - c_begin >= 2);
@@ -737,9 +740,14 @@ namespace DataStructures {
     c_it x2_begin (x0_begin), x2_end (x0_end);
     if (x1_begin < x1_end) {
       it tmp_x2_begin (z1_begin);
-      it tmp_x2_end (z1_begin);
+      it tmp_x2_end (z1_begin + part_size);
       copy(tmp_x2_begin, tmp_x2_end, x0_begin, x0_end);
+      *(tmp_x2_end++) = 0l;
       add(tmp_x2_begin, tmp_x2_end, x1_begin, x1_end);
+      // Take out leading zeroes. Is necessary because else size 3 would result in endless recursion.
+      while (*(tmp_x2_end - 1) == 0) {
+        --tmp_x2_end;
+      }
       x2_begin = tmp_x2_begin;
       x2_end = tmp_x2_end;
       z1_begin = tmp_x2_end;
@@ -750,7 +758,11 @@ namespace DataStructures {
       it tmp_y2_begin (z1_begin);
       it tmp_y2_end (z1_begin + part_size);
       copy(tmp_y2_begin, tmp_y2_end, y0_begin, y0_end);
+      *(tmp_y2_end++) = 0l;
       add(tmp_y2_begin, tmp_y2_end, y1_begin, y1_end);
+      while (*(tmp_y2_end - 1) == 0) {
+        --tmp_y2_end;
+      }
       y2_begin = tmp_y2_begin;
       y2_end = tmp_y2_end;
       z1_begin = tmp_y2_end;
@@ -811,9 +823,22 @@ namespace DataStructures {
     }
   }
 
+  static const index_type INITIAL_SPACE_USAGE[][4] = {{0}, {0, 2}, {0, 9, 16}, {0, 20, 29, 38}};
+
   index_type inline space_usage(index_type size_a, index_type size_b)
   {
-    part_size = size_a - size_a / 2;
+    if (size_a < size_b) {
+      return space_usage(size_b, size_a);
+    }
+    if (size_a < 4) {
+      return INITIAL_SPACE_USAGE[size_a][size_b];
+    }
+    index_type part_size = size_a - size_a / 2;
+    if (size_b <= part_size) {
+      return space_usage(part_size + 1, size_b) + 3 * part_size + size_b + 1;
+    } else {
+      return space_usage(part_size + 1, part_size + 1) + size_a + size_b + 2 * part_size + 2;
+    }
   }
 
 }
