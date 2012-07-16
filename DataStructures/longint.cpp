@@ -159,7 +159,7 @@ namespace DataStructures {
       return result;
     }
     index_type max_size = std::max(size(), other.size());
-    index_type part_size = next_higher(max_size) / 2;
+    index_type part_size = max_size - max_size / 2;
     LongInt x0 (lower_part(part_size));
     LongInt x1 (upper_part(part_size));
     LongInt y0 (other.lower_part(part_size));
@@ -384,67 +384,40 @@ namespace DataStructures {
 
   LongInt& LongInt::operator+=(const LongInt& other)
   {
-    if (other == zero) {
-      return *this;
-    }
     if (other.m_positive != m_positive) {
       return operator-=(-other);
     }
-    part_type keep = 0;
-    index_type i = 0;
-    while (keep != 0 || i < other.size()) {
-      assert(keep == 0 || keep == 1);
-      if (i >= size()) {
-        m_content.push(0);
-      }
-      part_type sum = m_content[i] + keep;
-      if (i < other.size()) {
-        sum += other.m_content[i];
-      }
-      m_content[i] = lower_half(sum);
-      keep = upper_half(sum);
-      i++;
-    }
+    pad_zeros(std::max(other.size(), size()) + 1);
+    add(m_content.begin(), m_content.end(), other.m_content.begin(), other.m_content.end());
+    remove_zeros();
     return *this;
+  }
+
+  void LongInt::pad_zeros(index_type new_size)
+  {
+    assert(new_size > size());
+    ArrayList<part_type>::iterator old_end = m_content.end();
+    m_content.prepare_size(new_size);
+    for (; old_end < m_content.end(); ++old_end) {
+      *old_end = 0l;
+    }
   }
 
   static const LongInt::part_type MAX_PART = (1l << LongInt::PART_SIZE) - 1;
 
   LongInt& LongInt::operator-=(const LongInt& other)
   {
+    // Else the trick with negating would result in an endless loop
     if (other == zero) {
       return *this;
     }
     if (other.m_positive != m_positive) {
       return operator+=(-other);
     }
-    if ((m_positive && *this < other) || (!m_positive && *this > other)) {
+    if (uCompareTo(other) == -1) {
       return operator=(-(other - *this));
     }
-    bool keep = false;
-    index_type i = 0;
-    while (keep || i < other.size()) {
-      assert(keep == 0 || keep == 1);
-      if (i >= size()) {
-        // can only happen if the rest of the other numbers content is 0 because the other number is at most this number.
-        break;
-      }
-      part_type left = m_content[i];
-      part_type right = (i < other.size()) ? other.m_content[i] : 0;
-      if (keep) {
-        if (left <= right) {
-          // leave keep true
-          left += MAX_PART;
-        } else {
-          --left;
-          keep = false;
-        }
-      } else if (left < right) {
-        left += MAX_PART + 1;
-        keep = true;
-      }
-      m_content[i++] = left - right;
-    }
+    subtract(m_content.begin(), m_content.end(), other.m_content.begin(), other.m_content.end());
     remove_zeros();
     if (size() == 1 && m_content[0] == 0) {
       m_positive = true;
@@ -709,35 +682,113 @@ namespace DataStructures {
     }
   }
 
-  ArrayList<LongInt::part_type>::iterator multiply_parts(ArrayList<LongInt::part_type>::const_iterator a_begin,
-                                                         ArrayList<LongInt::part_type>::const_iterator a_end,
-                                                         ArrayList<LongInt::part_type>::const_iterator b_begin,
-                                                         ArrayList<LongInt::part_type>::const_iterator b_end,
-                                                         ArrayList<LongInt::part_type>::iterator c_begin,
-                                                         ArrayList<LongInt::part_type>::iterator c_end)
+  ArrayList<LongInt::part_type>::iterator multiply(ArrayList<LongInt::part_type>::const_iterator a_begin,
+                                                   ArrayList<LongInt::part_type>::const_iterator a_end,
+                                                   ArrayList<LongInt::part_type>::const_iterator b_begin,
+                                                   ArrayList<LongInt::part_type>::const_iterator b_end,
+                                                   ArrayList<LongInt::part_type>::iterator c_begin,
+                                                   ArrayList<LongInt::part_type>::iterator c_end)
   {
+    typedef ArrayList<LongInt::part_type>::const_iterator c_it;
+    typedef ArrayList<LongInt::part_type>::iterator it;
     if (a_begin <= a_end || b_begin <= b_end) {
       return c_begin;
     } else if (a_begin + 1 == a_end && b_begin + 1 == b_end) {
       assert(c_end - c_begin >= 2);
-      part_type c = *a_begin * *b_begin;
+      LongInt::part_type c = *a_begin * *b_begin;
       *c_begin = lower_half(c);
-      part_type upper = upper_half(c);
+      LongInt::part_type upper = upper_half(c);
       if (upper > 0) {
         *(++c_begin) = upper;
       }
       return ++c_begin;
     }
-    index_type part_size = next_higher(std::max(a_end - a_begin, b_end - b_begin)) / 2;
-    ArrayList<LongInt::part_type>::const_iterator x0_begin (a_begin);
-    ArrayList<LongInt::part_type>::const_iterator x0_end (std::min(a_begin + part_size, a_end));
-    ArrayList<LongInt::part_type>::const_iterator x1_begin (x0_end);
-    ArrayList<LongInt::part_type>::const_iterator x1_end (a_end);
-    ArrayList<LongInt::part_type>::const_iterator y0_begin (b_begin);
-    ArrayList<LongInt::part_type>::const_iterator y0_end (std::min(b_begin + part_size, b_end));
-    ArrayList<LongInt::part_type>::const_iterator y1_begin (y0_end);
-    ArrayList<LongInt::part_type>::const_iterator y1_end (b_end);
-
+    index_type a_size = a_end - a_begin;
+    index_type b_size = b_end - b_begin;
+    index_type max_size = std::max(a_size, b_size);
+    index_type part_size = max_size - max_size / 2;
+    c_it x0_begin (a_begin);
+    c_it x0_end (std::min(a_begin + part_size, a_end));
+    c_it x1_begin (x0_end);
+    c_it x1_end (a_end);
+    c_it y0_begin (b_begin);
+    c_it y0_end (std::min(b_begin + part_size, b_end));
+    c_it y1_begin (y0_end);
+    c_it y1_end (b_end);
+    it z0_begin (c_begin); // Is the first part of the actual result
+    it z0_end = multiply(x0_begin, x0_end, y0_begin, y0_end, z0_begin, c_end); // z0 = x0 * y0
+    it z2_begin (c_begin + 2 * part_size); // Is the second part of the actual result
+    it z2_end = multiply(x1_begin, x1_end, y1_begin, y1_end, z2_begin, c_end); // z2 = x1 * y1
+    it z1_begin (c_begin + 4 * part_size);
+    // x2 = x0 + x1
+    c_it x2_begin (x0_begin), x2_end (x0_end);
+    if (x1_begin < x1_end) {
+      it tmp_x2_begin (z1_begin);
+      it tmp_x2_end (z1_begin);
+      copy(tmp_x2_begin, tmp_x2_end, x0_begin, x0_end);
+      add(tmp_x2_begin, tmp_x2_end, x1_begin, x1_end);
+      x2_begin = tmp_x2_begin;
+      x2_end = tmp_x2_end;
+      z1_begin = tmp_x2_end;
+    }
+    // y2 = y0 + y1
+    c_it y2_begin (y0_begin), y2_end (y0_end);
+    if (y1_begin < y1_end) {
+      it tmp_y2_begin (z1_begin);
+      it tmp_y2_end (z1_begin + part_size);
+      copy(tmp_y2_begin, tmp_y2_end, y0_begin, y0_end);
+      add(tmp_y2_begin, tmp_y2_end, y1_begin, y1_end);
+      y2_begin = tmp_y2_begin;
+      y2_end = tmp_y2_end;
+      z1_begin = tmp_y2_end;
+    }
+    it z1_end = multiply(x2_begin, x2_end, y2_begin, y2_end, z1_begin, c_end);
+    add(c_begin + part_size, c_begin + part_size * 4, z1_begin, z1_end);
+    return c_begin + part_size * 4;
   }
 
-}
+  void add(ArrayList<LongInt::part_type>::iterator a_begin,
+           ArrayList<LongInt::part_type>::iterator a_end,
+           ArrayList<LongInt::part_type>::const_iterator b_begin,
+           ArrayList<LongInt::part_type>::const_iterator b_end)
+  {
+    LongInt::part_type keep = 0;
+    for (; keep != 0 || b_begin < b_end; ++a_begin, ++b_begin) {
+      assert(keep == 0 || keep == 1);
+      assert(a_begin < a_end);
+      LongInt::part_type sum = *a_begin + keep;
+      if (b_begin < b_end) {
+        sum += *b_begin;
+      }
+      *a_begin = lower_half(sum);
+      keep = upper_half(sum);
+    }
+  }
+
+  void subtract(ArrayList<LongInt::part_type>::iterator a_begin,
+                ArrayList<LongInt::part_type>::iterator a_end,
+                ArrayList<LongInt::part_type>::const_iterator b_begin,
+                ArrayList<LongInt::part_type>::const_iterator b_end)
+  {
+    bool keep = false;
+    index_type i = 0;
+    while (keep || i < other.size()) {
+      assert(keep == 0 || keep == 1);
+      assert(i < size()); // could only happen if the rest of the other numbers content is 0 because the other number is at most this number.
+      part_type left = m_content[i];
+      part_type right = other.part_at(i);
+      if (keep) {
+        if (left <= right) {
+          // leave keep true
+          left += MAX_PART;
+        } else {
+          --left;
+          keep = false;
+        }
+      } else if (left < right) {
+        left += MAX_PART + 1;
+        keep = true;
+      }
+      m_content[i++] = left - right;
+    }
+  }

@@ -68,6 +68,7 @@ namespace DataStructures {
     LongInt upper_part(index_type part_size) const;
     int uCompareTo(const LongInt& other) const;
     void remove_zeros();
+    void pad_zeros(index_type new_size);
     part_type part_at(index_type i) const;
     bool m_positive;
     ArrayList<part_type> m_content;
@@ -78,6 +79,18 @@ namespace DataStructures {
   LongInt::part_type upper_half(LongInt::part_type part);
 
   LongInt::part_type lower_half(LongInt::part_type part);
+
+  ArrayList<LongInt::part_type>::iterator multiply(ArrayList<LongInt::part_type>::const_iterator a_begin,
+                                                   ArrayList<LongInt::part_type>::const_iterator a_end,
+                                                   ArrayList<LongInt::part_type>::const_iterator b_begin,
+                                                   ArrayList<LongInt::part_type>::const_iterator b_end,
+                                                   ArrayList<LongInt::part_type>::iterator c_begin,
+                                                   ArrayList<LongInt::part_type>::iterator c_end);
+
+  void add(ArrayList<LongInt::part_type>::iterator a_begin,
+           ArrayList<LongInt::part_type>::iterator a_end,
+           ArrayList<LongInt::part_type>::const_iterator b_begin,
+           ArrayList<LongInt::part_type>::const_iterator b_end);
 
 }
 #endif // LONGINT_H

@@ -388,11 +388,12 @@ namespace DataStructures {
   {
     friend std::ostream& operator<< <> (std::ostream& out, const ArrayList<T>& it);
   public:
+    static const index_type DEFAULT_MIN_CAPACITY;
     typedef ArrayListIterator<T> iterator;
     typedef ArrayListConstIterator<T> const_iterator;
     typedef std::logic_error empty_list_error;
     typedef std::out_of_range range_error;
-    explicit ArrayList(index_type initial_size = 0, const T& element = T());
+    explicit ArrayList(index_type initial_size = 0, const T& element = T(), index_type min_capacity = DEFAULT_MIN_CAPACITY);
     ArrayList(const ArrayList<T>& other);
     ArrayList(const ArrayList<T>::const_iterator& begin, const ArrayList<T>::const_iterator& end);
     virtual ~ArrayList();
@@ -418,15 +419,14 @@ namespace DataStructures {
     index_type get_min_capacity() const;
     void set_min_capacity(index_type min_capacity);
     index_type get_capacity() const;
+    void prepare_size(index_type new_size);
   private:
-    static const index_type DEFAULT_MIN_CAPACITY;
     static const index_type CAPACITY_DECREASE_FACTOR;
     T* m_content;
     index_type m_size;
     index_type m_capacity;
     index_type m_min_capacity;
     void add_content(const T * const content, index_type insert_position, index_type length);
-    void prepare_size(index_type new_size);
     void init_capacity(index_type initial_capacity);
     void adjust_capacity(index_type new_capacity);
     void inline check_index(index_type index) const;
@@ -435,6 +435,12 @@ namespace DataStructures {
   index_type next_higher(index_type k);
 
   index_type next_lower(index_type k);
+
+  template <typename T>
+  void copy(ArrayListIterator<T> target_begin,
+            ArrayListIterator<T> target_end,
+            ArrayListConstIterator<T> source_begin,
+            ArrayListConstIterator<T> source_end);
 
   template <typename T>
   const index_type ArrayList<T>::DEFAULT_MIN_CAPACITY(16);
@@ -457,9 +463,9 @@ namespace DataStructures {
   }
 
   template <typename T>
-  ArrayList<T>::ArrayList(index_type initial_size, const T& element):
+  ArrayList<T>::ArrayList(index_type initial_size, const T& element, index_type min_capacity):
     m_size(initial_size),
-    m_min_capacity(DEFAULT_MIN_CAPACITY)
+    m_min_capacity(min_capacity)
   {
     init_capacity(initial_size);
     for (index_type i = 0; i < size(); ++i) {
@@ -482,7 +488,7 @@ namespace DataStructures {
   template <typename T>
   ArrayList<T>::ArrayList(const ArrayList<T>& other):
     m_size(other.m_size),
-    m_min_capacity(DEFAULT_MIN_CAPACITY)
+    m_min_capacity(other.m_min_capacity)
   {
     init_capacity(other.m_size);
     add_content(other.m_content, 0, other.m_size);
@@ -714,6 +720,18 @@ namespace DataStructures {
       std::ostringstream oss;
       oss << "Invalid index " << index << " for array list of size " << m_size << ".";
       throw range_error(oss.str());
+    }
+  }
+
+  template <typename T>
+  void copy(ArrayListIterator<T> target_begin,
+            ArrayListIterator<T> target_end,
+            ArrayListConstIterator<T> source_begin,
+            ArrayListConstIterator<T> source_end)
+  {
+    for (; target_begin < target_end && source_begin < source_end; ++target_begin, ++source_begin)
+    {
+      *target_begin = *source_begin;
     }
   }
 
