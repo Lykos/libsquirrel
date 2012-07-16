@@ -145,40 +145,6 @@ namespace DataStructures {
 
   LongInt LongInt::operator*(const LongInt& other) const
   {
-
-    /*if (operator==(zero) || other == zero) {
-      return zero;
-    } else if (other.size() == 1 && size() == 1) {
-      part_type product = m_content[0] * other.m_content[0];
-      LongInt result;
-      result.m_content[0] = lower_half(product);
-      part_type upper = upper_half(product);
-      if (upper > 0) {
-        result.m_content.push(upper);
-      }
-      result.m_positive = m_positive == other.m_positive;
-      return result;
-    }
-    index_type max_size = std::max(size(), other.size());
-    index_type part_size = max_size - max_size / 2;
-    LongInt x0 (lower_part(part_size));
-    LongInt x1 (upper_part(part_size));
-    LongInt y0 (other.lower_part(part_size));
-    LongInt y1 (other.upper_part(part_size));
-    LongInt z2 (zero);
-    if (size() > part_size && other.size() > part_size) {
-      z2 = x1 * y1;
-    }
-    LongInt z0 (x0 * y0);
-    x1 += x0;
-    y1 += y0;
-    LongInt z1 (x1 * y1);
-    z1 -= z0;
-    z1 -= z2;
-    z2 <<= part_size * PART_SIZE;
-    z2 += z1;
-    z2 <<= part_size * PART_SIZE;
-    z2 += z0;*/
     ArrayList<part_type> c (space_usage(size(), other.size()));
     ArrayList<part_type>::const_iterator c_end = multiply(m_content.begin(), m_content.end(), other.m_content.begin(), other.m_content.end(), c.begin(), c.end());
     LongInt z2 (c.begin(), c_end);
