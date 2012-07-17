@@ -36,6 +36,8 @@ private Q_SLOTS:
   void test_unary_minus();
   void test_unary_plus_data();
   void test_unary_plus();
+  void test_bit_negate_data();
+  void test_bit_negate();
   void test_plus_data();
   void test_plus();
   void test_minus_data();

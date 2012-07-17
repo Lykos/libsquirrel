@@ -115,6 +115,11 @@ namespace DataStructures {
     m_positive = positive;
   }
 
+  LongInt LongInt::operator~() const
+  {
+    return --operator-();
+  }
+
   LongInt LongInt::operator-() const
   {
     if (operator==(zero)) {

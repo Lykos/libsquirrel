@@ -162,7 +162,7 @@ void LongIntTest::test_#{@name}()
 #{INDENTATION}QFETCH(#{@type}, input);
 #{INDENTATION}QFETCH(bool, sign);
 EOS
-    @footer ||= @footer1 + evaluation + "QCOMPARE(constructed.is_positive(), sign);\n\}\n"
+    @footer ||= @footer1 + evaluation + "#{INDENTATION}QCOMPARE(constructed.is_positive(), sign);\n\}\n"
   end
 
   def title(element)
@@ -533,7 +533,7 @@ LongIntTest::LongIntTest()
 
 void LongIntTest::init()
 {
-#{INDENTATINON}number = LongInt(5);
+#{INDENTATION}number = LongInt(5);
 }
 
 static const int half_size = sizeof(part_type) / 2 * CHAR_BIT;
@@ -580,7 +580,7 @@ EOS
 puts header
 
 generator = DefaultConstructorGenerator.new("default_constructor")
-puts generator.generate([-1, 1], [200, 1 << 33, 1 << 63], [0, 1, 2, -1 << 63])
+puts generator.generate([-1, 1], [200, 1 << 33, 1 << 63], [0, 1, 2])
 puts
 
 [
@@ -602,7 +602,8 @@ end
 
 [
  UnaryGenerator.new("unary_plus", "+"),
- UnaryGenerator.new("unary_minus", "-")
+ UnaryGenerator.new("unary_minus", "-"),
+ UnaryGenerator.new("bit_negate", "~")
 ].each do |generator|
   puts generator.generate([-1, 1], [200, 1 << 33, 1 << 200], [0, 1, 2])
   puts
