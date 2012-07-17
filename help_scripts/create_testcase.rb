@@ -1,14 +1,14 @@
 #!/usr/bin/env ruby
 
+INDENTATION = "  "
+
 class CaseGenerator
 
-  INDENTATION = "  "
-  
   def initialize(name, number=2)
     @name = name
     @number = number
   end
-  
+
   def generate_n_random(*args)
     cases = ""
     @number.times do
@@ -16,7 +16,7 @@ class CaseGenerator
     end
     cases
   end
-  
+
   def construct_long_int(element)
     "LongInt(\"#{element}\")"
   end
@@ -24,12 +24,12 @@ class CaseGenerator
 end
 
 class UnaryGenerator < CaseGenerator
-  
+
   def initialize(name, operator, number=2)
     super(name, number)
     @operator = operator
   end
-  
+
   def header
     @header ||= <<EOS
 void LongIntTest::test_#{@name}_data()
@@ -39,7 +39,7 @@ void LongIntTest::test_#{@name}_data()
 
 EOS
   end
-  
+
   def footer
     @footer ||= <<EOS
 }
@@ -55,7 +55,7 @@ void LongIntTest::test_#{@name}()
 }
 EOS
   end
-  
+
   def evaluate(element)
     eval("#{@operator}(#{element})")
   end
@@ -67,11 +67,11 @@ EOS
   def construct_result(result)
     construct_long_int(result)
   end
-  
+
   def title(element)
     "#{@operator}#{element}"
   end
-  
+
   def line(element)
     result = evaluate(element)
     sep = element.to_s.length > 50 ? "\n" : " "
@@ -79,11 +79,11 @@ EOS
     result2 = construct_result(result)
     "#{INDENTATION}QTest::newRow(\"#{title(element)}\")#{sep}<< #{element2}#{sep}<< #{result2};\n"
   end
-  
+
   def generate_random(sign, limit)
     line(sign * (rand(limit) + 1))
   end
-  
+
   def generate(signs, limits, special)
     cases = header
     limits.each do |limit|
@@ -102,11 +102,11 @@ EOS
     end
     cases + footer
   end
-  
+
 end
 
 class IncDecGenerator < UnaryGenerator
-  
+
   def footer
     @footer ||= <<EOS
 }
@@ -124,25 +124,25 @@ void LongIntTest::test_#{@name}()
 }
 EOS
   end
-  
+
   def evaluate(element)
     eval("#{element} #{@operator} 1")
   end
-  
+
   def title(element)
     "#{element}#{@operator}#{@operator}"
   end
-  
+
 end
 
 
 class ConstructorGenerator < UnaryGenerator
-  
+
   def initialize(name, type, number=2)
     super(name, "", number)
     @type = type
   end
-  
+
   def header
     @header ||= <<EOS
 void LongIntTest::test_#{@name}_data()
@@ -152,7 +152,7 @@ void LongIntTest::test_#{@name}_data()
 
 EOS
   end
-  
+
   def footer
     @footer1 ||= <<EOS
 }
@@ -164,20 +164,20 @@ void LongIntTest::test_#{@name}()
 EOS
     @footer ||= @footer1 + evaluation + "QCOMPARE(constructed.is_positive(), sign);\n\}\n"
   end
-  
+
   def title(element)
     element
   end
-  
+
   def line(element)
     sep = element.to_s.length > 50 ? "\n" : " "
     "#{INDENTATION}QTest::newRow(\"#{title(element)}\")#{sep}<< #{construct(element)} << #{element >= 0 ? true : false};\n"
   end
-  
+
 end
 
 class DefaultConstructorGenerator < ConstructorGenerator
-  
+
   def initialize(name, number=2)
     super(name, "qlonglong", number)
   end
@@ -185,11 +185,11 @@ class DefaultConstructorGenerator < ConstructorGenerator
   def title(element)
     "LongInt(#{element})"
   end
-  
+
   def construct(element)
     "qlonglong(#{element}l)"
   end
-  
+
   def evaluation
     <<EOS
 #{INDENTATION}LongInt constructed (input);
@@ -201,23 +201,23 @@ class DefaultConstructorGenerator < ConstructorGenerator
 #{INDENTATION}QCOMPARE(oss1.str(), oss2.str());
 EOS
   end
-  
+
 end
 
 class CopyConstructorGenerator < ConstructorGenerator
-  
+
   def initialize(name, number=2)
     super(name, "LongInt", number)
   end
-  
+
   def title(element)
     "LongInt(LongInt(\\\"#{element}\\\"))"
   end
-  
+
   def construct(element)
     construct_long_int(element)
   end
-  
+
   def evaluation
     <<EOS
 #{INDENTATION}LongInt constructed (input);
@@ -225,23 +225,23 @@ class CopyConstructorGenerator < ConstructorGenerator
 #{INDENTATION}QCOMPARE(constructed, input);
 EOS
   end
-  
+
 end
 
 class StringConstructorGenerator < ConstructorGenerator
-  
+
   def initialize(name, number=2)
     super(name, "std::string", number)
   end
-  
+
   def title(element)
     "LongInt(\\\"#{element}\\\")"
   end
-  
+
   def construct(element)
     "std::string(\"#{element}\")"
   end
-  
+
   def evaluation
     <<EOS
 #{INDENTATION}LongInt constructed (input);
@@ -255,15 +255,15 @@ EOS
 end
 
 class AssignGenerator < CopyConstructorGenerator
-  
+
   def initialize(name, number=2)
     super(name, number)
   end
-  
+
   def title(element)
     "i = LongInt(\\\"#{element}\\\")"
   end
-  
+
   def evaluation
     <<EOS
 #{INDENTATION}LongInt constructed;
@@ -274,7 +274,7 @@ class AssignGenerator < CopyConstructorGenerator
 #{INDENTATION}QCOMPARE(constructed, input);
 EOS
   end
-  
+
 end
 
 class BinaryGenerator < CaseGenerator
@@ -283,7 +283,7 @@ class BinaryGenerator < CaseGenerator
     super(name, number)
     @operator = operator
   end
-  
+
   def header
     <<EOS
 void LongIntTest::test_#{@name}_data()
@@ -302,11 +302,11 @@ EOS
   def right_type
     "LongInt"
   end
-  
+
   def result_type
     "LongInt"
   end
-  
+
   def footer
     @footer2 ||= <<EOS
 }
@@ -342,23 +342,23 @@ EOS
   def construct_left(left)
     construct_long_int(left)
   end
-  
+
   def construct_right(right)
     construct_long_int(right)
   end
-  
+
   def construct_result(result)
     construct_long_int(result)
   end
-  
+
   def title(left, right)
     "#{left} #{@operator} #{right}"
   end
-  
+
   def evaluate(left, right)
     eval("(#{left}) #{@operator} (#{right})")
   end
-  
+
   def line(left, right)
     sep1 = left.to_s.length > 50 ? "\n" : " "
     sep2 = right.to_s.length > 50 ? "\n" : " "
@@ -369,11 +369,11 @@ EOS
     result2 = construct_result(result)
     "#{INDENTATION}QTest::newRow(\"#{title}\")#{sep1}<< #{left2}#{sep1}<< #{right2}#{sep2}<< #{result2};\n"
   end
-  
+
   def generate_random(sign1, sign2, limit1, limit2, b_is_long=true)
     line(sign1 * (rand(limit1) + 1), sign2 * (rand(limit2) + 1))
   end
-  
+
   def double_foreach(as, bs, &block)
     as.each do |a|
       bs.each do |b|
@@ -381,7 +381,7 @@ EOS
       end
     end
   end
-  
+
   def generate(signs1, signs2, limits1, limits2, special1, special2)
     cases = header
     double_foreach(signs1, signs2) do |sign1, sign2|
@@ -451,7 +451,7 @@ EOS
 end
 
 class ShiftGenerator < BinaryGenerator
-  
+
   def construct_right(right)
     right.to_s
   end
@@ -479,11 +479,11 @@ class CompareToGenerator < BinaryGenerator
   def result_type
     "int"
   end
-  
+
   def construct_result(result)
     result.to_s
   end
-    
+
   def evaluation
     <<EOS
 #{INDENTATION}bool larger = false, larger_equal = false, equal = false, smaller_equal = false, smaller = false, unequal = true;
@@ -511,7 +511,7 @@ class CompareToGenerator < BinaryGenerator
 }
 EOS
   end
-  
+
 end
 
 header = <<EOS
@@ -533,7 +533,7 @@ LongIntTest::LongIntTest()
 
 void LongIntTest::init()
 {
-  number = LongInt(5);
+#{INDENTATINON}number = LongInt(5);
 }
 
 static const int half_size = sizeof(part_type) / 2 * CHAR_BIT;
@@ -546,32 +546,32 @@ static const part_type number3 = 7881299347898368l;
 
 void LongIntTest::test_lower_half()
 {
-  if (half_size != 32) {
-    char str[200];
-    sprintf(str, "Half size is %d instead of the expected 32.",half_size);
-    QWARN(str);
-  }
-  QCOMPARE((int) lower_half(int1), lower);
-  QCOMPARE((int) lower_half(number3), 0);
-  QCOMPARE((int) lower_half(0), 0);
-  QCOMPARE((int) lower_half((1l << half_size) + 2), 2);
-  QCOMPARE((int) lower_half(number2), (int) number2);
-  QCOMPARE((int) lower_half(number2 << 1), 11 << 1);
+#{INDENTATION}if (half_size != 32) {
+#{INDENTATION}#{INDENTATION}char str[200];
+#{INDENTATION}#{INDENTATION}sprintf(str, "Half size is %d instead of the expected 32.",half_size);
+#{INDENTATION}#{INDENTATION}QWARN(str);
+#{INDENTATION}}
+#{INDENTATION}QCOMPARE((int) lower_half(int1), lower);
+#{INDENTATION}QCOMPARE((int) lower_half(number3), 0);
+#{INDENTATION}QCOMPARE((int) lower_half(0), 0);
+#{INDENTATION}QCOMPARE((int) lower_half((1l << half_size) + 2), 2);
+#{INDENTATION}QCOMPARE((int) lower_half(number2), (int) number2);
+#{INDENTATION}QCOMPARE((int) lower_half(number2 << 1), 11 << 1);
 }
 
 void LongIntTest::test_upper_half()
 {
-  QCOMPARE((int) upper_half(int2), upper);
-  QCOMPARE((int) upper_half(number3), 1835008);
-  QCOMPARE((int) upper_half(number2 << half_size), (int) number2);
-  QCOMPARE((int) upper_half(number2 << 1), 1);
-  QCOMPARE((int) upper_half(number2), 0);
-  QCOMPARE((int) upper_half(0), 0);
+#{INDENTATION}QCOMPARE((int) upper_half(int2), upper);
+#{INDENTATION}QCOMPARE((int) upper_half(number3), 1835008);
+#{INDENTATION}QCOMPARE((int) upper_half(number2 << half_size), (int) number2);
+#{INDENTATION}QCOMPARE((int) upper_half(number2 << 1), 1);
+#{INDENTATION}QCOMPARE((int) upper_half(number2), 0);
+#{INDENTATION}QCOMPARE((int) upper_half(0), 0);
 }
 
 void LongIntTest::test_empty_constructor()
 {
-  QCOMPARE(LongInt(), LongInt(0));
+#{INDENTATION}QCOMPARE(LongInt(), LongInt(0));
 }
 
 // Auto generated
@@ -580,10 +580,10 @@ EOS
 puts header
 
 generator = DefaultConstructorGenerator.new("default_constructor")
-puts generator.generate([-1, 1], [200, 1 << 33, 1 << 63], [0, 1, 2])
+puts generator.generate([-1, 1], [200, 1 << 33, 1 << 63], [0, 1, 2, -1 << 63])
 puts
-                    
-[           
+
+[
  CopyConstructorGenerator.new("copy_constructor"),
  StringConstructorGenerator.new("string_constructor"),
  AssignGenerator.new("assign")
