@@ -82,12 +82,12 @@ namespace DataStructures {
 
   LongInt::part_type lower_half(LongInt::part_type part);
 
-  ArrayList<LongInt::part_type>::iterator multiply(ArrayList<LongInt::part_type>::const_iterator a_begin,
-                                                   ArrayList<LongInt::part_type>::const_iterator a_end,
-                                                   ArrayList<LongInt::part_type>::const_iterator b_begin,
-                                                   ArrayList<LongInt::part_type>::const_iterator b_end,
-                                                   ArrayList<LongInt::part_type>::iterator c_begin,
-                                                   ArrayList<LongInt::part_type>::iterator c_end);
+  ArrayList<LongInt::part_type>::iterator multiply(const ArrayList<LongInt::part_type>::const_iterator& a_begin,
+                                                   const ArrayList<LongInt::part_type>::const_iterator& a_end,
+                                                   const ArrayList<LongInt::part_type>::const_iterator& b_begin,
+                                                   const ArrayList<LongInt::part_type>::const_iterator& b_end,
+                                                   const ArrayList<LongInt::part_type>::iterator& c_begin,
+                                                   const ArrayList<LongInt::part_type>::iterator& c_end);
 
 
   std::pair<ArrayList<LongInt::part_type>::const_iterator, ArrayList<LongInt::part_type>::const_iterator> inline calc_xy2(const ArrayList<LongInt::part_type>::const_iterator& xy0_begin,
@@ -97,15 +97,15 @@ namespace DataStructures {
                                                                                                                           ArrayList<LongInt::part_type>::iterator& c_begin,
                                                                                                                           const ArrayList<LongInt::part_type>::iterator& c_end);
 
-  void add(ArrayList<LongInt::part_type>::iterator a_begin,
-           ArrayList<LongInt::part_type>::iterator a_end,
-           ArrayList<LongInt::part_type>::const_iterator b_begin,
-           ArrayList<LongInt::part_type>::const_iterator b_end);
+  void add(const ArrayList<LongInt::part_type>::iterator& a_begin,
+           const ArrayList<LongInt::part_type>::iterator& a_end,
+           const ArrayList<LongInt::part_type>::const_iterator& b_begin,
+           const ArrayList<LongInt::part_type>::const_iterator& b_end);
 
-  void subtract(ArrayList<LongInt::part_type>::iterator a_begin,
-                ArrayList<LongInt::part_type>::iterator a_end,
-                ArrayList<LongInt::part_type>::const_iterator b_begin,
-                ArrayList<LongInt::part_type>::const_iterator b_end,
+  void subtract(const ArrayList<LongInt::part_type>::iterator& a_begin,
+                const ArrayList<LongInt::part_type>::iterator& a_end,
+                const ArrayList<LongInt::part_type>::const_iterator& b_begin,
+                const ArrayList<LongInt::part_type>::const_iterator& b_end,
                 bool exchange = false);
 
   index_type space_usage(index_type size_a, index_type size_b);
