@@ -530,12 +530,16 @@ namespace DataStructures {
     }
     assert(keep == 0 && other_keep == 0 && new_keep == 0);
     m_positive = new_positive;
+    remove_zeros();
+    if (size() == 1 && m_content[0] == 0) {
+      m_positive = true;
+    }
     return *this;
   }
 
   LongInt& LongInt::operator^=(const LongInt& other)
   {
-    bool new_positive = other.m_positive ^ other.m_positive;
+    bool new_positive = m_positive == other.m_positive;
     part_type keep = !m_positive;
     part_type other_keep = !other.m_positive;
     part_type new_keep = !new_positive;
@@ -552,12 +556,16 @@ namespace DataStructures {
     }
     assert(keep == 0 && other_keep == 0 && new_keep == 0);
     m_positive = new_positive;
+    remove_zeros();
+    if (size() == 1 && m_content[0] == 0) {
+      m_positive = true;
+    }
     return *this;
   }
 
   LongInt& LongInt::operator&=(const LongInt& other)
   {
-    bool new_positive = other.m_positive || other.m_positive;
+    bool new_positive = m_positive || other.m_positive;
     part_type keep = !m_positive;
     part_type other_keep = !other.m_positive;
     part_type new_keep = !new_positive;
@@ -574,6 +582,10 @@ namespace DataStructures {
     }
     assert(keep == 0 && other_keep == 0 && new_keep == 0);
     m_positive = new_positive;
+    remove_zeros();
+    if (size() == 1 && m_content[0] == 0) {
+      m_positive = true;
+    }
     return *this;
   }
 
