@@ -59,7 +59,7 @@ namespace DataStructures {
     return res;
   }
 
-  LongInt::LongInt(long long int initial): m_positive(initial >= 0)
+  LongInt::LongInt(long long int initial): m_positive (initial >= 0)
   {
     part_type positive_part = m_positive ? initial : -initial;
     part_type lower = lower_half(positive_part);
@@ -70,7 +70,7 @@ namespace DataStructures {
     }
   }
 
-  LongInt::LongInt(const LongInt& other): m_positive(other.m_positive), m_content(other.m_content)
+  LongInt::LongInt(const LongInt& other): m_positive (other.m_positive), m_content (other.m_content)
   {
   }
 
