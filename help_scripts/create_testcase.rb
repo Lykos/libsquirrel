@@ -7,7 +7,7 @@ class DataColumn
     @name = name
   end
 
-  attr_reader :type, :name
+  attr_reader :name
 
   def construct(element)
     case @type
@@ -18,6 +18,14 @@ class DataColumn
     when :int then element.to_s
     else
       raise "Unknown type #{type}"
+    end
+  end
+
+  def typename
+    if @type == :string
+      "std::string"
+    else
+      @type.to_s
     end
   end
 
@@ -52,15 +60,15 @@ class CaseGenerator
   end
 
   def test_method_signature
-    "void LongIntTest::test_#{@name}"
+    "void LongIntTest::test_#{@name}()"
   end
 
   def fetching
-    data_columns.collect { |c| "QFETCH(#{c.type.to_s}, #{c.name})" }
+    data_columns.collect { |c| "QFETCH(#{c.typename}, #{c.name});" }
   end
 
   def column_declarations
-    data_columns.collect { |c| "QTest::addColumn<#{c.type.to_s}>(\"#{c.name}\");" }
+    data_columns.collect { |c| "QTest::addColumn<#{c.typename}>(\"#{c.name}\");" }
   end
     
   def data_method_body(*args)
@@ -113,7 +121,7 @@ class UnaryGenerator < CaseGenerator
   end
   
   def construction
-    ["LongInt copy (element)"]
+    ["LongInt copy (element);"]
   end
 
   def tests
@@ -160,7 +168,7 @@ class IncDecGenerator < UnaryGenerator
      Test.new("copy", "result")]
   end
   
-  def evaluate(element)
+  def result(element)
     eval("(#{element}) #{@operator} 1")
   end
   
@@ -178,6 +186,10 @@ class ConstructorGenerator < UnaryGenerator
     @type = type
   end
   
+  def result(element)
+    element >= 0
+  end
+
   def data_columns
     [DataColumn.new(@type, "input"),
      DataColumn.new(:bool, "sign")]
@@ -257,7 +269,7 @@ class StringConstructorGenerator < ConstructorGenerator
   def construction
     super + ["std::ostringstream oss;",
              "oss << constructed;",
-             "std::string string_output"]
+             "std::string string_output = oss.str();"]
   end
 
   def tests
@@ -281,10 +293,10 @@ class AssignGenerator < CopyConstructorGenerator
   end
 
   def tests
-    super + [Test.new("constructed = input", "input"),
-             Test.new("constructed", "input"),
-             Test.new("constructed = constructed", "input"),
-             Test.new("constructed", "input")]
+    [Test.new("constructed = input", "input"),
+     Test.new("constructed", "input"),
+     Test.new("constructed = constructed", "input"),
+     Test.new("constructed", "input")] + super
   end
   
 end
@@ -453,6 +465,7 @@ class CompareToGenerator < BinaryGenerator
   
   def construction
     super + ["bool larger = false, larger_equal = false, equal = false, smaller_equal = false, smaller = false, unequal = true;",
+             "LongInt copy_left (left), copy_right (right);",
              "if (result == 1) {",
              "#{INDENTATION}larger = true;",
              "#{INDENTATION}larger_equal = true;",
@@ -470,13 +483,15 @@ class CompareToGenerator < BinaryGenerator
   end
     
   def tests
-    super + [Test.new("left.compareTo(right)", "result"),
-             Test.new("left > right", "larger"),
-             Test.new("left >= right", "larger_equal"),
-             Test.new("left == right", "equal"),
-             Test.new("left <= right", "smaller_equal"),
-             Test.new("left < right", "smaller"),
-             Test.new("left != right", "unequal")]
+    [Test.new("left.compareTo(right)", "result"),
+     Test.new("left > right", "larger"),
+     Test.new("left >= right", "larger_equal"),
+     Test.new("left == right", "equal"),
+     Test.new("left <= right", "smaller_equal"),
+     Test.new("left < right", "smaller"),
+     Test.new("left != right", "unequal"),
+     Test.new("left", "copy_left"),
+     Test.new("right", "copy_right")]
   end
   
 end
