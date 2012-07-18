@@ -24,4 +24,5 @@ INCLUDEPATH += $$PWD/../DataStructures
 DEPENDPATH += $$PWD/../DataStructures
 
 HEADERS += \
+    compositeperformanceresult.h \
     performanceresult.h

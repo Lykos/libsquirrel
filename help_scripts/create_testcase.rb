@@ -1,8 +1,34 @@
 #!/usr/bin/env ruby
 
+class DataColumn
+
+  def initialize(type, name)
+    @type = type
+    @name = name
+  end
+
+  attr_reader :type, :name
+
+  def construct(element)
+    case @type
+    when :LongInt then "LongInt(\"#{element}\")"
+    when :bool then  element.to_s
+    when :qlonglong then "qlonglong(#{element})"
+    when :string then "std::string(\"#{element}\")"
+    when :int then element.to_s
+    else
+      raise "Unknown type #{type}"
+    end
+  end
+
+end
+
+Test = Struct.new(:actual, :expected)
+
 class CaseGenerator
 
   INDENTATION = "  "
+  NEWLINE_SIZE = 50
   
   def initialize(name, number=2)
     @name = name
@@ -10,15 +36,67 @@ class CaseGenerator
   end
   
   def generate_n_random(*args)
-    cases = ""
+    cases = []
     @number.times do
-      cases += generate_random(*args)
+      cases.push(generate_random(*args))
     end
     cases
   end
+
+  def join_indent(lines)
+    lines.collect { |l| INDENTATION + l + "\n" }.join
+  end
+
+  def data_method_signature
+    "void LongIntTest::test_#{@name}_data()"
+  end
+
+  def test_method_signature
+    "void LongIntTest::test_#{@name}"
+  end
+
+  def fetching
+    data_columns.collect { |c| "QFETCH(#{c.type.to_s}, #{c.name})" }
+  end
+
+  def column_declarations
+    data_columns.collect { |c| "QTest::addColumn<#{c.type.to_s}>(\"#{c.name}\");" }
+  end
+    
+  def data_method_body(*args)
+    join_indent(column_declarations) + "\n" + join_indent(generate_cases(*args))
+  end
+
+  def test_method_body
+    bla_tests = tests.collect { |c| "QCOMPARE(#{c.actual}, #{c.expected});"}
+    join_indent(fetching) + "\n" + join_indent(construction) + "\n" + join_indent(bla_tests)
+  end
+
+  def generate(*args)
+    data_method_signature + "\n{\n" + data_method_body(*args) + "}\n\n" + test_method_signature + "\n{\n" + test_method_body + "}\n\n"
+  end
+
+  def whitespace(element)
+    element.length > NEWLINE_SIZE ? "\n#{INDENTATION * 3}" : " "
+  end
+
+  def line(*args)
+    s = "QTest::newRow(\"#{title(*args)}\")"
+    raise "not the right number of arguments" unless args.length + 1 == data_columns.length
+    args.push(result(*args))
+    args.each_with_index do |arg, i|
+      bla = data_columns[i].construct(arg)
+      s += whitespace(bla) + "<< " + bla
+    end
+    s + ";"
+  end
   
-  def construct_long_int(element)
-    "LongInt(\"#{element}\")"
+  def double_foreach(as, bs, &block)
+    as.each do |a|
+      bs.each do |b|
+        yield a, b
+      end
+    end
   end
 
 end
@@ -30,103 +108,60 @@ class UnaryGenerator < CaseGenerator
     @operator = operator
   end
   
-  def header
-    @header ||= <<EOS
-void LongIntTest::test_#{@name}_data()
-{
-#{INDENTATION}QTest::addColumn<LongInt>("element");
-#{INDENTATION}QTest::addColumn<LongInt>("result");
-
-EOS
+  def data_columns
+    [DataColumn.new(:LongInt, "element"), DataColumn.new(:LongInt, "result")]
   end
   
-  def footer
-    @footer ||= <<EOS
-}
-
-void LongIntTest::test_#{@name}()
-{
-#{INDENTATION}QFETCH(LongInt, element);
-#{INDENTATION}QFETCH(LongInt, result);
-#{INDENTATION}LongInt copy (element);
-
-#{INDENTATION}QCOMPARE(#{@operator}element, result);
-#{INDENTATION}QCOMPARE(element, copy);
-}
-EOS
+  def construction
+    ["LongInt copy (element)"]
   end
-  
-  def evaluate(element)
+
+  def tests
+    [Test.new("#{@operator}element", "result"),
+     Test.new("element", "copy")]
+  end
+   
+  def result(element)
     eval("#{@operator}(#{element})")
-  end
+  end  
 
-  def construct_element(element)
-    construct_long_int(element)
-  end
-
-  def construct_result(result)
-    construct_long_int(result)
-  end
-  
   def title(element)
     "#{@operator}#{element}"
-  end
-  
-  def line(element)
-    result = evaluate(element)
-    sep = element.to_s.length > 50 ? "\n" : " "
-    element2 = construct_element(element)
-    result2 = construct_result(result)
-    "#{INDENTATION}QTest::newRow(\"#{title(element)}\")#{sep}<< #{element2}#{sep}<< #{result2};\n"
   end
   
   def generate_random(sign, limit)
     line(sign * (rand(limit) + 1))
   end
   
-  def generate(signs, limits, special)
-    cases = header
-    limits.each do |limit|
-      signs.each do |sign|
-        cases += generate_n_random(sign, limit)
-      end
+  def generate_cases(signs, limits, special)
+    cases = []
+    if special.delete(0)
+      cases.push(line(0))
     end
-    a_0 = special.delete(0)
-    if a_0
-      cases += line(0)
+
+    double_foreach(signs, special) do |sign, a|
+      cases.push(line(sign * a))
     end
-    signs.each do |sign|
-      special.each do |a|
-        cases += line(sign * a)
-      end
+
+    double_foreach(limits, signs) do |limit, sign|
+      cases += generate_n_random(sign, limit)
     end
-    cases + footer
+    cases
   end
   
 end
 
 class IncDecGenerator < UnaryGenerator
   
-  def footer
-    @footer ||= <<EOS
-}
-
-void LongIntTest::test_#{@name}()
-{
-#{INDENTATION}QFETCH(LongInt, element);
-#{INDENTATION}QFETCH(LongInt, result);
-#{INDENTATION}LongInt copy (element);
-
-#{INDENTATION}QCOMPARE(element#{@operator}#{@operator}, copy);
-#{INDENTATION}QCOMPARE(element, result);
-#{INDENTATION}QCOMPARE(#{@operator}#{@operator}copy, result);
-#{INDENTATION}QCOMPARE(copy, result);
-}
-EOS
+  def tests
+    [Test.new("element#{@operator}#{@operator}", "copy"),
+     Test.new("element", "result"),
+     Test.new("#{@operator}#{@operator}copy", "result"),
+     Test.new("copy", "result")]
   end
   
   def evaluate(element)
-    eval("#{element} #{@operator} 1")
+    eval("(#{element}) #{@operator} 1")
   end
   
   def title(element)
@@ -143,35 +178,21 @@ class ConstructorGenerator < UnaryGenerator
     @type = type
   end
   
-  def header
-    @header ||= <<EOS
-void LongIntTest::test_#{@name}_data()
-{
-#{INDENTATION}QTest::addColumn<#{@type}>("input");
-#{INDENTATION}QTest::addColumn<bool>("sign");
-
-EOS
+  def data_columns
+    [DataColumn.new(@type, "input"),
+     DataColumn.new(:bool, "sign")]
   end
-  
-  def footer
-    @footer1 ||= <<EOS
-}
 
-void LongIntTest::test_#{@name}()
-{
-#{INDENTATION}QFETCH(#{@type}, input);
-#{INDENTATION}QFETCH(bool, sign);
-EOS
-    @footer ||= @footer1 + evaluation + "QCOMPARE(constructed.is_positive(), sign);\n\}\n"
+  def construction
+    ["LongInt constructed (input);"]
+  end
+
+  def tests
+    [Test.new("constructed.is_positive()", "sign")]
   end
   
   def title(element)
-    element
-  end
-  
-  def line(element)
-    sep = element.to_s.length > 50 ? "\n" : " "
-    "#{INDENTATION}QTest::newRow(\"#{title(element)}\")#{sep}<< #{construct(element)} << #{element >= 0 ? true : false};\n"
+    element.to_s
   end
   
 end
@@ -179,27 +200,26 @@ end
 class DefaultConstructorGenerator < ConstructorGenerator
   
   def initialize(name, number=2)
-    super(name, "qlonglong", number)
+    super(name, :qlonglong, number)
+  end
+
+  def construction
+    super + ["",
+             "// We need this trick because normal comparing would use exactly this constructor to transform the integer into a LongInt.",
+             "std::ostringstream oss1;",
+             "oss1 << constructed;",
+             "std::ostringstream oss2;",
+             "oss2 << input;",
+             "std::string actual_string = oss1.str();",
+             "std::string expected_string = oss2.str();"]
+  end
+
+  def tests
+    super + [Test.new("actual_string", "expected_string")]
   end
 
   def title(element)
     "LongInt(#{element})"
-  end
-  
-  def construct(element)
-    "qlonglong(#{element}l)"
-  end
-  
-  def evaluation
-    <<EOS
-#{INDENTATION}LongInt constructed (input);
-
-#{INDENTATION}std::ostringstream oss1;
-#{INDENTATION}oss1 << constructed;
-#{INDENTATION}std::ostringstream oss2;
-#{INDENTATION}oss2 << input;
-#{INDENTATION}QCOMPARE(oss1.str(), oss2.str());
-EOS
   end
   
 end
@@ -207,23 +227,19 @@ end
 class CopyConstructorGenerator < ConstructorGenerator
   
   def initialize(name, number=2)
-    super(name, "LongInt", number)
+    super(name, :LongInt, number)
   end
   
   def title(element)
     "LongInt(LongInt(\\\"#{element}\\\"))"
   end
-  
+
   def construct(element)
     construct_long_int(element)
   end
   
-  def evaluation
-    <<EOS
-#{INDENTATION}LongInt constructed (input);
-
-#{INDENTATION}QCOMPARE(constructed, input);
-EOS
+  def tests
+    super + [Test.new("constructed", "input")]
   end
   
 end
@@ -231,25 +247,21 @@ end
 class StringConstructorGenerator < ConstructorGenerator
   
   def initialize(name, number=2)
-    super(name, "std::string", number)
+    super(name, :string, number)
   end
   
   def title(element)
     "LongInt(\\\"#{element}\\\")"
   end
   
-  def construct(element)
-    "std::string(\"#{element}\")"
+  def construction
+    super + ["std::ostringstream oss;",
+             "oss << constructed;",
+             "std::string string_output"]
   end
-  
-  def evaluation
-    <<EOS
-#{INDENTATION}LongInt constructed (input);
 
-#{INDENTATION}std::ostringstream oss;
-#{INDENTATION}oss << constructed;
-#{INDENTATION}QCOMPARE(oss.str(), input);
-EOS
+  def tests
+    super + [Test.new("string_output", "input")]
   end
 
 end
@@ -264,15 +276,15 @@ class AssignGenerator < CopyConstructorGenerator
     "i = LongInt(\\\"#{element}\\\")"
   end
   
-  def evaluation
-    <<EOS
-#{INDENTATION}LongInt constructed;
+  def construction
+    ["LongInt constructed;"]
+  end
 
-#{INDENTATION}QCOMPARE(constructed = input, input);
-#{INDENTATION}QCOMPARE(constructed, input);
-#{INDENTATION}QCOMPARE(constructed = constructed, input);
-#{INDENTATION}QCOMPARE(constructed, input);
-EOS
+  def tests
+    super + [Test.new("constructed = input", "input"),
+             Test.new("constructed", "input"),
+             Test.new("constructed = constructed", "input"),
+             Test.new("constructed", "input")]
   end
   
 end
@@ -284,51 +296,33 @@ class BinaryGenerator < CaseGenerator
     @operator = operator
   end
   
-  def header
-    <<EOS
-void LongIntTest::test_#{@name}_data()
-{
-#{INDENTATION}QTest::addColumn<#{left_type}>("left");
-#{INDENTATION}QTest::addColumn<#{right_type}>("right");
-#{INDENTATION}QTest::addColumn<#{result_type}>("result");
-
-EOS
+  def data_columns
+    [DataColumn.new(left_type, "left"),
+     DataColumn.new(right_type, "right"),
+     DataColumn.new(result_type, "result")]
   end
 
   def left_type
-    "LongInt"
+    :LongInt
   end
 
   def right_type
-    "LongInt"
+    :LongInt
   end
   
   def result_type
-    "LongInt"
-  end
-  
-  def footer
-    @footer2 ||= <<EOS
-}
-
-void LongIntTest::test_#{@name}()
-{
-#{INDENTATION}QFETCH(#{left_type}, left);
-#{INDENTATION}QFETCH(#{right_type}, right);
-#{INDENTATION}QFETCH(#{result_type}, result);
-EOS
-    @footer ||= @footer2 + "\n" + evaluation
+    :LongInt
   end
 
-  def evaluation
-    <<EOS
-#{INDENTATION}LongInt copy (left);
-#{INDENTATION}QCOMPARE(#{bin_op("left", "right")}, result);
-#{INDENTATION}QCOMPARE(left, copy);
-#{INDENTATION}#{bin_op_eq("copy", "right")};
-#{INDENTATION}QCOMPARE(copy, result);
-}
-EOS
+  def construction
+    ["LongInt copy (left);"]
+  end
+
+  def tests
+    [Test.new(bin_op("left", "right"), "result"),
+     Test.new("left", "copy"),
+     Test.new(bin_op_eq("copy", "right"), "result"),
+     Test.new("copy", "result")]
   end
 
   def bin_op(left, right)
@@ -339,125 +333,102 @@ EOS
     "#{left} #{@operator}= #{right}"
   end
 
-  def construct_left(left)
-    construct_long_int(left)
-  end
-  
-  def construct_right(right)
-    construct_long_int(right)
-  end
-  
-  def construct_result(result)
-    construct_long_int(result)
-  end
-  
   def title(left, right)
     "#{left} #{@operator} #{right}"
   end
   
-  def evaluate(left, right)
+  def result(left, right)
     eval("(#{left}) #{@operator} (#{right})")
   end
-  
-  def line(left, right)
-    sep1 = left.to_s.length > 50 ? "\n" : " "
-    sep2 = right.to_s.length > 50 ? "\n" : " "
-    title = title(left, right)
-    result = evaluate(left, right)
-    left2 = construct_left(left)
-    right2 = construct_right(right)
-    result2 = construct_result(result)
-    "#{INDENTATION}QTest::newRow(\"#{title}\")#{sep1}<< #{left2}#{sep1}<< #{right2}#{sep2}<< #{result2};\n"
-  end
-  
+
   def generate_random(sign1, sign2, limit1, limit2, b_is_long=true)
     line(sign1 * (rand(limit1) + 1), sign2 * (rand(limit2) + 1))
   end
-  
-  def double_foreach(as, bs, &block)
-    as.each do |a|
-      bs.each do |b|
-        yield a, b
+
+  def quadruple_foreach(as, bs, cs, ds, &block)
+    double_foreach(as, bs) do |a, b|
+      double_foreach(cs, ds) do |c, d|
+        yield a, b, c, d
       end
     end
   end
   
-  def generate(signs1, signs2, limits1, limits2, special1, special2)
-    cases = header
-    double_foreach(signs1, signs2) do |sign1, sign2|
-      double_foreach(limits1, limits2) do |limit1, limit2|
-        cases += generate_n_random(sign1, sign2, limit1, limit2)
-      end
-    end
+  def generate_cases(signs1, signs2, limits1, limits2, special1, special2)
     # A little complicated because we don't want to have duplicates for 0 because of signs
     spec1_0 = special1.delete(0)
     spec2_0 = special2.delete(0)
-    # special random cases
-    double_foreach(signs1, special1) do |sign1, a|
-      double_foreach(signs2, limits2) do |sign2, limit2|
-        @number.times do
-          cases += line(sign1 * a, sign2 * (rand(limit2) + 1))
-        end
-      end
+
+    cases = []
+    # zero zero case
+    if spec1_0 && spec2_0
+      cases.push(line(0, 0))
     end
-    # random special cases
-    double_foreach(signs1, limits1) do |sign1, limit1|
+
+    # zero special cases
+    if spec1_0
       double_foreach(signs2, special2) do |sign2, b|
-        @number.times do
-          cases += line(sign1 * (rand(limit1) + 1), b)
-        end
+        cases.push(line(0, sign2 * b))
       end
     end
+
+    # special zero cases
+    if spec2_0
+      double_foreach(signs1, special1) do |sign1, a|
+        cases.push(line(sign1 * a, 0))
+      end
+    end
+
+    # special special cases
+    quadruple_foreach(signs1, special1, signs2, special2) do |sign1, a, sign2, b|
+      cases.push(line(sign1 * a, sign2 * b))
+    end
+
     # random zero cases
     if spec2_0
       double_foreach(signs1, limits1) do |sign1, limit1|
         @number.times do
-          cases += line(sign1 * (rand(limit1) + 1), 0)
+          cases.push(line(sign1 * (rand(limit1) + 1), 0))
         end
       end
     end
+
     # zero random cases
     if spec1_0
       double_foreach(signs2, limits2) do |sign2, limit2|
         @number.times do
-          cases += line(0, sign2 * (rand(limit2) + 1))
+          cases.push(line(0, sign2 * (rand(limit2) + 1)))
         end
       end
     end
-    # special special cases
-    double_foreach(signs1, special1) do |sign1, a|
-      double_foreach(signs2, special2) do |sign2, b|
-        cases += line(sign1 * a, sign2 * b)
+
+    # random special cases
+    quadruple_foreach(signs1, limits1, signs2, special2) do |sign1, limit1, sign2, b|
+      @number.times do
+        cases.push(line(sign1 * (rand(limit1) + 1), b))
       end
     end
-    # zero special cases
-    if spec1_0
-      double_foreach(signs2, special2) do |sign2, b|
-        cases += line(0, sign2 * b)
+
+    # special random cases
+    quadruple_foreach(signs1, special1, signs2, limits2) do |sign1, a, sign2, limit2|
+      @number.times do
+        cases.push(line(sign1 * a, sign2 * (rand(limit2) + 1)))
       end
     end
-    # special zero cases
-    if spec2_0
-      double_foreach(signs1, special1) do |sign1, a|
-        cases += line(sign1 * a, 0)
-      end
-    end
-    # zero zero case
-    if spec1_0 && spec2_0
-      cases += line(0, 0)
-    end
-    cases + footer
+
+    # random random cases
+    quadruple_foreach(signs1, limits1, signs2, limits2) do |sign1, limit1, sign2, limit2|
+      cases += generate_n_random(sign1, sign2, limit1, limit2)
+     end
+
+    cases
   end
+
 end
 
 class ShiftGenerator < BinaryGenerator
-  
-  def construct_right(right)
-    right.to_s
-  end
 
   def right_type
-    "int"
+    :int
   end
 
 end
@@ -477,39 +448,35 @@ end
 class CompareToGenerator < BinaryGenerator
 
   def result_type
-    "int"
+    :int
   end
   
-  def construct_result(result)
-    result.to_s
+  def construction
+    super + ["bool larger = false, larger_equal = false, equal = false, smaller_equal = false, smaller = false, unequal = true;",
+             "if (result == 1) {",
+             "#{INDENTATION}larger = true;",
+             "#{INDENTATION}larger_equal = true;",
+             "} else if (result == 0) {",
+             "#{INDENTATION}larger_equal = true;",
+             "#{INDENTATION}equal = true;",
+             "#{INDENTATION}smaller_equal = true;",
+             "#{INDENTATION}unequal = false;",
+             "} else if (result == -1) {",
+             "#{INDENTATION}smaller_equal = true;",
+             "#{INDENTATION}smaller = true;",
+             "} else {",
+             "#{INDENTATION}QFAIL(\"Invalid result.\");",
+             "}"]
   end
     
-  def evaluation
-    <<EOS
-#{INDENTATION}bool larger = false, larger_equal = false, equal = false, smaller_equal = false, smaller = false, unequal = true;
-#{INDENTATION}if (result == 1) {
-#{INDENTATION}#{INDENTATION}larger = true;
-#{INDENTATION}#{INDENTATION}larger_equal = true;
-#{INDENTATION}} else if (result == 0) {
-#{INDENTATION}#{INDENTATION}larger_equal = true;
-#{INDENTATION}#{INDENTATION}equal = true;
-#{INDENTATION}#{INDENTATION}smaller_equal = true;
-#{INDENTATION}#{INDENTATION}unequal = false;
-#{INDENTATION}} else if (result == -1) {
-#{INDENTATION}#{INDENTATION}smaller_equal = true;
-#{INDENTATION}#{INDENTATION}smaller = true;
-#{INDENTATION}} else {
-#{INDENTATION}#{INDENTATION}QFAIL("Invalid result.");
-#{INDENTATION}}
-#{INDENTATION}QCOMPARE(left.compareTo(right), result);
-#{INDENTATION}QCOMPARE(left > right, larger);
-#{INDENTATION}QCOMPARE(left >= right, larger_equal);
-#{INDENTATION}QCOMPARE(left == right, equal);
-#{INDENTATION}QCOMPARE(left <= right, smaller_equal);
-#{INDENTATION}QCOMPARE(left < right, smaller);
-#{INDENTATION}QCOMPARE(left != right, unequal);
-}
-EOS
+  def tests
+    super + [Test.new("left.compareTo(right)", "result"),
+             Test.new("left > right", "larger"),
+             Test.new("left >= right", "larger_equal"),
+             Test.new("left == right", "equal"),
+             Test.new("left <= right", "smaller_equal"),
+             Test.new("left < right", "smaller"),
+             Test.new("left != right", "unequal")]
   end
   
 end
@@ -638,5 +605,5 @@ puts generator.generate([-1, 1], [-1, 1], [200, 1 << 200], [200, 1 << 200], [0, 
 puts
 
 generator = PowerGenerator.new("pow", "**", 1) { |a, b| a ** b }
-puts generator.generate([-1, 1], [1], [200, 1 << 200], [200], [0, 1, 2], [0, 1, 2])
+puts generator.generate([-1, 1], [1], [200, 1 << 100], [100], [0, 1, 2], [0, 1, 2])
 puts
