@@ -478,9 +478,9 @@ namespace DataStructures {
       for (index_type i = 0; i < size(); ++i) {
         --j;
         // Or works because exactly the space needed for keep gets shifted away.
-        part_type shifted = (m_content[j] << (PART_SIZE - per_part_shift)) | (keep << PART_SIZE);
-        m_content[j] = upper_half(shifted);
-        keep = lower_half(shifted);
+        part_type shifted = (m_content[j] >> per_part_shift) | keep;
+        keep = m_content[j] << (PART_SIZE - per_part_shift);
+        m_content[j] = shifted;
       }
     }
     if (part_shift > 0) {
