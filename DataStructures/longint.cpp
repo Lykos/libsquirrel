@@ -6,9 +6,6 @@
 
 namespace DataStructures {
 
-  static const int UNSIGNED_LONG_BITS = sizeof(LongInt::part_type) * CHAR_BIT;
-  static const int LOWER_BITS = UNSIGNED_LONG_BITS / 2;
-  static const LongInt::part_type LOWER_MASK = (1l << (UNSIGNED_LONG_BITS / 2)) - 1;
   static const unsigned int buffer_size = (LongInt::PART_SIZE * 1233) >> 12;
 
   static const LongInt minus_one (-1);
@@ -62,12 +59,7 @@ namespace DataStructures {
   LongInt::LongInt(long long int initial): m_positive (initial >= 0)
   {
     part_type positive_part = m_positive ? initial : -initial;
-    part_type lower = lower_half(positive_part);
-    part_type upper = upper_half(positive_part);
-    m_content.push(lower);
-    if (upper > 0) {
-      m_content.push(upper);
-    }
+    m_content.push(positive_part);
   }
 
   LongInt::LongInt(const LongInt& other): m_positive (other.m_positive), m_content (other.m_content)
@@ -665,16 +657,6 @@ namespace DataStructures {
   LongInt::part_type inline LongInt::part_at(index_type i) const
   {
     return i < size() ? m_content[i] : 0l;
-  }
-
-  LongInt::part_type inline upper_half(LongInt::part_type part)
-  {
-    return part >> LOWER_BITS;
-  }
-
-  LongInt::part_type inline lower_half(LongInt::part_type part)
-  {
-    return part & LOWER_MASK;
   }
 
   LongInt::part_type inline complement_keep(bool positive, LongInt::part_type part, LongInt::part_type& keep)

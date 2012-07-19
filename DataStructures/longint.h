@@ -62,7 +62,7 @@ namespace DataStructures {
     LongInt& operator&=(const LongInt& other);
     bool is_positive() const;
     LongInt abs() const;
-    static const index_type PART_SIZE = CHAR_BIT * sizeof(part_type) / 2;
+    static const index_type PART_SIZE = CHAR_BIT * sizeof(part_type);
   private:
     index_type size() const;
     LongInt lower_part(index_type part_size) const;
@@ -78,10 +78,6 @@ namespace DataStructures {
   };
 
   LongInt::part_type complement_keep(bool positive, LongInt::part_type part, LongInt::part_type& keep);
-
-  LongInt::part_type upper_half(LongInt::part_type part);
-
-  LongInt::part_type lower_half(LongInt::part_type part);
 
   ArrayList<LongInt::part_type>::iterator multiply(const ArrayList<LongInt::part_type>::const_iterator& a_begin,
                                                    const ArrayList<LongInt::part_type>::const_iterator& a_end,
