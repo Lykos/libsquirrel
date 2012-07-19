@@ -273,7 +273,7 @@ namespace DataStructures {
   LongInt LongInt::operator++(int)
   {
     LongInt result (*this);
-    operator+=(one);
+    operator++();
     return result;
   }
 
@@ -285,7 +285,7 @@ namespace DataStructures {
   LongInt LongInt::operator--(int)
   {
     LongInt result (*this);
-    operator-=(one);
+    operator--();
     return result;
   }
 
