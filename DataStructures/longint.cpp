@@ -494,7 +494,6 @@ namespace DataStructures {
     if (part_shift > 0) {
       m_content = ArrayList<part_type> (m_content.begin() + part_shift, m_content.end());
     }
-    // Adding one bit could be made slightly more efficient
     if (extra_bit) {
       operator--();
     }
