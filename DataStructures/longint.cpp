@@ -472,9 +472,11 @@ namespace DataStructures {
     // Correction for negative numbers because of two complement semantic
     bool extra_bit = false;
     if (!m_positive) {
+      // Check if a bit whose whole part gets shifted away is 1
       for (index_type i = 0; i < part_shift && !extra_bit; ++i) {
         extra_bit = m_content[i] != 0;
       }
+      // Check if a bit in the part that gets shifted away partially is 1
       extra_bit = extra_bit || (m_content[part_shift] & ((1 << per_part_shift) - 1)) != 0;
     }
     if (per_part_shift > 0) {
