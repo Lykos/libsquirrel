@@ -807,13 +807,13 @@ namespace DataStructures {
                   const ArrayList<LongInt::part_type>::const_iterator& b_begin,
                   const ArrayList<LongInt::part_type>::const_iterator& b_end)
   {
-    LongInt::part_type keep = 0l;
+    LongInt::part_type keep = 0;
     ArrayList<LongInt::part_type>::iterator a_it (a_begin);
-    for (ArrayList<LongInt::part_type>::const_iterator b_it (b_begin); keep == 1 || b_it < b_end; ++a_it, ++b_it) {
-      assert(keep == 0 || keep == 1);
+    ArrayList<LongInt::part_type>::const_iterator b_it (b_begin);
+    for (; keep == 1 || b_it < b_end; ++a_it, ++b_it) {
       if (a_it >= a_end)
       assert(a_it < a_end);
-      LongInt::part_type sum = *a_it + keep;
+      LongInt::part_type sum = *a_it + old_keep;
       if (b_it < b_end) {
         sum += *b_it;
       }
