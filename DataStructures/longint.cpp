@@ -634,22 +634,12 @@ namespace DataStructures {
     index_type i = max_index;
     for (index_type j = 0; j < max_index; j++) {
       i--;
-      part_type my = 0;
-      part_type his = 0;
-      if (size() > i) {
-        my = m_content[i];
-      }
-      if (other.size() > i) {
-        his = other.m_content[i];
-      }
+      part_type my = part_at(i);
+      part_type his = other.part_at(i);
       if (my > his) {
         return 1;
       } else if (his > my) {
         return -1;
-      }
-      if (i == 0) {
-        // Because of the unsignedness, the while condition doesn't really work.
-        return 0;
       }
     }
     return 0;
