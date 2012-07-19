@@ -439,8 +439,8 @@ namespace DataStructures {
         }
         // Or works because exactly the space needed for keep gets shifted away.
         part_type shifted = (m_content[i] << per_part_shift) | keep;
-        m_content[i] = lower_half(shifted);
-        keep = upper_half(shifted);
+        keep = m_content[i] >> (PART_SIZE - per_part_shift);
+        m_content[i] = shifted;
       }
     }
     if (part_shift > 0) {
