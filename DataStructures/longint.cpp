@@ -512,9 +512,9 @@ namespace DataStructures {
   LongInt& LongInt::operator|=(const LongInt& other)
   {
     bool new_positive = m_positive && other.m_positive;
-    part_type keep = !m_positive;
-    part_type other_keep = !other.m_positive;
-    part_type new_keep = !new_positive;
+    bool keep = !m_positive;
+    bool other_keep = !other.m_positive;
+    bool new_keep = !new_positive;
     for (index_type i = 0; i < std::max(size(), other.size()); ++i) {
       part_type part, other_part, new_part;
       part = complement_keep(m_positive, part_at(i), keep);
@@ -538,9 +538,9 @@ namespace DataStructures {
   LongInt& LongInt::operator^=(const LongInt& other)
   {
     bool new_positive = m_positive == other.m_positive;
-    part_type keep = !m_positive;
-    part_type other_keep = !other.m_positive;
-    part_type new_keep = !new_positive;
+    bool keep = !m_positive;
+    bool other_keep = !other.m_positive;
+    bool new_keep = !new_positive;
     for (index_type i = 0; i < std::max(size(), other.size()); ++i) {
       part_type part, other_part, new_part;
       part = complement_keep(m_positive, part_at(i), keep);
@@ -564,9 +564,9 @@ namespace DataStructures {
   LongInt& LongInt::operator&=(const LongInt& other)
   {
     bool new_positive = m_positive || other.m_positive;
-    part_type keep = !m_positive;
-    part_type other_keep = !other.m_positive;
-    part_type new_keep = !new_positive;
+    bool keep = !m_positive;
+    bool other_keep = !other.m_positive;
+    bool new_keep = !new_positive;
     for (index_type i = 0; i < std::max(size(), other.size()); ++i) {
       part_type part, other_part, new_part;
       part = complement_keep(m_positive, part_at(i), keep);
@@ -650,12 +650,18 @@ namespace DataStructures {
     return i < size() ? m_content[i] : 0l;
   }
 
-  LongInt::part_type inline complement_keep(bool positive, LongInt::part_type part, LongInt::part_type& keep)
+  LongInt::part_type inline complement_keep(bool positive, LongInt::part_type part, bool& keep)
   {
     if (positive) {
       return part;
     } else {
-      assert(keep == 0 || keep == 1);
+      asm("notq %0;\n"
+      "\ttestb %1, %1;\n"
+      "\tjz complement_keep_no_keep;\n"
+      "\tincq %0;\n"
+      "\tsetc %1;\n"
+      "complement_keep_no_keep:"
+      : "=q" (part), "=q" (keep) : "0" (part), "1" (keep));
       LongInt::part_type tmp = ~part + keep;
       keep = ~upper_half(tmp) & 1;
       return lower_half(tmp);
