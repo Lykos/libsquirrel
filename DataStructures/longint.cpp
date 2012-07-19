@@ -813,7 +813,7 @@ namespace DataStructures {
     for (; keep == 1 || b_it < b_end; ++a_it, ++b_it) {
       if (a_it >= a_end)
       assert(a_it < a_end);
-      LongInt::part_type sum = *a_it + old_keep;
+      LongInt::part_type sum = *a_it + keep;
       if (b_it < b_end) {
         sum += *b_it;
       }
