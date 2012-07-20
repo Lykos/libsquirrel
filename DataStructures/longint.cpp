@@ -553,7 +553,8 @@ namespace DataStructures {
       m_content = ArrayList<part_type> (m_content.begin() + part_shift, m_content.end());
     }
     if (extra_bit) {
-      operator--();
+      // We know the sign is negative, so -- increments the content
+      inc();
     }
     remove_zeros();
     return *this;
