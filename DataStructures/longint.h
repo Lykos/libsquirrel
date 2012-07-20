@@ -19,7 +19,12 @@ namespace DataStructures {
     friend std::istream& operator>>(std::istream& in, const LongInt& longInt);
   public:
     typedef unsigned long long int part_type;
-    LongInt(long long int initial = 0);
+    LongInt(long long int initial);
+    LongInt(unsigned long long int initial = 0);
+    LongInt(long int initial);
+    LongInt(unsigned long int initial);
+    LongInt(int initial);
+    LongInt(unsigned int initial);
     LongInt(const LongInt& other);
     explicit LongInt(ArrayList<part_type>::const_iterator part_begin, ArrayList<part_type>::const_iterator part_end);
     explicit LongInt(const std::string& numerical_string);

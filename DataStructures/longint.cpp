@@ -58,8 +58,32 @@ namespace DataStructures {
 
   LongInt::LongInt(long long int initial): m_positive (initial >= 0)
   {
-    part_type positive_part = m_positive ? initial : -initial;
-    m_content.push(positive_part);
+    m_content.push(m_positive ? initial : -initial);
+  }
+
+  LongInt::LongInt(unsigned long long int initial): m_positive (true)
+  {
+    m_content.push(initial);
+  }
+
+  LongInt::LongInt(long int initial): m_positive (initial >= 0)
+  {
+    m_content.push(m_positive ? initial : -initial);
+  }
+
+  LongInt::LongInt(unsigned long int initial): m_positive (true)
+  {
+    m_content.push(initial);
+  }
+
+  LongInt::LongInt(int initial): m_positive (initial >= 0)
+  {
+    m_content.push(m_positive ? initial : -initial);
+  }
+
+  LongInt::LongInt(unsigned int initial): m_positive (true)
+  {
+    m_content.push(initial);
   }
 
   LongInt::LongInt(const LongInt& other): m_positive (other.m_positive), m_content (other.m_content)
