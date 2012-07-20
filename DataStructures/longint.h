@@ -75,6 +75,8 @@ namespace DataStructures {
     void pad_zeros(index_type new_size);
     void subtract(const LongInt& other);
     void add(const LongInt& other);
+    void inc();
+    void dec();
     part_type part_at(index_type i) const;
     bool m_positive;
     ArrayList<part_type> m_content;
