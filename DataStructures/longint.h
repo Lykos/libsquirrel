@@ -65,8 +65,8 @@ namespace DataStructures {
     LongInt& operator|=(const LongInt& other);
     LongInt& operator^=(const LongInt& other);
     LongInt& operator&=(const LongInt& other);
-    bool inline is_positive() const;
-    LongInt inline abs() const;
+    bool is_positive() const;
+    LongInt abs() const;
     static const index_type PART_SIZE = CHAR_BIT * sizeof(part_type);
   private:
     index_type inline size() const;

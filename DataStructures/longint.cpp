@@ -609,12 +609,12 @@ namespace DataStructures {
     return *this;
   }
 
-  bool inline LongInt::is_positive() const
+  bool LongInt::is_positive() const
   {
     return m_positive;
   }
 
-  LongInt inline LongInt::abs() const
+  LongInt LongInt::abs() const
   {
     return m_positive ? *this : operator-();
   }
