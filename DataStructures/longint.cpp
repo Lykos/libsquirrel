@@ -480,7 +480,7 @@ namespace DataStructures {
     index_type per_part_shift = shift_offset % PART_SIZE;
     index_type part_shift = shift_offset / PART_SIZE;
     // Handle the case that the number completely disappears, this resolves nasty two complements handling for negative numbers.
-    if (part_shift >= size() || (part_shift + 1 == size() && (1u << per_part_shift) > m_content[part_shift])) {
+    if (part_shift >= size() || (part_shift + 1 == size() && (m_content[part_shift] >> per_part_shift) == 0)) {
       return operator=(m_positive ? zero : minus_one);
     }
     // Correction for negative numbers because of two complement semantic
@@ -491,7 +491,7 @@ namespace DataStructures {
         extra_bit = m_content[i] != 0;
       }
       // Check if a bit in the part that gets shifted away partially is 1
-      extra_bit = extra_bit || (m_content[part_shift] & ((1 << per_part_shift) - 1)) != 0;
+      extra_bit = extra_bit || (((m_content[part_shift] >> per_part_shift) << per_part_shift) != m_content[part_shift]);
     }
     if (per_part_shift > 0) {
       part_type keep = 0;
