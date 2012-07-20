@@ -14,9 +14,6 @@ private:
   DataStructures::LongInt number;
 
 private Q_SLOTS:
-  void init();
-  void test_upper_half();
-  void test_lower_half();
   void test_empty_constructor();
   void test_default_constructor_data();
   void test_default_constructor();

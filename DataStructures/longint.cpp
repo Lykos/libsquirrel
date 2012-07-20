@@ -373,8 +373,6 @@ namespace DataStructures {
     }
   }
 
-  static const LongInt::part_type MAX_PART = (1l << LongInt::PART_SIZE) - 1;
-
   LongInt& LongInt::operator-=(const LongInt& other)
   {
     if (other.m_positive != m_positive) {
@@ -611,16 +609,6 @@ namespace DataStructures {
     return m_content.size();
   }
 
-  LongInt LongInt::lower_part(index_type part_size) const
-  {
-    return LongInt (m_content.begin(), std::min(m_content.end(), m_content.begin() + part_size));
-  }
-
-  LongInt LongInt::upper_part(index_type part_size) const
-  {
-    return LongInt (m_content.begin() + part_size, std::max(m_content.end(), m_content.begin() + part_size));
-  }
-
   int LongInt::uCompareTo(const LongInt& other) const
   {
     index_type max_index = std::max(size(), other.size());
@@ -655,16 +643,13 @@ namespace DataStructures {
     if (positive) {
       return part;
     } else {
-      asm("notq %0;\n"
-      "\ttestb %1, %1;\n"
-      "\tjz complement_keep_no_keep;\n"
-      "\tincq %0;\n"
-      "\tsetc %1;\n"
-      "complement_keep_no_keep:"
-      : "=q" (part), "=q" (keep) : "0" (part), "1" (keep));
-      LongInt::part_type tmp = ~part + keep;
-      keep = ~upper_half(tmp) & 1;
-      return lower_half(tmp);
+      part = ~part;
+      if (keep) {
+        asm("incq %0;\n"
+        "\tsetc %1;\n"
+        : "=q" (part), "=q" (keep) : "0" (part), "1" (keep));
+      }
+      return part;
     }
   }
 
@@ -683,13 +668,14 @@ namespace DataStructures {
       return c_begin;
     } else if (a_size == 1 && b_size == 1) {
       assert(c_end - c_begin >= 2);
-      LongInt::part_type c = *a_begin * *b_begin;
+      LongInt::part_type c0, c1;
+      asm("mulq %3"
+      : "=a" (c0), "=d" (c1) : "a" (*a_begin), "b" (*b_begin));
       it res_begin (c_begin), res_end (c_begin);
-      *res_begin = lower_half(c);
+      *res_begin = c0;
       ++res_end;
-      LongInt::part_type upper = upper_half(c);
-      if (upper > 0) {
-        *res_end = upper;
+      if (c1 > 0) {
+        *res_end = c1;
         ++res_end;
       } else if (*res_begin == 0) {
         return res_begin;
@@ -786,18 +772,23 @@ namespace DataStructures {
                   const ArrayList<LongInt::part_type>::const_iterator& b_begin,
                   const ArrayList<LongInt::part_type>::const_iterator& b_end)
   {
-    LongInt::part_type keep = 0;
+    bool keep = 0;
     ArrayList<LongInt::part_type>::iterator a_it (a_begin);
     ArrayList<LongInt::part_type>::const_iterator b_it (b_begin);
     for (; keep == 1 || b_it < b_end; ++a_it, ++b_it) {
       if (a_it >= a_end)
       assert(a_it < a_end);
-      LongInt::part_type sum = *a_it + keep;
-      if (b_it < b_end) {
-        sum += *b_it;
+      LongInt::part_type b_part = b_it < b_end ? *b_it : 0;
+      if (keep) {
+        asm("stc;\n"
+        "\tadcq %2, %0;\n"
+        "\tsetc %1;"
+        : "=q" (*a_it), "=q" (keep) : "q" (b_part), "0" (*a_it));
+      } else {
+        asm("addq %2, %0;\n"
+        "\tsetc %1;\n"
+        : "=q" (*a_it), "=q" (keep) : "q" (b_part), "0" (*a_it));
       }
-      *a_it = lower_half(sum);
-      keep = upper_half(sum);
     }
   }
 
@@ -807,29 +798,25 @@ namespace DataStructures {
                        const ArrayList<LongInt::part_type>::const_iterator& b_end,
                        bool exchange)
   {
-    LongInt::part_type keep = 0l;
+    bool keep = false;
     ArrayList<LongInt::part_type>::iterator a_it (a_begin);
     for (ArrayList<LongInt::part_type>::const_iterator b_it (b_begin); keep == 1 || b_it < b_end; ++a_it, ++b_it) {
-      assert(keep == 0 || keep == 1);
       assert(a_it < a_end); // Should never happen because a < b
       LongInt::part_type left = *a_it;
       LongInt::part_type right = b_it < b_end ? *b_it : 0l;
       if (exchange) {
         std::swap(left, right);
       }
-      if (keep == 1) {
-        if (left <= right) {
-          // leave keep true
-          left += MAX_PART;
-        } else {
-          --left;
-          keep = 0l;
-        }
-      } else if (left < right) {
-        left += MAX_PART + 1;
-        keep = 1l;
+      if (keep) {
+        asm("stc;\n"
+        "\tsbbq %2, %0;\n"
+        "\tsetc %1;"
+        : "=q" (*a_it), "=q" (keep) : "q" (right), "0" (left));
+      } else {
+        asm("subq %2, %0;\n"
+        "\tsetc %1;\n"
+        : "=q" (*a_it), "=q" (keep) : "q" (right), "0" (left));
       }
-      *a_it = left - right;
     }
   }
 
