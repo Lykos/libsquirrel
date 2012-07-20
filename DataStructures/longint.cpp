@@ -307,7 +307,7 @@ namespace DataStructures {
   }
 
   // Increments without looking at the sign
-  void LongInt::inc()
+  void inline LongInt::inc()
   {
     bool keep = true;
     for (ArrayList<part_type>::iterator it = m_content.begin(); keep; ++it) {
@@ -341,7 +341,7 @@ namespace DataStructures {
   }
 
   // Decrements without looking at the sign
-  void LongInt::dec()
+  void inline LongInt::dec()
   {
     bool keep = true;
     for (ArrayList<part_type>::iterator it = m_content.begin(); keep; ++it) {
