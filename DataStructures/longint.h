@@ -65,17 +65,17 @@ namespace DataStructures {
     LongInt& operator|=(const LongInt& other);
     LongInt& operator^=(const LongInt& other);
     LongInt& operator&=(const LongInt& other);
-    bool is_positive() const;
-    LongInt abs() const;
+    bool inline is_positive() const;
+    LongInt inline abs() const;
     static const index_type PART_SIZE = CHAR_BIT * sizeof(part_type);
   private:
-    index_type size() const;
-    int uCompareTo(const LongInt& other) const;
-    void remove_zeros();
-    void pad_zeros(index_type new_size);
-    void subtract(const LongInt& other);
-    void add(const LongInt& other);
-    part_type part_at(index_type i) const;
+    index_type inline size() const;
+    int inline uCompareTo(const LongInt& other) const;
+    void inline remove_zeros();
+    void inline pad_zeros(index_type new_size);
+    void inline subtract(const LongInt& other);
+    void inline add(const LongInt& other);
+    part_type inline part_at(index_type i) const;
     bool m_positive;
     ArrayList<part_type> m_content;
   };

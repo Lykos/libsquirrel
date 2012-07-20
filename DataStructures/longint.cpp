@@ -609,12 +609,12 @@ namespace DataStructures {
     return *this;
   }
 
-  bool LongInt::is_positive() const
+  bool inline LongInt::is_positive() const
   {
     return m_positive;
   }
 
-  LongInt LongInt::abs() const
+  LongInt inline LongInt::abs() const
   {
     return m_positive ? *this : operator-();
   }
@@ -633,7 +633,7 @@ namespace DataStructures {
     return m_content.size();
   }
 
-  int LongInt::uCompareTo(const LongInt& other) const
+  int inline LongInt::uCompareTo(const LongInt& other) const
   {
     index_type max_index = std::max(size(), other.size());
     index_type i = max_index;
