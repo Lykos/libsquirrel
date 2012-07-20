@@ -64,24 +64,24 @@ namespace DataStructures {
     LongInt abs() const;
     static const index_type PART_SIZE = CHAR_BIT * sizeof(part_type) / 2;
   private:
-    index_type size() const;
-    LongInt lower_part(index_type part_size) const;
-    LongInt upper_part(index_type part_size) const;
-    int uCompareTo(const LongInt& other) const;
-    void remove_zeros();
-    void pad_zeros(index_type new_size);
-    void subtract(const LongInt& other);
-    void add(const LongInt& other);
-    part_type part_at(index_type i) const;
+    index_type inline size() const;
+    LongInt inline lower_part(index_type part_size) const;
+    LongInt inline upper_part(index_type part_size) const;
+    int inline uCompareTo(const LongInt& other) const;
+    void inline remove_zeros();
+    void inline pad_zeros(index_type new_size);
+    void inline subtract(const LongInt& other);
+    void inline add(const LongInt& other);
+    part_type inline part_at(index_type i) const;
     bool m_positive;
     ArrayList<part_type> m_content;
   };
 
-  LongInt::part_type complement_keep(bool positive, LongInt::part_type part, LongInt::part_type& keep);
+  LongInt::part_type inline complement_keep(bool positive, LongInt::part_type part, LongInt::part_type& keep);
 
-  LongInt::part_type upper_half(LongInt::part_type part);
+  LongInt::part_type inline upper_half(LongInt::part_type part);
 
-  LongInt::part_type lower_half(LongInt::part_type part);
+  LongInt::part_type inline lower_half(LongInt::part_type part);
 
   ArrayList<LongInt::part_type>::iterator multiply(const ArrayList<LongInt::part_type>::const_iterator& a_begin,
                                                    const ArrayList<LongInt::part_type>::const_iterator& a_end,
@@ -98,16 +98,16 @@ namespace DataStructures {
                                                                                                                           ArrayList<LongInt::part_type>::iterator& c_begin,
                                                                                                                           const ArrayList<LongInt::part_type>::iterator& c_end);
 
-  void add(const ArrayList<LongInt::part_type>::iterator& a_begin,
-           const ArrayList<LongInt::part_type>::iterator& a_end,
-           const ArrayList<LongInt::part_type>::const_iterator& b_begin,
-           const ArrayList<LongInt::part_type>::const_iterator& b_end);
+  void inline add(const ArrayList<LongInt::part_type>::iterator& a_begin,
+                  const ArrayList<LongInt::part_type>::iterator& a_end,
+                  const ArrayList<LongInt::part_type>::const_iterator& b_begin,
+                  const ArrayList<LongInt::part_type>::const_iterator& b_end);
 
-  void subtract(const ArrayList<LongInt::part_type>::iterator& a_begin,
-                const ArrayList<LongInt::part_type>::iterator& a_end,
-                const ArrayList<LongInt::part_type>::const_iterator& b_begin,
-                const ArrayList<LongInt::part_type>::const_iterator& b_end,
-                bool exchange = false);
+  void inline subtract(const ArrayList<LongInt::part_type>::iterator& a_begin,
+                       const ArrayList<LongInt::part_type>::iterator& a_end,
+                       const ArrayList<LongInt::part_type>::const_iterator& b_begin,
+                       const ArrayList<LongInt::part_type>::const_iterator& b_end,
+                       bool exchange = false);
 
   index_type space_usage(index_type size_a, index_type size_b);
 
