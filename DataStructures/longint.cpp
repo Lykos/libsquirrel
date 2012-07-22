@@ -170,7 +170,7 @@ namespace DataStructures {
     return result *= other;
   }
 
-  LongInt LongInt::operator/(const LongInt& other) const
+  void LongInt::operator/(const LongInt& other) const
   {
     if (other == zero) {
       throw std::logic_error("Division by zero.");
@@ -179,35 +179,59 @@ namespace DataStructures {
     if (*this == zero) {
       return *this;
     }
-    LongInt divisor (other.abs());
-    LongInt result (zero);
-    LongInt two_power (one);
-    LongInt active_part (zero);
-    two_power <<= size() * PART_SIZE;
-    index_type i = size();
+    // Maximal factor we can multiply the divisor with without increasing its size.
+    part_type scale_factor = 1;
+    part_type other_last_digit = other.m_content.end()[-1];
+    if (other_last_digit + 1 != 0) {
+      // (1 << 64) / (other_last_digit + 1)
+      asm("movq $0x1, %%rdx;\n"
+      "\txorq %%rax, %%rax;\n"
+      "\tdiv %2;"
+      : "=a" (scale_factor), "=d" (remainder) : "c" (other_last_digit + 1));
+    }
+    // This scaling does not change the result because it crosses out,
+    // but it ensures that the first digit of the divisor is at least 1 << 63.
+    LongInt dividend (abs() * scale_factor);
+    LongInt divisor (other.abs() * scale_factor);
+    part_type divisor_first_digit = divisor.m_content.end()[-1];
+    if (divisor_first_digit < (1ul << 63))
+    assert(divisor_first_digit >= (1ul << 63));
+    index_type divisor_size = divisor.size();
+    assert(divisor_size == other.size());
+    LongInt quotient (zero);
+    LongInt remainder (zero);
+    index_type i = dividend.size();
     // Strange for loop necessary because of unsigned types.
-    for (index_type i2 = 0; i2 < size(); ++i2) {
+    for (index_type i2 = 0; i2 < dividend.size(); ++i2) {
       --i;
-      index_type j = PART_SIZE;
-      for (unsigned int j2 = 0; j2 < PART_SIZE; ++j2) {
-        j--;
-        two_power >>= 1;
-        active_part <<= 1;
-        if ((m_content[i] >> j) & 1) {
-          active_part += 1;
+      remainder <<= PART_SIZE;
+      remainder += dividend.m_content[i];
+      if (remainder.size() >= divisor_size) {
+        // Guess according to the first one or two parts of the active part and the first digit of the divisor,
+        // how many times the divisor fits into the active part. This guess can never be to high and because
+        // of our scaling factor, it can be at most 2 to low (according to a proof of Knuth)
+        part_type guess;
+        asm("div %3;"
+        : "=a" (guess) : "d" (active_part.part_at(divisor_size)), "a" (active_part.m_content[divisor_size - 1]), "q" (divisor_first_digit));
+        LongInt back_calculated (divisor * guess);
+#ifndef NDEBUG
+        index_type old_guess = guess;
+#endif
+        while (back_calculated > remainder) {
+          back_calculated -= divisor;
+          --guess;
         }
-        if (active_part >= divisor) {
-          result += two_power;
-          active_part -= divisor;
+        assert(back_calculated + divisor > remainder);
+        assert(old_guess - guess <= 2);
+        remainder -= back_calculated;
+        while (quotient.size() <= i) {
+          quotient.m_content.push(0);
         }
+        quotient.m_content[i] = guess;
       }
     }
-    result.m_positive = m_positive == other.m_positive;
-    // Round to negative infinity hack
-    if (!result.m_positive && active_part != zero) {
-      result -= one;
-    }
-    return result;
+    quotient.m_positive = m_positive == other.m_positive;
+    return quotient;
   }
 
   LongInt LongInt::operator%(const LongInt& other) const
