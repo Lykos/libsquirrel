@@ -74,6 +74,7 @@ namespace DataStructures {
     void inline remove_zeros();
     void inline pad_zeros(index_type new_size);
     void inline subtract(const LongInt& other);
+    void inline divide(const LongInt& other, LongInt& quotient, LongInt& remainder, bool remainder_needed = false);
     void inline add(const LongInt& other);
     part_type inline part_at(index_type i) const;
     bool m_positive;
