@@ -11,10 +11,16 @@ TEMPLATE = lib
 
 DEFINES += CRYPTO_LIBRARY
 
-SOURCES += crypto.cpp
+SOURCES += \
+    rsakey.cpp \
+    rsa.cpp \
+    rsastrategy.cpp
 
-HEADERS += crypto.h\
-        Crypto_global.h
+HEADERS +=\
+        Crypto_global.h \
+    rsakey.h \
+    rsa.h \
+    rsastrategy.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN
@@ -28,9 +34,14 @@ symbian {
 
 unix:!symbian {
     maemo5 {
-        target.path = /opt/usr/lib
+        target.path = /opt/usr/local/lib
     } else {
-        target.path = /usr/lib
+        target.path = /usr/local/lib
     }
     INSTALLS += target
 }
+
+unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
+
+INCLUDEPATH += $$PWD/../DataStructures
+DEPENDPATH += $$PWD/../DataStructures

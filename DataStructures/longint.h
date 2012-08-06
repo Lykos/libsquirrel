@@ -38,7 +38,8 @@ namespace DataStructures {
     LongInt operator%(const LongInt& other) const;
     LongInt operator<<(index_type shift_offset) const;
     LongInt operator>>(index_type shift_offset) const;
-    LongInt pow(index_type other) const;
+    LongInt pow(index_type exponent) const;
+    LongInt pow_mod(index_type exponent, const LongInt& modulus) const;
     LongInt operator|(const LongInt& other) const;
     LongInt operator^(const LongInt& other) const;
     LongInt operator&(const LongInt& other) const;
@@ -61,7 +62,8 @@ namespace DataStructures {
     LongInt& operator%=(const LongInt& other);
     LongInt& operator<<=(index_type shift_offset);
     LongInt& operator>>=(index_type shift_offset);
-    LongInt& pow_eq(index_type other);
+    LongInt& pow_eq(index_type exponent);
+    LongInt& pow_mod_eq(index_type exponent, const LongInt& modulus);
     LongInt& operator|=(const LongInt& other);
     LongInt& operator^=(const LongInt& other);
     LongInt& operator&=(const LongInt& other);

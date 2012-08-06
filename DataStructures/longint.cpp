@@ -195,10 +195,16 @@ namespace DataStructures {
     return result >>= shift_offset;
   }
 
-  LongInt LongInt::pow(index_type other) const
+  LongInt LongInt::pow(index_type exponent) const
   {
     LongInt result(*this);
-    return result.pow_eq(other);
+    return result.pow_eq(exponent);
+  }
+
+  LongInt LongInt::pow_mod(index_type exponent, const LongInt& modulus) const
+  {
+    LongInt result(*this);
+    return result.pow_mod_eq(exponent, modulus);
   }
 
   LongInt LongInt::operator|(const LongInt& other) const
@@ -535,18 +541,35 @@ namespace DataStructures {
     return *this;
   }
 
-  LongInt& LongInt::pow_eq(index_type other)
+  LongInt& LongInt::pow_eq(index_type exponent)
   {
     LongInt result (one);
     unsigned int j = sizeof(index_type) * CHAR_BIT;
     for (unsigned int j2 = 0; j2 < sizeof(index_type) * CHAR_BIT; ++j2) {
       --j;
-      if ((other >> j) & 1) {
+      if ((exponent >> j) & 1) {
         result *= *this;
       }
       if (j > 0) {
         result *= result;
       }
+    }
+    return operator=(result);
+  }
+
+  LongInt& LongInt::pow_mod_eq(index_type exponent, const LongInt& modulus)
+  {
+    LongInt result (one);
+    unsigned int j = sizeof(index_type) * CHAR_BIT;
+    for (unsigned int j2 = 0; j2 < sizeof(index_type) * CHAR_BIT; ++j2) {
+      --j;
+      if ((exponent >> j) & 1) {
+        result *= *this;
+      }
+      if (j > 0) {
+        result *= result;
+      }
+      result %= modulus;
     }
     return operator=(result);
   }
