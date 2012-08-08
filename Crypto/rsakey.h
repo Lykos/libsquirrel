@@ -3,19 +3,23 @@
 
 #include "Crypto_global.h"
 #include "longint.h"
+#include "key.h"
 
 namespace Crypto {
 
-  class CRYPTOSHARED_EXPORT RSAKey
+  class CRYPTOSHARED_EXPORT RSAKey : public Key
   {
   public:
     typedef DataStructures::index_type exponent_t;
-    typedef DataStructures::LongInt number_t;
-    RSAKey(exponent_t exponent, const number_t& modulus);
+    RSAKey(exponent_t exponent, const text_t& modulus);
+
+    inline exponent_t get_exponent() const;
+
+    inline const text_t& get_modulus() const;
 
   private:
     exponent_t m_exponent;
-    number_t m_modulus;
+    text_t m_modulus;
   };
 
 }

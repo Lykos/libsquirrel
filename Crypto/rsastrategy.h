@@ -1,14 +1,21 @@
 #ifndef RSASTRATEGY_H
 #define RSASTRATEGY_H
 
-class RSAStrategy
-{
-public:
-  RSAStrategy();
+#include "rsakey.h"
 
-  virtual RSAKey::number_t encrypt() const = 0;
+namespace Crypto {
 
-  virtual RSAKey::number_t decrypt() const = 0;
-};
+  class RSAStrategy
+  {
+  public:
+    virtual RSAKey::text_t encrypt(const RSAKey::text_t& plain_text) const = 0;
+
+    virtual RSAStrategy* copy() const = 0;
+
+    virtual ~RSAStrategy();
+
+  };
+
+}
 
 #endif // RSASTRATEGY_H

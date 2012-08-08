@@ -1,5 +1,9 @@
 #include "rsastrategy.h"
 
-RSAStrategy::RSAStrategy()
-{
+namespace Crypto {
+
+  RSAStrategy::~RSAStrategy()
+  {
+  }
+
 }

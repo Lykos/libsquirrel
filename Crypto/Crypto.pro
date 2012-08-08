@@ -13,14 +13,30 @@ DEFINES += CRYPTO_LIBRARY
 
 SOURCES += \
     rsakey.cpp \
-    rsa.cpp \
+    rsaencrypter.cpp \
+    rsakeygenerator.cpp \
+    rsadecrypter.cpp \
+    rsadirectstrategy.cpp \
+    rsapqstrategy.cpp \
+    keypair.cpp \
+    rsakeypair.cpp \
     rsastrategy.cpp
 
 HEADERS +=\
         Crypto_global.h \
     rsakey.h \
-    rsa.h \
-    rsastrategy.h
+    rsastrategy.h \
+    rsaencrypter.h \
+    rsakeygenerator.h \
+    rsadecrypter.h \
+    rsadirectstrategy.h \
+    rsapqstrategy.h \
+    decrypter.h \
+    key.h \
+    keypair.h \
+    encrypter.h \
+    rsakeypair.h \
+    keygenerator.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN
