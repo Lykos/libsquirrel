@@ -69,6 +69,8 @@ namespace DataStructures {
     LongInt abs() const;
     static const index_type PART_SIZE = CHAR_BIT * sizeof(part_type);
   private:
+    void inline inc();
+    void inline dec();
     index_type inline size() const;
     int inline uCompareTo(const LongInt& other) const;
     void inline remove_zeros();
