@@ -25,6 +25,7 @@ HEADERS +=\
     treap.h \
     treapnode.h \
     treapbaseiterator.h
+    basetypes.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN
