@@ -10,10 +10,9 @@
 #include <stdexcept>
 #include <cassert>
 
-namespace DataStructures {
+#include "basetypes.h"
 
-  typedef unsigned long long int index_type;
-  typedef long long int difference_type;
+namespace DataStructures {
 
   template <typename T>
   class ArrayListBaseIterator : public std::iterator<std::random_access_iterator_tag, T, difference_type>
