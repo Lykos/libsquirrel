@@ -18,7 +18,8 @@ SOURCES += \
 HEADERS +=\
         DataStructures_global.h \
     arraylist.h \
-    longint.h
+    longint.h \
+    basetypes.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN
