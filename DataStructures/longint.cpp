@@ -678,7 +678,7 @@ namespace DataStructures {
     return m_content.size();
   }
 
-  int LongInt::uCompareTo(const LongInt& other) const
+  int inline LongInt::uCompareTo(const LongInt& other) const
   {
     index_type max_index = std::max(size(), other.size());
     index_type i = max_index;
@@ -891,7 +891,7 @@ namespace DataStructures {
 
   static const index_type INITIAL_SPACE_USAGE[][4] = {{0, 0, 0, 0}, {0, 2, 11, 28}, {0, 11, 16, 33}, {0, 28, 33, 42}};
 
-  index_type inline space_usage(index_type size_a, index_type size_b)
+  index_type space_usage(index_type size_a, index_type size_b)
   {
     if (size_a < size_b) {
       return space_usage(size_b, size_a);
