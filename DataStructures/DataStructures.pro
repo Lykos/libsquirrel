@@ -13,12 +13,14 @@ DEFINES += DATASTRUCTURES_LIBRARY
 
 SOURCES += \
     longint.cpp \
-    arraylist.cpp
+    arraylist.cpp \
+    infiniterandom.cpp
 
 HEADERS +=\
         DataStructures_global.h \
     arraylist.h \
-    longint.h
+    longint.h \
+    infiniterandom.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN
