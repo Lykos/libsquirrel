@@ -14,13 +14,16 @@ DEFINES += DATASTRUCTURES_LIBRARY
 SOURCES += \
     longint.cpp \
     arraylist.cpp \
-    infiniterandom.cpp
+    infiniterandom.cpp \
+    treapnode.cpp
 
 HEADERS +=\
         DataStructures_global.h \
     arraylist.h \
     longint.h \
-    infiniterandom.h
+    infiniterandom.h \
+    treap.h \
+    treapnode.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

@@ -10,6 +10,7 @@ namespace DataStructures {
   public:
     InfiniteRandom();
     typedef unsigned int part_type;
+    part_type part_at(index_type index) const;
     int compareTo(const InfiniteRandom& other) const;
     bool operator<(const InfiniteRandom& other) const;
     bool operator<=(const InfiniteRandom& other) const;

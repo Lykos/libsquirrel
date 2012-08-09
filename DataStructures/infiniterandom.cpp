@@ -7,14 +7,13 @@ namespace DataStructures {
   {
   }
 
-  InfiniteRandom::part_type part_at(ArrayList<InfiniteRandom::part_type>::index_type index) const
+  InfiniteRandom::part_type InfiniteRandom::part_at(index_type index) const
   {
-    assert(index <= randomness);
-    if (index < m_randomness.size()) {
-      return m_randomness[index];
-    } else {
+    assert(index <= m_randomness.size());
+    if (index == m_randomness.size()) {
       m_randomness.push(rand());
     }
+    return m_randomness[index];
   }
 
   int InfiniteRandom::compareTo(const InfiniteRandom &other) const
@@ -22,7 +21,7 @@ namespace DataStructures {
     if (this == &other) {
       return 0;
     }
-    ArrayList<part_type>::index_type index;
+    index_type index;
     for (index = 0; part_at(index) == other.part_at(index); ++index);
     if (m_randomness[index] < other.m_randomness[index]) {
       return -1;
