@@ -15,7 +15,7 @@ SOURCES += \
     longint.cpp \
     arraylist.cpp \
     infiniterandom.cpp \
-    treapnode.cpp
+    treapbaseiterator.cpp
 
 HEADERS +=\
         DataStructures_global.h \
@@ -23,7 +23,8 @@ HEADERS +=\
     longint.h \
     infiniterandom.h \
     treap.h \
-    treapnode.h
+    treapnode.h \
+    treapbaseiterator.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN
