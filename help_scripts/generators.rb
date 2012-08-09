@@ -42,7 +42,7 @@ module Generators
       @name = name
       @number = number
     end
-    
+
     def generate_n_random(*args)
       cases = []
       @number.times do
@@ -74,18 +74,20 @@ module Generators
     def data_method_body(*args)
       join_indent(column_declarations) + "\n" + join_indent(generate_cases(*args))
     end
-    
-    # This exists because we can now surround this with timing stuff
-    #
-    def rest
-      join_indent(construction) + "\n" + join_indent(bla_tests)
-    end
 
     def test_method_body
       bla_tests = tests.collect { |c| "QCOMPARE(#{c.actual}, #{c.expected});"}
-      join_indent(fetching) + "\n" + rest
+      join_indent(fetching) + "\n" + start_timer + join_indent(construction) + "\n" + join_indent(bla_tests) + end_timer
+    end
+
+    def start_timer
+      ""
     end
     
+    def end_timer
+      ""
+    end
+ 
     def generate(*args)
       data_method_signature + "\n{\n" + data_method_body(*args) + "}\n\n" + test_method_signature + "\n{\n" + test_method_body + "}\n\n"
     end
@@ -519,6 +521,9 @@ LongIntTest::LongIntTest()
 {
 }
 
+EOS
+
+  FIXED_TESTS = <<EOS
 void LongIntTest::init()
 {
   number = LongInt(5);
@@ -562,7 +567,6 @@ void LongIntTest::test_empty_constructor()
   QCOMPARE(LongInt(), LongInt(0));
 }
 
-// Auto generated
 EOS
 
   DEFAULT_CONSTRUCTOR = DefaultConstructorGenerator.new("default_constructor")
@@ -599,7 +603,7 @@ EOS
 
   BIT_AND = BinaryGenerator.new("bit_and", "&")
 
-  MODULO = BinaryGenarator.new("modulo", "%")
+  MODULO = BinaryGenerator.new("modulo", "%")
 
   DIVIDED = BinaryGenerator.new("divided", "/")
 

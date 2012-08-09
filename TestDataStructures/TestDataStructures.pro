@@ -8,7 +8,7 @@ QT       += testlib
 
 QT       -= gui
 
-TARGET = tst_arraylisttest
+TARGET = tst_all_tests
 CONFIG   += console
 CONFIG   -= app_bundle
 

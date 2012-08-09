@@ -4,19 +4,22 @@
 #
 #-------------------------------------------------
 
-QT       += core
+QT       += testlib
 
 QT       -= gui
 
-TARGET = PerformanceDataStructures
+TARGET = tst_performance_tests
 CONFIG   += console
 CONFIG   -= app_bundle
 
 TEMPLATE = app
 
 
-SOURCES += main.cpp \
-    performanceresult.cpp
+SOURCES += \
+    performanceresult.cpp \
+    performancetest.cpp \
+    longinttest.cpp \
+    AllPerformanceTests.cpp
 
 unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
 
@@ -25,4 +28,6 @@ DEPENDPATH += $$PWD/../DataStructures
 
 HEADERS += \
     compositeperformanceresult.h \
-    performanceresult.h
+    performanceresult.h \
+    longinttest.h \
+    performancetest.h

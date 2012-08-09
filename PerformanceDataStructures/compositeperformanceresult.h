@@ -1,38 +1,47 @@
-#ifndef PERFORMANCERESULT_H
-#define PERFORMANCERESULT_H
+#ifndef COMPOSITEPERFORMANCERESULT_H
+#define COMPOSITEPERFORMANCERESULT_H
 
 #include <string>
 #include <ostream>
+#include <sstream>
 #include "arraylist.h"
 
 template <typename T>
 class CompositePerformanceResult;
 
 template <typename T>
-std::ostream& operator<<(std::ostream& out, CompositePerformanceResult<T> result);
+std::ostream& operator<<(std::ostream& out, const CompositePerformanceResult<T>& result);
 
 template <typename T>
 class CompositePerformanceResult
 {
-  friend std::ostream& operator<< <> (std::ostream& out, CompositePerformanceResult<T> result);
+  friend std::ostream& operator<< <> (std::ostream& out, const CompositePerformanceResult<T>& result);
 
 public:
-  explicit CompositePerformanceResult(const std::string& name);
+  CompositePerformanceResult();
 
-  const std::string& get_name() const;
+  explicit CompositePerformanceResult(const std::string& description);
 
-  const DataStructures::ArrayList<T> get_sub_results() const;
+  const std::string& get_description() const;
+
+  const DataStructures::ArrayList<T>& get_sub_results() const;
 
   void add_sub_result(const T& sub_result);
 
 private:
   std::string m_description;
-  DataStructures::ArrayList<ClassPerformanceResult> m_sub_results;
+  DataStructures::ArrayList<T> m_sub_results;
 
 };
 
 template <typename T>
-explicit CompositePerformanceResult<T>::CompositePerformanceResult(const std::string& description):
+CompositePerformanceResult<T>::CompositePerformanceResult():
+  m_description ("")
+{
+}
+
+template <typename T>
+CompositePerformanceResult<T>::CompositePerformanceResult(const std::string& description):
   m_description (description)
 {
 }
@@ -56,13 +65,19 @@ void CompositePerformanceResult<T>::add_sub_result(const T& sub_result)
 }
 
 template <typename T>
-std::ostream& operator<<(std::ostream out, const CompositePerformanceResult<T>& result)
+std::ostream& operator<<(std::ostream& out, const CompositePerformanceResult<T>& result)
 {
   out << result.m_description << std::endl;
-  for (DataStructures::ArrayList<T>::const_iterator it = m_sub_results.begin(); it < m_sub_results.end(); ++it) {
-    out << "\t" << *it << std::endl;
+  typedef typename DataStructures::ArrayList<T>::const_iterator const_iterator;
+  for (const_iterator it = result.m_sub_results.begin(); it < result.m_sub_results.end(); ++it) {
+    std::stringstream ss;
+    ss << *it;
+    std::string line;
+    while (std::getline(ss, line)) {
+      out << "\t" << line << std::endl;
+    }
   }
   return out << std::endl;
 }
 
-#endif // PERFORMANCERESULT_H
+#endif // COMPOSITEPERFORMANCERESULT_H

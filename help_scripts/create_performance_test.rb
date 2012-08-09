@@ -6,51 +6,68 @@ require 'generators'
 
 include Generators
 
+NUMBER = 1
+
 class CaseGenerator
 
-  def rest
-    INDETATION + "m_timer.start();\n" + super + INDENTATION + "m_results.push(PerformanceResult(\"#{@name}\", m_timer.elapsed()));\n"
+  def start_timer
+    INDENTATION + "std::cout << \"bla\" << std::endl;\n" +
+    INDENTATION + "m_timer.start();\n"
+  end
+
+  def end_timer
+    INDENTATION + "std::cout << \"#{@name} \" << m_timer.elapsed() << std::endl;\n" +
+    INDENTATION + "m_results.push(PerformanceResult(\"#{@name}\", m_timer.elapsed()));\n"
+  end
+
+  def generate_nospecial(limit)
+    @number = NUMBER
+    generate([1], [limit], [])
+  end
+
+end
+
+class BinaryGenerator
+
+  def generate_nospecial(limit1, limit2)
+    @number = NUMBER
+    generate([1], [1], [limit1], [limit2], [], [])
   end
 
 end
 
 File.open(File.join(File.dirname(__FILE__), '..', 'PerformanceDataStructures', 'longinttest.cpp'), 'w') do |f|
-  f.puts "#include \"performancersult.h\""
+  f.puts "#include <iostream>"
+  f.puts "#include \"performanceresult.h\""
   f.puts HEADER
 
-  f.puts DEFAULT_CONSTRUCTOR.generate([-1, 1], [200, 1 << 33, 1 << 63], [0, 1, 2])
+  f.puts STRING_CONSTRUCTOR.generate_nospecial(10)#(1 << 2685)
   f.puts
-                    
-  [COPY_CONSTRUCTOR, STRING_CONSTRUCTOR, ASSIGN].each do |generator|
-    f.puts generator.generate([-1, 1], [200, 1 << 33, 1 << 200], [0, 1, 2])
-    f.puts
-  end
 
   [INC, DEC].each do |generator|
-    f.puts generator.generate([-1, 1], [200, 1 << 33, 1 << 200], [0, 1, 2])
-    f.puts
-  end
-
-  [UNARY_PLUS, UNARY_MINUS].each do |generator|
-    f.puts generator.generate([-1, 1], [200, 1 << 33, 1 << 200], [0, 1, 2])
+    f.puts generator.generate_nospecial(1 << 1000000)
     f.puts
   end
 
   [RIGHT_SHIFT, LEFT_SHIFT].each do |generator|
-    f.puts generator.generate([-1, 1], [1], [200, 1 << 200], [200], [0, 1, 2], [0, 1, 2, 32])
+    f.puts generator.generate_nospecial(1 << 1000000, 300)
     f.puts
   end
 
-  [PLUS, MINUS, TIMES, COMPARE].each do |generator|
-    f.puts generator.generate([-1, 1], [-1, 1], [200, 1 << 200], [200, 1 << 200], [0, 1, 2], [0, 1, 2])
+  [PLUS, MINUS].each do |generator|
+    f.puts generator.generate_nospecial(1 << 1000000, 1 << 1000000)
     f.puts
   end
 
-  [MODULO, DIVIDED].each do |generator|
-    f.puts generator.generate([-1, 1], [-1, 1], [200, 1 << 200], [200, 1 << 200], [0, 1, 2], [1, 2])
-    f.puts
-  end
+  f.puts TIMES.generate_nospecial(1 << 10000, 1 << 10000)
+  f.puts
 
-  f.puts POWER.generate([-1, 1], [1], [200, 1 << 100], [100], [0, 1, 2], [0, 1, 2])
+  f.puts MODULO.generate_nospecial(1 << 10000, 1 << 5000)
+  f.puts
+
+  f.puts DIVIDED.generate_nospecial(1 << 10000, 1 << 5000)
+  f.puts
+
+  f.puts POWER.generate_nospecial(1 << 200, 100)
   f.puts
 end
