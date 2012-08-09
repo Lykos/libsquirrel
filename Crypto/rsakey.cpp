@@ -7,14 +7,4 @@ namespace Crypto {
   {
   }
 
-  inline RSAKey::exponent_t RSAKey::get_exponent() const
-  {
-    return m_exponent;
-  }
-
-  inline const RSAKey::text_t& RSAKey::get_modulus() const
-  {
-    return m_modulus;
-  }
-
 }

@@ -69,6 +69,7 @@ namespace DataStructures {
     LongInt& operator&=(const LongInt& other);
     bool is_positive() const;
     LongInt abs() const;
+    LongInt inv_mod(const LongInt& modulus) const;
     static const index_type PART_SIZE = CHAR_BIT * sizeof(part_type);
   private:
     index_type inline size() const;
@@ -82,6 +83,8 @@ namespace DataStructures {
     bool m_positive;
     ArrayList<part_type> m_content;
   };
+
+  LongInt gcd(const LongInt& first, const LongInt& second);
 
   LongInt::part_type inline complement_keep(bool positive, LongInt::part_type part, bool& keep);
 

@@ -273,8 +273,7 @@ namespace DataStructures {
 
   bool LongInt::operator<=(const LongInt& other) const
   {
-    int res = compareTo(other);
-    return res == -1 || res == 0;
+    return compareTo(other) != 1;
   }
 
   bool LongInt::operator==(const LongInt& other) const
@@ -284,8 +283,7 @@ namespace DataStructures {
 
   bool LongInt::operator>=(const LongInt& other) const
   {
-    int res = compareTo(other);
-    return res == 1 || res == 0;
+    return compareTo(other) != -1;
   }
 
   bool LongInt::operator>(const LongInt& other) const
@@ -662,6 +660,30 @@ namespace DataStructures {
     return m_positive ? *this : operator-();
   }
 
+  LongInt LongInt::inv_mod(const LongInt &modulus) const
+  {
+    LongInt a = modulus.abs();
+    if (a == 1) {
+      throw std::logic_error("Modulo 1, there are no multiplicative inverses.");
+    }
+    LongInt b = abs();
+    LongInt u_old = 0;
+    LongInt u = 1;
+    if (b >= a) {
+      b %= a;
+    }
+    while (b > 0) {
+      LongInt q;
+      a.divide(b, q, b, true);
+      u_old -= u * q;
+      std::swap(u, u_old);
+    }
+    if (a != 1) {
+      throw std::logic_error("*this and modulus are not relatively prime, hence no multiplicative inverse exists.");
+    }
+    return u_old;
+  }
+
   LongInt::LongInt(ArrayList<part_type>::const_iterator part_begin, ArrayList<part_type>::const_iterator part_end):
     m_positive (true),
     m_content (part_begin, part_end)
@@ -703,6 +725,20 @@ namespace DataStructures {
   LongInt::part_type inline LongInt::part_at(index_type i) const
   {
     return i < size() ? m_content[i] : 0l;
+  }
+
+  LongInt gcd(const LongInt &first, const LongInt &second)
+  {
+    LongInt a = first.abs();
+    LongInt b = second.abs();
+    if (first < second) {
+      std::swap(a, b);
+    }
+    while (b > 0) {
+      a %= b;
+      std::swap(a, b);
+    }
+    return a;
   }
 
   LongInt::part_type inline complement_keep(bool positive, LongInt::part_type part, bool& keep)

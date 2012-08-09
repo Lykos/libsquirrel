@@ -23,6 +23,10 @@ namespace Crypto {
 
     RSAKey::text_t m_q;
 
+    RSAKey::text_t m_p_inv;
+
+    RSAKey::text_t m_q_inv;
+
   };
 
 }

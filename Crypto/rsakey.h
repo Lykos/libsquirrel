@@ -13,9 +13,15 @@ namespace Crypto {
     typedef DataStructures::index_type exponent_t;
     RSAKey(exponent_t exponent, const text_t& modulus);
 
-    inline exponent_t get_exponent() const;
+    inline exponent_t get_exponent() const
+    {
+      return m_exponent;
+    }
 
-    inline const text_t& get_modulus() const;
+    inline const text_t& get_modulus() const
+    {
+      return m_modulus;
+    }
 
   private:
     exponent_t m_exponent;
