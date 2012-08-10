@@ -114,4 +114,5 @@ namespace DataStructures {
   index_type space_usage(index_type size_a, index_type size_b);
 
 }
+
 #endif // LONGINT_H

@@ -19,6 +19,8 @@ namespace DataStructures {
 
     T remove(const T& element);
 
+    inline T& get_element() const;
+
   private:
     inline void insert(NodePointer &parent, const T& element, index_type direction);
     inline void rotate(NodePointer &parent, index_type direction);
@@ -45,6 +47,12 @@ namespace DataStructures {
     } else {
       insert(parent, element, RIGHT);
     }
+  }
+
+  template <typename T>
+  inline T& TreapNode<T>::get_element() const
+  {
+    return element;
   }
 
   inline void TreapNode<T>::insert(NodePointer &parent, const T& element, index_type direction)

@@ -23,8 +23,11 @@ HEADERS +=\
     infiniterandom.h \
     treap.h \
     treapnode.h \
-    treapbaseiterator.h \
-    basetypes.h
+    basetypes.h \
+    arraylistiterator.h \
+    arraylistconstiterator.h \
+    baseiterator.h \
+    treapiterator.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN
