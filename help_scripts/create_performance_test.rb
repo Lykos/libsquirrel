@@ -50,12 +50,12 @@ File.open(File.join(File.dirname(__FILE__), '..', 'PerformanceDataStructures', '
   f.puts
 
   [INC, DEC].each do |generator|
-    f.puts generator.generate_special((1 << 100000) - 1)
+    f.puts generator.generate_special((1 << 1000000) - 1)
     f.puts
   end
 
   [RIGHT_SHIFT, LEFT_SHIFT].each do |generator|
-    f.puts generator.generate_nospecial(1 << 100000, 300)
+    f.puts generator.generate_nospecial(1 << 1000000, 300)
     f.puts
   end
 
@@ -64,13 +64,13 @@ File.open(File.join(File.dirname(__FILE__), '..', 'PerformanceDataStructures', '
     f.puts
   end
 
-  f.puts TIMES.generate_nospecial(1 << 10000, 1 << 10000)
+  f.puts TIMES.generate_nospecial(1 << 8000, 1 << 8000)
   f.puts
 
-  f.puts MODULO.generate_nospecial(1 << 10000, 1 << 5000)
+  f.puts MODULO.generate_nospecial(1 << 16000, 1 << 8000)
   f.puts
 
-  f.puts DIVIDED.generate_nospecial(1 << 10000, 1 << 5000)
+  f.puts DIVIDED.generate_nospecial(1 << 14000, 1 << 7000)
   f.puts
 
   f.puts POWER.generate_nospecial(1 << 200, 100)
