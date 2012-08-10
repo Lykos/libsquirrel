@@ -76,11 +76,6 @@ File.open(File.join(File.dirname(__FILE__), '..', 'PerformanceDataStructures', '
     f.puts
   end
 
-  [RIGHT_SHIFT, LEFT_SHIFT].each do |generator|
-    f.puts generator.generate_nospecial(1 << limits[:shift_number], limits[:shift_offset])
-    f.puts
-  end
-
   [PLUS, MINUS].each do |generator|
     f.puts generator.generate_nospecial(1 << limits[:plus_minus], 1 << limits[:plus_minus])
     f.puts

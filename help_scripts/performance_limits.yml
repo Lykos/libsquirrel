@@ -1,0 +1,11 @@
+---
+:string_constructor: 10000
+:inc_dec: 10000000
+:plus_minus: 10000000
+:times: 40000
+:modulo_dividend: 20000
+:modulo_divisor: 10000
+:divide_dividend: 20000
+:divide_divisor: 10000
+:power_base: 500
+:power_exponent: 200
