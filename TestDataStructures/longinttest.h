@@ -10,9 +10,6 @@ class LongIntTest : public QObject
 public:
   LongIntTest();
 
-private:
-  DataStructures::LongInt number;
-
 private Q_SLOTS:
   void test_empty_constructor();
   void test_default_constructor_data();

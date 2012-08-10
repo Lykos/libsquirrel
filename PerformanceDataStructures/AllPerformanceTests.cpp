@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
   timeinfo = localtime(&rawtime);
 
   // description
-  std::string version_name ("only_efficient_io");
+  std::string version_name ("chunk_div_mod");
   std::ostringstream oss;
   oss << version_name << " " << hostname << " " << (1900 + timeinfo->tm_year) << "-" << timeinfo->tm_mon << "-"
       << timeinfo->tm_mday << " " << timeinfo->tm_hour << ":" << timeinfo->tm_min << ":" << timeinfo->tm_sec;

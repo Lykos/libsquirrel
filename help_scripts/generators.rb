@@ -228,11 +228,11 @@ module Generators
   end
 
   class DefaultConstructorGenerator < ConstructorGenerator
-  
+
     def initialize(name, number=2)
       super(name, :qlonglong, number)
     end
-  
+
     def construction
       super + ["",
                "// We need this trick because normal comparing would use exactly this constructor to transform the integer into a LongInt.",
@@ -243,138 +243,138 @@ module Generators
                "std::string actual_string = oss1.str();",
                "std::string expected_string = oss2.str();"]
     end
-  
+
     def tests
       super + [Test.new("actual_string", "expected_string")]
     end
-  
+
     def title(element)
       "LongInt(#{element})"
     end
-  
+
   end
 
   class CopyConstructorGenerator < ConstructorGenerator
-  
+
     def initialize(name, number=2)
       super(name, :LongInt, number)
     end
-  
+
     def title(element)
       "LongInt(LongInt(\\\"#{element}\\\"))"
     end
-  
+
     def construct(element)
       construct_long_int(element)
     end
-  
+
     def tests
       super + [Test.new("constructed", "input")]
     end
-  
+
   end
 
   class StringConstructorGenerator < ConstructorGenerator
-  
+
     def initialize(name, number=2)
       super(name, :string, number)
     end
-  
+
     def title(element)
       "LongInt(\\\"#{element}\\\")"
     end
-  
+
     def construction
       super + ["std::ostringstream oss;",
                "oss << constructed;",
                "std::string string_output = oss.str();"]
     end
-  
+
     def tests
       super + [Test.new("string_output", "input")]
     end
-  
+
   end
 
   class AssignGenerator < CopyConstructorGenerator
-  
+
     def initialize(name, number=2)
       super(name, number)
     end
-  
+
     def title(element)
       "i = LongInt(\\\"#{element}\\\")"
     end
-  
+
     def construction
       ["LongInt constructed;"]
     end
-  
+
     def tests
       [Test.new("constructed = input", "input"),
        Test.new("constructed", "input"),
        Test.new("constructed = constructed", "input"),
        Test.new("constructed", "input")] + super
     end
-  
+
   end
 
   class BinaryGenerator < CaseGenerator
-  
+
     def initialize(name, operator, number=2)
       super(name, number)
       @operator = operator
     end
-  
+
     def data_columns
       [DataColumn.new(left_type, "left"),
        DataColumn.new(right_type, "right"),
        DataColumn.new(result_type, "result")]
     end
-  
+
     def left_type
       :LongInt
     end
-  
+
     def right_type
       :LongInt
     end
-  
+
     def result_type
       :LongInt
     end
-  
+
     def construction
       ["LongInt copy (left);"]
     end
-  
+
     def tests
       [Test.new(bin_op("left", "right"), "result"),
        Test.new("left", "copy"),
        Test.new(bin_op_eq("copy", "right"), "result"),
        Test.new("copy", "result")]
     end
-  
+
     def bin_op(left, right)
       "#{left} #{@operator} #{right}"
     end
-  
+
     def bin_op_eq(left, right)
       "#{left} #{@operator}= #{right}"
     end
-  
+
     def title(left, right)
       "#{left} #{@operator} #{right}"
     end
-  
+
     def result(left, right)
       eval("(#{left}) #{@operator} (#{right})")
     end
-  
+
     def generate_random(sign1, sign2, limit1, limit2, b_is_long=true)
       line(sign1 * (rand(limit1) + 1), sign2 * (rand(limit2) + 1))
     end
-  
+
     def quadruple_foreach(as, bs, cs, ds, &block)
       double_foreach(as, bs) do |a, b|
         double_foreach(cs, ds) do |c, d|
@@ -382,37 +382,37 @@ module Generators
         end
       end
     end
-  
+
     def generate_cases(signs1, signs2, limits1, limits2, special1, special2)
       # A little complicated because we don't want to have duplicates for 0 because of signs
       spec1_0 = special1.delete(0)
       spec2_0 = special2.delete(0)
-    
+
       cases = []
       # zero zero case
       if spec1_0 && spec2_0
         cases.push(line(0, 0))
       end
-    
+
       # zero special cases
       if spec1_0
         double_foreach(signs2, special2) do |sign2, b|
           cases.push(line(0, sign2 * b))
         end
       end
-    
+
       # special zero cases
       if spec2_0
         double_foreach(signs1, special1) do |sign1, a|
           cases.push(line(sign1 * a, 0))
         end
       end
-    
+
       # special special cases
       quadruple_foreach(signs1, special1, signs2, special2) do |sign1, a, sign2, b|
         cases.push(line(sign1 * a, sign2 * b))
       end
-    
+
       # random zero cases
       if spec2_0
         double_foreach(signs1, limits1) do |sign1, limit1|
@@ -421,7 +421,7 @@ module Generators
           end
         end
       end
-    
+
       # zero random cases
       if spec1_0
         double_foreach(signs2, limits2) do |sign2, limit2|
@@ -430,57 +430,57 @@ module Generators
           end
         end
       end
-    
+
       # random special cases
       quadruple_foreach(signs1, limits1, signs2, special2) do |sign1, limit1, sign2, b|
         @number.times do
           cases.push(line(sign1 * (rand(limit1) + 1), b))
         end
       end
-    
+
       # special random cases
       quadruple_foreach(signs1, special1, signs2, limits2) do |sign1, a, sign2, limit2|
         @number.times do
           cases.push(line(sign1 * a, sign2 * (rand(limit2) + 1)))
         end
       end
-    
+
       # random random cases
       quadruple_foreach(signs1, limits1, signs2, limits2) do |sign1, limit1, sign2, limit2|
         cases += generate_n_random(sign1, sign2, limit1, limit2)
       end
-    
+
       cases
     end
-  
+
   end
 
   class ShiftGenerator < BinaryGenerator
-  
+
     def right_type
       :int
     end
-  
+
   end
 
   class PowerGenerator < ShiftGenerator
-  
+
     def bin_op(left, right)
       "#{left}.#{@name}(#{right})"
     end
-  
+
     def bin_op_eq(left, right)
       "#{left}.#{@name}_eq(#{right})"
     end
-  
+
   end
 
   class CompareToGenerator < BinaryGenerator
-  
+
     def result_type
       :int
     end
-  
+
     def construction
       super + ["bool larger = false, larger_equal = false, equal = false, smaller_equal = false, smaller = false, unequal = true;",
                "LongInt copy_left (left), copy_right (right);",
@@ -499,7 +499,7 @@ module Generators
                "#{INDENTATION}QFAIL(\"Invalid result.\");",
                "}"]
     end
-  
+
     def tests
       [Test.new("left.compareTo(right)", "result"),
        Test.new("left > right", "larger"),
@@ -511,7 +511,7 @@ module Generators
        Test.new("left", "copy_left"),
        Test.new("right", "copy_right")]
     end
-  
+
   end
 
   HEADER = <<EOS
@@ -534,44 +534,6 @@ LongIntTest::LongIntTest()
 EOS
 
   FIXED_TESTS = <<EOS
-void LongIntTest::init()
-{
-  number = LongInt(5);
-}
-
-static const int half_size = sizeof(part_type) / 2 * CHAR_BIT;
-static const part_type int1 = 0x8f70e4b4db783331;
-static const int lower = 0xdb783331;
-static const part_type int2 = 0x3f7076c9145b28a0;
-static const int upper = 0x3f7076c9;
-static const part_type number2 = 11l + (1l << (half_size - 1));
-static const part_type number3 = 7881299347898368l;
-
-void LongIntTest::test_lower_half()
-{
-  if (half_size != 32) {
-    char str[200];
-    sprintf(str, "Half size is %d instead of the expected 32.",half_size);
-    QWARN(str);
-  }
-  QCOMPARE((int) lower_half(int1), lower);
-  QCOMPARE((int) lower_half(number3), 0);
-  QCOMPARE((int) lower_half(0), 0);
-  QCOMPARE((int) lower_half((1l << half_size) + 2), 2);
-  QCOMPARE((int) lower_half(number2), (int) number2);
-  QCOMPARE((int) lower_half(number2 << 1), 11 << 1);
-}
-
-void LongIntTest::test_upper_half()
-{
-  QCOMPARE((int) upper_half(int2), upper);
-  QCOMPARE((int) upper_half(number3), 1835008);
-  QCOMPARE((int) upper_half(number2 << half_size), (int) number2);
-  QCOMPARE((int) upper_half(number2 << 1), 1);
-  QCOMPARE((int) upper_half(number2), 0);
-  QCOMPARE((int) upper_half(0), 0);
-}
-
 void LongIntTest::test_empty_constructor()
 {
   QCOMPARE(LongInt(), LongInt(0));
@@ -594,6 +556,8 @@ EOS
   UNARY_PLUS = UnaryGenerator.new("unary_plus", "+")
 
   UNARY_MINUS = UnaryGenerator.new("unary_minus", "-")
+
+  BIT_NEGATE = UnaryGenerator.new("bit_negate", "~")
 
   LEFT_SHIFT = ShiftGenerator.new("left_shift", "<<")
 

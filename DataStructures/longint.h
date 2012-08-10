@@ -19,8 +19,9 @@ namespace DataStructures {
     friend std::istream& operator>>(std::istream& in, const LongInt& longInt);
   public:
     typedef unsigned long long int part_type;
+    LongInt();
     LongInt(long long int initial);
-    LongInt(unsigned long long int initial = 0);
+    LongInt(unsigned long long int initial);
     LongInt(long int initial);
     LongInt(unsigned long int initial);
     LongInt(int initial);
