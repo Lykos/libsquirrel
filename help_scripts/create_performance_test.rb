@@ -11,12 +11,11 @@ NUMBER = 1
 class CaseGenerator
 
   def start_timer
-    INDENTATION + "std::cout << \"bla\" << std::endl;\n" +
     INDENTATION + "m_timer.start();\n"
   end
 
   def end_timer
-    INDENTATION + "std::cout << \"#{@name} \" << m_timer.elapsed() << std::endl;\n" +
+    INDENTATION + "std::cout << \"#{@name} \" << m_timer.elapsed() << \" ms\" << std::endl;\n" +
     INDENTATION + "m_results.push(PerformanceResult(\"#{@name}\", m_timer.elapsed()));\n"
   end
 
@@ -46,25 +45,25 @@ File.open(File.join(File.dirname(__FILE__), '..', 'PerformanceDataStructures', '
   f.puts "#include \"performanceresult.h\""
   f.puts HEADER
 
-  f.puts STRING_CONSTRUCTOR.generate_nospecial(10)#(1 << 2685)
+  f.puts STRING_CONSTRUCTOR.generate_nospecial(1 << 1000)
   f.puts
 
   [INC, DEC].each do |generator|
-    f.puts generator.generate_special((1 << 100000) - 1)
+    f.puts generator.generate_special((1 << 1000000) - 1)
     f.puts
   end
 
   [RIGHT_SHIFT, LEFT_SHIFT].each do |generator|
-    f.puts generator.generate_nospecial(1 << 100000, 300)
+    f.puts generator.generate_nospecial(1 << 1000000, 300)
     f.puts
   end
 
   [PLUS, MINUS].each do |generator|
-    f.puts generator.generate_nospecial(1 << 100000, 1 << 100000)
+    f.puts generator.generate_nospecial(1 << 1000000, 1 << 1000000)
     f.puts
   end
 
-  f.puts TIMES.generate_nospecial(1 << 10000, 1 << 10000)
+  f.puts TIMES.generate_nospecial(1 << 5000, 1 << 5000)
   f.puts
 
   f.puts MODULO.generate_nospecial(1 << 10000, 1 << 5000)
