@@ -27,7 +27,9 @@ HEADERS +=\
     arraylistiterator.h \
     arraylistconstiterator.h \
     baseiterator.h \
-    treapiterator.h
+    treapiterator.h \
+    treapconstiterator.h \
+    treapbaseiterator.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

@@ -1,5 +1,5 @@
-#ifndef TREAPITERATOR_H
-#define TREAPITERATOR_H
+#ifndef TREAPCONSTITERATOR_H
+#define TREAPCONSTITERATOR_H
 
 #include "treapbaseiterator.h"
 
@@ -167,4 +167,4 @@ namespace DataStructures {
 
 }
 
-#endif // TREAPITERATOR_H
+#endif // TREAPCONSTITERATOR_H
