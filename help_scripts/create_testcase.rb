@@ -23,7 +23,7 @@ File.open(File.join(File.dirname(__FILE__), '..', 'TestDataStructures', 'longint
     f.puts
   end
 
-  [UNARY_PLUS, UNARY_MINUS].each do |generator|
+  [UNARY_PLUS, UNARY_MINUS, BIT_NEGATE].each do |generator|
     f.puts generator.generate([-1, 1], [200, 1 << 33, 1 << 200], [0, 1, 2])
     f.puts
   end
@@ -33,7 +33,7 @@ File.open(File.join(File.dirname(__FILE__), '..', 'TestDataStructures', 'longint
     f.puts
   end
 
-  [PLUS, MINUS, TIMES, COMPARE].each do |generator|
+  [PLUS, MINUS, TIMES, COMPARE, BIT_OR, BIT_XOR, BIT_AND].each do |generator|
     f.puts generator.generate([-1, 1], [-1, 1], [200, 1 << 200], [200, 1 << 200], [0, 1, 2], [0, 1, 2])
     f.puts
   end
