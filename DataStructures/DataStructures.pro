@@ -14,8 +14,7 @@ DEFINES += DATASTRUCTURES_LIBRARY
 SOURCES += \
     longint.cpp \
     arraylist.cpp \
-    infiniterandom.cpp \
-    treapbaseiterator.cpp
+    infiniterandom.cpp
 
 HEADERS +=\
     DataStructures_global.h \

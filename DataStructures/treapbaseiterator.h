@@ -2,7 +2,7 @@
 #define TREAPBASEITERATOR_H
 
 #include "basetypes.h"
-
+/*
 namespace DataStructures {
 
   template <typename T>
@@ -22,6 +22,6 @@ namespace DataStructures {
     index_type m_index;
   };
 
-}
+}*/
 
 #endif // TREAPBASEITERATOR_H
