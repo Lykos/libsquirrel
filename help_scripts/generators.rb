@@ -534,44 +534,6 @@ LongIntTest::LongIntTest()
 EOS
 
   FIXED_TESTS = <<EOS
-void LongIntTest::init()
-{
-  number = LongInt(5);
-}
-
-static const int half_size = sizeof(part_type) / 2 * CHAR_BIT;
-static const part_type int1 = 0x8f70e4b4db783331;
-static const int lower = 0xdb783331;
-static const part_type int2 = 0x3f7076c9145b28a0;
-static const int upper = 0x3f7076c9;
-static const part_type number2 = 11l + (1l << (half_size - 1));
-static const part_type number3 = 7881299347898368l;
-
-void LongIntTest::test_lower_half()
-{
-  if (half_size != 32) {
-    char str[200];
-    sprintf(str, "Half size is %d instead of the expected 32.",half_size);
-    QWARN(str);
-  }
-  QCOMPARE((int) lower_half(int1), lower);
-  QCOMPARE((int) lower_half(number3), 0);
-  QCOMPARE((int) lower_half(0), 0);
-  QCOMPARE((int) lower_half((1l << half_size) + 2), 2);
-  QCOMPARE((int) lower_half(number2), (int) number2);
-  QCOMPARE((int) lower_half(number2 << 1), 11 << 1);
-}
-
-void LongIntTest::test_upper_half()
-{
-  QCOMPARE((int) upper_half(int2), upper);
-  QCOMPARE((int) upper_half(number3), 1835008);
-  QCOMPARE((int) upper_half(number2 << half_size), (int) number2);
-  QCOMPARE((int) upper_half(number2 << 1), 1);
-  QCOMPARE((int) upper_half(number2), 0);
-  QCOMPARE((int) upper_half(0), 0);
-}
-
 void LongIntTest::test_empty_constructor()
 {
   QCOMPARE(LongInt(), LongInt(0));
@@ -594,6 +556,8 @@ EOS
   UNARY_PLUS = UnaryGenerator.new("unary_plus", "+")
 
   UNARY_MINUS = UnaryGenerator.new("unary_minus", "-")
+
+  BIT_NEGATE = UnaryGenerator.new("bit_negate", "~")
 
   LEFT_SHIFT = ShiftGenerator.new("left_shift", "<<")
 

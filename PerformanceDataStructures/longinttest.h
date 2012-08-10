@@ -34,10 +34,6 @@ private Q_SLOTS:
   void test_modulo();
   void test_divided_data();
   void test_divided();
-  void test_left_shift_data();
-  void test_left_shift();
-  void test_right_shift_data();
-  void test_right_shift();
   void test_pow_data();
   void test_pow();
 };

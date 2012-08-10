@@ -57,6 +57,12 @@ namespace DataStructures {
     return res;
   }
 
+  LongInt::LongInt():
+    m_positive (true)
+  {
+    m_content.push(0);
+  }
+
   LongInt::LongInt(long long int initial): m_positive (initial >= 0)
   {
     m_content.push(m_positive ? initial : -initial);
