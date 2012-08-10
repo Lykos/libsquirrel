@@ -20,6 +20,11 @@ class CaseGenerator
     INDENTATION + "m_results.push(PerformanceResult(\"#{@name}\", m_timer.elapsed()));\n"
   end
 
+  def generate_special(special)
+    @number = NUMBER
+    generate([1], [], [special])
+  end
+
   def generate_nospecial(limit)
     @number = NUMBER
     generate([1], [limit], [])
@@ -45,17 +50,17 @@ File.open(File.join(File.dirname(__FILE__), '..', 'PerformanceDataStructures', '
   f.puts
 
   [INC, DEC].each do |generator|
-    f.puts generator.generate_nospecial(1 << 1000000)
+    f.puts generator.generate_special((1 << 100000) - 1)
     f.puts
   end
 
   [RIGHT_SHIFT, LEFT_SHIFT].each do |generator|
-    f.puts generator.generate_nospecial(1 << 1000000, 300)
+    f.puts generator.generate_nospecial(1 << 100000, 300)
     f.puts
   end
 
   [PLUS, MINUS].each do |generator|
-    f.puts generator.generate_nospecial(1 << 1000000, 1 << 1000000)
+    f.puts generator.generate_nospecial(1 << 100000, 1 << 100000)
     f.puts
   end
 
