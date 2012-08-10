@@ -21,8 +21,9 @@ int main(int argc, char *argv[])
   timeinfo = localtime(&rawtime);
 
   // description
+  std::string version_name ("only_efficient_io");
   std::ostringstream oss;
-  oss << "very_old " << hostname << " " << (1900 + timeinfo->tm_year) << "-" << timeinfo->tm_mon << "-"
+  oss << version_name << " " << hostname << " " << (1900 + timeinfo->tm_year) << "-" << timeinfo->tm_mon << "-"
       << timeinfo->tm_mday << " " << timeinfo->tm_hour << ":" << timeinfo->tm_min << ":" << timeinfo->tm_sec;
   std::string description = oss.str();
 
@@ -36,7 +37,7 @@ int main(int argc, char *argv[])
 
   // Write result to file
   std::ostringstream oss2;
-  oss2 << "../performance_results/" << "very_old_" << hostname << "_" << (1900 + timeinfo->tm_year) << "-" << timeinfo->tm_mon << "-"
+  oss2 << "../performance_results/" << version_name << "_" << hostname << "_" << (1900 + timeinfo->tm_year) << "-" << timeinfo->tm_mon << "-"
       << timeinfo->tm_mday << "_" << timeinfo->tm_hour << ":" << timeinfo->tm_min << ":" << timeinfo->tm_sec;
   std::string file_name = oss2.str();
   std::ofstream result_file (file_name.c_str());
