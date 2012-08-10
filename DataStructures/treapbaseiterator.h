@@ -1,6 +1,8 @@
 #ifndef TREAPBASEITERATOR_H
 #define TREAPBASEITERATOR_H
 
+#include "basetypes.h"
+
 namespace DataStructures {
 
   template <typename T>

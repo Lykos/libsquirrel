@@ -18,13 +18,13 @@ SOURCES += \
     treapbaseiterator.cpp
 
 HEADERS +=\
-        DataStructures_global.h \
+    DataStructures_global.h \
     arraylist.h \
     longint.h \
     infiniterandom.h \
     treap.h \
     treapnode.h \
-    treapbaseiterator.h
+    treapbaseiterator.h \
     basetypes.h
 
 symbian {

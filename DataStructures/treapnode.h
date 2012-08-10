@@ -5,8 +5,6 @@
 
 namespace DataStructures {
 
-
-
   template <typename T>
   class TreapNode
   {
