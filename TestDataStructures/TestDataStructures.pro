@@ -18,7 +18,8 @@ TEMPLATE = app
 SOURCES += \
     longinttest.cpp \
     arraylisttest.cpp \
-    AllTests.cpp
+    AllTests.cpp \
+    infiniterandomtest.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
@@ -28,4 +29,5 @@ DEPENDPATH += $$PWD/../DataStructures
 
 HEADERS += \
     longinttest.h \
-    arraylisttest.h
+    arraylisttest.h \
+    infiniterandomtest.h

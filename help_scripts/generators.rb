@@ -527,10 +527,6 @@ typedef LongInt::part_type part_type;
 Q_DECLARE_METATYPE(DataStructures::LongInt)
 Q_DECLARE_METATYPE(std::string)
 
-LongIntTest::LongIntTest()
-{
-}
-
 EOS
 
   FIXED_TESTS = <<EOS

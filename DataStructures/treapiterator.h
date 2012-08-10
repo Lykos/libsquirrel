@@ -1,7 +1,7 @@
 #ifndef TREAPITERATOR_H
 #define TREAPITERATOR_H
 
-#include "treapbaseiterator.h"
+#include "baseiterator.h"
 
 namespace DataStructures {
 
@@ -9,7 +9,7 @@ namespace DataStructures {
   TreapIterator<T> operator+(index_type i, const TreapIterator<T>& it);
 
   template <typename T>
-  class TreapIterator : public TreapBaseIterator<T>
+  class TreapIterator : public BaseIterator<T>
   {
     friend TreapIterator<T> operator+ <> (index_type i, const TreapIterator<T>& it);
     friend class TreapConstIterator<T>;
@@ -34,7 +34,7 @@ namespace DataStructures {
     ArrayList<NodeInfo> m_parent_stack;
     inline void local_search();
     inline TreapNode<T>& node() const { return *m_parent_stack.top().node; }
-    inline index_type left_part() const { return *m_parent_stack.top().left_part; }
+    inline index_type left_part() const { return m_parent_stack.top().left_part; }
   };
 
   template <typename T>

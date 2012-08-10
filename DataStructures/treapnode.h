@@ -3,6 +3,7 @@
 
 #include "infiniterandom.h"
 #include "treapiterator.h"
+#include "treapconstiterator.h"
 
 namespace DataStructures {
 
@@ -26,6 +27,8 @@ namespace DataStructures {
 
     TreapIterator<T> iterator_at(ArrayList<TreapIterator<T>::NodeInfo>& parent_stack, index_type index);
 
+    TreapConstIterator<T> iterator_at(ArrayList<TreapConstIterator<T>::ConstNodeInfo>& parent_stack, index_type index) const;
+
   private:
     inline void insert(NodePointer &parent, const T& element, index_type direction);
     inline void rotate(NodePointer &parent, index_type direction);
@@ -43,6 +46,21 @@ namespace DataStructures {
     m_element (element),
     m_children (2, NULL)
   {
+  }
+
+  template <typename T>
+  TreapConstIterator<T> TreapNode<T>::iterator_at(ArrayList<TreapConstIterator<T>::ConstNodeInfo>& parent_stack, index_type index) const
+  {
+    assert(index < m_size);
+    parent_stack.push(TreapConstIterator<T>::ConstNodeInfo(this, this_index));
+    index_type left_size = left_size();
+    if (index == left_size) {
+      return TreapConstIterator<T>(parent_stack, index);
+    } else if (index < left_size) {
+      return m_children[LEFT]->iterator_at(parent_stack, index);
+    } else {
+      return m_children[RIGHT]->iterator_at(parent_stack, index - left_size - 1);
+    }
   }
 
   template <typename T>

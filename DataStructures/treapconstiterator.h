@@ -1,7 +1,7 @@
 #ifndef TREAPCONSTITERATOR_H
 #define TREAPCONSTITERATOR_H
 
-#include "treapbaseiterator.h"
+#include "baseiterator.h"
 
 namespace DataStructures {
 
@@ -9,12 +9,12 @@ namespace DataStructures {
   TreapIterator<T> operator+(index_type i, const TreapIterator<T>& it);
 
   template <typename T>
-  class TreapIterator : public TreapBaseIterator<T>
+  class TreapIterator : public BaseIterator<T>
   {
     friend TreapIterator<T> operator+ <> (index_type i, const TreapIterator<T>& it);
     friend class TreapConstIterator<T>;
   public:
-    typedef struct { TreapNode<T> *node; index_type left_part; } NodeInfo;
+    typedef struct { const TreapNode<T> *node; index_type left_part; } ConstNodeInfo;
     TreapIterator(const ArrayList<NodeInfo> &parent_stack, index_type index = 0);
     TreapIterator(const TreapIterator<T>& other);
     difference_type operator-(const TreapIterator<T>& other) const;
@@ -28,13 +28,13 @@ namespace DataStructures {
     TreapIterator<T> operator-(index_type i) const;
     TreapIterator<T>& operator+=(index_type i);
     TreapIterator<T>& operator-=(index_type i);
-    T& operator*();
-    T& operator[](index_type i);
+    const T& operator*();
+    const T& operator[](index_type i);
   private:
     ArrayList<NodeInfo> m_parent_stack;
     inline void local_search();
-    inline TreapNode<T>& node() const { return *m_parent_stack.top().node; }
-    inline index_type left_part() const { return *m_parent_stack.top().left_part; }
+    inline const TreapNode<T>& node() const { return *m_parent_stack.top().node; }
+    inline index_type left_part() const { return m_parent_stack.top().left_part; }
   };
 
   template <typename T>
@@ -140,13 +140,13 @@ namespace DataStructures {
   }
 
   template <typename T>
-  T& TreapIterator<T>::operator*()
+  const T& TreapIterator<T>::operator*()
   {
     return m_parent_stack.top().node->get_element();
   }
 
   template <typename T>
-  T& TreapIterator<T>::operator[](index_type index)
+  const T& TreapIterator<T>::operator[](index_type index)
   {
     return *(operator+(index));
   }
