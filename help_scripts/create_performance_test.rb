@@ -45,7 +45,7 @@ File.open(File.join(File.dirname(__FILE__), '..', 'PerformanceDataStructures', '
   f.puts "#include \"performanceresult.h\""
   f.puts HEADER
 
-  f.puts STRING_CONSTRUCTOR.generate_nospecial(1 << 1000)
+  f.puts STRING_CONSTRUCTOR.generate_nospecial(1 << 1204)
   f.puts
 
   [INC, DEC].each do |generator|
