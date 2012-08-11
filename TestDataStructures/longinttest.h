@@ -7,9 +7,6 @@ class LongIntTest : public QObject
 {
   Q_OBJECT
 
-public:
-  LongIntTest();
-
 private Q_SLOTS:
   void test_empty_constructor();
   void test_default_constructor_data();

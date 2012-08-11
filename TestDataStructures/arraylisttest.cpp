@@ -46,7 +46,8 @@ void ArrayListTest::test_copy_constructor()
 
 void ArrayListTest::test_range_copy_constructor()
 {
-  ArrayList<int> copied_list (list.begin() + 5, list.begin() + 14);
+  ArrayList<int> copied_list;
+  copied_list.push_all(list.begin() + 5, list.begin() + 14);
   QCOMPARE((int) copied_list.size(), 9);
   for (int i = 0; i < 9; ++i) {
     QCOMPARE(copied_list[i], i + 5);

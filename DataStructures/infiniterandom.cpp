@@ -2,8 +2,12 @@
 
 namespace DataStructures {
 
-  InfiniteRandom::InfiniteRandom():
-    m_randomness (1, rand())
+  InfiniteRandom::InfiniteRandom()
+  {
+  }
+
+  InfiniteRandom::InfiniteRandom(const InfiniteRandom& other):
+    m_randomness (other.m_randomness)
   {
   }
 
@@ -28,6 +32,12 @@ namespace DataStructures {
     } else {
       return 1;
     }
+  }
+
+  InfiniteRandom& InfiniteRandom::operator=(const InfiniteRandom& other)
+  {
+    m_randomness = other.m_randomness;
+    return *this;
   }
 
   bool InfiniteRandom::operator<(const InfiniteRandom& other) const

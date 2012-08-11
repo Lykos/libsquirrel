@@ -25,47 +25,92 @@ namespace DataStructures {
     friend std::ostream& operator<< <> (std::ostream& out, const ArrayList<T>& it);
   public:
     static const index_type DEFAULT_MIN_CAPACITY;
+
     typedef ArrayListIterator<T> iterator;
+
     typedef ArrayListConstIterator<T> const_iterator;
+
     typedef std::logic_error empty_list_error;
+
     typedef std::out_of_range range_error;
+
     explicit ArrayList(index_type initial_size = 0, const T& element = T(), index_type min_capacity = DEFAULT_MIN_CAPACITY);
+
     ArrayList(const ArrayList<T>& other);
-    ArrayList(const ArrayList<T>::const_iterator& begin, const ArrayList<T>::const_iterator& end);
+/*
+    template <typename BeginIterator, typename EndIterator>
+    ArrayList(const BeginIterator& begin, const EndIterator& end);*/
+
+    template <typename BeginIterator, typename EndIterator>
+    void push_all(const BeginIterator& begin, const EndIterator& end);
+
     virtual ~ArrayList();
+
     ArrayList<T>& operator=(const ArrayList<T>& other);
+
     ArrayList<T> operator+(const ArrayList<T>& other) const;
+
     ArrayList<T>& operator+=(const ArrayList<T>& other);
+
     ArrayList<T> operator*(index_type factor) const;
+
     ArrayList<T>& operator*=(index_type factor);
+
     bool operator==(const ArrayList<T> other) const;
+
     bool operator<(const ArrayList<T> other) const;
+
     index_type size() const;
+
     bool is_empty() const;
+
     const T& operator[](index_type i) const;
+
     T& operator[](index_type i);
+
     void push(const T& element);
+
     T pop();
+
     T top() const;
+
     void clear();
+
     iterator begin();
+
     const_iterator begin() const;
+
     iterator end();
+
     const_iterator end() const;
+
     index_type get_min_capacity() const;
+
     void set_min_capacity(index_type min_capacity);
+
     index_type get_capacity() const;
+
     void prepare_size(index_type new_size);
+
   private:
     static const index_type CAPACITY_DECREASE_FACTOR;
+
     T* m_content;
+
     index_type m_size;
+
     index_type m_capacity;
+
     index_type m_min_capacity;
+
     void add_content(const T * const content, index_type insert_position, index_type length);
+
     void init_capacity(index_type initial_capacity);
+
     void adjust_capacity(index_type new_capacity);
+
     void inline check_index(index_type index) const;
+
   };
 
   index_type next_higher(index_type k);
@@ -108,15 +153,27 @@ namespace DataStructures {
       m_content[i] = element;
     }
   }
-
+/*
   template <typename T>
-  ArrayList<T>::ArrayList(const ArrayList<T>::const_iterator& begin, const ArrayList<T>::const_iterator& end):
+  template <typename BeginIterator, typename EndIterator>
+  ArrayList<T>::ArrayList(const BeginIterator& begin, const EndIterator& end):
     m_size(end - begin),
     m_min_capacity(DEFAULT_MIN_CAPACITY)
   {
     init_capacity(end - begin);
     index_type i = 0;
-    for (ArrayList<T>::const_iterator it = begin; it < end; ++it) {
+    for (BeginIterator it = begin; it < end; ++it) {
+      m_content[i++] = *it;
+    }
+  }
+*/
+  template <typename T>
+  template <typename BeginIterator, typename EndIterator>
+  void ArrayList<T>::push_all(const BeginIterator& begin, const EndIterator& end)
+  {
+    index_type i = m_size;
+    prepare_size(m_size + (end - begin));
+    for (BeginIterator it = begin; it != end; ++it) {
       m_content[i++] = *it;
     }
   }

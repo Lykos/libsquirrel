@@ -15,7 +15,7 @@ namespace DataStructures {
     friend class TreapConstIterator<T>;
   public:
     typedef struct { TreapNode<T> *node; index_type left_part; } NodeInfo;
-    TreapIterator(const ArrayList<NodeInfo> &parent_stack, index_type index = 0);
+    TreapIterator(const ArrayList<NodeInfo> &parent_stack = ArrayList<NodeInfo>(), index_type index = 0);
     TreapIterator(const TreapIterator<T>& other);
     difference_type operator-(const TreapIterator<T>& other) const;
     difference_type operator-(const TreapConstIterator<T>& other) const;
@@ -154,15 +154,15 @@ namespace DataStructures {
   template <typename T>
   inline void TreapIterator<T>::local_search()
   {
-    index_type left_part = left_part();
-    while (m_index < left_part || m_index >= left_part + node().size()) {
+    index_type left = left_part();
+    while (BaseIterator<T>::m_index < left || BaseIterator<T>::m_index >= left + node().size()) {
       if (m_parent_stack.size() > 1) {
         m_parent_stack.pop();
       } else {
         return;
       }
     }
-    node().iterator_at(m_parent_stack, m_index);
+    node().iterator_at(m_parent_stack, BaseIterator<T>::m_index);
   }
 
 }

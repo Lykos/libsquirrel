@@ -12,6 +12,7 @@ namespace DataStructures {
   class ArrayListConstIterator : public BaseIterator<T>
   {
     friend ArrayListConstIterator<T> operator+ <> (index_type i, const ArrayListConstIterator<T>& it);
+    friend class ArrayListIterator<T>;
   public:
     ArrayListConstIterator(const ArrayList<T>* list, index_type index = 0);
     ArrayListConstIterator(const ArrayListIterator<T>& other);

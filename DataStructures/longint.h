@@ -27,7 +27,6 @@ namespace DataStructures {
     LongInt(int initial);
     LongInt(unsigned int initial);
     LongInt(const LongInt& other);
-    explicit LongInt(ArrayList<part_type>::const_iterator part_begin, ArrayList<part_type>::const_iterator part_end);
     explicit LongInt(const std::string& numerical_string);
     LongInt operator~() const;
     LongInt operator-() const;

@@ -546,7 +546,12 @@ namespace DataStructures {
       }
     }
     if (part_shift > 0) {
-      m_content = ArrayList<part_type> (m_content.begin() + part_shift, m_content.end());
+      for (ArrayList<part_type>::iterator it = m_content.begin(); it < m_content.end() - part_shift; ++it) {
+        *it = it[part_shift];
+      }
+      for (index_type i = 0; i < part_shift; ++i) {
+        m_content.pop();
+      }
     }
     if (extra_bit) {
       operator--();
@@ -674,15 +679,6 @@ namespace DataStructures {
   LongInt LongInt::abs() const
   {
     return m_positive ? *this : operator-();
-  }
-
-  LongInt::LongInt(ArrayList<part_type>::const_iterator part_begin, ArrayList<part_type>::const_iterator part_end):
-    m_positive (true),
-    m_content (part_begin, part_end)
-  {
-    if (m_content.is_empty()) {
-      m_content.push(0);
-    }
   }
 
   index_type inline LongInt::size() const
