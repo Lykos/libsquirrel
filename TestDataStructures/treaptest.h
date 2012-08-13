@@ -33,6 +33,24 @@ private Q_SLOTS:
   void test_index();
 
   void test_const_index();
+
+  void test_iterators();
+
+  void test_const_iterators();
+
+  void test_lower_bound();
+
+  void test_lower_bound_const();
+
+  void test_upper_bound();
+
+  void test_upper_bound_const();
+
+  void test_assign();
+
+  void test_equals();
+
+  void test_not_equals();
   
 };
 

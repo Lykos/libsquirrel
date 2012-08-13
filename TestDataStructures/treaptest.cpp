@@ -1,4 +1,5 @@
 #include <QtTest/QtTest>
+#include <iostream>
 #include "treaptest.h"
 
 #define COMPARE_SIZE(treap, expected_size) QCOMPARE((int) (treap).size(), (int) (expected_size))
@@ -118,8 +119,8 @@ void TreapTest::test_merge()
   t1.insert(-2);
   t1.insert(-1);
   t1.merge(t2);
-  COMPARE_SIZE(t1, 22);
-  COMPARE_SIZE(t2, 20);
+  COMPARE_SIZE(t1, 42);
+  COMPARE_SIZE(t2, 40);
   for (int i = -2; i < 20; ++i) {
     QVERIFY(t1.search(i));
   }
@@ -130,8 +131,8 @@ void TreapTest::test_copy_constructor()
   Treap<int> t1;
   standard_fill(t1);
   Treap<int> t2 (t1);
-  COMPARE_SIZE(t2, 20);
-  for (int i = -2; i < 20; ++i) {
+  COMPARE_SIZE(t2, 40);
+  for (int i = 0; i < 20; ++i) {
     QVERIFY(t2.search(i));
   }
 }
@@ -142,7 +143,7 @@ void TreapTest::test_index()
   standard_fill(t);
   for (index_type i = 0; i < 20; ++i) {
     COMPARE_INTS(t[i], 0);
-    COMPARE_INTS(t[i] + 20, i);
+    COMPARE_INTS(t[i + 20], i);
   }
 }
 
@@ -153,6 +154,104 @@ void TreapTest::test_const_index()
   const Treap<int>& t = t2;
   for (index_type i = 0; i < 20; ++i) {
     COMPARE_INTS(t[i], 0);
-    COMPARE_INTS(t[i] + 20, i);
+    COMPARE_INTS(t[i + 20], i);
   }
+}
+
+void TreapTest::test_iterators()
+{
+  Treap<int> t;
+  standard_fill(t);
+  index_type i = 0;
+  for (Treap<int>::iterator it = t.begin(); it < t.end(); ++it, ++i)
+  {
+    COMPARE_INTS(*it, t[i]);
+  }
+}
+
+void TreapTest::test_const_iterators()
+{
+  Treap<int> t2;
+  standard_fill(t2);
+  const Treap<int>& t = t2;
+  index_type i = 0;
+  for (Treap<int>::const_iterator it = t.begin(); it < t.end(); ++it, ++i)
+  {
+    COMPARE_INTS(*it, t[i]);
+  }
+}
+
+void TreapTest::test_upper_bound_const()
+{
+  Treap<int> t2;
+  standard_fill(t2);
+  const Treap<int>& t = t2;
+  QCOMPARE(t.upper_bound(0), t.begin() + 21);
+  QCOMPARE(t.upper_bound(-1), t.begin());
+  QCOMPARE(t.upper_bound(1), t.begin() + 22);
+  QCOMPARE(t.upper_bound(100), t.end());
+}
+
+void TreapTest::test_upper_bound()
+{
+  Treap<int> t;
+  standard_fill(t);
+  QCOMPARE(t.upper_bound(0), t.begin() + 21);
+  QCOMPARE(t.upper_bound(-1), t.begin());
+  QCOMPARE(t.upper_bound(1), t.begin() + 22);
+  QCOMPARE(t.upper_bound(100), t.end());
+}
+
+void TreapTest::test_lower_bound_const()
+{
+  Treap<int> t2;
+  standard_fill(t2);
+  const Treap<int>& t = t2;
+  QCOMPARE(t.lower_bound(0), t.begin());
+  QCOMPARE(t.lower_bound(-1), t.begin());
+  QCOMPARE(t.lower_bound(1), t.begin() + 21);
+  QCOMPARE(t.lower_bound(100), t.end());
+}
+
+void TreapTest::test_lower_bound()
+{
+  Treap<int> t;
+  standard_fill(t);
+  QCOMPARE(t.lower_bound(0), t.begin());
+  QCOMPARE(t.lower_bound(-1), t.begin());
+  QCOMPARE(t.lower_bound(1), t.begin() + 21);
+  QCOMPARE(t.lower_bound(100), t.end());
+}
+
+void TreapTest::test_assign()
+{
+  Treap<int> t, t2;
+  standard_fill(t2);
+  t.insert(-1);
+  t = t2;
+  COMPARE_SIZE(t, 40);
+  QVERIFY(!t.search(-1));
+  for (int i = 0; i < 20; ++i) {
+    QVERIFY(t2.search(i));
+  }
+}
+
+void TreapTest::test_equals()
+{
+  Treap<int> t1, t2;
+  QVERIFY(t1 == t2);
+  standard_fill(t1);
+  QVERIFY(!(t1 == t2));
+  standard_fill(t2);
+  QVERIFY(t1 == t2);
+}
+
+void TreapTest::test_not_equals()
+{
+  Treap<int> t1, t2;
+  QVERIFY(!(t1 != t2));
+  standard_fill(t1);
+  QVERIFY(t1 != t2);
+  standard_fill(t2);
+  QVERIFY(!(t1 != t2));
 }

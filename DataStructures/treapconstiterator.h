@@ -32,7 +32,7 @@ namespace DataStructures {
     const T& operator*();
     const T& operator[](index_type i);
   private:
-    typedef TreapIterator<T>::NodeInfo NodeInfo;
+    typedef typename TreapIterator<T>::NodeInfo NodeInfo;
     ArrayList<ConstNodeInfo> m_parent_stack;
     inline void local_search();
     inline const TreapNode<T>& node() const { return *m_parent_stack.top().node; }
@@ -50,7 +50,7 @@ namespace DataStructures {
   TreapConstIterator<T>::TreapConstIterator(const TreapIterator<T>& other):
     BaseIterator<T> (other.m_index)
   {
-    for (ArrayList<NodeInfo>::const_iterator it = other.m_parent_stack.begin(); it != other.m_parent_stack.end(); ++it) {
+    for (typename ArrayList<NodeInfo>::const_iterator it = other.m_parent_stack.begin(); it != other.m_parent_stack.end(); ++it) {
       ConstNodeInfo info {(*it).node, (*it).left_part};
       m_parent_stack.push(info);
     }
@@ -166,15 +166,14 @@ namespace DataStructures {
   template <typename T>
   inline void TreapConstIterator<T>::local_search()
   {
-    index_type left = left_part();
-    while (BaseIterator<T>::m_index < left || BaseIterator<T>::m_index >= left + node().size()) {
+    while (BaseIterator<T>::m_index < left_part() || BaseIterator<T>::m_index >= left_part() + node().size()) {
       if (m_parent_stack.size() > 1) {
         m_parent_stack.pop();
       } else {
         return;
       }
     }
-    node().iterator_at(m_parent_stack, BaseIterator<T>::m_index);
+    node().iterator_at(m_parent_stack, BaseIterator<T>::m_index, left_part());
   }
 
 }

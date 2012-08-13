@@ -13,8 +13,12 @@
 namespace DataStructures {
 
   template <typename T>
+  std::ostream& operator<<(std::ostream& out, const TreapNode<T>& it);
+
+  template <typename T>
   class TreapNode
   {
+    friend std::ostream& operator<< <> (std::ostream& out, const TreapNode<T>& it);
   public:
     typedef TreapConstIterator<T> const_iterator;
 
@@ -56,7 +60,9 @@ namespace DataStructures {
 
     bool remove(NodePointer *incoming_pointer_address, const T& element);
 
-    inline T& get_element() const { return m_element; }
+    inline T& get_element() { return m_element; }
+
+    inline const T& get_element() const { return m_element; }
 
     inline index_type size() const { return m_size; }
 
@@ -98,7 +104,7 @@ namespace DataStructures {
   };
 
   template <typename T>
-  TreapNode<T>::TreapNode(const TreapNode &other):
+  TreapNode<T>::TreapNode(const TreapNode<T> &other):
     m_size (other.m_size),
     m_element (other.m_element),
     m_randomness (other.m_randomness),
@@ -122,30 +128,32 @@ namespace DataStructures {
   template <typename T>
   typename TreapNode<T>::const_iterator TreapNode<T>::iterator_at(ArrayList<ConstNodeInfo>& parent_stack, index_type index, index_type left_part) const
   {
-    assert(index < m_size);
-    parent_stack.push(ConstNodeInfo(this, left_part));
-    index_type left = left_size();
+    assert(left_part <= index && index < left_part + m_size);
+    ConstNodeInfo info {this, left_part};
+    parent_stack.push(info);
+    index_type left = left_size() + left_part;
     if (index == left) {
       return const_iterator(parent_stack, left_part);
     } else if (index < left) {
       return m_children[LEFT]->iterator_at(parent_stack, index, left_part);
     } else {
-      return m_children[RIGHT]->iterator_at(parent_stack, index - left - 1, left_part + left + 1);
+      return m_children[RIGHT]->iterator_at(parent_stack, index, left + 1);
     }
   }
 
   template <typename T>
   typename TreapNode<T>::iterator TreapNode<T>::iterator_at(ArrayList<NodeInfo>& parent_stack, index_type index, index_type left_part)
   {
-    assert(index < m_size);
-    parent_stack.push(NodeInfo(this, left_part));
-    index_type left = left_size();
+    assert(left_part <= index && index < left_part + m_size);
+    NodeInfo info {this, left_part};
+    parent_stack.push(info);
+    index_type left = left_part + left_size();
     if (index == left) {
       return iterator(parent_stack, left_part);
     } else if (index < left) {
       return m_children[LEFT]->iterator_at(parent_stack, index, left_part);
     } else {
-      return m_children[RIGHT]->iterator_at(parent_stack, index - left - 1, left_part + left + 1);
+      return m_children[RIGHT]->iterator_at(parent_stack, index, left + 1);
     }
   }
 
@@ -182,17 +190,18 @@ namespace DataStructures {
   template <typename T>
   typename TreapNode<T>::iterator TreapNode<T>::upper_bound(ArrayList<NodeInfo>& parent_stack, const T& element, index_type left_part)
   {
-    parent_stack.push(NodeInfo(this, left_part));
+    NodeInfo info {this, left_part};
+    parent_stack.push(info);
     if (m_children[LEFT] == NULL && element < m_element) {
       return iterator(parent_stack, left_part);
     }
-    if (m_children[RIGHT] == NULL && element > m_element) {
-      return parent_stack[0].end();
+    if (m_children[RIGHT] == NULL && element >= m_element) {
+      return parent_stack[0].node->end();
     }
     if (element < m_element) {
        iterator left_upper_bound = m_children[LEFT]->upper_bound(parent_stack, element, left_part);
-       if (left_upper_bound == parent_stack[0].end()) {
-         return iterator(parent_stack, left_part);
+       if (left_upper_bound == parent_stack[0].node->end()) {
+         return iterator(parent_stack, left_part + left_size());
        } else {
          return left_upper_bound;
        }
@@ -208,13 +217,13 @@ namespace DataStructures {
     if (m_children[LEFT] == NULL && element < m_element) {
       return iterator(parent_stack, left_part);
     }
-    if (m_children[RIGHT] == NULL && element > m_element) {
-      return parent_stack[0].end();
+    if (m_children[RIGHT] == NULL && element >= m_element) {
+      return parent_stack[0].node->end();
     }
     if (element < m_element) {
        const_iterator left_upper_bound = m_children[LEFT]->upper_bound(parent_stack, element, left_part);
-       if (left_upper_bound == parent_stack[0].end()) {
-         return const_iterator(parent_stack, left_part);
+       if (left_upper_bound == parent_stack[0].node->end()) {
+         return const_iterator(parent_stack, left_part + left_size());
        } else {
          return left_upper_bound;
        }
@@ -231,7 +240,7 @@ namespace DataStructures {
       return iterator(parent_stack, left_part);
     }
     if (m_children[RIGHT] == NULL && element > m_element) {
-      return parent_stack[0].end();
+      return parent_stack[0].node->end();
     }
     if (element < m_element) {
       return m_children[LEFT]->lower_bound(parent_stack, element, left_part);
@@ -239,8 +248,8 @@ namespace DataStructures {
       return m_children[RIGHT]->lower_bound(parent_stack, element, left_part + 1 + left_size());
     } else {
       const_iterator left_lower_bound = m_children[LEFT]->lower_bound(parent_stack, element, left_part);
-      if (left_lower_bound == parent_stack[0].end()) {
-        return const_iterator(parent_stack, left_part);
+      if (left_lower_bound == parent_stack[0].node->end()) {
+        return const_iterator(parent_stack, left_part + left_size());
       } else {
         return left_lower_bound;
       }
@@ -250,12 +259,13 @@ namespace DataStructures {
   template <typename T>
   typename TreapNode<T>::iterator TreapNode<T>::lower_bound(ArrayList<NodeInfo>& parent_stack, const T& element, index_type left_part)
   {
-    parent_stack.push(NodeInfo(this, left_part));
+    NodeInfo info {this, left_part};
+    parent_stack.push(info);
     if (m_children[LEFT] == NULL && element <= m_element) {
       return iterator(parent_stack, left_part);
     }
     if (m_children[RIGHT] == NULL && element > m_element) {
-      return parent_stack[0].end();
+      return parent_stack[0].node->end();
     }
     if (element < m_element) {
       return m_children[LEFT]->lower_bound(parent_stack, element, left_part);
@@ -263,8 +273,8 @@ namespace DataStructures {
       return m_children[RIGHT]->lower_bound(parent_stack, element, left_part + 1 + left_size());
     } else {
       iterator left_lower_bound = m_children[LEFT]->lower_bound(parent_stack, element, left_part);
-      if (left_lower_bound == parent_stack[0].end()) {
-        return iterator(parent_stack, left_part);
+      if (left_lower_bound == parent_stack[0].node->end()) {
+        return iterator(parent_stack, left_part + left_size());
       } else {
         return left_lower_bound;
       }
@@ -301,7 +311,7 @@ namespace DataStructures {
     if (index < left) {
       return m_children[LEFT]->operator[](index);
     } else if (index > left) {
-      return m_children[RIGHT]->operator[](index);
+      return m_children[RIGHT]->operator[](index - 1 - left);
     } else {
       return m_element;
     }
@@ -315,7 +325,7 @@ namespace DataStructures {
     if (index < left) {
       return m_children[LEFT]->operator[](index);
     } else if (index > left) {
-      return m_children[RIGHT]->operator[](index);
+      return m_children[RIGHT]->operator[](index - 1 - left);
     } else {
       return m_element;
     }
@@ -382,7 +392,7 @@ namespace DataStructures {
   typename TreapNode<T>::iterator TreapNode<T>::end()
   {
     ArrayList<NodeInfo> empty_info;
-    return iterator_at(empty_info, m_size, 0);
+    return iterator(empty_info, m_size);
   }
 
   template <typename T>
@@ -396,7 +406,7 @@ namespace DataStructures {
   typename TreapNode<T>::const_iterator TreapNode<T>::end() const
   {
     ArrayList<ConstNodeInfo> empty_info;
-    return iterator_at(empty_info, m_size, 0);
+    return iterator(empty_info, m_size);
   }
 
   template <typename T>
@@ -445,6 +455,19 @@ namespace DataStructures {
     } else {
       return m_children[LEFT]->m_randomness < m_children[RIGHT]->m_randomness ? LEFT : RIGHT;
     }
+  }
+
+  template <typename T>
+  std::ostream& operator<<(std::ostream& out, const TreapNode<T>& treap)
+  {
+    if (treap.m_children[LEFT] != NULL) {
+      out << *(treap.m_children[LEFT]) << ", ";
+    }
+    out << treap.m_element;
+    if (treap.m_children[RIGHT] != NULL) {
+      out << ", " << *(treap.m_children[RIGHT]);
+    }
+    return out;
   }
 
 }

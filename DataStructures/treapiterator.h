@@ -154,15 +154,14 @@ namespace DataStructures {
   template <typename T>
   inline void TreapIterator<T>::local_search()
   {
-    index_type left = left_part();
-    while (BaseIterator<T>::m_index < left || BaseIterator<T>::m_index >= left + node().size()) {
+    while (BaseIterator<T>::m_index < left_part() || BaseIterator<T>::m_index >= left_part() + node().size()) {
       if (m_parent_stack.size() > 1) {
         m_parent_stack.pop();
       } else {
         return;
       }
     }
-    node().iterator_at(m_parent_stack, BaseIterator<T>::m_index);
+    node().iterator_at(m_parent_stack, BaseIterator<T>::m_index, left_part());
   }
 
 }

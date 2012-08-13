@@ -60,7 +60,7 @@ namespace DataStructures {
 
     bool operator<(const ArrayList<T> other) const;
 
-    index_type size() const;
+    inline index_type size() const { return m_size; }
 
     bool is_empty() const;
 
@@ -74,7 +74,7 @@ namespace DataStructures {
 
     T top() const;
 
-    void clear();
+    inline void clear() { prepare_size(0); }
 
     iterator begin();
 
@@ -84,11 +84,15 @@ namespace DataStructures {
 
     const_iterator end() const;
 
-    index_type get_min_capacity() const;
+    inline index_type get_min_capacity() const { return m_min_capacity; }
 
-    void set_min_capacity(index_type min_capacity);
+    inline void set_min_capacity(index_type min_capacity) { m_min_capacity = min_capacity; }
 
-    index_type get_capacity() const;
+    inline index_type get_capacity() const { return m_capacity; }
+
+    inline void set_shrinkable(bool is_shrinkable) { m_is_shrinkable = is_shrinkable; }
+
+    inline bool is_shrinkable() const { return m_is_shrinkable; }
 
     void prepare_size(index_type new_size);
 
@@ -102,6 +106,8 @@ namespace DataStructures {
     index_type m_capacity;
 
     index_type m_min_capacity;
+
+    bool m_is_shrinkable;
 
     void add_content(const T * const content, index_type insert_position, index_type length);
 
@@ -335,30 +341,12 @@ namespace DataStructures {
   }
 
   template <typename T>
-  void ArrayList<T>::clear()
-  {
-    prepare_size(0);
-  }
-
-  template <typename T>
-  index_type ArrayList<T>::get_min_capacity() const
-  {
-    return m_min_capacity;
-  }
-
-  template <typename T>
   void ArrayList<T>::set_min_capacity(index_type min_capacity)
   {
     m_min_capacity = min_capacity;
     if (m_capacity < m_min_capacity) {
       adjust_capacity(m_min_capacity);
     }
-  }
-
-  template <typename T>
-  index_type ArrayList<T>::get_capacity() const
-  {
-    return m_capacity;
   }
 
   template <typename T>
