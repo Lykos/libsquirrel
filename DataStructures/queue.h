@@ -8,7 +8,7 @@
 namespace DataStructures {
   
   template <typename T>
-  class Queue<T> : public DataStructures::BaseList<T>
+  class Queue<T> : public BaseList<T>
   {
   public:
     typedef ListIterator<T, Queue<T> > iterator;
@@ -19,12 +19,16 @@ namespace DataStructures {
 
     Queue(const Queue<T>& other);
 
+    operator==(const Queue<T>& other);
+
+    operator!=(const Queue<T>& other) { return !operator==(other); }
+
     template <typename BeginIterator, typename EndIterator>
     void push_all(const BeginIterator& begin, const EndIterator& end);
 
-    const T& operator[](index_type i) const;
+    inline const T& operator[](index_type i) const { check_index(i); return BaseList<T>::m_content[(i + BaseList<T>::m_begin) % BaseList<T>::m_capacity]; }
 
-    T& operator[](index_type i);
+    inline T& operator[](index_type i) const { check_index(i); return BaseList<T>::m_content[(i + BaseList<T>::m_begin) % BaseList<T>::m_capacity]; }
 
     void push(const T& element);
 
@@ -36,9 +40,9 @@ namespace DataStructures {
 
     inline const_iterator begin() const { return const_iterator(this, 0); }
 
-    inline iterator end() { return iterator(this, m_size); }
+    inline iterator end() { return iterator(this, BaseList<T>::m_size); }
 
-    inline const_iterator end() const { return const_iterator(this, m_size); }
+    inline const_iterator end() const { return const_iterator(this, BaseList<T>::m_size); }
 
   protected:
     void copy_old_content(const DataStructures::T *old_content);
@@ -47,7 +51,6 @@ namespace DataStructures {
 
     index_type m_begin;
 
-    index_type m_end;
   };
 
   Queue<T>::Queue():
@@ -65,11 +68,6 @@ namespace DataStructures {
 
   }
 
-  void Queue<T>::push(const T &element)
-  {
-
-  }
-
   template <typename T>
   bool Queue<T>::operator==(const ArrayList<T> other) const
   {
@@ -77,7 +75,7 @@ namespace DataStructures {
       return false;
     }
     for (index_type i = 0; i < size(); ++i) {
-      if (m_content[i] != other[i]) {
+      if (operator[](i) != other.operator[](i)) {
         return false;
       }
     }
@@ -88,21 +86,21 @@ namespace DataStructures {
   const T& Queue<T>::operator[](index_type i) const
   {
     check_index(i);
-    return m_content[(i + m_begin) % m_capacity];
+    return BaseList<T>::m_content[(i + BaseList<T>::m_begin) % BaseList<T>::m_capacity];
   }
 
   template <typename T>
   T& Queue<T>::operator[](index_type i)
   {
     check_index(i);
-    return m_content[i];
+    return BaseList<T>::m_content[(i + BaseList<T>::m_begin) % BaseList<T>::m_capacity];
   }
 
   template <typename T>
   void Queue<T>::push(const T& element)
   {
-    prepare_size(m_size + 1);
-    m_content[m_size - 1] = element;
+    prepare_size(BaseList<T>::m_size + 1);
+    BaseList<T>::m_content[(BaseList<T>::m_size + BaseList<T>::m_begin - 1) % BaseList<T>::m_capacity] = element;
   }
 
   template <typename T>
@@ -111,8 +109,8 @@ namespace DataStructures {
     if (is_empty()) {
       throw empty_list_error("Cannot pop from an empty ArrayList.");
     }
-    T element = m_content[m_size - 1];
-    prepare_size(m_size - 1);
+    T element = BaseList<T>::m_content[BaseList<T>::m_begin++];
+    prepare_size(BaseList<T>::m_size - 1);
     return element;
   }
 
@@ -122,7 +120,7 @@ namespace DataStructures {
     if (is_empty()) {
       throw empty_list_error("Cannot take the top from an empty ArrayList.");
     }
-    return m_content[m_size - 1];
+    return BaseList<T>::m_content[BaseList<T>::m_begin];
   }
 
   template <typename T>
@@ -131,17 +129,14 @@ namespace DataStructures {
     if (is_empty()) {
       throw empty_list_error("Cannot take the top from an empty ArrayList.");
     }
-    return m_content[m_size - 1];
+    return BaseList<T>::m_content[BaseList<T>::m_begin];
   }
 
   void Queue<T>::copy_old_content(const T* old_content)
   {
-    if (m_end > m_begin) {
-      add_content(m_content, old_content + m_begin, m_end - m_begin);
-    } else {
-      add_content(m_content, old_content + m_begin, m_size - m_begin);
-      add_content(m_content, old_content, m_end);
-    }
+    add_content(BaseList<T>::m_content, old_content + BaseList<T>::m_begin, BaseList<T>::m_size - BaseList<T>::m_begin);
+    add_content(BaseList<T>::m_content, old_content, BaseList<T>::m_begin);
+    BaseList<T>::m_begin = 0;
   }
 
 }

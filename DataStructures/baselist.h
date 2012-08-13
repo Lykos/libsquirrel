@@ -11,6 +11,12 @@
 #include <cassert>
 
 #include "basetypes.h"
+#ifndef NDEBUG
+#define check_index(index) if (index >= BaseList<T>::m_size) { std::ostringstream oss; oss << "Invalid index " << index << " for array list of size " << BaseList<T>::m_size << "."; throw typename BaseList<T>::range_error(oss.str()); }
+#else
+#define check_index(index)
+#endif
+
 
 namespace DataStructures {
 
@@ -76,13 +82,11 @@ namespace DataStructures {
 
     virtual void copy_old_content(const T* old_content);
 
-    void add_content(const T * content, index_type insert_position, index_type length);
+    inline void add_content(const T * content, index_type insert_position, index_type length);
 
-    void init_capacity(index_type initial_capacity);
+    inline void init_capacity(index_type initial_capacity);
 
-    void adjust_capacity(index_type new_capacity);
-
-    inline bool check_index(index_type index) const;
+    inline void adjust_capacity(index_type new_capacity);
 
   };
 
@@ -188,7 +192,7 @@ namespace DataStructures {
   }
 
   template <typename T>
-  void BaseList<T>::add_content(const T * content, index_type insert_position, index_type length)
+  inline void BaseList<T>::add_content(const T * content, index_type insert_position, index_type length)
   {
     for (index_type i = 0; i < length; i++) {
       m_content[insert_position + i] = content[i];
@@ -196,7 +200,7 @@ namespace DataStructures {
   }
 
   template <typename T>
-  void BaseList<T>::prepare_size(index_type new_size)
+  inline void BaseList<T>::prepare_size(index_type new_size)
   {
     // TODO overflow is not dealt with!
     if (new_size > m_capacity) {
@@ -212,7 +216,7 @@ namespace DataStructures {
   }
 
   template <typename T>
-  void BaseList<T>::init_capacity(index_type initial_capacity)
+  inline void BaseList<T>::init_capacity(index_type initial_capacity)
   {
     m_capacity = std::max(next_higher(initial_capacity), m_min_capacity);
     m_content = new T[m_capacity];
@@ -236,17 +240,6 @@ namespace DataStructures {
   void BaseList<T>::copy_old_content(const T* old_content)
   {
     add_content(old_content, 0, m_size);
-  }
-
-  template <typename T>
-  inline bool BaseList<T>::check_index(index_type index) const
-  {
-    if (index >= m_size) {
-      std::ostringstream oss;
-      oss << "Invalid index " << index << " for array list of size " << m_size << ".";
-      throw range_error(oss.str());
-    }
-    return true;
   }
 
   template <typename TargetBegin, typename TargetEnd, typename SourceBegin, typename SourceEnd>

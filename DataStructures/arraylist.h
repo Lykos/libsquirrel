@@ -42,9 +42,9 @@ namespace DataStructures {
 
     bool operator==(const ArrayList<T> other) const;
 
-    const T& operator[](index_type i) const;
+    const T& operator[](index_type i) const { check_index(i); return BaseList<T>::m_content[i]; }
 
-    T& operator[](index_type i);
+    T& operator[](index_type i) { check_index(i); return BaseList<T>::m_content[i]; }
 
     void push(const T& element);
 
@@ -104,7 +104,7 @@ namespace DataStructures {
   void ArrayList<T>::push_all(const BeginIterator& begin, const EndIterator& end)
   {
     index_type i = BaseList<T>::m_size;
-    prepare_size(BaseList<T>::m_size + (end - begin));
+    BaseList<T>::prepare_size(BaseList<T>::m_size + (end - begin));
     for (BeginIterator it = begin; it != end; ++it) {
       BaseList<T>::m_content[i++] = *it;
     }
@@ -129,8 +129,8 @@ namespace DataStructures {
   ArrayList<T>& ArrayList<T>::operator+=(const ArrayList<T>& other)
   {
     index_type old_size = BaseList<T>::m_size;
-    prepare_size(BaseList<T>::m_size + other.m_size);
-    add_content(other.m_content, old_size, other.m_size);
+    BaseList<T>::prepare_size(BaseList<T>::m_size + other.m_size);
+    BaseList<T>::add_content(other.m_content, old_size, other.m_size);
     return *this;
   }
 
@@ -148,9 +148,9 @@ namespace DataStructures {
   ArrayList<T>& ArrayList<T>::operator*=(index_type factor)
   {
     index_type old_size = BaseList<T>::m_size;
-    prepare_size(BaseList<T>::m_size * factor);
+    BaseList<T>::prepare_size(BaseList<T>::m_size * factor);
     for (index_type i = 1; i < factor; ++i) {
-      add_content(BaseList<T>::m_content, i * old_size, old_size);
+      BaseList<T>::add_content(BaseList<T>::m_content, i * old_size, old_size);
     }
     return *this;
   }
@@ -167,20 +167,6 @@ namespace DataStructures {
       }
     }
     return true;
-  }
-
-  template <typename T>
-  const T& ArrayList<T>::operator[](index_type i) const
-  {
-    BaseList<T>::check_index(i);
-    return BaseList<T>::m_content[i];
-  }
-
-  template <typename T>
-  T& ArrayList<T>::operator[](index_type i)
-  {
-    BaseList<T>::check_index(i);
-    return BaseList<T>::m_content[i];
   }
 
   template <typename T>
