@@ -13,24 +13,24 @@ DEFINES += DATASTRUCTURES_LIBRARY
 
 SOURCES += \
     longint.cpp \
-    arraylist.cpp \
     infiniterandom.cpp \
-    queue.cpp
+    baselist.cpp
 
 HEADERS +=\
     DataStructures_global.h \
-    arraylist.h \
     longint.h \
     infiniterandom.h \
     treap.h \
     treapnode.h \
     basetypes.h \
-    arraylistiterator.h \
-    arraylistconstiterator.h \
     baseiterator.h \
     treapiterator.h \
     treapconstiterator.h \
-    queue.h
+    queue.h \
+    listconstiterator.h \
+    listiterator.h \
+    baselist.h \
+    arraylist.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

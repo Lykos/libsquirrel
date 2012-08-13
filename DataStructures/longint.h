@@ -48,12 +48,12 @@ namespace DataStructures {
     LongInt operator--(int);
     LongInt& operator--();
     int compareTo(const LongInt& other) const;
-    bool operator<(const LongInt& other) const;
-    bool operator<=(const LongInt& other) const;
-    bool operator==(const LongInt& other) const;
-    bool operator>=(const LongInt& other) const;
-    bool operator>(const LongInt& other) const;
-    bool operator!=(const LongInt& other) const;
+    bool operator<(const LongInt& other) const { return compareTo(other) == -1; }
+    bool operator<=(const LongInt& other) const { return compareTo(other) != 1; }
+    bool operator==(const LongInt& other) const { return compareTo(other) == 0; }
+    bool operator>=(const LongInt& other) const { return compareTo(other) != -1; }
+    bool operator>(const LongInt& other) const { return compareTo(other) == 1; }
+    bool operator!=(const LongInt& other) const { return compareTo(other) != 0; }
     LongInt& operator=(const LongInt& other);
     LongInt& operator+=(const LongInt& other);
     LongInt& operator-=(const LongInt& other);

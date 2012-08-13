@@ -280,38 +280,6 @@ namespace DataStructures {
     }
   }
 
-  bool LongInt::operator<(const LongInt& other) const
-  {
-    return compareTo(other) == -1;
-  }
-
-  bool LongInt::operator<=(const LongInt& other) const
-  {
-    int res = compareTo(other);
-    return res == -1 || res == 0;
-  }
-
-  bool LongInt::operator==(const LongInt& other) const
-  {
-    return compareTo(other) == 0;
-  }
-
-  bool LongInt::operator>=(const LongInt& other) const
-  {
-    int res = compareTo(other);
-    return res == 1 || res == 0;
-  }
-
-  bool LongInt::operator>(const LongInt& other) const
-  {
-    return compareTo(other) == 1;
-  }
-
-  bool LongInt::operator!=(const LongInt& other) const
-  {
-    return compareTo(other) != 0;
-  }
-
   LongInt& LongInt::operator=(const LongInt& other)
   {
     if (&other == this) {

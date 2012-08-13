@@ -9,10 +9,13 @@ namespace DataStructures {
   typedef long long int difference_type;
 
   template <typename T>
-  class ArrayListIterator;
+  class BaseList;
 
-  template <typename T>
-  class ArrayListConstIterator;
+  template <typename T, typename List>
+  class ListIterator;
+
+  template <typename T, typename List>
+  class ListConstIterator;
 
   template <typename T>
   class DATASTRUCTURESSHARED_EXPORT ArrayList;
