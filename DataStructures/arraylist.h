@@ -42,6 +42,8 @@ namespace DataStructures {
 
     bool operator==(const ArrayList<T> other) const;
 
+    bool operator!=(const ArrayList<T> other) const { return !operator==(other); }
+
     const T& operator[](index_type i) const { check_index(i); return BaseList<T>::m_content[i]; }
 
     T& operator[](index_type i) { check_index(i); return BaseList<T>::m_content[i]; }
@@ -50,9 +52,9 @@ namespace DataStructures {
 
     T pop();
 
-    const T& top() const;
+    const T& top() const { check_empty(); return BaseList<T>::m_content[BaseList<T>::m_size - 1]; }
 
-    T& top();
+    T& top() { check_empty(); return BaseList<T>::m_content[BaseList<T>::m_size - 1]; }
 
     inline iterator begin() { return iterator(this, 0); }
 
@@ -103,6 +105,9 @@ namespace DataStructures {
   template <typename BeginIterator, typename EndIterator>
   void ArrayList<T>::push_all(const BeginIterator& begin, const EndIterator& end)
   {
+    if (end <= begin) {
+      return;
+    }
     index_type i = BaseList<T>::m_size;
     BaseList<T>::prepare_size(BaseList<T>::m_size + (end - begin));
     for (BeginIterator it = begin; it != end; ++it) {
@@ -179,30 +184,10 @@ namespace DataStructures {
   template <typename T>
   T ArrayList<T>::pop()
   {
-    if (BaseList<T>::is_empty()) {
-      throw empty_list_error("Cannot pop from an empty ArrayList.");
-    }
+    check_empty();
     T element = BaseList<T>::m_content[BaseList<T>::m_size - 1];
     BaseList<T>::prepare_size(BaseList<T>::m_size - 1);
     return element;
-  }
-
-  template <typename T>
-  T& ArrayList<T>::top()
-  {
-    if (BaseList<T>::is_empty()) {
-      throw empty_list_error("Cannot take the top from an empty ArrayList.");
-    }
-    return BaseList<T>::m_content[BaseList<T>::m_size - 1];
-  }
-
-  template <typename T>
-  const T& ArrayList<T>::top() const
-  {
-    if (BaseList<T>::is_empty()) {
-      throw empty_list_error("Cannot take the top from an empty ArrayList.");
-    }
-    return BaseList<T>::m_content[BaseList<T>::m_size - 1];
   }
 
 }

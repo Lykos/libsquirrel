@@ -9,9 +9,13 @@ class TreapTest : public QObject
   Q_OBJECT
 
 private:
-  void standard_fill(DataStructures::Treap<int>& t);
+  DataStructures::Treap<int> m_treap;
+
+  void standard_fill(DataStructures::Treap<int>& treap);
 
 private Q_SLOTS:  
+  void init();
+
   void test_empty_constructor();
 
   void test_insert();
@@ -33,6 +37,10 @@ private Q_SLOTS:
   void test_index();
 
   void test_const_index();
+
+  void test_index_errors();
+
+  void test_const_index_errors();
 
   void test_iterators();
 

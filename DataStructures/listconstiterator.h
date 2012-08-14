@@ -12,7 +12,6 @@ namespace DataStructures {
   class ListConstIterator : public BaseIterator<T>
   {
     friend ListConstIterator<T, List> operator+ <> (index_type i, const ListConstIterator<T, List>& it);
-    friend class ListConstIterator<T, List>;
   public:
     ListConstIterator(const List* list, index_type index = 0);
     ListConstIterator(const ListIterator<T, List>& other);

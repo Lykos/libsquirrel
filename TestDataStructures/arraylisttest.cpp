@@ -1,3 +1,4 @@
+#include <iostream>
 #include "arraylisttest.h"
 #define COMPARE_SIZE(list, expected_size) QCOMPARE((int) (list).size(), (expected_size))
 #define COMPARE_INTS(actual, expected) QCOMPARE((int) (actual), (int) (expected))
@@ -44,7 +45,7 @@ void ArrayListTest::test_copy_constructor()
   QCOMPARE(list, copied_list);
 }
 
-void ArrayListTest::test_range_copy_constructor()
+void ArrayListTest::test_push_all()
 {
   ArrayList<int> copied_list;
   copied_list.push_all(list.begin() + 5, list.begin() + 14);
@@ -156,7 +157,22 @@ void ArrayListTest::test_is_empty()
   QVERIFY(list3.is_empty());
 }
 
-void ArrayListTest::test_index()
+void ArrayListTest::test_const_index_errors()
+{
+  const ArrayList<int>& l = list;
+  int a = 333;
+  try {
+    a = l[-1];
+    QFAIL("a = l[-1] didn't cause an exception.");
+  } catch (ArrayList<int>::range_error e) {}
+  try {
+    a = l[20];
+    QFAIL("a = l[20] didn't cause an exception.");
+  } catch (ArrayList<int>::range_error e) {}
+  QCOMPARE(a, 333);
+}
+
+void ArrayListTest::test_index_errors()
 {
   int a = 333;
   try {
@@ -281,4 +297,35 @@ void ArrayListTest::test_capacity()
     list.pop();
     QVERIFY(list.get_capacity() >= 46);
   }
+}
+
+
+void ArrayListTest::test_equals()
+{
+  ArrayList<int> t1, t2;
+  QVERIFY(t1 == t2);
+  for (index_type i = 0; i < 30; ++i) {
+    t1.push(i);
+  }
+  QVERIFY(t1 == t1);
+  QVERIFY(!(t1 == t2));
+  for (index_type i = 0; i < 30; ++i) {
+    t2.push(i);
+  }
+  QVERIFY(t2 == t2);
+}
+
+void ArrayListTest::test_unequals()
+{
+  ArrayList<int> t1, t2;
+  QVERIFY(!(t1 != t2));
+  for (index_type i = 0; i < 30; ++i) {
+    t1.push(i);
+  }
+  QVERIFY(!(t1 != t1));
+  QVERIFY(t1 != t2);
+  for (index_type i = 0; i < 30; ++i) {
+    t2.push(i);
+  }
+  QVERIFY(!(t1 != t2));
 }

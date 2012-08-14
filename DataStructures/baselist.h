@@ -12,11 +12,15 @@
 
 #include "basetypes.h"
 #ifndef NDEBUG
-#define check_index(index) if (index >= BaseList<T>::m_size) { std::ostringstream oss; oss << "Invalid index " << index << " for array list of size " << BaseList<T>::m_size << "."; throw typename BaseList<T>::range_error(oss.str()); }
+#define check_index(index) if (index >= BaseList<T>::m_size) { std::ostringstream oss; oss << "Invalid index " << index << " for list of size " << BaseList<T>::m_size << "."; throw typename BaseList<T>::range_error(oss.str()); }
 #else
 #define check_index(index)
 #endif
-
+#ifndef NDEBUG
+#define check_empty() if (BaseList<T>::is_empty()) { throw typename BaseList<T>::empty_list_error("Cannot take the top from an empty ArrayList."); }
+#else
+#define check_empty()
+#endif
 
 namespace DataStructures {
 
@@ -30,7 +34,7 @@ namespace DataStructures {
 
     typedef std::out_of_range range_error;
 
-    explicit BaseList(index_type initial_size, const T& element);
+    explicit BaseList(index_type initial_size = 0, const T& element = T());
 
     BaseList(const BaseList<T>& other);
 
@@ -204,7 +208,7 @@ namespace DataStructures {
   {
     // TODO overflow is not dealt with!
     if (new_size > m_capacity) {
-      adjust_capacity(next_higher(new_size));
+      adjust_capacity(new_size);
       // Size has to be adjusted afterwards in order to ensure that all old values are copied but not more than that.
     } else if (m_is_shrinkable && new_size < m_capacity / CAPACITY_DECREASE_FACTOR && new_size < m_size) {
       // Size has to be adjusted before because the later data is lost anyway and copying could cause a segfault because

@@ -4,15 +4,18 @@
 #include "longinttest.h"
 #include "infiniterandomtest.h"
 #include "treaptest.h"
+#include "queuetest.h"
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv) {/*
+  LongIntTest long_int_test;
+  QTest::qExec(&long_int_test, argc, argv);*/
   ArrayListTest array_list_test;
   QTest::qExec(&array_list_test, argc, argv);
-  LongIntTest long_int_test;
-  QTest::qExec(&long_int_test, argc, argv);
   InfiniteRandomTest infinite_random_test;
   QTest::qExec(&infinite_random_test, argc, argv);
   TreapTest treap_test;
-  QTest::qExec(&treap_test);
+  QTest::qExec(&treap_test, argc, argv);
+  QueueTest queue_test;
+  QTest::qExec(&queue_test, argc, argv);
   return EXIT_SUCCESS;
 }

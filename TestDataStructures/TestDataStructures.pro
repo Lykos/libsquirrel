@@ -20,7 +20,8 @@ SOURCES += \
     arraylisttest.cpp \
     AllTests.cpp \
     infiniterandomtest.cpp \
-    treaptest.cpp
+    treaptest.cpp \
+    queuetest.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
@@ -32,4 +33,5 @@ HEADERS += \
     longinttest.h \
     arraylisttest.h \
     infiniterandomtest.h \
-    treaptest.h
+    treaptest.h \
+    queuetest.h
