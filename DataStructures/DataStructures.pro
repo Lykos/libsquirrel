@@ -14,7 +14,8 @@ DEFINES += DATASTRUCTURES_LIBRARY
 SOURCES += \
     longint.cpp \
     infiniterandom.cpp \
-    baselist.cpp
+    baselist.cpp \
+    avltree.cpp
 
 HEADERS +=\
     DataStructures_global.h \
@@ -30,7 +31,8 @@ HEADERS +=\
     listconstiterator.h \
     listiterator.h \
     baselist.h \
-    arraylist.h
+    arraylist.h \
+    avltree.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN
