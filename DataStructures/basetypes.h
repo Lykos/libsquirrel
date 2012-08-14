@@ -21,10 +21,19 @@ namespace DataStructures {
   class DATASTRUCTURESSHARED_EXPORT ArrayList;
 
   template <typename T>
-  class TreapIterator;
+  class DATASTRUCTURESSHARED_EXPORT Queue;
+
+  template <typename T, typename Node>
+  class BaseTree;
+
+  template <typename T, typename Node>
+  class TreeIterator;
+
+  template <typename T, typename Node>
+  class TreeConstIterator;
 
   template <typename T>
-  class TreapConstIterator;
+  class TreeNode;
 
   template <typename T>
   class TreapNode;

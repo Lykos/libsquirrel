@@ -1,24 +1,23 @@
-#ifndef TREAP_H
-#define TREAP_H
+#ifndef BINARYBASETREE_H
+#define BINARYBASETREE_H
 
 #include <sstream>
 #include "basetypes.h"
 #include "DataStructures_global.h"
-#include "treapnode.h"
 
 namespace DataStructures {
 
-  template <typename T>
-  std::ostream& operator<<(std::ostream& out, const Treap<T>& it);
+  template <typename T, typename Node>
+  std::ostream& operator<<(std::ostream& out, const BaseTree<T, Node>& it);
 
-  template <typename T>
-  class DATASTRUCTURESSHARED_EXPORT Treap
+  template <typename T, typename Node>
+  class BaseTree
   {
-    friend std::ostream& operator<< <> (std::ostream& out, const Treap<T>& it);
+    friend std::ostream& operator<< <> (std::ostream& out, const BaseTree<T, Node>& it);
   public:
-    typedef typename TreapNode<T>::const_iterator const_iterator;
+    typedef typename Node::const_iterator const_iterator;
 
-    typedef typename TreapNode<T>::iterator iterator;
+    typedef typename Node::iterator iterator;
 
   private:
     typedef typename const_iterator::ConstNodeInfo ConstNodeInfo;
@@ -28,29 +27,29 @@ namespace DataStructures {
   public:
     typedef std::out_of_range range_error;
 
-    Treap();
+    BaseTree();
 
-    Treap(const Treap& other);
+    BaseTree(const BaseTree<T, Node>& other);
 
-    template <typename BeginIterator, typename EndIterator>
-    Treap(BeginIterator begin, EndIterator end);
+    template <typename Begin, typename End>
+    BaseTree(Begin begin, End end);
 
-    virtual ~Treap();
+    virtual ~BaseTree();
 
-    Treap& operator=(const Treap& other);
+    BaseTree& operator=(const BaseTree<T, Node>& other);
 
-    bool operator==(const Treap& other) const;
+    bool operator==(const BaseTree<T, Node>& other) const;
 
-    bool operator!=(const Treap& other) const { return !operator==(other); }
+    inline bool operator!=(const BaseTree<T, Node>& other) const { return !operator==(other); }
 
     void clear();
 
-    void merge(const Treap<T>& other);
+    void merge(const BaseTree<T, Node>& other);
 
     void insert(const T& element);
 
-    template <typename BeginIterator, typename EndIterator>
-    void insert_all(const BeginIterator& begin, const EndIterator& end);
+    template <typename Begin, typename End>
+    void insert_all(const Begin& begin, const End& end);
 
     bool search(const T& element) const { return m_root == NULL ? false : m_root->search(element); }
 
@@ -84,43 +83,43 @@ namespace DataStructures {
 
     const_iterator end() const { return m_root == NULL ? const_iterator() : m_root->end(); }
 
-  private:
-    TreapNode<T>* m_root;
+  protected:
+    Node* m_root;
 
   };
 
-  template <typename T>
-  Treap<T>::Treap():
+  template <typename T, typename Node>
+  BaseTree<T, Node>::BaseTree():
     m_root (NULL)
   {
   }
 
-  template <typename T>
-  Treap<T>::Treap(const Treap<T>& other)
+  template <typename T, typename Node>
+  BaseTree<T, Node>::BaseTree(const BaseTree<T, Node>& other)
   {
     if (other.m_root == NULL) {
       m_root = NULL;
     } else {
-      m_root = new TreapNode<T>(*other.m_root);
+      m_root = new Node(*other.m_root);
     }
   }
 
-  template <typename T>
-  template <typename BeginIterator, typename EndIterator>
-  Treap<T>::Treap(BeginIterator begin, EndIterator End):
+  template <typename T, typename Node>
+  template <typename Begin, typename End>
+  BaseTree<T, Node>::BaseTree(Begin begin, End end):
     m_root (NULL)
   {
     insert_all(begin, end);
   }
 
-  template <typename T>
-  Treap<T>::~Treap()
+  template <typename T, typename Node>
+  BaseTree<T, Node>::~BaseTree()
   {
     delete m_root;
   }
 
-  template <typename T>
-  Treap<T>& Treap<T>::operator=(const Treap<T>& other)
+  template <typename T, typename Node>
+  BaseTree<T, Node>& BaseTree<T, Node>::operator=(const BaseTree<T, Node>& other)
   {
     if ((&other) == this) {
       return *this;
@@ -129,13 +128,13 @@ namespace DataStructures {
     if (other.m_root == NULL) {
       m_root = NULL;
     } else {
-      m_root = new TreapNode<T>(*other.m_root);
+      m_root = new Node(*other.m_root);
     }
     return *this;
   }
 
-  template <typename T>
-  bool Treap<T>::operator==(const Treap<T>& other) const
+  template <typename T, typename Node>
+  bool BaseTree<T, Node>::operator==(const BaseTree<T, Node>& other) const
   {
     if (size() != other.size()) {
       return false;
@@ -149,8 +148,8 @@ namespace DataStructures {
     return true;
   }
 
-  template <typename T>
-  void Treap<T>::clear()
+  template <typename T, typename Node>
+  void BaseTree<T, Node>::clear()
   {
     if (m_root != NULL) {
       delete m_root;
@@ -158,33 +157,33 @@ namespace DataStructures {
     }
   }
 
-  template <typename T>
-  void Treap<T>::merge(const Treap<T> &other)
+  template <typename T, typename Node>
+  void BaseTree<T, Node>::merge(const BaseTree<T, Node> &other)
   {
     insert_all(other.begin(), other.end());
   }
 
-  template <typename T>
-  void Treap<T>::insert(const T& element)
+  template <typename T, typename Node>
+  void BaseTree<T, Node>::insert(const T& element)
   {
     if (m_root == NULL) {
-      m_root = new TreapNode<T>(element);
+      m_root = new Node(element);
     } else {
       m_root->insert(&m_root, element);
     }
   }
 
-  template <typename T>
+  template <typename T, typename Node>
   template <typename BeginIterator, typename EndIterator>
-  void Treap<T>::insert_all(const BeginIterator& begin, const EndIterator& end)
+  void BaseTree<T, Node>::insert_all(const BeginIterator& begin, const EndIterator& end)
   {
     for (BeginIterator it = begin; it != end; ++it) {
       insert(*it);
     }
   }
 
-  template <typename T>
-  typename Treap<T>::iterator Treap<T>::lower_bound(const T &element)
+  template <typename T, typename Node>
+  typename BaseTree<T, Node>::iterator BaseTree<T, Node>::lower_bound(const T &element)
   {
     if (m_root == NULL) {
       return iterator();
@@ -194,8 +193,8 @@ namespace DataStructures {
     }
   }
 
-  template <typename T>
-  typename Treap<T>::const_iterator Treap<T>::lower_bound(const T &element) const
+  template <typename T, typename Node>
+  typename BaseTree<T, Node>::const_iterator BaseTree<T, Node>::lower_bound(const T &element) const
   {
     if (m_root == NULL) {
       return const_iterator();
@@ -205,8 +204,8 @@ namespace DataStructures {
     }
   }
 
-  template <typename T>
-  typename Treap<T>::iterator Treap<T>::upper_bound(const T &element)
+  template <typename T, typename Node>
+  typename BaseTree<T, Node>::iterator BaseTree<T, Node>::upper_bound(const T &element)
   {
     if (m_root == NULL) {
       return iterator();
@@ -216,8 +215,8 @@ namespace DataStructures {
     }
   }
 
-  template <typename T>
-  typename Treap<T>::const_iterator Treap<T>::upper_bound(const T &element) const
+  template <typename T, typename Node>
+  typename BaseTree<T, Node>::const_iterator BaseTree<T, Node>::upper_bound(const T &element) const
   {
     if (m_root == NULL) {
       return const_iterator();
@@ -227,8 +226,8 @@ namespace DataStructures {
     }
   }
 
-  template <typename T>
-  typename std::pair< typename Treap<T>::iterator, typename Treap<T>::iterator > Treap<T>::equal_range(const T &element)
+  template <typename T, typename Node>
+  typename std::pair< typename BaseTree<T, Node>::iterator, typename BaseTree<T, Node>::iterator > BaseTree<T, Node>::equal_range(const T &element)
   {
     if (m_root == NULL) {
       return make_pair(iterator(), iterator());
@@ -238,8 +237,8 @@ namespace DataStructures {
     }
   }
 
-  template <typename T>
-  typename std::pair< typename Treap<T>::const_iterator, typename Treap<T>::const_iterator > Treap<T>::equal_range(const T &element) const
+  template <typename T, typename Node>
+  typename std::pair< typename BaseTree<T, Node>::const_iterator, typename BaseTree<T, Node>::const_iterator > BaseTree<T, Node>::equal_range(const T &element) const
   {
     if (m_root == NULL) {
       return make_pair(const_iterator(), const_iterator());
@@ -249,8 +248,8 @@ namespace DataStructures {
     }
   }
 
-  template <typename T>
-  bool Treap<T>::remove(const T& element)
+  template <typename T, typename Node>
+  bool BaseTree<T, Node>::remove(const T& element)
   {
     if (m_root == NULL) {
       return false;
@@ -259,8 +258,8 @@ namespace DataStructures {
     }
   }
 
-  template <typename T>
-  index_type Treap<T>::remove_all(const T& element)
+  template <typename T, typename Node>
+  index_type BaseTree<T, Node>::remove_all(const T& element)
   {
     if (m_root == NULL) {
       return 0;
@@ -269,34 +268,34 @@ namespace DataStructures {
     }
   }
 
-  template <typename T>
-  T& Treap<T>::operator[](index_type index)
+  template <typename T, typename Node>
+  T& BaseTree<T, Node>::operator[](index_type index)
   {
     if (index >= size()) {
       std::ostringstream oss;
-      oss << "Invalid index " << index << " for treap of size " << size() << ".";
+      oss << "Invalid index " << index << " for BaseTree of size " << size() << ".";
       throw range_error(oss.str());
     }
     return m_root->operator[](index);
   }
 
-  template <typename T>
-  const T& Treap<T>::operator[](index_type index) const
+  template <typename T, typename Node>
+  const T& BaseTree<T, Node>::operator[](index_type index) const
   {
     if (index >= size()) {
       std::ostringstream oss;
-      oss << "Invalid index " << index << " for treap of size " << size() << ".";
+      oss << "Invalid index " << index << " for BaseTree of size " << size() << ".";
       throw range_error(oss.str());
     }
     return m_root->operator[](index);
   }
 
-  template <typename T>
-  std::ostream& operator<<(std::ostream& out, const Treap<T>& treap)
+  template <typename T, typename Node>
+  std::ostream& operator<<(std::ostream& out, const BaseTree<T, Node>& BaseTree)
   {
-    out << "Treap[";
-    if (treap.m_root != NULL) {
-      out << *(treap.m_root);
+    out << "BaseTree[";
+    if (BaseTree.m_root != NULL) {
+      out << *(BaseTree.m_root);
     }
     out << "]";
     return out;
@@ -304,4 +303,4 @@ namespace DataStructures {
 
 }
 
-#endif // TREAP_H
+#endif // BINARYBASETREE_H

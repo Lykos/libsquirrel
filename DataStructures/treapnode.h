@@ -2,8 +2,7 @@
 #define TREAPNODE_H
 
 #include "infiniterandom.h"
-#include "treapiterator.h"
-#include "treapconstiterator.h"
+#include "treenode.h"
 #include <iostream>
 
 #define LEFT 0
@@ -16,7 +15,7 @@ namespace DataStructures {
   std::ostream& operator<<(std::ostream& out, const TreapNode<T>& it);
 
   template <typename T>
-  class TreapNode
+  class TreapNode : public TreeNode<T>
   {
     friend std::ostream& operator<< <> (std::ostream& out, const TreapNode<T>& it);
   public:
@@ -38,47 +37,7 @@ namespace DataStructures {
 
     void insert(NodePointer *incoming_pointer_address, const T& element);
 
-    bool search(const T& element) const;
-
-    iterator lower_bound(ArrayList<NodeInfo>& parent_stack, const T& element, index_type left_part);
-
-    iterator upper_bound(ArrayList<NodeInfo>& parent_stack,const T& element, index_type left_part);
-
-    std::pair< iterator, iterator > equal_range(ArrayList<NodeInfo>& parent_stack,const T& element, index_type left_part);
-
-    T& operator[](index_type index);
-
-    const_iterator lower_bound(ArrayList<ConstNodeInfo>& parent_stack,const T& element, index_type left_part) const;
-
-    const_iterator upper_bound(ArrayList<ConstNodeInfo>& parent_stack,const T& element, index_type left_part) const;
-
-    std::pair< const_iterator, const_iterator > equal_range(ArrayList<ConstNodeInfo>& parent_stack, const T& element, index_type left_part) const;
-
-    const T& operator[](index_type index) const;
-
-    index_type remove_all(NodePointer *incoming_pointer_address, const T& element);
-
     bool remove(NodePointer *incoming_pointer_address, const T& element);
-
-    inline T& get_element() { return m_element; }
-
-    inline const T& get_element() const { return m_element; }
-
-    inline index_type size() const { return m_size; }
-
-    iterator iterator_at(ArrayList<NodeInfo>& parent_stack, index_type index, index_type left_part);
-
-    const_iterator iterator_at(ArrayList<ConstNodeInfo>& parent_stack, index_type index, index_type left_part) const;
-
-    iterator begin();
-
-    iterator end();
-
-    const_iterator begin() const;
-
-    const_iterator end() const;
-
-    ~TreapNode();
   private:
 
     typedef index_type direction;

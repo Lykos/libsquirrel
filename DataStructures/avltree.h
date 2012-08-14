@@ -6,7 +6,7 @@ namespace DataStructures {
   class AVLTree
   {
   public:
-    AVLTree(int bla);
+    AVLTree();
   };
   
 }

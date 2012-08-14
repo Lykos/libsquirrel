@@ -1,6 +1,7 @@
 #ifndef DATASTRUCTURES_QUEUE_H
 #define DATASTRUCTURES_QUEUE_H
 
+#include "DataStructures_global.h"
 #include "baselist.h"
 #include "listiterator.h"
 #include "listconstiterator.h"
@@ -11,7 +12,7 @@ namespace DataStructures {
   std::ostream& operator<<(std::ostream& out, const ArrayList<T>& it);
 
   template <typename T>
-  class Queue : public BaseList<T>
+  class DATASTRUCTURESSHARED_EXPORT Queue : public BaseList<T>
   {
     friend std::ostream& operator<< <> (std::ostream& out, const ArrayList<T>& it);
   public:
