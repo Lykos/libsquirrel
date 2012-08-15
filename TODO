@@ -6,3 +6,5 @@ tom cook
 schnhage strassen
 C style malloc realloc free (destructor without constructor, copy without complications)
 constraints for templates
+Leave choices for comparing to user
+template for "this class"
