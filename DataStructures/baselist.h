@@ -182,6 +182,9 @@ namespace DataStructures {
     } else if (m_is_shrinkable && new_size < m_capacity / CAPACITY_DECREASE_FACTOR && new_size < m_size) {
       // Size has to be adjusted before because the later data is lost anyway and copying could cause a segfault because
       // there is not enough space in the new array.
+      for (index_type i = new_size; i < m_size; ++i) {
+        delete &m_content[i];
+      }
       m_size = new_size;
       adjust_capacity(new_size);
     }
@@ -189,30 +192,11 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline void BaseList<T>::init_capacity(index_type initial_capacity)
-  {
-    m_capacity = std::max(next_higher(initial_capacity), m_min_capacity);
-    m_content = new T[m_capacity];
-  }
-
-  template <typename T>
   void BaseList<T>::adjust_capacity(index_type new_capacity)
   {
-    new_capacity = std::max(next_higher(new_capacity), m_min_capacity);
     assert(new_capacity >= m_size);
-    if (m_capacity != new_capacity) {
-      m_capacity = new_capacity;
-      T* old_content = m_content;
-      m_content = new T[m_capacity];
-      copy_old_content(old_content);
-      delete[] old_content;
-    }
-  }
-
-  template <typename T>
-  void BaseList<T>::copy_old_content(const T* old_content)
-  {
-    add_content(old_content, 0, m_size);
+    m_capacity = std::max(next_higher(new_capacity), m_min_capacity);
+    m_content = static_cast<T*>(realloc(m_content, m_capacity * sizeof(T)));
   }
 
   template <typename TargetBegin, typename TargetEnd, typename SourceBegin, typename SourceEnd>
