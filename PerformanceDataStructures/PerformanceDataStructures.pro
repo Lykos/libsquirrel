@@ -18,8 +18,8 @@ TEMPLATE = app
 SOURCES += \
     performanceresult.cpp \
     performancetest.cpp \
-    longinttest.cpp \
-    AllPerformanceTests.cpp
+    AllPerformanceTests.cpp \
+    longinttest.cpp
 
 unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
 

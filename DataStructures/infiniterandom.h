@@ -9,14 +9,28 @@ namespace DataStructures {
   {
   public:
     InfiniteRandom();
-    typedef unsigned int part_type;
+
+    InfiniteRandom(const InfiniteRandom& other);
+
+    typedef unsigned long long int part_type;
+
+    part_type part_at(index_type index) const;
+
     int compareTo(const InfiniteRandom& other) const;
-    bool operator<(const InfiniteRandom& other) const;
-    bool operator<=(const InfiniteRandom& other) const;
-    bool operator==(const InfiniteRandom& other) const;
-    bool operator>=(const InfiniteRandom& other) const;
-    bool operator>(const InfiniteRandom& other) const;
-    bool operator!=(const InfiniteRandom& other) const;
+
+    InfiniteRandom& operator=(const InfiniteRandom& other);
+
+    bool operator<(const InfiniteRandom& other) const { return compareTo(other) == -1; }
+
+    bool operator<=(const InfiniteRandom& other) const { return compareTo(other) != 1; }
+
+    bool operator==(const InfiniteRandom& other) const { return compareTo(other) == 0; }
+
+    bool operator>=(const InfiniteRandom& other) const { return compareTo(other) != -1; }
+
+    bool operator>(const InfiniteRandom& other) const { return compareTo(other) == 1; }
+
+    bool operator!=(const InfiniteRandom& other) const { return compareTo(other) != 0; }
 
   private:
     mutable ArrayList<part_type> m_randomness;

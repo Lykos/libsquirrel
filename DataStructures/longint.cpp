@@ -63,37 +63,45 @@ namespace DataStructures {
     m_content.push(0);
   }
 
-  LongInt::LongInt(long long int initial): m_positive (initial >= 0)
+  LongInt::LongInt(long long int initial):
+    m_positive (initial >= 0)
   {
     m_content.push(m_positive ? initial : -initial);
   }
 
-  LongInt::LongInt(unsigned long long int initial): m_positive (true)
+  LongInt::LongInt(unsigned long long int initial):
+    m_positive (true)
   {
     m_content.push(initial);
   }
 
-  LongInt::LongInt(long int initial): m_positive (initial >= 0)
+  LongInt::LongInt(long int initial):
+    m_positive (initial >= 0)
   {
     m_content.push(m_positive ? initial : -initial);
   }
 
-  LongInt::LongInt(unsigned long int initial): m_positive (true)
+  LongInt::LongInt(unsigned long int initial):
+    m_positive (true)
   {
     m_content.push(initial);
   }
 
-  LongInt::LongInt(int initial): m_positive (initial >= 0)
+  LongInt::LongInt(int initial):
+    m_positive (initial >= 0)
   {
     m_content.push(m_positive ? initial : -initial);
   }
 
-  LongInt::LongInt(unsigned int initial): m_positive (true)
+  LongInt::LongInt(unsigned int initial):
+    m_positive (true)
   {
     m_content.push(initial);
   }
 
-  LongInt::LongInt(const LongInt& other): m_positive (other.m_positive), m_content (other.m_content)
+  LongInt::LongInt(const LongInt& other):
+    m_positive (other.m_positive),
+    m_content (other.m_content)
   {
   }
 
@@ -270,36 +278,6 @@ namespace DataStructures {
         return -uCompareTo(other);
       }
     }
-  }
-
-  bool LongInt::operator<(const LongInt& other) const
-  {
-    return compareTo(other) == -1;
-  }
-
-  bool LongInt::operator<=(const LongInt& other) const
-  {
-    return compareTo(other) != 1;
-  }
-
-  bool LongInt::operator==(const LongInt& other) const
-  {
-    return compareTo(other) == 0;
-  }
-
-  bool LongInt::operator>=(const LongInt& other) const
-  {
-    return compareTo(other) != -1;
-  }
-
-  bool LongInt::operator>(const LongInt& other) const
-  {
-    return compareTo(other) == 1;
-  }
-
-  bool LongInt::operator!=(const LongInt& other) const
-  {
-    return compareTo(other) != 0;
   }
 
   LongInt& LongInt::operator=(const LongInt& other)
@@ -536,7 +514,12 @@ namespace DataStructures {
       }
     }
     if (part_shift > 0) {
-      m_content = ArrayList<part_type> (m_content.begin() + part_shift, m_content.end());
+      for (ArrayList<part_type>::iterator it = m_content.begin(); it < m_content.end() - part_shift; ++it) {
+        *it = it[part_shift];
+      }
+      for (index_type i = 0; i < part_shift; ++i) {
+        m_content.pop();
+      }
     }
     if (extra_bit) {
       operator--();
@@ -688,15 +671,6 @@ namespace DataStructures {
       throw std::logic_error("*this and modulus are not relatively prime, hence no multiplicative inverse exists.");
     }
     return u_old;
-  }
-
-  LongInt::LongInt(ArrayList<part_type>::const_iterator part_begin, ArrayList<part_type>::const_iterator part_end):
-    m_positive (true),
-    m_content (part_begin, part_end)
-  {
-    if (m_content.is_empty()) {
-      m_content.push(0);
-    }
   }
 
   index_type inline LongInt::size() const
