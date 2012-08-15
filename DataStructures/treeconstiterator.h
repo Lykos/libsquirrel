@@ -35,8 +35,8 @@ namespace DataStructures {
     typedef typename TreeIterator<T>::NodeInfo NodeInfo;
     ArrayList<ConstNodeInfo> m_parent_stack;
     inline void local_search();
-    inline const TreeNode<T>& node() const { return *m_parent_stack.top().node; }
-    inline index_type left_part() const { return m_parent_stack.top().left_part; }
+    inline const TreeNode<T>& node() const { return *m_parent_stack.back().node; }
+    inline index_type left_part() const { return m_parent_stack.back().left_part; }
   };
 
   template <typename T>
@@ -154,7 +154,7 @@ namespace DataStructures {
   template <typename T>
   const T& TreeConstIterator<T>::operator*()
   {
-    return m_parent_stack.top().node->get_element();
+    return m_parent_stack.back().node->get_element();
   }
 
   template <typename T>

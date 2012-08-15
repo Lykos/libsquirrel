@@ -44,18 +44,11 @@ namespace DataStructures {
     template <typename BeginIterator, typename EndIterator>
     BaseList(const BeginIterator& begin, const EndIterator& end);*/
 
-    template <typename BeginIterator, typename EndIterator>
-    void push_all(const BeginIterator& begin, const EndIterator& end);
-
     virtual ~BaseList();
 
     inline index_type size() const { return m_size; }
 
     inline bool is_empty() const { return m_size == 0; }
-
-    virtual const T& operator[](index_type i) const = 0;
-
-    virtual T& operator[](index_type i) = 0;
 
     inline void clear() { prepare_size(0); }
 
@@ -69,7 +62,7 @@ namespace DataStructures {
 
     inline bool is_shrinkable() const { return m_is_shrinkable; }
 
-    void prepare_size(index_type new_size);
+    inline void prepare_size(index_type new_size);
 
   protected:
     static const index_type CAPACITY_DECREASE_FACTOR;
@@ -135,16 +128,6 @@ namespace DataStructures {
     }
   }
 */
-  template <typename T>
-  template <typename BeginIterator, typename EndIterator>
-  void BaseList<T>::push_all(const BeginIterator& begin, const EndIterator& end)
-  {
-    index_type i = m_size;
-    prepare_size(m_size + (end - begin));
-    for (BeginIterator it = begin; it != end; ++it) {
-      m_content[i++] = *it;
-    }
-  }
 
   template <typename T>
   BaseList<T>::BaseList(const BaseList<T>& other):
@@ -170,20 +153,6 @@ namespace DataStructures {
     prepare_size(other.m_size);
     add_content(other.m_content, 0, other.m_size);
     return *this;
-  }
-
-  template <typename T>
-  const T& BaseList<T>::operator[](index_type i) const
-  {
-    check_index(i);
-    return m_content[i];
-  }
-
-  template <typename T>
-  T& BaseList<T>::operator[](index_type i)
-  {
-    check_index(i);
-    return m_content[i];
   }
 
   template <typename T>

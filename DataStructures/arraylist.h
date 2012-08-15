@@ -26,8 +26,8 @@ namespace DataStructures {
 
     ArrayList(const ArrayList<T>& other);
 /*
-    template <typename BeginIterator, typename EndIterator>
-    ArrayList(const BeginIterator& begin, const EndIterator& end);*/
+    template <typename Begin, typename End>
+    ArrayList(const Begin& begin, const End& end);*/
 
     template <typename BeginIterator, typename EndIterator>
     void push_all(const BeginIterator& begin, const EndIterator& end);
@@ -52,9 +52,13 @@ namespace DataStructures {
 
     T pop();
 
-    const T& top() const { check_empty(); return BaseList<T>::m_content[BaseList<T>::m_size - 1]; }
+    const T& front() const { check_empty(); return BaseList<T>::m_content[0]; }
 
-    T& top() { check_empty(); return BaseList<T>::m_content[BaseList<T>::m_size - 1]; }
+    T& front() { check_empty(); return BaseList<T>::m_content[0]; }
+
+    const T& back() const { check_empty(); return BaseList<T>::m_content[BaseList<T>::m_size - 1]; }
+
+    T& back() { check_empty(); return BaseList<T>::m_content[BaseList<T>::m_size - 1]; }
 
     inline iterator begin() { return iterator(this, 0); }
 
@@ -88,14 +92,14 @@ namespace DataStructures {
 
 /*
   template <typename T>
-  template <typename BeginIterator, typename EndIterator>
-  ArrayList<T>::ArrayList(const BeginIterator& begin, const EndIterator& end):
+  template <typename Begin, typename End>
+  ArrayList<T>::ArrayList(const Begin& begin, const End& end):
     m_size(end - begin),
     m_min_capacity(DEFAULT_MIN_CAPACITY)
   {
     init_capacity(end - begin);
     index_type i = 0;
-    for (BeginIterator it = begin; it < end; ++it) {
+    for (Begin it = begin; it < end; ++it) {
       m_content[i++] = *it;
     }
   }

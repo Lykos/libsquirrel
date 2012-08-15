@@ -39,9 +39,13 @@ namespace DataStructures {
 
     T pop();
 
-    const T& top() const { check_empty(); return BaseList<T>::m_content[m_begin]; }
+    const T& front() const { check_empty(); return BaseList<T>::m_content[m_begin]; }
 
-    T& top() { check_empty(); return BaseList<T>::m_content[m_begin]; }
+    T& front() { check_empty(); return BaseList<T>::m_content[m_begin]; }
+
+    const T& back() const { check_empty(); return operator[](BaseList<T>::m_size - 1); }
+
+    T& back() { check_empty(); return operator[](BaseList<T>::m_size - 1); }
 
     inline iterator begin() { return iterator(this, 0); }
 

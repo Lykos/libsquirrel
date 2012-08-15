@@ -5,6 +5,7 @@
 #include "infiniterandomtest.h"
 #include "treaptest.h"
 #include "queuetest.h"
+#include "heaptest.h"
 
 int main(int argc, char** argv) {/*
   LongIntTest long_int_test;
@@ -17,5 +18,7 @@ int main(int argc, char** argv) {/*
   QTest::qExec(&treap_test, argc, argv);
   QueueTest queue_test;
   QTest::qExec(&queue_test, argc, argv);
+  HeapTest heap_test;
+  QTest::qExec(&heap_test, argc, argv);
   return EXIT_SUCCESS;
 }

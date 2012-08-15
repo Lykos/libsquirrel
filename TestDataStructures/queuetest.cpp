@@ -135,12 +135,12 @@ void QueueTest::test_pop() {
 
 void QueueTest::test_top() {
   for (int n = 0; n < 20; ++n) {
-    QCOMPARE(m_queue.top(), n);
+    QCOMPARE(m_queue.front(), n);
     m_queue.pop();
   }
   int a = 29;
   try {
-    a = m_queue.top();
+    a = m_queue.front();
     QFAIL("Popping from an empty m_queue didn't cause an exception.");
   } catch (Queue<int>::empty_list_error e) {}
   QCOMPARE(a, 29);

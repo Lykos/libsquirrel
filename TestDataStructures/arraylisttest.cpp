@@ -220,12 +220,12 @@ void ArrayListTest::test_pop() {
 
 void ArrayListTest::test_top() {
   for (int n = 19; n >= 0; --n) {
-    QCOMPARE(list.top(), n);
+    QCOMPARE(list.back(), n);
     list.pop();
   }
   int a = 29;
   try {
-    a = list.top();
+    a = list.back();
     QFAIL("Popping from an empty list didn't cause an exception.");
   } catch (ArrayList<int>::empty_list_error e) {}
   QCOMPARE(a, 29);
