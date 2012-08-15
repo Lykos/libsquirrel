@@ -2,6 +2,7 @@
 #define BINARYBASETREE_H
 
 #include <sstream>
+#include <stdexcept>
 #include "basetypes.h"
 #include "DataStructures_global.h"
 
@@ -23,6 +24,8 @@ namespace DataStructures {
     typedef typename const_iterator::ConstNodeInfo ConstNodeInfo;
 
     typedef typename iterator::NodeInfo NodeInfo;
+
+    typedef typename TreeNode<T>::NodePointer NodePointer;
 
   public:
     typedef std::out_of_range range_error;
@@ -84,7 +87,7 @@ namespace DataStructures {
     const_iterator end() const { return m_root == NULL ? const_iterator() : m_root->end(); }
 
   protected:
-    Node* m_root;
+    TreeNode<T>* m_root;
 
   };
 
@@ -100,7 +103,7 @@ namespace DataStructures {
     if (other.m_root == NULL) {
       m_root = NULL;
     } else {
-      m_root = new Node(*other.m_root);
+      m_root = new Node(static_cast<const Node&>(*other.m_root));
     }
   }
 
@@ -128,7 +131,7 @@ namespace DataStructures {
     if (other.m_root == NULL) {
       m_root = NULL;
     } else {
-      m_root = new Node(*other.m_root);
+      m_root = new Node(static_cast<const Node&>(*other.m_root));
     }
     return *this;
   }
@@ -169,7 +172,7 @@ namespace DataStructures {
     if (m_root == NULL) {
       m_root = new Node(element);
     } else {
-      m_root->insert(&m_root, element);
+      m_root = m_root->insert(element);
     }
   }
 
@@ -254,7 +257,9 @@ namespace DataStructures {
     if (m_root == NULL) {
       return false;
     } else {
-      return m_root->remove(&m_root, element);
+      std::pair<NodePointer, bool> result = m_root->remove(element);
+      m_root = result.first;
+      return result.second;
     }
   }
 
@@ -264,7 +269,9 @@ namespace DataStructures {
     if (m_root == NULL) {
       return 0;
     } else {
-      return m_root->remove_all(&m_root, element);
+      std::pair<NodePointer, index_type> result = m_root->remove_all(element);
+      m_root = result.first;
+      return result.second;
     }
   }
 

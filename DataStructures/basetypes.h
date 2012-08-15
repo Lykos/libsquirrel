@@ -26,10 +26,10 @@ namespace DataStructures {
   template <typename T, typename Node>
   class BaseTree;
 
-  template <typename T, typename Node>
+  template <typename T>
   class TreeIterator;
 
-  template <typename T, typename Node>
+  template <typename T>
   class TreeConstIterator;
 
   template <typename T>
