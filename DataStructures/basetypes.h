@@ -5,8 +5,8 @@
 
 namespace DataStructures {
 
-  typedef unsigned long long int index_type;
-  typedef long long int difference_type;
+  typedef u_int64_t index_type;
+  typedef int64_t difference_type;
 
   template <typename T>
   class BaseList;

@@ -12,7 +12,7 @@ namespace DataStructures {
 
     InfiniteRandom(const InfiniteRandom& other);
 
-    typedef unsigned long long int part_type;
+    typedef u_int64_t part_type;
 
     part_type part_at(index_type index) const;
 
