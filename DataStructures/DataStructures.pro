@@ -29,7 +29,6 @@ HEADERS +=\
     listiterator.h \
     baselist.h \
     arraylist.h \
-    avltree.h \
     basetree.h \
     treenode.h \
     treeiterator.h \
