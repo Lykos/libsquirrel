@@ -25,5 +25,7 @@ HEADERS += \
 
 unix:!macx:!symbian: LIBS += -L$$PWD/../Crypto-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lCrypto
 
-INCLUDEPATH += $$PWD/../Crypto-build-desktop-Qt_4_8_0_in_Pfad__System__Debug
-DEPENDPATH += $$PWD/../Crypto-build-desktop-Qt_4_8_0_in_Pfad__System__Debug
+INCLUDEPATH += $$PWD/../Crypto \
+    $$PWD/../DataStructures
+DEPENDPATH += $$PWD/../Crypto \
+    $$PWD/../DataStructures

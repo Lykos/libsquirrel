@@ -721,6 +721,15 @@ namespace DataStructures {
     return a;
   }
 
+  LongInt rand(const LongInt& max)
+  {
+    LongInt result (0);
+    while (max > RAND_MAX) {
+      result *= RAND_MAX;
+      result += rand();
+    }
+  }
+
   LongInt::part_type inline complement_keep(bool positive, LongInt::part_type part, bool& keep)
   {
     if (positive) {
