@@ -9,7 +9,7 @@ namespace Crypto {
 
     typedef DataStructures::LongInt number_t;
 
-    typedef DataStructures::index_type exponent_t;
+    typedef DataStructures::LongInt exponent_t;
 
     typedef number_t plain_text_t;
 

@@ -102,6 +102,8 @@ namespace DataStructures {
 
   index_type next_lower(index_type k);
 
+  index_type log2(index_type k);
+
   template <typename TargetBegin, typename TargetEnd, typename SourceBegin, typename SourceEnd>
   void copy(const TargetBegin& target_begin,
             const TargetEnd& target_end,

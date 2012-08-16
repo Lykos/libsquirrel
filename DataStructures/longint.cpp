@@ -215,7 +215,7 @@ namespace DataStructures {
     return result.pow_eq(exponent);
   }
 
-  LongInt LongInt::pow_mod(index_type exponent, const LongInt& modulus) const
+  LongInt LongInt::pow_mod(const LongInt& exponent, const LongInt& modulus) const
   {
     LongInt result(*this);
     return result.pow_mod_eq(exponent, modulus);
@@ -544,13 +544,14 @@ namespace DataStructures {
     return operator=(result);
   }
 
-  LongInt& LongInt::pow_mod_eq(index_type exponent, const LongInt& modulus)
+  LongInt& LongInt::pow_mod_eq(const LongInt& exponent, const LongInt& modulus)
   {
+    assert(exponent >= 0);
     LongInt result (one);
     unsigned int j = sizeof(index_type) * CHAR_BIT;
     for (unsigned int j2 = 0; j2 < sizeof(index_type) * CHAR_BIT; ++j2) {
       --j;
-      if ((exponent >> j) & 1) {
+      if (((exponent >> j) & 1) == 1) {
         result *= *this;
       }
       if (j > 0) {
@@ -673,11 +674,6 @@ namespace DataStructures {
     return u_old;
   }
 
-  index_type inline LongInt::size() const
-  {
-    return m_content.size();
-  }
-
   int inline LongInt::uCompareTo(const LongInt& other) const
   {
     index_type max_index = std::max(size(), other.size());
@@ -721,13 +717,33 @@ namespace DataStructures {
     return a;
   }
 
-  LongInt rand(const LongInt& max)
+  index_type log2(const LongInt& number)
   {
+    return (number.size() - 1) * LongInt::PART_SIZE + log2(number.m_content[number.size() - 1]);
+  }
+
+  LongInt rand_bits(index_type number_bits)
+  {
+    static const index_type RAND_BITS = log2((index_type) RAND_MAX + 1);
+    // static_assert((1 << RAND_BITS) == RAND_MAX + 1);
     LongInt result (0);
-    while (max > RAND_MAX) {
-      result *= RAND_MAX;
+    while (number_bits > RAND_BITS) {
+      result <<= RAND_BITS;
       result += rand();
+      number_bits -= RAND_BITS;
     }
+    result += rand() % (2 << number_bits);
+    return result;
+  }
+
+  LongInt rand_number(const LongInt& max_number)
+  {
+    LongInt result;
+    index_type bits = log2(max_number);
+    do {
+      result = rand_bits(bits);
+    } while (result >= max_number);
+    return result;
   }
 
   LongInt::part_type inline complement_keep(bool positive, LongInt::part_type part, bool& keep)

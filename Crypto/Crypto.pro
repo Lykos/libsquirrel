@@ -16,7 +16,8 @@ SOURCES += \
     rsa_directstrategy.cpp \
     rsa_keygenerator.cpp \
     rsa_pqstrategy.cpp \
-    rsa_encrypter.cpp
+    rsa_encrypter.cpp \
+    primetester.cpp
 
 HEADERS +=\
         Crypto_global.h \
@@ -29,7 +30,9 @@ HEADERS +=\
     rsa_encrypter.h \
     rsa_keygenerator.h \
     rsa_pqstrategy.h \
-    rsa_types.h
+    rsa_types.h \
+    primetester.h \
+    keyreader.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

@@ -13,11 +13,15 @@ namespace DataStructures {
 
   std::istream& operator>>(std::istream& in, const LongInt& longInt);
 
+  inline index_type log2(const LongInt& number);
+
   class DATASTRUCTURESSHARED_EXPORT LongInt
   {
     friend std::ostream& operator<<(std::ostream& out, const LongInt& longInt);
 
     friend std::istream& operator>>(std::istream& in, const LongInt& longInt);
+
+    friend index_type log2(const LongInt& number);
 
   public:
     typedef u_int64_t part_type;
@@ -62,7 +66,7 @@ namespace DataStructures {
 
     LongInt pow(index_type exponent) const;
 
-    LongInt pow_mod(index_type exponent, const LongInt& modulus) const;
+    LongInt pow_mod(const LongInt& exponent, const LongInt& modulus) const;
 
     LongInt operator|(const LongInt& other) const;
 
@@ -110,7 +114,7 @@ namespace DataStructures {
 
     LongInt& pow_eq(index_type exponent);
 
-    LongInt& pow_mod_eq(index_type exponent, const LongInt& modulus);
+    LongInt& pow_mod_eq(const LongInt& exponent, const LongInt& modulus);
 
     LongInt& operator|=(const LongInt& other);
 
@@ -151,7 +155,9 @@ namespace DataStructures {
 
   LongInt gcd(const LongInt& first, const LongInt& second);
 
-  LongInt rand(const LongInt& max);
+  LongInt rand_bits(index_type number_bits);
+
+  LongInt rand_number(const LongInt& max_number);
 
   LongInt::part_type inline complement_keep(bool positive, LongInt::part_type part, bool& keep);
 

@@ -11,4 +11,9 @@ template for "this class"
 yaml for C++ for keys etc
 Elgamal / RSA signing
 Better Random stuff
-
+Prime testing
+encapsulation for BaseList<T>
+Performance testing with QBenchmark
+divide fixed and random tests, repair % and / tests
+conversions from LongInt to int types
+conversions from double to LongInt etc
