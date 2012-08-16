@@ -47,7 +47,7 @@ namespace DataStructures {
 
   private:
 
-    inline const TreapNodePointer child(direction dir) const { return static_cast<const TreapNodePointer>(TreeNode<T>::m_children[dir]); }
+    inline const TreapNodePointer& child(direction dir) const { return static_cast<const TreapNodePointer>(TreeNode<T>::m_children[dir]); }
 
     inline TreapNodePointer child(direction dir) { return static_cast<TreapNodePointer>(TreeNode<T>::m_children[dir]); }
 

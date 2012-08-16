@@ -9,6 +9,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <cassert>
+#include <cstring>
 
 #include "basetypes.h"
 #ifndef NDEBUG
@@ -34,23 +35,27 @@ namespace DataStructures {
 
     typedef std::out_of_range range_error;
 
-    explicit BaseList(index_type initial_size = 0, const T& element = T());
+    typedef T value_t;
 
-    BaseList(const BaseList<T>& other);
+    explicit inline BaseList(index_type initial_size = 0, const T& element = T());
 
-    virtual BaseList<T>& operator=(const BaseList<T>& other);
+    inline BaseList(const BaseList<T>& other);
+
+    inline virtual BaseList<T>& operator=(const BaseList<T>& other);
+
+    inline virtual void reorganize() {}
 
 /*
     template <typename BeginIterator, typename EndIterator>
     BaseList(const BeginIterator& begin, const EndIterator& end);*/
 
-    virtual ~BaseList();
+    inline virtual ~BaseList();
 
     inline index_type size() const { return m_size; }
 
     inline bool is_empty() const { return m_size == 0; }
 
-    inline void clear() { prepare_size(0); }
+    inline virtual void clear() { destroy_segment(0, m_size); prepare_size(0); }
 
     inline index_type get_min_capacity() const { return m_min_capacity; }
 
@@ -77,13 +82,19 @@ namespace DataStructures {
 
     bool m_is_shrinkable;
 
-    virtual void copy_old_content(const T* old_content);
-
     inline void add_content(const T * content, index_type insert_position, index_type length);
+
+    inline void move_part(index_type insert_position, index_type start, index_type length);
+
+    inline void swap_parts(index_type start1, index_type start2, index_type length);
 
     inline void init_capacity(index_type initial_capacity);
 
     inline void adjust_capacity(index_type new_capacity);
+
+    inline void destroy(index_type index) { m_content[index].~T(); }
+
+    inline void destroy_segment(index_type begin, index_type length) { for (index_type i = begin; i < begin + length; ++i) destroy(i); }
 
   };
 
@@ -105,11 +116,12 @@ namespace DataStructures {
 
   template <typename T>
   BaseList<T>::BaseList(index_type initial_size, const T& element):
+    m_content (NULL),
     m_size (initial_size),
     m_min_capacity (DEFAULT_MIN_CAPACITY),
     m_is_shrinkable (false)
   {
-    init_capacity(initial_size);
+    adjust_capacity(initial_size);
     for (index_type i = 0; i < size(); ++i) {
       m_content[i] = element;
     }
@@ -131,10 +143,11 @@ namespace DataStructures {
 
   template <typename T>
   BaseList<T>::BaseList(const BaseList<T>& other):
-    m_size(other.m_size),
-    m_min_capacity(other.m_min_capacity)
+    m_content (NULL),
+    m_size (other.m_size),
+    m_min_capacity (other.m_min_capacity)
   {
-    init_capacity(other.m_size);
+    adjust_capacity(other.m_size);
     add_content(other.m_content, 0, other.m_size);
   }
 
@@ -145,7 +158,7 @@ namespace DataStructures {
   }
 
   template <typename T>
-  BaseList<T>& BaseList<T>::operator=(const BaseList<T>& other)
+  inline BaseList<T>& BaseList<T>::operator=(const BaseList<T>& other)
   {
     if (this == &other) {
       return *this;
@@ -156,7 +169,7 @@ namespace DataStructures {
   }
 
   template <typename T>
-  void BaseList<T>::set_min_capacity(index_type min_capacity)
+  inline void BaseList<T>::set_min_capacity(index_type min_capacity)
   {
     m_min_capacity = min_capacity;
     if (m_capacity < m_min_capacity) {
@@ -173,18 +186,34 @@ namespace DataStructures {
   }
 
   template <typename T>
+  inline void BaseList<T>::move_part(index_type insert_position, index_type start, index_type length)
+  {
+    assert(insert_position < m_capacity);
+    assert(start < m_capacity);
+    assert(insert_position + length <= m_capacity);
+    assert(start + length <= m_capacity);
+    memmove(m_content + insert_position, m_content + start, length);
+  }
+
+  template <typename T>
+  inline void BaseList<T>::swap_parts(index_type start1, index_type start2, index_type length)
+  {
+    assert((start1 <= start2 && start1 + length <= start2) || (start2 <= start1 && start2 + length <= start1));
+    std::swap_ranges(m_content + start1, m_content + start1 + length, m_content + start2);
+  }
+
+  template <typename T>
   inline void BaseList<T>::prepare_size(index_type new_size)
   {
     // TODO overflow is not dealt with!
     if (new_size > m_capacity) {
+      reorganize();
       adjust_capacity(new_size);
       // Size has to be adjusted afterwards in order to ensure that all old values are copied but not more than that.
     } else if (m_is_shrinkable && new_size < m_capacity / CAPACITY_DECREASE_FACTOR && new_size < m_size) {
       // Size has to be adjusted before because the later data is lost anyway and copying could cause a segfault because
-      // there is not enough space in the new array.
-      for (index_type i = new_size; i < m_size; ++i) {
-        delete &m_content[i];
-      }
+      // there is not enough space in the new array. It is assumed that the content is deinitialized already.
+      reorganize();
       m_size = new_size;
       adjust_capacity(new_size);
     }

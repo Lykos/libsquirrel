@@ -96,6 +96,7 @@ namespace DataStructures {
     check_empty();
     T element = BaseList<T>::m_content[0];
     BaseList<T>::m_content[0] = BaseList<T>::m_content[BaseList<T>::m_size - 1];
+    BaseList<T>::destroy(BaseList<T>::m_size - 1);
     BaseList<T>::prepare_size(BaseList<T>::m_size - 1);
     bubble_down(0);
     return element;

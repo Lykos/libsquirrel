@@ -8,7 +8,7 @@
 
 #define TREE_LEFT 0
 #define TREE_RIGHT 1
-#define assert_size() assert(m_size == left_size() + 1 + right_size())
+#define assert_size() assert(TreeNode<T>::m_size == TreeNode<T>::left_size() + 1 + TreeNode<T>::right_size())
 
 namespace DataStructures {
 
