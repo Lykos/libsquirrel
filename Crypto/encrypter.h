@@ -2,14 +2,23 @@
 #define ENCRYPTER_H
 
 #include "Crypto_global.h"
-#include "key.h"
 
 namespace Crypto {
 
+  template <typename PublicKey, typename Plain, typename Cipher>
   class CRYPTOSHARED_EXPORT Encrypter
   {
   public:
-    Key::text_t encrypt(Key::text_t) const = 0;
+    inline Encrypter(PublicKey public_key): m_public_key (public_key) {}
+
+    inline Encrypter(const Encrypter<PublicKey, Plain, Cipher>& other): m_public_key (other.m_public_key) {}
+
+    inline Encrypter<PublicKey, Plain, Cipher>& operator=(const Encrypter<PublicKey, Plain, Cipher>& other) { m_public_key = other.m_public_key; return *this; }
+
+    virtual Cipher encrypt(const Plain& plain) const = 0;
+
+  protected:
+    PublicKey m_public_key;
   };
 
 }

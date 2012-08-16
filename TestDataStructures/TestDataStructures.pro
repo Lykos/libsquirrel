@@ -8,7 +8,7 @@ QT       += testlib
 
 QT       -= gui
 
-TARGET = tst_all_tests
+TARGET = datastructures_tests
 CONFIG   += console
 CONFIG   -= app_bundle
 
@@ -18,11 +18,11 @@ TEMPLATE = app
 SOURCES += \
     longinttest.cpp \
     arraylisttest.cpp \
-    AllTests.cpp \
     infiniterandomtest.cpp \
     treaptest.cpp \
     queuetest.cpp \
-    heaptest.cpp
+    heaptest.cpp \
+    datastructurestests.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures

@@ -5,11 +5,13 @@
 
 namespace Crypto {
 
-  template <typename T>
+  template <typename PublicKey, typename PrivateKey>
   class CRYPTOSHARED_EXPORT KeyGenerator
   {
   public:
-    virtual T generate() const = 0;
+    typedef std::pair<PublicKey, PrivateKey> key_pair_t;
+
+    virtual key_pair_t generate() const = 0;
   };
 
 }

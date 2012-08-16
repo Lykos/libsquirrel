@@ -8,3 +8,5 @@ C style malloc realloc free (destructor without constructor, copy without compli
 constraints for templates
 Leave choices for comparing to user
 template for "this class"
+yaml for C++ for keys etc
+Elgamal / RSA signing

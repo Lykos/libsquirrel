@@ -12,31 +12,24 @@ TEMPLATE = lib
 DEFINES += CRYPTO_LIBRARY
 
 SOURCES += \
-    rsakey.cpp \
-    rsaencrypter.cpp \
-    rsakeygenerator.cpp \
-    rsadecrypter.cpp \
-    rsadirectstrategy.cpp \
-    rsapqstrategy.cpp \
-    keypair.cpp \
-    rsakeypair.cpp \
-    rsastrategy.cpp
+    rsa_decrypter.cpp \
+    rsa_directstrategy.cpp \
+    rsa_keygenerator.cpp \
+    rsa_pqstrategy.cpp \
+    rsa_encrypter.cpp
 
 HEADERS +=\
         Crypto_global.h \
-    rsakey.h \
-    rsastrategy.h \
-    rsaencrypter.h \
-    rsakeygenerator.h \
-    rsadecrypter.h \
-    rsadirectstrategy.h \
-    rsapqstrategy.h \
     decrypter.h \
-    key.h \
-    keypair.h \
     encrypter.h \
-    rsakeypair.h \
-    keygenerator.h
+    keygenerator.h \
+    rsa_decrypter.h \
+    rsa_decryptstrategy.h \
+    rsa_directstrategy.h \
+    rsa_encrypter.h \
+    rsa_keygenerator.h \
+    rsa_pqstrategy.h \
+    rsa_types.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

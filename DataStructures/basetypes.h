@@ -41,6 +41,9 @@ namespace DataStructures {
   template <typename T>
   class DATASTRUCTURESSHARED_EXPORT Treap;
 
+  template <typename T>
+  class DATASTRUCTURESSHARED_EXPORT Heap;
+
 }
 
 #endif // BASETYPES_H
