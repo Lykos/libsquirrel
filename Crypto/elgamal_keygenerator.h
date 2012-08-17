@@ -1,14 +1,14 @@
-#ifndef RSAKEYGENERATOR_H
-#define RSAKEYGENERATOR_H
+#ifndef CRYPTO_ELGAMAL_KEYGENERATOR_H
+#define CRYPTO_ELGAMAL_KEYGENERATOR_H
 
 #include "Crypto_global.h"
 #include "keygenerator.h"
-#include "rsa_types.h"
 #include "primetester.h"
+#include "elgamal_types.h"
 
 namespace Crypto {
 
-  namespace RSA {
+  namespace Elgamal {
 
     class CRYPTOSHARED_EXPORT KeyGenerator : public Crypto::KeyGenerator<key_pair_t>
     {
@@ -26,8 +26,8 @@ namespace Crypto {
 
     };
 
-  }
+  } // namespace Elgamal
 
-}
+} // namespace Crypto
 
-#endif // RSAKEYGENERATOR_H
+#endif // CRYPTO_ELGAMAL_KEYGENERATOR_H

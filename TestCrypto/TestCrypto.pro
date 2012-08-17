@@ -17,15 +17,20 @@ TEMPLATE = app
 
 SOURCES += \
     cryptotests.cpp \
-    rsatest.cpp
+    rsatest.cpp \
+    elgamaltest.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 HEADERS += \
-    rsatest.h
+    rsatest.h \
+    elgamaltest.h
 
 unix:!macx:!symbian: LIBS += -L$$PWD/../Crypto-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lCrypto
 
-INCLUDEPATH += $$PWD/../Crypto \
-    $$PWD/../DataStructures
-DEPENDPATH += $$PWD/../Crypto \
-    $$PWD/../DataStructures
+INCLUDEPATH += $$PWD/../Crypto
+DEPENDPATH += $$PWD/../Crypto
+
+unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
+
+INCLUDEPATH += $$PWD/../DataStructures
+DEPENDPATH += $$PWD/../DataStructures

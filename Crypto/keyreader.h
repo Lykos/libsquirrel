@@ -3,12 +3,14 @@
 
 namespace Crypto {
   
+  template <typename Key>
   class KeyReader
   {
   public:
-    KeyReader();
+    Key read_key(std::string key_string);
+
   };
   
-} // namespace Crypto
+}
 
 #endif // CRYPTO_KEYREADER_H

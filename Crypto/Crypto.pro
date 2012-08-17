@@ -17,7 +17,11 @@ SOURCES += \
     rsa_keygenerator.cpp \
     rsa_pqstrategy.cpp \
     rsa_encrypter.cpp \
-    primetester.cpp
+    primetester.cpp \
+    elgamal_decrypter.cpp \
+    elgamal_encrypter.cpp \
+    elgamal_keygenerator.cpp \
+    elgamal_keypersonalizer.cpp
 
 HEADERS +=\
         Crypto_global.h \
@@ -32,7 +36,14 @@ HEADERS +=\
     rsa_pqstrategy.h \
     rsa_types.h \
     primetester.h \
-    keyreader.h
+    keyreader.h \
+    keywriter.h \
+    elgamal_decrypter.h \
+    elgamal_types.h \
+    elgamal_encrypter.h \
+    elgamal_keygenerator.h \
+    keypersonalizer.h \
+    elgamal_keypersonalizer.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

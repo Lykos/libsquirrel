@@ -1,5 +1,5 @@
-#ifndef DECRYPTER_H
-#define DECRYPTER_H
+#ifndef CRYPTO_DECRYPTER_H
+#define CRYPTO_DECRYPTER_H
 
 #include "Crypto_global.h"
 
@@ -15,13 +15,15 @@ namespace Crypto {
 
     inline Decrypter<PrivateKey, Plain, Cipher>& operator=(const Decrypter<PrivateKey, Plain, Cipher>& other) { m_private_key = other.m_private_key; return *this; }
 
-    virtual Plain decrypt(const Cipher& cipher) = 0;
+    virtual Plain decrypt(const Cipher& cipher_text) const = 0;
+
+    inline PrivateKey get_key() const { return m_private_key; }
 
   protected:
     PrivateKey m_private_key;
 
   };
 
-}
+} // namespace Crypto
 
-#endif // DECRYPTER_H
+#endif // CRYPTO_DECRYPTER_H

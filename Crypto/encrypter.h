@@ -1,5 +1,5 @@
-#ifndef ENCRYPTER_H
-#define ENCRYPTER_H
+#ifndef CRYPTO_ENCRYPTER_H
+#define CRYPTO_ENCRYPTER_H
 
 #include "Crypto_global.h"
 
@@ -17,10 +17,12 @@ namespace Crypto {
 
     virtual Cipher encrypt(const Plain& plain) const = 0;
 
+    inline PublicKey get_key() const { return m_public_key; }
+
   protected:
     PublicKey m_public_key;
   };
 
-}
+} // namespace Crypto
 
-#endif // ENCRYPTER_H
+#endif // CRYPTO_ENCRYPTER_H

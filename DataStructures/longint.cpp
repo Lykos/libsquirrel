@@ -650,30 +650,6 @@ namespace DataStructures {
     return m_positive ? *this : operator-();
   }
 
-  LongInt LongInt::inv_mod(const LongInt &modulus) const
-  {
-    LongInt a = modulus.abs();
-    if (a == 1) {
-      throw std::logic_error("Modulo 1, there are no multiplicative inverses.");
-    }
-    LongInt b = abs();
-    LongInt u_old = 0;
-    LongInt u = 1;
-    if (b >= a) {
-      b %= a;
-    }
-    while (b > 0) {
-      LongInt q;
-      a.divide(b, q, b, true);
-      u_old -= u * q;
-      std::swap(u, u_old);
-    }
-    if (a != 1) {
-      throw std::logic_error("*this and modulus are not relatively prime, hence no multiplicative inverse exists.");
-    }
-    return u_old;
-  }
-
   int inline LongInt::uCompareTo(const LongInt& other) const
   {
     index_type max_index = std::max(size(), other.size());
@@ -703,6 +679,39 @@ namespace DataStructures {
     return i < size() ? m_content[i] : 0l;
   }
 
+  LongInt LongInt::inv_mod(const LongInt &modulus) const
+  {
+    LongInt a = modulus.abs();
+    if (a <= 1) {
+      throw std::logic_error("Modulo 0 and 1, there are no multiplicative inverses.");
+    }
+    LongInt b = abs();
+    LongInt u_old = 0;
+    LongInt u = 1;
+    LongInt v_old = 1;
+    LongInt v = 0;
+    if (b >= a) {
+      b %= a;
+    }
+    while (b > 0) {
+      LongInt q;
+      a.divide(b, q, a, true);
+      u_old -= u * q;
+      v_old -= v * q;
+      std::swap(a, b);
+      std::swap(u, u_old);
+      std::swap(v, v_old);
+    }
+    if (a != 1) {
+      std::ostringstream oss;
+      oss << "*this (" << *this << ") and modulus (" << modulus << ") are not relatively prime, the gcd is " << a << ", hence no multiplicative inverse exists.";
+      throw std::logic_error(oss.str());
+    }
+    u_old += modulus;
+    u_old %= modulus;
+    return u_old;
+  }
+
   LongInt gcd(const LongInt &first, const LongInt &second)
   {
     LongInt a = first.abs();
@@ -727,12 +736,12 @@ namespace DataStructures {
     static const index_type RAND_BITS = log2((index_type) RAND_MAX + 1);
     // static_assert((1 << RAND_BITS) == RAND_MAX + 1);
     LongInt result (0);
-    while (number_bits > RAND_BITS) {
+    while (number_bits >= RAND_BITS) {
       result <<= RAND_BITS;
       result += rand();
       number_bits -= RAND_BITS;
     }
-    result += rand() % (2 << number_bits);
+    result += rand() % (1 << number_bits);
     return result;
   }
 

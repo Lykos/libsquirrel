@@ -2,16 +2,15 @@
 #define KEYGENERATOR_H
 
 #include "Crypto_global.h"
+#include "basetypes.h"
 
 namespace Crypto {
 
-  template <typename PublicKey, typename PrivateKey>
+  template <typename KeyPair>
   class CRYPTOSHARED_EXPORT KeyGenerator
   {
   public:
-    typedef std::pair<PublicKey, PrivateKey> key_pair_t;
-
-    virtual key_pair_t generate() const = 0;
+    virtual KeyPair generate(DataStructures::index_type number_bits) const = 0;
   };
 
 }
