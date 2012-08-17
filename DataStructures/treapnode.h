@@ -1,5 +1,5 @@
-#ifndef TREAPNODE_H
-#define TREAPNODE_H
+#ifndef DATASTRUCTURES_TREAPNODE_H
+#define DATASTRUCTURES_TREAPNODE_H
 
 #include "infiniterandom.h"
 #include "treenode.h"
@@ -105,4 +105,4 @@ namespace DataStructures {
 #undef LEFT
 #undef RIGHT
 
-#endif // TREAPNODE_H
+#endif // DATASTRUCTURES_TREAPNODE_H

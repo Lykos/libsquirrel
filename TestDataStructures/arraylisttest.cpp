@@ -282,20 +282,20 @@ void ArrayListTest::test_next_higher()
 void ArrayListTest::test_min_capacity()
 {
   list.set_min_capacity(55);
-  COMPARE_INTS(list.get_min_capacity(), 55);
+  COMPARE_INTS(list.min_capacity(), 55);
 }
 
 void ArrayListTest::test_capacity()
 {
   list.set_min_capacity(46);
-  QVERIFY(list.get_capacity() >= 46);
+  QVERIFY(list.capacity() >= 46);
   for (int i = 0; i < 100; ++i) {
     list.push(0);
-    QVERIFY(list.get_capacity() >= 46);
+    QVERIFY(list.capacity() >= 46);
   }
   for (int i = 0; i < 100; ++i) {
     list.pop();
-    QVERIFY(list.get_capacity() >= 46);
+    QVERIFY(list.capacity() >= 46);
   }
 }
 

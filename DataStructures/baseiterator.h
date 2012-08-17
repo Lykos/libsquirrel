@@ -1,5 +1,5 @@
-#ifndef BASEITERATOR_H
-#define BASEITERATOR_H
+#ifndef DATASTRUCTURES_BASEITERATOR_H
+#define DATASTRUCTURES_BASEITERATOR_H
 
 #include "basetypes.h"
 
@@ -72,4 +72,4 @@ namespace DataStructures {
 
 }
 
-#endif // BASEITERATOR_H
+#endif // DATASTRUCTURES_BASEITERATOR_H

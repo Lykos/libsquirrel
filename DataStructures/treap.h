@@ -1,5 +1,5 @@
-#ifndef TREAP_H
-#define TREAP_H
+#ifndef DATASTRUCTURES_TREAP_H
+#define DATASTRUCTURES_TREAP_H
 
 #include <sstream>
 #include "basetypes.h"
@@ -59,4 +59,4 @@ namespace DataStructures {
 
 }
 
-#endif // TREAP_H
+#endif // DATASTRUCTURES_TREAP_H

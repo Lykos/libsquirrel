@@ -1,5 +1,5 @@
-#ifndef BASETYPES_H
-#define BASETYPES_H
+#ifndef DATASTRUCTURES_BASETYPES_H
+#define DATASTRUCTURES_BASETYPES_H
 
 #include "DataStructures_global.h"
 
@@ -46,4 +46,4 @@ namespace DataStructures {
 
 }
 
-#endif // BASETYPES_H
+#endif // DATASTRUCTURES_BASETYPES_H

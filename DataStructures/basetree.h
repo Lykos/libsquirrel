@@ -1,5 +1,5 @@
-#ifndef BINARYBASETREE_H
-#define BINARYBASETREE_H
+#ifndef DATASTRUCTURES_BINARYBASETREE_H
+#define DATASTRUCTURES_BINARYBASETREE_H
 
 #include <sstream>
 #include <stdexcept>
@@ -310,4 +310,4 @@ namespace DataStructures {
 
 }
 
-#endif // BINARYBASETREE_H
+#endif // DATASTRUCTURES_BINARYBASETREE_H

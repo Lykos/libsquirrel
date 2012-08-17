@@ -197,20 +197,20 @@ void QueueTest::test_next_higher()
 void QueueTest::test_min_capacity()
 {
   m_queue.set_min_capacity(55);
-  COMPARE_INTS(m_queue.get_min_capacity(), 55);
+  COMPARE_INTS(m_queue.min_capacity(), 55);
 }
 
 void QueueTest::test_capacity()
 {
   m_queue.set_min_capacity(46);
-  QVERIFY(m_queue.get_capacity() >= 46);
+  QVERIFY(m_queue.capacity() >= 46);
   for (int i = 0; i < 100; ++i) {
     m_queue.push(0);
-    QVERIFY(m_queue.get_capacity() >= 46);
+    QVERIFY(m_queue.capacity() >= 46);
   }
   for (int i = 0; i < 100; ++i) {
     m_queue.pop();
-    QVERIFY(m_queue.get_capacity() >= 46);
+    QVERIFY(m_queue.capacity() >= 46);
   }
 }
 

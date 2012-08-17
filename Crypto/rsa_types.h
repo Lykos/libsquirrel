@@ -1,5 +1,5 @@
-#ifndef RSATYPES_H
-#define RSATYPES_H
+#ifndef CRYPTO_RSA_TYPES_H
+#define CRYPTO_RSA_TYPES_H
 
 #include "longint.h"
 
@@ -38,4 +38,4 @@ namespace Crypto {
 
 }
 
-#endif // RSATYPES_H
+#endif // CRYPTO_RSA_TYPES_H

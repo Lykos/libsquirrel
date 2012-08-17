@@ -1,5 +1,5 @@
-#ifndef RSAPQSTRATEGY_H
-#define RSAPQSTRATEGY_H
+#ifndef CRYPTO_RSA_PQSTRATEGY_H
+#define CRYPTO_RSA_PQSTRATEGY_H
 
 #include "rsa_decryptstrategy.h"
 #include "rsa_types.h"
@@ -29,4 +29,4 @@ namespace Crypto {
 
 }
 
-#endif // RSAPQSTRATEGY_H
+#endif // CRYPTO_RSA_PQSTRATEGY_H

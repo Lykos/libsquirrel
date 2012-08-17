@@ -1,5 +1,5 @@
-#ifndef INFINITERANDOM_H
-#define INFINITERANDOM_H
+#ifndef DATASTRUCTURES_INFINITERANDOM_H
+#define DATASTRUCTURES_INFINITERANDOM_H
 
 #include "arraylist.h"
 
@@ -39,4 +39,4 @@ namespace DataStructures {
 
 }
 
-#endif // INFINITERANDOM_H
+#endif // DATASTRUCTURES_INFINITERANDOM_H

@@ -1,5 +1,5 @@
-#ifndef BASELIST_H
-#define BASELIST_H
+#ifndef DATASTRUCTURES_BASELIST_H
+#define DATASTRUCTURES_BASELIST_H
 
 #include "DataStructures_global.h"
 #include <climits>
@@ -13,7 +13,7 @@
 
 #include "basetypes.h"
 #ifndef NDEBUG
-#define check_index(index) if (index >= BaseList<T>::m_size) { std::ostringstream oss; oss << "Invalid index " << index << " for list of size " << BaseList<T>::m_size << "."; throw typename BaseList<T>::range_error(oss.str()); }
+#define check_index(index) if (index >= BaseList<T>::size()) { std::ostringstream oss; oss << "Invalid index " << index << " for list of size " << BaseList<T>::size() << "."; throw typename BaseList<T>::range_error(oss.str()); }
 #else
 #define check_index(index)
 #endif
@@ -57,11 +57,11 @@ namespace DataStructures {
 
     inline virtual void clear() { destroy_segment(0, m_size); prepare_size(0); }
 
-    inline index_type get_min_capacity() const { return m_min_capacity; }
+    inline index_type min_capacity() const { return m_min_capacity; }
 
     inline void set_min_capacity(index_type min_capacity);
 
-    inline index_type get_capacity() const { return m_capacity; }
+    inline index_type capacity() const { return m_capacity; }
 
     inline void set_shrinkable(bool is_shrinkable) { m_is_shrinkable = is_shrinkable; }
 
@@ -69,7 +69,7 @@ namespace DataStructures {
 
     inline void prepare_size(index_type new_size);
 
-  protected:
+  private:
     static const index_type CAPACITY_DECREASE_FACTOR;
 
     T* m_content;
@@ -81,6 +81,15 @@ namespace DataStructures {
     index_type m_min_capacity;
 
     bool m_is_shrinkable;
+
+  protected:
+    inline T* content() { return m_content; }
+
+    inline const T* content() const { return m_content; }
+
+    inline const T& at(index_type index) const { return m_content[index]; }
+
+    inline T& at(index_type index) { return m_content[index]; }
 
     inline void add_content(const T * content, index_type insert_position, index_type length);
 
@@ -245,4 +254,4 @@ namespace DataStructures {
   }
 
 }
-#endif // BASELIST_H
+#endif // DATASTRUCTURES_BASELIST_H

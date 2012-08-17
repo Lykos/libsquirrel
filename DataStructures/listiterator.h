@@ -1,5 +1,5 @@
-#ifndef LISTITERATOR_H
-#define LISTITERATOR_H
+#ifndef DATASTRUCTURES_LISTITERATOR_H
+#define DATASTRUCTURES_LISTITERATOR_H
 
 #include "baseiterator.h"
 
@@ -145,4 +145,4 @@ namespace DataStructures {
 
 }
 
-#endif // LISTITERATOR_H
+#endif // DATASTRUCTURES_LISTITERATOR_H

@@ -32,9 +32,9 @@ namespace DataStructures {
 
     T pop();
 
-    const T& top() const { check_empty(); return BaseList<T>::m_content[0]; }
+    const T& top() const { check_empty(); return BaseList<T>::at(0); }
 
-    T& top() { check_empty(); return BaseList<T>::m_content[0]; }
+    T& top() { check_empty(); return BaseList<T>::at(0); }
 
   private:
 
@@ -73,10 +73,10 @@ namespace DataStructures {
     if (begin > end) {
       return;
     }
-    index_type i = BaseList<T>::m_size;
-    BaseList<T>::prepare_size(BaseList<T>::m_size + (end - begin));
+    index_type i = BaseList<T>::size();
+    BaseList<T>::prepare_size(BaseList<T>::size() + (end - begin));
     for (Begin it = begin; it != end; ++it, ++i) {
-      BaseList<T>::m_content[i] = *it;
+      BaseList<T>::at(i) = *it;
       bubble_up(i);
     }
   }
@@ -84,9 +84,9 @@ namespace DataStructures {
   template <typename T>
   void Heap<T>::push(const T& element)
   {
-    index_type old_size = BaseList<T>::m_size;
-    BaseList<T>::prepare_size(BaseList<T>::m_size + 1);
-    BaseList<T>::m_content[old_size] = element;
+    index_type old_size = BaseList<T>::size();
+    BaseList<T>::prepare_size(BaseList<T>::size() + 1);
+    BaseList<T>::at(old_size) = element;
     bubble_up(old_size);
   }
 
@@ -94,10 +94,10 @@ namespace DataStructures {
   T Heap<T>::pop()
   {
     check_empty();
-    T element = BaseList<T>::m_content[0];
-    BaseList<T>::m_content[0] = BaseList<T>::m_content[BaseList<T>::m_size - 1];
-    BaseList<T>::destroy(BaseList<T>::m_size - 1);
-    BaseList<T>::prepare_size(BaseList<T>::m_size - 1);
+    T element = BaseList<T>::at(0);
+    BaseList<T>::at(0) = BaseList<T>::at(BaseList<T>::size() - 1);
+    BaseList<T>::destroy(BaseList<T>::size() - 1);
+    BaseList<T>::prepare_size(BaseList<T>::size() - 1);
     bubble_down(0);
     return element;
   }
@@ -107,11 +107,11 @@ namespace DataStructures {
   {
     index_type left = left_child(index);
     index_type right = right_child(index);
-    assert(left < BaseList<T>::m_size);
-    if (right >= BaseList<T>::m_size) {
+    assert(left < BaseList<T>::size());
+    if (right >= BaseList<T>::size()) {
       return left;
     } else {
-      return BaseList<T>::m_content[left] < BaseList<T>::m_content[right] ? left : right;
+      return BaseList<T>::at(left) < BaseList<T>::at(right) ? left : right;
     }
   }
 
@@ -120,10 +120,10 @@ namespace DataStructures {
   {
     while (index > 0) {
       index_type new_index = parent(index);
-      if (BaseList<T>::m_content[new_index] < BaseList<T>::m_content[index]) {
+      if (BaseList<T>::at(new_index) < BaseList<T>::at(index)) {
         return;
       }
-      std::swap(BaseList<T>::m_content[new_index], BaseList<T>::m_content[index]);
+      std::swap(BaseList<T>::at(new_index), BaseList<T>::at(index));
       index = new_index;
     }
   }
@@ -131,12 +131,12 @@ namespace DataStructures {
   template <typename T>
   inline void Heap<T>::bubble_down(index_type index)
   {
-    while (left_child(index) < BaseList<T>::m_size) {
+    while (left_child(index) < BaseList<T>::size()) {
       index_type new_index = min_child(index);
-      if (BaseList<T>::m_content[index] < BaseList<T>::m_content[new_index]) {
+      if (BaseList<T>::at(index) < BaseList<T>::at(new_index)) {
         return;
       }
-      std::swap(BaseList<T>::m_content[new_index], BaseList<T>::m_content[index]);
+      std::swap(BaseList<T>::at(new_index), BaseList<T>::at(index));
       index = new_index;
     }
   }

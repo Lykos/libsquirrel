@@ -1,5 +1,5 @@
-#ifndef RSADIRECTSTRATEGY_H
-#define RSADIRECTSTRATEGY_H
+#ifndef CRYPTO_RSA_DIRECTSTRATEGY_H
+#define CRYPTO_RSA_DIRECTSTRATEGY_H
 
 #include "rsa_types.h"
 #include "rsa_decryptstrategy.h"
@@ -23,4 +23,4 @@ namespace Crypto {
 
 }
 
-#endif // RSADIRECTSTRATEGY_H
+#endif // CRYPTO_RSA_DIRECTSTRATEGY_H

@@ -1,5 +1,5 @@
-#ifndef TREENODE_H
-#define TREENODE_H
+#ifndef DATASTRUCTURES_TREENODE_H
+#define DATASTRUCTURES_TREENODE_H
 
 #include "infiniterandom.h"
 #include "treeiterator.h"
@@ -472,4 +472,4 @@ namespace DataStructures {
 
 }
 
-#endif // TREENODE_H
+#endif // DATASTRUCTURES_TREENODE_H

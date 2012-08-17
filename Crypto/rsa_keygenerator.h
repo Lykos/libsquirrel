@@ -1,5 +1,5 @@
-#ifndef RSAKEYGENERATOR_H
-#define RSAKEYGENERATOR_H
+#ifndef CRYPTO_RSA_KEYGENERATOR_H
+#define CRYPTO_RSA_KEYGENERATOR_H
 
 #include "Crypto_global.h"
 #include "keygenerator.h"
@@ -30,4 +30,4 @@ namespace Crypto {
 
 }
 
-#endif // RSAKEYGENERATOR_H
+#endif // CRYPTO_RSA_KEYGENERATOR_H

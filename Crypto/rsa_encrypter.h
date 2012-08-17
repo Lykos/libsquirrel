@@ -1,5 +1,5 @@
-#ifndef RSADECRYPTER_H
-#define RSADECRYPTER_H
+#ifndef CRYPTO_RSA_ENCRYPTER_H
+#define CRYPTO_RSA_ENCRYPTER_H
 
 #include "Crypto_global.h"
 #include "encrypter.h"
@@ -29,4 +29,4 @@ namespace Crypto {
 
 }
 
-#endif // RSADECRYPTER_H
+#endif // CRYPTO_RSA_ENCRYPTER_H

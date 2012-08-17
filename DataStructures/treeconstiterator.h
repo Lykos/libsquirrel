@@ -1,5 +1,5 @@
-#ifndef TreeConstIterator_H
-#define TreeConstIterator_H
+#ifndef DATASTRUCTURES_TREECONSTITERATOR_H
+#define DATASTRUCTURES_TREECONSTITERATOR_H
 
 #include "baseiterator.h"
 
@@ -178,4 +178,4 @@ namespace DataStructures {
 
 }
 
-#endif // TreeConstIterator_H
+#endif // DATASTRUCTURES_TREECONSTITERATOR_H

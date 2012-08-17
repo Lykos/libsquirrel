@@ -1,5 +1,5 @@
-#ifndef LONGINT_H
-#define LONGINT_H
+#ifndef DATASTRUCTURES_LONGINT_H
+#define DATASTRUCTURES_LONGINT_H
 
 #include "DataStructures_global.h"
 #include "arraylist.h"
@@ -191,4 +191,4 @@ namespace DataStructures {
 
 }
 
-#endif // LONGINT_H
+#endif // DATASTRUCTURES_LONGINT_H

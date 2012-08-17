@@ -1,5 +1,5 @@
-#ifndef TREEITERATOR_H
-#define TREEITERATOR_H
+#ifndef DATASTRUCTURES_TREEITERATOR_H
+#define DATASTRUCTURES_TREEITERATOR_H
 
 #include "baseiterator.h"
 
@@ -166,4 +166,4 @@ namespace DataStructures {
 
 }
 
-#endif // TREEITERATOR_H
+#endif // DATASTRUCTURES_TREEITERATOR_H
