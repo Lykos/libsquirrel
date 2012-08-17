@@ -43,7 +43,8 @@ HEADERS +=\
     elgamal_encrypter.h \
     elgamal_keygenerator.h \
     keypersonalizer.h \
-    elgamal_keypersonalizer.h
+    elgamal_keypersonalizer.h \
+    keypair.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

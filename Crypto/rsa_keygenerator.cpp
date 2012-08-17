@@ -1,4 +1,5 @@
 #include "rsa_keygenerator.h"
+#include "rsa_types.h"
 
 namespace Crypto {
 

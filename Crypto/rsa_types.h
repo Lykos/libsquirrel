@@ -2,6 +2,7 @@
 #define CRYPTO_RSA_TYPES_H
 
 #include "longint.h"
+#include "keypair.h"
 
 namespace Crypto {
 
@@ -28,11 +29,7 @@ namespace Crypto {
       bool p_q_available;
     } private_key_t;
 
-
-    typedef struct {
-      public_key_t public_key;
-      private_key_t private_key;
-    } key_pair_t;
+    typedef KeyPair<public_key_t, private_key_t> key_pair_t;
 
   }
 
