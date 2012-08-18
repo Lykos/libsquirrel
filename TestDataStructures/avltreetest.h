@@ -1,15 +1,15 @@
-#ifndef TREAPTEST_H
-#define TREAPTEST_H
+#ifndef AVLTREETEST_H
+#define AVLTREETEST_H
 
-#include "treap.h"
+#include "avltree.h"
 #include "treetest.h"
 
-class TreapTest : public QObject, public TreeTest<DataStructures::Treap<int> >
+class AVLTreeTest : public QObject, public TreeTest<DataStructures::AVLTree<int> >
 {
   Q_OBJECT
 
 private:
-  typedef TreeTest<DataStructures::Treap<int> > Test;
+  typedef TreeTest<DataStructures::AVLTree<int> > Test;
 
 private Q_SLOTS:
   void init() { Test::init(); }
@@ -20,11 +20,11 @@ private Q_SLOTS:
 
   void test_search() { Test::test_search(); }
 
-  void test_remove() { Test::test_remove(); }
+  // void test_remove() { Test::test_remove(); }
 
   void test_insert_all() { Test::test_insert_all(); }
 
-  void test_remove_all() { Test::test_remove_all(); }
+  // void test_remove_all() { Test::test_remove_all(); }
 
   void test_clear() { Test::test_clear(); }
 
@@ -59,4 +59,4 @@ private Q_SLOTS:
   void test_not_equals() { Test::test_not_equals(); }
 };
 
-#endif // TREAPTEST_H
+#endif // AVLTREETEST_H

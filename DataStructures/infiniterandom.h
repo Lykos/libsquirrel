@@ -20,6 +20,8 @@ namespace DataStructures {
 
     InfiniteRandom& operator=(const InfiniteRandom& other);
 
+    bool stuff() const { return m_randomness.min_capacity() > 0; }
+
     bool operator<(const InfiniteRandom& other) const { return compareTo(other) == -1; }
 
     bool operator<=(const InfiniteRandom& other) const { return compareTo(other) != 1; }

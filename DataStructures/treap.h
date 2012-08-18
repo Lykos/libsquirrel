@@ -2,6 +2,7 @@
 #define DATASTRUCTURES_TREAP_H
 
 #include <sstream>
+#include <ostream>
 #include "basetypes.h"
 #include "DataStructures_global.h"
 #include "basetree.h"

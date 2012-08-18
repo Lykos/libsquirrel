@@ -2,7 +2,8 @@
 
 namespace DataStructures {
 
-  InfiniteRandom::InfiniteRandom()
+  InfiniteRandom::InfiniteRandom():
+    m_randomness (0)
   {
   }
 

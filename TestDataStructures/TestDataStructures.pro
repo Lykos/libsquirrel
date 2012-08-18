@@ -19,7 +19,6 @@ SOURCES += \
     longinttest.cpp \
     arraylisttest.cpp \
     infiniterandomtest.cpp \
-    treaptest.cpp \
     queuetest.cpp \
     heaptest.cpp \
     datastructurestests.cpp
@@ -34,6 +33,8 @@ HEADERS += \
     longinttest.h \
     arraylisttest.h \
     infiniterandomtest.h \
-    treaptest.h \
     queuetest.h \
-    heaptest.h
+    heaptest.h \
+    treetest.h \
+    treaptest.h \
+    avltreetest.h

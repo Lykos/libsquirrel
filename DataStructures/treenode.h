@@ -8,7 +8,7 @@
 
 #define TREE_LEFT 0
 #define TREE_RIGHT 1
-#define assert_size() assert(TreeNode<T>::m_size == TreeNode<T>::left_size() + 1 + TreeNode<T>::right_size())
+#define assert_size() assert(TreeNode<T>::m_size == TreeNode<T>::calculated_size())
 
 namespace DataStructures {
 
@@ -86,7 +86,7 @@ namespace DataStructures {
 
     inline direction element_direction(const T& element) const { return element < m_element ? TREE_LEFT : TREE_RIGHT; }
 
-    virtual direction remove_direction() const { return left_size() < right_size() ? TREE_LEFT : TREE_RIGHT; }
+    inline virtual direction remove_direction() const { return left_size() < right_size() ? TREE_LEFT : TREE_RIGHT; }
 
     inline NodePointer rotate(direction dir);
 
@@ -94,12 +94,15 @@ namespace DataStructures {
 
     inline index_type right_size() const { return m_children[TREE_RIGHT] == NULL ? 0 : m_children[TREE_RIGHT]->size(); }
 
+    inline index_type calculated_size() const { return left_size() + 1 + right_size(); }
+
     index_type m_size;
 
     T m_element;
 
     ArrayList<NodePointer> m_children;
 
+    inline virtual NodePointer new_node(const T& element) { return new TreeNode<T>(element); }
   };
 
   template <typename T>
@@ -161,7 +164,7 @@ namespace DataStructures {
     ++m_size;
     direction dir = element_direction(element);
     if (m_children[dir] == NULL) {
-      m_children[dir] = new TreeNode<T>(element);
+      m_children[dir] = new_node(element);
     } else {
       m_children[dir] = m_children[dir]->insert(element);
     }
@@ -453,7 +456,6 @@ namespace DataStructures {
     assert(new_parent->m_size == new_parent->left_size() + 1 + new_parent->right_size());
     assert_size();
     assert(new_parent != NULL);
-
     return new_parent;
   }
 

@@ -4,7 +4,6 @@ linked list
 fib heap
 tom cook
 schnhage strassen
-C style malloc realloc free (destructor without constructor, copy without complications)
 constraints for templates
 Leave choices for comparing to user
 template for "this class"
@@ -12,8 +11,9 @@ yaml for C++ for keys etc
 Elgamal / RSA signing
 Better Random stuff
 Prime testing
-encapsulation for BaseList<T>
 Performance testing with QBenchmark
 divide fixed and random tests, repair % and / tests
 conversions from LongInt to int types
 conversions from double to LongInt etc
+templates of templates for tree test
+turn off warnings

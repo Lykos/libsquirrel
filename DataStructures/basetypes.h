@@ -23,6 +23,9 @@ namespace DataStructures {
   template <typename T>
   class DATASTRUCTURESSHARED_EXPORT Queue;
 
+  template <typename T>
+  class DATASTRUCTURESSHARED_EXPORT Heap;
+
   template <typename T, typename Node>
   class BaseTree;
 
@@ -39,10 +42,13 @@ namespace DataStructures {
   class TreapNode;
 
   template <typename T>
+  class AVLNode;
+
+  template <typename T>
   class DATASTRUCTURESSHARED_EXPORT Treap;
 
   template <typename T>
-  class DATASTRUCTURESSHARED_EXPORT Heap;
+  class DATASTRUCTURESSHARED_EXPORT AVLTree;
 
 }
 

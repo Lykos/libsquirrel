@@ -4,6 +4,7 @@
 #include "longinttest.h"
 #include "infiniterandomtest.h"
 #include "treaptest.h"
+#include "avltreetest.h"
 #include "queuetest.h"
 #include "heaptest.h"
 
@@ -16,6 +17,8 @@ int main(int argc, char** argv) {/*
   QTest::qExec(&infinite_random_test, argc, argv);
   TreapTest treap_test;
   QTest::qExec(&treap_test, argc, argv);
+  AVLTreeTest avl_tree_test;
+  QTest::qExec(&avl_tree_test, argc, argv);
   QueueTest queue_test;
   QTest::qExec(&queue_test, argc, argv);
   HeapTest heap_test;

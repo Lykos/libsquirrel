@@ -5,14 +5,10 @@
 #include "treenode.h"
 #include <iostream>
 
-#define LEFT 0
-#define RIGHT 1
-#define assert_size() assert(TreeNode<T>::m_size == TreeNode<T>::left_size() + 1 + TreeNode<T>::right_size())
-
 namespace DataStructures {
 
   template <typename T>
-  std::ostream& operator<<(std::ostream& out, const TreapNode<T>& it);
+  inline std::ostream& operator<<(std::ostream& out, const TreapNode<T>& it);
 
   template <typename T>
   class TreapNode : public TreeNode<T>
@@ -28,6 +24,8 @@ namespace DataStructures {
 
     typedef TreapNode<T>* TreapNodePointer;
 
+    typedef const TreapNode<T>* ConstTreapNodePointer;
+
     typedef typename iterator::NodeInfo NodeInfo;
 
     typedef typename const_iterator::ConstNodeInfo ConstNodeInfo;
@@ -37,17 +35,19 @@ namespace DataStructures {
     inline direction min_rand_direction() const;
 
   public:
-    TreapNode(const TreapNode& other);
+    inline TreapNode(const TreapNode& other);
 
-    TreapNode(const T& element);
+    inline TreapNode(const T& element);
 
-    NodePointer insert(const T& element);
+    inline NodePointer insert(const T& element);
 
+  protected:
     inline direction remove_direction() const { return min_rand_direction(); }
 
-  private:
+    inline NodePointer new_node(const T& element) { return new TreapNode<T>(element); }
 
-    inline const TreapNodePointer& child(direction dir) const { return static_cast<const TreapNodePointer>(TreeNode<T>::m_children[dir]); }
+  private:
+    inline ConstTreapNodePointer child(direction dir) const { return static_cast<const TreapNodePointer>(TreeNode<T>::m_children[dir]); }
 
     inline TreapNodePointer child(direction dir) { return static_cast<TreapNodePointer>(TreeNode<T>::m_children[dir]); }
 
@@ -56,7 +56,7 @@ namespace DataStructures {
   };
 
   template <typename T>
-  TreapNode<T>::TreapNode(const TreapNode<T> &other):
+  inline TreapNode<T>::TreapNode(const TreapNode<T> &other):
     TreeNode<T>(other),
     m_randomness (other.m_randomness)
   {
@@ -64,21 +64,19 @@ namespace DataStructures {
 
   template <typename T>
   TreapNode<T>::TreapNode(const T& element):
-    TreeNode<T>(element)
+    TreeNode<T>(element),
+    m_randomness ()
   {
   }
 
   template <typename T>
-  typename TreapNode<T>::NodePointer TreapNode<T>::insert(const T& element)
+  inline typename TreapNode<T>::NodePointer TreapNode<T>::insert(const T& element)
   {
-    ++TreeNode<T>::m_size;
     direction dir = TreeNode<T>::element_direction(element);
-    if (TreeNode<T>::m_children[dir] == NULL) {
-      TreeNode<T>::m_children[dir] = new TreapNode<T>(element);
-    } else {
-      TreeNode<T>::m_children[dir] = child(dir)->insert(element);
-    }
+    TreeNode<T>::insert(element);
     NodePointer result = this;
+    assert(child(dir)->m_randomness.stuff());
+    assert(m_randomness.stuff());
     if (child(dir)->m_randomness < m_randomness) {
       result = TreeNode<T>::rotate(dir);
     }
@@ -90,19 +88,16 @@ namespace DataStructures {
   inline typename TreapNode<T>::direction TreapNode<T>::min_rand_direction() const
   {
     assert(TreeNode<T>::m_size > 1);
-    assert(TreeNode<T>::m_children[LEFT] != NULL || TreeNode<T>::m_children[RIGHT] != NULL);
-    if (TreeNode<T>::m_children[LEFT] == NULL) {
-      return RIGHT;
-    } else if (TreeNode<T>::m_children[RIGHT] == NULL) {
-      return LEFT;
+    assert(TreeNode<T>::m_children[TREE_LEFT] != NULL || TreeNode<T>::m_children[TREE_RIGHT] != NULL);
+    if (TreeNode<T>::m_children[TREE_LEFT] == NULL) {
+      return TREE_RIGHT;
+    } else if (TreeNode<T>::m_children[TREE_RIGHT] == NULL) {
+      return TREE_LEFT;
     } else {
-      return child(LEFT)->m_randomness < child(RIGHT)->m_randomness ? LEFT : RIGHT;
+      return child(TREE_LEFT)->m_randomness < child(TREE_RIGHT)->m_randomness ? TREE_LEFT : TREE_RIGHT;
     }
   }
 
 }
-
-#undef LEFT
-#undef RIGHT
 
 #endif // DATASTRUCTURES_TREAPNODE_H

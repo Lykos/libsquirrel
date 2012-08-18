@@ -3,10 +3,11 @@
 
 #include "longint.h"
 #include "arraylist.h"
+#include "Crypto_global.h"
 
 namespace Crypto {
   
-  class PrimeTester
+  class CRYPTOSHARED_EXPORT PrimeTester
   {
   public:
     typedef DataStructures::ArrayList<DataStructures::LongInt> factorization_t;

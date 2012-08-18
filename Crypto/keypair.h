@@ -1,10 +1,12 @@
 #ifndef CRYPTO_KEYPAIR_H
 #define CRYPTO_KEYPAIR_H
 
+#include "Crypto_global.h"
+
 namespace Crypto {
   
   template <typename PublicKey, typename PrivateKey>
-  struct KeyPair
+  struct CRYPTOSHARED_EXPORT KeyPair
   {
     inline KeyPair() {}
 

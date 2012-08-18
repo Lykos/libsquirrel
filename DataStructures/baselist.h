@@ -136,6 +136,7 @@ namespace DataStructures {
     for (index_type i = 0; i < size(); ++i) {
       m_content[i] = element;
     }
+    assert(m_min_capacity > 0);
   }
 /*
   template <typename T>
@@ -160,6 +161,7 @@ namespace DataStructures {
   {
     adjust_capacity(other.m_size);
     add_content(other.m_content, 0, other.m_size);
+    assert(m_min_capacity > 0);
   }
 
   template <typename T>
