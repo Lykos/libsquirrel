@@ -3,8 +3,14 @@
 
 #include <sstream>
 #include <stdexcept>
+#include <cassert>
 #include "basetypes.h"
 #include "DataStructures_global.h"
+#ifndef NDEBUG
+#define tree_check_index(index) if (index >= BaseTree<T, Node>::size()) { std::ostringstream oss; oss << "Invalid index " << index << " for BaseTree of size " << BaseTree<T, Node>::size() << "."; throw typename BaseTree<T, Node>::range_error(oss.str()); }
+#else
+#define tree_check_index(index)
+#endif
 
 namespace DataStructures {
 
@@ -26,6 +32,8 @@ namespace DataStructures {
     typedef typename iterator::NodeInfo NodeInfo;
 
     typedef typename TreeNode<T>::NodePointer NodePointer;
+
+    typedef typename TreeNode<T>::direction direction;
 
   public:
     typedef std::out_of_range range_error;
@@ -54,7 +62,7 @@ namespace DataStructures {
     template <typename Begin, typename End>
     void insert_all(const Begin& begin, const End& end);
 
-    bool search(const T& element) const { return m_root == NULL ? false : m_root->search(element); }
+    bool search(const T& element) const;
 
     iterator lower_bound(const T& element);
 
@@ -90,6 +98,60 @@ namespace DataStructures {
     TreeNode<T>* m_root;
 
   };
+
+  template <typename T, typename Node>
+  bool BaseTree<T, Node>::search(const T& element) const
+  {
+    NodePointer current = m_root;
+    while (current != NULL) {
+      if (current->get_element() == element) {
+        return true;
+      }
+      direction dir = current->element_direction(element);
+      current = current->m_children[dir];
+    }
+    return false;
+  }
+
+  template <typename T, typename Node>
+  const T& BaseTree<T, Node>::operator[](index_type index) const
+  {
+    tree_check_index(index);
+    NodePointer current = m_root;
+    while (true) {
+      assert(current != NULL);
+      assert(index < current->size());
+      index_type left = current->size(TREE_LEFT);
+      if (index < left) {
+        current = current->m_children[TREE_LEFT];
+      } else if (index > left) {
+        index -= left + 1;
+        current = current->m_children[TREE_RIGHT];
+      } else {
+        return current->get_element();
+      }
+    }
+  }
+
+  template <typename T, typename Node>
+  T& BaseTree<T, Node>::operator[](index_type index)
+  {
+    tree_check_index(index);
+    NodePointer current = m_root;
+    while (true) {
+      assert(current != NULL);
+      assert(index < current->size());
+      index_type left = current->size(TREE_LEFT);
+      if (index < left) {
+        current = current->m_children[TREE_LEFT];
+      } else if (index > left) {
+        index -= left + 1;
+        current = current->m_children[TREE_RIGHT];
+      } else {
+        return current->get_element();
+      }
+    }
+  }
 
   template <typename T, typename Node>
   BaseTree<T, Node>::BaseTree():
@@ -275,27 +337,6 @@ namespace DataStructures {
     }
   }
 
-  template <typename T, typename Node>
-  T& BaseTree<T, Node>::operator[](index_type index)
-  {
-    if (index >= size()) {
-      std::ostringstream oss;
-      oss << "Invalid index " << index << " for BaseTree of size " << size() << ".";
-      throw range_error(oss.str());
-    }
-    return m_root->operator[](index);
-  }
-
-  template <typename T, typename Node>
-  const T& BaseTree<T, Node>::operator[](index_type index) const
-  {
-    if (index >= size()) {
-      std::ostringstream oss;
-      oss << "Invalid index " << index << " for BaseTree of size " << size() << ".";
-      throw range_error(oss.str());
-    }
-    return m_root->operator[](index);
-  }
 
   template <typename T, typename Node>
   std::ostream& operator<<(std::ostream& out, const BaseTree<T, Node>& BaseTree)

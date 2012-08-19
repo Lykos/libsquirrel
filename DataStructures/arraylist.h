@@ -44,9 +44,9 @@ namespace DataStructures {
 
     inline bool operator!=(const ArrayList<T> other) const { return !operator==(other); }
 
-    inline const T& operator[](index_type i) const { check_index(i); return BaseList<T>::at(i); }
+    inline const T& operator[](index_type i) const { list_check_index(i); return BaseList<T>::at(i); }
 
-    inline T& operator[](index_type i) { check_index(i); return BaseList<T>::at(i); }
+    inline T& operator[](index_type i) { list_check_index(i); return BaseList<T>::at(i); }
 
     inline void push(const T& element);
 

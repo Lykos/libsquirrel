@@ -50,6 +50,9 @@ namespace DataStructures {
   template <typename T>
   class DATASTRUCTURESSHARED_EXPORT AVLTree;
 
+#define TREE_LEFT 0
+#define TREE_RIGHT 1
+
 }
 
 #endif // DATASTRUCTURES_BASETYPES_H

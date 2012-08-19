@@ -13,9 +13,9 @@
 
 #include "basetypes.h"
 #ifndef NDEBUG
-#define check_index(index) if (index >= BaseList<T>::size()) { std::ostringstream oss; oss << "Invalid index " << index << " for list of size " << BaseList<T>::size() << "."; throw typename BaseList<T>::range_error(oss.str()); }
+#define list_check_index(index) if (index >= BaseList<T>::size()) { std::ostringstream oss; oss << "Invalid index " << index << " for list of size " << BaseList<T>::size() << "."; throw typename BaseList<T>::range_error(oss.str()); }
 #else
-#define check_index(index)
+#define list_check_index(index)
 #endif
 #ifndef NDEBUG
 #define check_empty() if (BaseList<T>::is_empty()) { throw typename BaseList<T>::empty_list_error("Cannot take the top from an empty ArrayList."); }

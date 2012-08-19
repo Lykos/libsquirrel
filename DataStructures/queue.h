@@ -31,9 +31,9 @@ namespace DataStructures {
     template <typename Begin, typename End>
     inline void push_all(const Begin& begin, const End& end);
 
-    inline const T& operator[](index_type i) const { check_index(i); return BaseList<T>::at((i + m_begin) % BaseList<T>::capacity()); }
+    inline const T& operator[](index_type i) const { list_check_index(i); return BaseList<T>::at((i + m_begin) % BaseList<T>::capacity()); }
 
-    inline T& operator[](index_type i) { check_index(i); return BaseList<T>::at((i + m_begin) % BaseList<T>::capacity()); }
+    inline T& operator[](index_type i) { list_check_index(i); return BaseList<T>::at((i + m_begin) % BaseList<T>::capacity()); }
 
     inline void clear();
 

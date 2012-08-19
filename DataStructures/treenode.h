@@ -6,8 +6,6 @@
 #include "treeconstiterator.h"
 #include <iostream>
 
-#define TREE_LEFT 0
-#define TREE_RIGHT 1
 #define assert_size() assert(TreeNode<T>::m_size == TreeNode<T>::calculated_size())
 
 namespace DataStructures {
@@ -26,6 +24,8 @@ namespace DataStructures {
 
     typedef TreeNode<T>* NodePointer;
 
+    typedef index_type direction;
+
   private:
     typedef typename iterator::NodeInfo NodeInfo;
 
@@ -38,23 +38,17 @@ namespace DataStructures {
 
     virtual NodePointer insert(const T& element);
 
-    bool search(const T& element) const;
-
     iterator lower_bound(ArrayList<NodeInfo>& parent_stack, const T& element, index_type left_part);
 
     iterator upper_bound(ArrayList<NodeInfo>& parent_stack, const T& element, index_type left_part);
 
-    std::pair< iterator, iterator > equal_range(ArrayList<NodeInfo>& parent_stack,const T& element, index_type left_part);
-
-    T& operator[](index_type index);
+    std::pair< iterator, iterator > equal_range(ArrayList<NodeInfo>& parent_stack, const T& element, index_type left_part);
 
     const_iterator lower_bound(ArrayList<ConstNodeInfo>& parent_stack,const T& element, index_type left_part) const;
 
     const_iterator upper_bound(ArrayList<ConstNodeInfo>& parent_stack,const T& element, index_type left_part) const;
 
     std::pair< const_iterator, const_iterator > equal_range(ArrayList<ConstNodeInfo>& parent_stack, const T& element, index_type left_part) const;
-
-    const T& operator[](index_type index) const;
 
     std::pair< NodePointer, index_type > remove_all(const T& element);
 
@@ -80,29 +74,26 @@ namespace DataStructures {
 
     virtual ~TreeNode();
 
-  protected:
-
-    typedef index_type direction;
-
     inline direction element_direction(const T& element) const { return element < m_element ? TREE_LEFT : TREE_RIGHT; }
 
-    inline virtual direction remove_direction() const { return left_size() < right_size() ? TREE_LEFT : TREE_RIGHT; }
+    inline index_type size(direction dir) const { return m_children[dir] == NULL ? 0 : m_children[dir]->size(); }
+
+  protected:
+    inline virtual direction remove_direction() const { return size(TREE_LEFT) < size(TREE_RIGHT) ? TREE_LEFT : TREE_RIGHT; }
 
     inline NodePointer rotate(direction dir);
 
-    inline index_type left_size() const { return m_children[TREE_LEFT] == NULL ? 0 : m_children[TREE_LEFT]->size(); }
-
-    inline index_type right_size() const { return m_children[TREE_RIGHT] == NULL ? 0 : m_children[TREE_RIGHT]->size(); }
-
-    inline index_type calculated_size() const { return left_size() + 1 + right_size(); }
+    inline index_type calculated_size() const { return size(TREE_LEFT) + 1 + size(TREE_RIGHT); }
 
     index_type m_size;
 
     T m_element;
 
+    inline virtual NodePointer new_node(const T& element) { return new TreeNode<T>(element); }
+
+  public:
     ArrayList<NodePointer> m_children;
 
-    inline virtual NodePointer new_node(const T& element) { return new TreeNode<T>(element); }
   };
 
   template <typename T>
@@ -132,7 +123,7 @@ namespace DataStructures {
     assert(left_part <= index && index < left_part + m_size);
     ConstNodeInfo info {this, left_part};
     parent_stack.push(info);
-    index_type left = left_size() + left_part;
+    index_type left = size(TREE_LEFT) + left_part;
     if (index == left) {
       return const_iterator(parent_stack, left_part);
     } else if (index < left) {
@@ -148,7 +139,7 @@ namespace DataStructures {
     assert(left_part <= index && index < left_part + m_size);
     NodeInfo info {this, left_part};
     parent_stack.push(info);
-    index_type left = left_part + left_size();
+    index_type left = left_part + size(TREE_LEFT);
     if (index == left) {
       return iterator(parent_stack, left_part);
     } else if (index < left) {
@@ -173,20 +164,6 @@ namespace DataStructures {
   }
 
   template <typename T>
-  bool TreeNode<T>::search(const T& element) const
-  {
-    if (element == m_element) {
-      return true;
-    }
-    direction dir = element_direction(element);
-    if (m_children[dir] == NULL) {
-      return false;
-    } else {
-      return m_children[dir]->search(element);
-    }
-  }
-
-  template <typename T>
   typename TreeNode<T>::iterator TreeNode<T>::upper_bound(ArrayList<NodeInfo>& parent_stack, const T& element, index_type left_part)
   {
     NodeInfo info {this, left_part};
@@ -200,12 +177,12 @@ namespace DataStructures {
     if (element < m_element) {
        iterator left_upper_bound = m_children[TREE_LEFT]->upper_bound(parent_stack, element, left_part);
        if (left_upper_bound == parent_stack[0].node->end()) {
-         return iterator(parent_stack, left_part + left_size());
+         return iterator(parent_stack, left_part + size(TREE_LEFT));
        } else {
          return left_upper_bound;
        }
     } else {
-      return m_children[TREE_RIGHT]->upper_bound(parent_stack, element, left_part + 1 + left_size());
+      return m_children[TREE_RIGHT]->upper_bound(parent_stack, element, left_part + 1 + size(TREE_LEFT));
     }
   }
 
@@ -222,12 +199,12 @@ namespace DataStructures {
     if (element < m_element) {
        const_iterator left_upper_bound = m_children[TREE_LEFT]->upper_bound(parent_stack, element, left_part);
        if (left_upper_bound == parent_stack[0].node->end()) {
-         return const_iterator(parent_stack, left_part + left_size());
+         return const_iterator(parent_stack, left_part + size(TREE_LEFT));
        } else {
          return left_upper_bound;
        }
     } else {
-      return m_children[TREE_RIGHT]->upper_bound(parent_stack, element, left_part + 1 + left_size());
+      return m_children[TREE_RIGHT]->upper_bound(parent_stack, element, left_part + 1 + size(TREE_LEFT));
     }
   }
 
@@ -244,11 +221,11 @@ namespace DataStructures {
     if (element < m_element) {
       return m_children[TREE_LEFT]->lower_bound(parent_stack, element, left_part);
     } else if (element > m_element) {
-      return m_children[TREE_RIGHT]->lower_bound(parent_stack, element, left_part + 1 + left_size());
+      return m_children[TREE_RIGHT]->lower_bound(parent_stack, element, left_part + 1 + size(TREE_LEFT));
     } else {
       const_iterator left_lower_bound = m_children[TREE_LEFT]->lower_bound(parent_stack, element, left_part);
       if (left_lower_bound == parent_stack[0].node->end()) {
-        return const_iterator(parent_stack, left_part + left_size());
+        return const_iterator(parent_stack, left_part + size(TREE_LEFT));
       } else {
         return left_lower_bound;
       }
@@ -269,11 +246,11 @@ namespace DataStructures {
     if (element < m_element) {
       return m_children[TREE_LEFT]->lower_bound(parent_stack, element, left_part);
     } else if (element > m_element) {
-      return m_children[TREE_RIGHT]->lower_bound(parent_stack, element, left_part + 1 + left_size());
+      return m_children[TREE_RIGHT]->lower_bound(parent_stack, element, left_part + 1 + size(TREE_LEFT));
     } else {
       iterator left_lower_bound = m_children[TREE_LEFT]->lower_bound(parent_stack, element, left_part);
       if (left_lower_bound == parent_stack[0].node->end()) {
-        return iterator(parent_stack, left_part + left_size());
+        return iterator(parent_stack, left_part + size(TREE_LEFT));
       } else {
         return left_lower_bound;
       }
@@ -300,34 +277,6 @@ namespace DataStructures {
       ++upper;
     }
     return make_pair(lower, upper);
-  }
-
-  template <typename T>
-  const T& TreeNode<T>::operator[](index_type index) const
-  {
-    assert(index < m_size);
-    index_type left = left_size();
-    if (index < left) {
-      return m_children[TREE_LEFT]->operator[](index);
-    } else if (index > left) {
-      return m_children[TREE_RIGHT]->operator[](index - 1 - left);
-    } else {
-      return m_element;
-    }
-  }
-
-  template <typename T>
-  T& TreeNode<T>::operator[](index_type index)
-  {
-    assert(index < m_size);
-    index_type left = left_size();
-    if (index < left) {
-      return m_children[TREE_LEFT]->operator[](index);
-    } else if (index > left) {
-      return m_children[TREE_RIGHT]->operator[](index - 1 - left);
-    } else {
-      return m_element;
-    }
   }
 
   template <typename T>
@@ -453,7 +402,7 @@ namespace DataStructures {
     new_parent->m_size = old_size;
 
     // Postcondition
-    assert(new_parent->m_size == new_parent->left_size() + 1 + new_parent->right_size());
+    assert(new_parent->m_size == new_parent->size(TREE_LEFT) + 1 + new_parent->size(TREE_RIGHT));
     assert_size();
     assert(new_parent != NULL);
     return new_parent;
