@@ -2,8 +2,6 @@
 #define DATASTRUCTURES_TREENODE_H
 
 #include "infiniterandom.h"
-#include "treeiterator.h"
-#include "treeconstiterator.h"
 #include <iostream>
 
 #define assert_size() assert(TreeNode<T>::m_size == TreeNode<T>::calculated_size())
@@ -18,18 +16,9 @@ namespace DataStructures {
   {
     friend std::ostream& operator<< <> (std::ostream& out, const TreeNode<T>& it);
   public:
-    typedef TreeConstIterator<T> const_iterator;
-
-    typedef TreeIterator<T> iterator;
-
     typedef TreeNode<T>* NodePointer;
 
     typedef index_type direction;
-
-  private:
-    typedef typename iterator::NodeInfo NodeInfo;
-
-    typedef typename const_iterator::ConstNodeInfo ConstNodeInfo;
 
   public:
     TreeNode(const TreeNode& other);
@@ -47,18 +36,6 @@ namespace DataStructures {
     inline const T& get_element() const { return m_element; }
 
     inline index_type size() const { return m_size; }
-
-    iterator iterator_at(ArrayList<NodeInfo>& parent_stack, index_type index, index_type left_part);
-
-    const_iterator iterator_at(ArrayList<ConstNodeInfo>& parent_stack, index_type index, index_type left_part) const;
-
-    iterator begin();
-
-    iterator end();
-
-    const_iterator begin() const;
-
-    const_iterator end() const;
 
     virtual ~TreeNode();
 
@@ -103,38 +80,6 @@ namespace DataStructures {
     m_element (element),
     m_children (2, NULL)
   {
-  }
-
-  template <typename T>
-  typename TreeNode<T>::const_iterator TreeNode<T>::iterator_at(ArrayList<ConstNodeInfo>& parent_stack, index_type index, index_type left_part) const
-  {
-    assert(left_part <= index && index < left_part + m_size);
-    ConstNodeInfo info {this, left_part};
-    parent_stack.push(info);
-    index_type left = size(TREE_LEFT) + left_part;
-    if (index == left) {
-      return const_iterator(parent_stack, left_part);
-    } else if (index < left) {
-      return m_children[TREE_LEFT]->iterator_at(parent_stack, index, left_part);
-    } else {
-      return m_children[TREE_RIGHT]->iterator_at(parent_stack, index, left + 1);
-    }
-  }
-
-  template <typename T>
-  typename TreeNode<T>::iterator TreeNode<T>::iterator_at(ArrayList<NodeInfo>& parent_stack, index_type index, index_type left_part)
-  {
-    assert(left_part <= index && index < left_part + m_size);
-    NodeInfo info {this, left_part};
-    parent_stack.push(info);
-    index_type left = left_part + size(TREE_LEFT);
-    if (index == left) {
-      return iterator(parent_stack, left_part);
-    } else if (index < left) {
-      return m_children[TREE_LEFT]->iterator_at(parent_stack, index, left_part);
-    } else {
-      return m_children[TREE_RIGHT]->iterator_at(parent_stack, index, left + 1);
-    }
   }
 
   template <typename T>
@@ -215,34 +160,6 @@ namespace DataStructures {
         return std::make_pair(this, removed);
       }
     }
-  }
-
-  template <typename T>
-  typename TreeNode<T>::iterator TreeNode<T>::begin()
-  {
-    ArrayList<NodeInfo> empty_info;
-    return iterator_at(empty_info, 0, 0);
-  }
-
-  template <typename T>
-  typename TreeNode<T>::iterator TreeNode<T>::end()
-  {
-    ArrayList<NodeInfo> empty_info;
-    return iterator(empty_info, m_size);
-  }
-
-  template <typename T>
-  typename TreeNode<T>::const_iterator TreeNode<T>::begin() const
-  {
-    ArrayList<ConstNodeInfo> empty_info;
-    return iterator_at(empty_info, 0, 0);
-  }
-
-  template <typename T>
-  typename TreeNode<T>::const_iterator TreeNode<T>::end() const
-  {
-    ArrayList<ConstNodeInfo> empty_info;
-    return iterator(empty_info, m_size);
   }
 
   template <typename T>

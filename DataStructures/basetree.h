@@ -5,6 +5,8 @@
 #include <stdexcept>
 #include <cassert>
 #include "basetypes.h"
+#include "treeiterator.h"
+#include "treeconstiterator.h"
 #include "DataStructures_global.h"
 #ifndef NDEBUG
 #define tree_check_index(index) if (index >= BaseTree<T, Node>::size()) { std::ostringstream oss; oss << "Invalid index " << index << " for BaseTree of size " << BaseTree<T, Node>::size() << "."; throw typename BaseTree<T, Node>::range_error(oss.str()); }
@@ -21,10 +23,15 @@ namespace DataStructures {
   class BaseTree
   {
     friend std::ostream& operator<< <> (std::ostream& out, const BaseTree<T, Node>& it);
-  public:
-    typedef typename Node::const_iterator const_iterator;
 
-    typedef typename Node::iterator iterator;
+    friend class TreeConstIterator<T, BaseTree<T, Node> >;
+
+    friend class TreeIterator<T, BaseTree<T, Node> >;
+
+  public:
+    typedef TreeConstIterator<T, BaseTree<T, Node> > const_iterator;
+
+    typedef TreeIterator<T, BaseTree<T, Node> > iterator;
 
     typedef bool (*predicate_t)(const T&);
 
@@ -63,8 +70,8 @@ namespace DataStructures {
 
     inline void insert(const T& element);
 
-    template <typename Begin, typename End>
-    inline void insert_all(const Begin& begin, const End& end);
+    template <typename Iterator>
+    inline void insert_all(const Iterator& begin, const Iterator& end);
 
     inline bool search(const T& element) const;
 
@@ -90,13 +97,13 @@ namespace DataStructures {
 
     inline index_type size() const { return m_root == NULL ? 0 : m_root->size(); }
 
-    inline iterator begin() { return m_root == NULL ? iterator() : m_root->begin(); }
+    inline iterator begin() { return iterator(this, 0); }
 
-    inline iterator end() { return m_root == NULL ? iterator() : m_root->end(); }
+    inline iterator end() { return iterator(this, size()); }
 
-    inline const_iterator begin() const { return m_root == NULL ? const_iterator() : m_root->begin(); }
+    inline const_iterator begin() const { return const_iterator(this, 0); }
 
-    inline const_iterator end() const { return m_root == NULL ? const_iterator() : m_root->end(); }
+    inline const_iterator end() const { return const_iterator(this, size()); }
 
   protected:
     TreeNode<T>* m_root;
@@ -243,45 +250,11 @@ namespace DataStructures {
   }
 
   template <typename T, typename Node>
-  template <typename BeginIterator, typename EndIterator>
-  inline void BaseTree<T, Node>::insert_all(const BeginIterator& begin, const EndIterator& end)
+  template <typename Iterator>
+  inline void BaseTree<T, Node>::insert_all(const Iterator& begin, const Iterator& end)
   {
-    for (BeginIterator it = begin; it != end; ++it) {
+    for (Iterator it = begin; it != end; ++it) {
       insert(*it);
-    }
-  }
-
-  template <typename T, typename Node>
-  typename BaseTree<T, Node>::const_iterator BaseTree<T, Node>::lower_bound(const T& element) const
-  {
-    NodePointer current = m_root;
-    ArrayList<ConstNodeInfo> parent_stack;
-    ConstNodeInfo info {m_root, 0};
-    parent_stack.push(info);
-    index_type true_size = 0;
-    index_type true_left_size = 0;
-    index_type left_size = 0;
-    while (current != NULL) {
-      if (current->get_element() < element) {
-        left_size += 1 + current->size(TREE_LEFT);
-        current = current->m_children[TREE_RIGHT];
-        ConstNodeInfo info {current, left_size};
-        parent_stack.push(info);
-      } else {
-        // Save information in case all of the elements on
-        // the left subtree are smaller
-        true_size = parent_stack.size();
-        true_left_size = left_size + current->size(TREE_LEFT);
-        current = current->m_children[TREE_LEFT];
-        ConstNodeInfo info {current, left_size};
-        parent_stack.push(info);
-      }
-    }
-    if (true_size == 0) {
-      return end();
-    } else {
-      parent_stack.remove_range(true_size, parent_stack.size());
-      return const_iterator(parent_stack, true_left_size);
     }
   }
 
@@ -289,97 +262,72 @@ namespace DataStructures {
   typename BaseTree<T, Node>::iterator BaseTree<T, Node>::lower_bound(const T& element)
   {
     NodePointer current = m_root;
-    ArrayList<NodeInfo> parent_stack;
-    NodeInfo info {m_root, 0};
-    parent_stack.push(info);
-    index_type true_size = 0;
-    index_type true_left_size = 0;
+    index_type correct_index = size();
     index_type left_size = 0;
     while (current != NULL) {
       if (current->get_element() < element) {
         left_size += 1 + current->size(TREE_LEFT);
         current = current->m_children[TREE_RIGHT];
-        NodeInfo info {current, left_size};
-        parent_stack.push(info);
       } else {
-        true_size = parent_stack.size();
-        true_left_size = left_size + current->size(TREE_LEFT);
+        correct_index = left_size + current->size(TREE_LEFT);
         current = current->m_children[TREE_LEFT];
-        NodeInfo info {current, left_size};
-        parent_stack.push(info);
       }
     }
-    if (true_size == 0) {
-      return end();
-    } else {
-      parent_stack.remove_range(true_size, parent_stack.size());
-      return iterator(parent_stack, true_left_size);
-    }
+    return iterator (this, correct_index);
   }
 
-
   template <typename T, typename Node>
-  typename BaseTree<T, Node>::const_iterator BaseTree<T, Node>::upper_bound(const T& element) const
+  inline typename BaseTree<T, Node>::const_iterator BaseTree<T, Node>::lower_bound(const T& element) const
   {
     NodePointer current = m_root;
-    ArrayList<ConstNodeInfo> parent_stack;
-    ConstNodeInfo info {m_root, 0};
-    parent_stack.push(info);
-    index_type true_size = 0;
-    index_type true_left_size = 0;
+    index_type correct_index = size();
     index_type left_size = 0;
     while (current != NULL) {
-      if (current->get_element() <= element) {
+      if (current->get_element() < element) {
         left_size += 1 + current->size(TREE_LEFT);
         current = current->m_children[TREE_RIGHT];
-        ConstNodeInfo info {current, left_size};
-        parent_stack.push(info);
       } else {
-        true_size = parent_stack.size();
-        true_left_size = left_size + current->size(TREE_LEFT);
+        correct_index = left_size + current->size(TREE_LEFT);
         current = current->m_children[TREE_LEFT];
-        ConstNodeInfo info {current, left_size};
-        parent_stack.push(info);
       }
     }
-    if (true_size == 0) {
-      return end();
-    } else {
-      parent_stack.remove_range(true_size, parent_stack.size());
-      return const_iterator(parent_stack, true_left_size);
-    }
+    return const_iterator (this, correct_index);
   }
 
   template <typename T, typename Node>
   typename BaseTree<T, Node>::iterator BaseTree<T, Node>::upper_bound(const T& element)
   {
     NodePointer current = m_root;
-    ArrayList<NodeInfo> parent_stack;
-    NodeInfo info {m_root, 0};
-    parent_stack.push(info);
-    index_type true_size = 0;
-    index_type true_left_size = 0;
+    index_type correct_index = size();
     index_type left_size = 0;
     while (current != NULL) {
       if (current->get_element() <= element) {
         left_size += 1 + current->size(TREE_LEFT);
         current = current->m_children[TREE_RIGHT];
-        NodeInfo info {current, left_size};
-        parent_stack.push(info);
       } else {
-        true_size = parent_stack.size();
-        true_left_size = left_size + current->size(TREE_LEFT);
+        correct_index = left_size + current->size(TREE_LEFT);
         current = current->m_children[TREE_LEFT];
-        NodeInfo info {current, left_size};
-        parent_stack.push(info);
       }
     }
-    if (true_size == 0) {
-      return end();
-    } else {
-      parent_stack.remove_range(true_size, parent_stack.size());
-      return iterator(parent_stack, true_left_size);
+    return iterator (this, correct_index);
+  }
+
+  template <typename T, typename Node>
+  typename BaseTree<T, Node>::const_iterator BaseTree<T, Node>::upper_bound(const T& element) const
+  {
+    NodePointer current = m_root;
+    index_type correct_index = size();
+    index_type left_size = 0;
+    while (current != NULL) {
+      if (current->get_element() <= element) {
+        left_size += 1 + current->size(TREE_LEFT);
+        current = current->m_children[TREE_RIGHT];
+      } else {
+        correct_index = left_size + current->size(TREE_LEFT);
+        current = current->m_children[TREE_LEFT];
+      }
     }
+    return const_iterator (this, correct_index);
   }
 
   template <typename T, typename Node>

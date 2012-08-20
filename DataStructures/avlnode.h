@@ -20,10 +20,6 @@ namespace DataStructures {
   class AVLNode : public TreeNode<T>
   {
     friend std::ostream& operator<< <> (std::ostream& out, const AVLNode<T>& it);
-  public:
-    typedef TreeConstIterator<T> const_iterator;
-
-    typedef TreeIterator<T> iterator;
 
     typedef char balance_t;
 
@@ -34,13 +30,9 @@ namespace DataStructures {
 
     typedef const AVLNode<T>* ConstAVLNodePointer;
 
-    typedef typename iterator::NodeInfo NodeInfo;
-
-    typedef typename const_iterator::ConstNodeInfo ConstNodeInfo;
-
     typedef typename TreeNode<T>::direction direction;
 
-    inline direction min_BALANCE_SIGNection() const;
+    inline direction min_balance_direction() const;
 
   public:
     inline AVLNode(const AVLNode& other);
@@ -168,7 +160,7 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline typename AVLNode<T>::direction AVLNode<T>::min_BALANCE_SIGNection() const
+  inline typename AVLNode<T>::direction AVLNode<T>::min_balance_direction() const
   {
     assert(TreeNode<T>::m_size > 1);
     assert(TreeNode<T>::m_children[TREE_LEFT] != NULL || TreeNode<T>::m_children[TREE_RIGHT] != NULL);

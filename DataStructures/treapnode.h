@@ -14,10 +14,6 @@ namespace DataStructures {
   class TreapNode : public TreeNode<T>
   {
     friend std::ostream& operator<< <> (std::ostream& out, const TreapNode<T>& it);
-  public:
-    typedef TreeConstIterator<T> const_iterator;
-
-    typedef TreeIterator<T> iterator;
 
   private:
     typedef typename TreeNode<T>::NodePointer NodePointer;
@@ -25,10 +21,6 @@ namespace DataStructures {
     typedef TreapNode<T>* TreapNodePointer;
 
     typedef const TreapNode<T>* ConstTreapNodePointer;
-
-    typedef typename iterator::NodeInfo NodeInfo;
-
-    typedef typename const_iterator::ConstNodeInfo ConstNodeInfo;
 
     typedef typename TreeNode<T>::direction direction;
 
