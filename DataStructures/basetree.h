@@ -191,7 +191,7 @@ namespace DataStructures {
   template <typename T, typename Node>
   inline BaseTree<T, Node>::~BaseTree()
   {
-    delete m_root;
+    clear();
   }
 
   template <typename T, typename Node>
@@ -200,7 +200,7 @@ namespace DataStructures {
     if ((&other) == this) {
       return *this;
     }
-    delete m_root;
+    clear();
     if (other.m_root == NULL) {
       m_root = NULL;
     } else {
@@ -227,10 +227,29 @@ namespace DataStructures {
   template <typename T, typename Node>
   inline void BaseTree<T, Node>::clear()
   {
-    if (m_root != NULL) {
-      delete m_root;
-      m_root = NULL;
+    if (m_root == NULL) {
+      return;
     }
+    ArrayList<NodePointer> deletion_stack (1, m_root);
+    while (!deletion_stack.is_empty()) {
+      NodePointer current = deletion_stack.back();
+      if (current->childless()) {
+        deletion_stack.pop();
+      } else {
+        for (direction dir = TREE_LEFT; dir <= TREE_RIGHT; ++dir) {
+          if (current->m_children[dir] != NULL) {
+            if (current->m_children[dir]->childless()) {
+              delete current->m_children[dir];
+              current->m_children[dir] = NULL;
+            } else {
+              deletion_stack.push(current->m_children[dir]);
+            }
+          }
+        }
+      }
+    }
+    delete m_root;
+    m_root = NULL;
   }
 
   template <typename T, typename Node>

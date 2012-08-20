@@ -14,7 +14,7 @@ namespace DataStructures {
   public:
     typedef TreeNode<T>* NodePointer;
 
-    typedef index_type direction;
+    typedef char direction;
 
   public:
     TreeNode(const TreeNode& other);
@@ -33,11 +33,11 @@ namespace DataStructures {
 
     inline index_type size() const { return m_size; }
 
-    virtual ~TreeNode();
-
     inline direction element_direction(const T& element) const { return element < m_element ? TREE_LEFT : TREE_RIGHT; }
 
     inline index_type size(direction dir) const { return m_children[dir] == NULL ? 0 : m_children[dir]->size(); }
+
+    inline bool childless() const { return m_children[TREE_LEFT] == NULL && m_children[TREE_RIGHT] == NULL; }
 
   protected:
     inline virtual direction remove_direction() const { return size(TREE_LEFT) < size(TREE_RIGHT) ? TREE_LEFT : TREE_RIGHT; }
@@ -46,14 +46,14 @@ namespace DataStructures {
 
     inline index_type calculated_size() const { return size(TREE_LEFT) + 1 + size(TREE_RIGHT); }
 
-    index_type m_size;
-
-    T m_element;
-
     inline virtual NodePointer new_node(const T& element) { return new TreeNode<T>(element); }
 
   public:
     ArrayList<NodePointer> m_children;
+
+    index_type m_size;
+
+    T m_element;
 
   };
 
@@ -155,14 +155,6 @@ namespace DataStructures {
         assert_size();
         return std::make_pair(this, removed);
       }
-    }
-  }
-
-  template <typename T>
-  TreeNode<T>::~TreeNode()
-  {
-    for (index_type dir = TREE_LEFT; dir <= TREE_RIGHT; ++dir) {
-      delete m_children[dir];
     }
   }
 
