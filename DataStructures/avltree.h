@@ -26,11 +26,14 @@ namespace DataStructures {
   };
 
   template <typename T>
-  inline std::ostream& operator<<(std::ostream& out, const AVLTree<T>& AVLTree)
+  inline std::ostream& operator<<(std::ostream& out, const AVLTree<T>& tree)
   {
     out << "AVLTree[";
-    if (AVLTree.m_root != NULL) {
-      out << *(AVLTree.m_root);
+    for (typename AVLTree<T>::const_iterator it = tree.begin(); it < tree.end(); ++it) {
+      out << (*it).get_element();
+      if (it + 1 < tree.end()) {
+        out << ", ";
+      }
     }
     out << "]";
     return out;

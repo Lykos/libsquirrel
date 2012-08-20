@@ -9,12 +9,8 @@
 namespace DataStructures {
 
   template <typename T>
-  std::ostream& operator<<(std::ostream& out, const TreeNode<T>& it);
-
-  template <typename T>
   class TreeNode
   {
-    friend std::ostream& operator<< <> (std::ostream& out, const TreeNode<T>& it);
   public:
     typedef TreeNode<T>* NodePointer;
 
@@ -195,19 +191,6 @@ namespace DataStructures {
     assert_size();
     assert(new_parent != NULL);
     return new_parent;
-  }
-
-  template <typename T>
-  std::ostream& operator<<(std::ostream& out, const TreeNode<T>& node)
-  {
-    if (node.m_children[TREE_LEFT] != NULL) {
-      out << *(node.m_children[TREE_LEFT]) << ", ";
-    }
-    out << node.m_element;
-    if (node.m_children[TREE_RIGHT] != NULL) {
-      out << ", " << *(node.m_children[TREE_RIGHT]);
-    }
-    return out;
   }
 
 }

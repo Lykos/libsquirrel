@@ -368,11 +368,14 @@ namespace DataStructures {
 
 
   template <typename T, typename Node>
-  inline std::ostream& operator<<(std::ostream& out, const BaseTree<T, Node>& BaseTree)
+  inline std::ostream& operator<<(std::ostream& out, const BaseTree<T, Node>& tree)
   {
     out << "BaseTree[";
-    if (BaseTree.m_root != NULL) {
-      out << *(BaseTree.m_root);
+    for (typename BaseTree<T, Node>::const_iterator it = tree.begin(); it < tree.end(); ++it) {
+      out << (*it).get_element();
+      if (it + 1 < tree.end()) {
+        out << ", ";
+      }
     }
     out << "]";
     return out;

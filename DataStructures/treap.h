@@ -32,8 +32,11 @@ namespace DataStructures {
   std::ostream& operator<<(std::ostream& out, const Treap<T>& treap)
   {
     out << "Treap[";
-    if (treap.m_root != NULL) {
-      out << *(treap.m_root);
+    for (typename Treap<T>::const_iterator it = treap.begin(); it < treap.end(); ++it) {
+      out << (*it).get_element();
+      if (it + 1 < treap.end()) {
+        out << ", ";
+      }
     }
     out << "]";
     return out;
