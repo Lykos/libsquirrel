@@ -106,14 +106,14 @@ namespace DataStructures {
             way_point_t parent = parent_stack.back();
             BaseTree<T, AVLNode<T> >::rotate(parent.node, parent.dir, dir);
           }
-          // Child stays the same because of the rotation
+          break;
         } else {
           // Zic zac rotation
           // Note that current->child(1 - dir) is guaranteed to exist in the case.
-          NodePointer new_child = child->child(1 - dir);
-          balance_t lower_balance = new_child->m_balance;
-          old_balance = new_child->m_balance;
-          new_child->m_balance = 0;
+          NodePointer new_parent = child->child(1 - dir);
+          balance_t lower_balance = new_parent->m_balance;
+          old_balance = new_parent->m_balance;
+          new_parent->m_balance = 0;
           if (lower_balance == BALANCE_SIGN[dir]) {
             current->m_balance = 0;
             child->m_balance = 1;
@@ -132,8 +132,7 @@ namespace DataStructures {
             way_point_t parent = parent_stack.back();
             BaseTree<T, AVLNode<T> >::rotate(parent.node, parent.dir, dir);
           }
-          assert_balance(child);
-          child = new_child;
+          break;
         }
       } else {
         child = current;
