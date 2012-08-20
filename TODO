@@ -17,3 +17,4 @@ conversions from LongInt to int types
 conversions from double to LongInt etc
 templates of templates for tree test
 turn off warnings
+typedef for function pointers

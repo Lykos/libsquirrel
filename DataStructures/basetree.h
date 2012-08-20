@@ -26,6 +26,8 @@ namespace DataStructures {
 
     typedef typename Node::iterator iterator;
 
+    typedef bool (*predicate_t)(const T&);
+
   private:
     typedef typename const_iterator::ConstNodeInfo ConstNodeInfo;
 
@@ -35,64 +37,66 @@ namespace DataStructures {
 
     typedef typename TreeNode<T>::direction direction;
 
+    inline predicate_t negate_predicate(predicate_t predicate) { return [&predicate](const T& element) { return !predicate(element); }; }
+
   public:
     typedef std::out_of_range range_error;
 
-    BaseTree();
+    inline BaseTree();
 
-    BaseTree(const BaseTree<T, Node>& other);
+    inline BaseTree(const BaseTree<T, Node>& other);
 
     template <typename Begin, typename End>
-    BaseTree(Begin begin, End end);
+    inline BaseTree(Begin begin, End end);
 
-    virtual ~BaseTree();
+    inline virtual ~BaseTree();
 
-    BaseTree& operator=(const BaseTree<T, Node>& other);
+    inline BaseTree& operator=(const BaseTree<T, Node>& other);
 
-    bool operator==(const BaseTree<T, Node>& other) const;
+    inline bool operator==(const BaseTree<T, Node>& other) const;
 
     inline bool operator!=(const BaseTree<T, Node>& other) const { return !operator==(other); }
 
-    void clear();
+    inline void clear();
 
-    void merge(const BaseTree<T, Node>& other);
+    inline void merge(const BaseTree<T, Node>& other);
 
-    void insert(const T& element);
+    inline void insert(const T& element);
 
     template <typename Begin, typename End>
-    void insert_all(const Begin& begin, const End& end);
+    inline void insert_all(const Begin& begin, const End& end);
 
-    bool search(const T& element) const;
+    inline bool search(const T& element) const;
 
-    iterator lower_bound(const T& element);
+    inline iterator lower_bound(const T& element);
 
-    iterator upper_bound(const T& element);
+    inline iterator upper_bound(const T& element);
 
-    std::pair< iterator, iterator > equal_range(const T& element);
+    inline std::pair< iterator, iterator > equal_range(const T& element);
 
-    T& operator[](index_type index);
+    inline T& operator[](index_type index);
 
-    const_iterator lower_bound(const T& element) const;
+    inline const_iterator lower_bound(const T& element) const;
 
-    const_iterator upper_bound(const T& element) const;
+    inline const_iterator upper_bound(const T& element) const;
 
-    std::pair< const_iterator, const_iterator > equal_range(const T& element) const;
+    inline std::pair< const_iterator, const_iterator > equal_range(const T& element) const;
 
-    const T& operator[](index_type index) const;
+    inline const T& operator[](index_type index) const;
 
-    bool remove(const T& element);
+    inline bool remove(const T& element);
 
-    index_type remove_all(const T& element);
+    inline index_type remove_all(const T& element);
 
     inline index_type size() const { return m_root == NULL ? 0 : m_root->size(); }
 
-    iterator begin() { return m_root == NULL ? iterator() : m_root->begin(); }
+    inline iterator begin() { return m_root == NULL ? iterator() : m_root->begin(); }
 
-    iterator end() { return m_root == NULL ? iterator() : m_root->end(); }
+    inline iterator end() { return m_root == NULL ? iterator() : m_root->end(); }
 
-    const_iterator begin() const { return m_root == NULL ? const_iterator() : m_root->begin(); }
+    inline const_iterator begin() const { return m_root == NULL ? const_iterator() : m_root->begin(); }
 
-    const_iterator end() const { return m_root == NULL ? const_iterator() : m_root->end(); }
+    inline const_iterator end() const { return m_root == NULL ? const_iterator() : m_root->end(); }
 
   protected:
     TreeNode<T>* m_root;
@@ -100,7 +104,7 @@ namespace DataStructures {
   };
 
   template <typename T, typename Node>
-  bool BaseTree<T, Node>::search(const T& element) const
+  inline bool BaseTree<T, Node>::search(const T& element) const
   {
     NodePointer current = m_root;
     while (current != NULL) {
@@ -114,7 +118,7 @@ namespace DataStructures {
   }
 
   template <typename T, typename Node>
-  const T& BaseTree<T, Node>::operator[](index_type index) const
+  inline const T& BaseTree<T, Node>::operator[](index_type index) const
   {
     tree_check_index(index);
     NodePointer current = m_root;
@@ -134,7 +138,7 @@ namespace DataStructures {
   }
 
   template <typename T, typename Node>
-  T& BaseTree<T, Node>::operator[](index_type index)
+  inline T& BaseTree<T, Node>::operator[](index_type index)
   {
     tree_check_index(index);
     NodePointer current = m_root;
@@ -154,13 +158,13 @@ namespace DataStructures {
   }
 
   template <typename T, typename Node>
-  BaseTree<T, Node>::BaseTree():
+  inline BaseTree<T, Node>::BaseTree():
     m_root (NULL)
   {
   }
 
   template <typename T, typename Node>
-  BaseTree<T, Node>::BaseTree(const BaseTree<T, Node>& other)
+  inline BaseTree<T, Node>::BaseTree(const BaseTree<T, Node>& other)
   {
     if (other.m_root == NULL) {
       m_root = NULL;
@@ -171,20 +175,20 @@ namespace DataStructures {
 
   template <typename T, typename Node>
   template <typename Begin, typename End>
-  BaseTree<T, Node>::BaseTree(Begin begin, End end):
+  inline BaseTree<T, Node>::BaseTree(Begin begin, End end):
     m_root (NULL)
   {
     insert_all(begin, end);
   }
 
   template <typename T, typename Node>
-  BaseTree<T, Node>::~BaseTree()
+  inline BaseTree<T, Node>::~BaseTree()
   {
     delete m_root;
   }
 
   template <typename T, typename Node>
-  BaseTree<T, Node>& BaseTree<T, Node>::operator=(const BaseTree<T, Node>& other)
+  inline BaseTree<T, Node>& BaseTree<T, Node>::operator=(const BaseTree<T, Node>& other)
   {
     if ((&other) == this) {
       return *this;
@@ -199,7 +203,7 @@ namespace DataStructures {
   }
 
   template <typename T, typename Node>
-  bool BaseTree<T, Node>::operator==(const BaseTree<T, Node>& other) const
+  inline bool BaseTree<T, Node>::operator==(const BaseTree<T, Node>& other) const
   {
     if (size() != other.size()) {
       return false;
@@ -214,7 +218,7 @@ namespace DataStructures {
   }
 
   template <typename T, typename Node>
-  void BaseTree<T, Node>::clear()
+  inline void BaseTree<T, Node>::clear()
   {
     if (m_root != NULL) {
       delete m_root;
@@ -223,13 +227,13 @@ namespace DataStructures {
   }
 
   template <typename T, typename Node>
-  void BaseTree<T, Node>::merge(const BaseTree<T, Node> &other)
+  inline void BaseTree<T, Node>::merge(const BaseTree<T, Node> &other)
   {
     insert_all(other.begin(), other.end());
   }
 
   template <typename T, typename Node>
-  void BaseTree<T, Node>::insert(const T& element)
+  inline void BaseTree<T, Node>::insert(const T& element)
   {
     if (m_root == NULL) {
       m_root = new Node(element);
@@ -240,7 +244,7 @@ namespace DataStructures {
 
   template <typename T, typename Node>
   template <typename BeginIterator, typename EndIterator>
-  void BaseTree<T, Node>::insert_all(const BeginIterator& begin, const EndIterator& end)
+  inline void BaseTree<T, Node>::insert_all(const BeginIterator& begin, const EndIterator& end)
   {
     for (BeginIterator it = begin; it != end; ++it) {
       insert(*it);
@@ -248,51 +252,138 @@ namespace DataStructures {
   }
 
   template <typename T, typename Node>
-  typename BaseTree<T, Node>::iterator BaseTree<T, Node>::lower_bound(const T &element)
+  typename BaseTree<T, Node>::const_iterator BaseTree<T, Node>::lower_bound(const T& element) const
   {
-    if (m_root == NULL) {
-      return iterator();
+    NodePointer current = m_root;
+    ArrayList<ConstNodeInfo> parent_stack;
+    ConstNodeInfo info {m_root, 0};
+    parent_stack.push(info);
+    index_type true_size = 0;
+    index_type true_left_size = 0;
+    index_type left_size = 0;
+    while (current != NULL) {
+      if (current->get_element() < element) {
+        left_size += 1 + current->size(TREE_LEFT);
+        current = current->m_children[TREE_RIGHT];
+        ConstNodeInfo info {current, left_size};
+        parent_stack.push(info);
+      } else {
+        // Save information in case all of the elements on
+        // the left subtree are smaller
+        true_size = parent_stack.size();
+        true_left_size = left_size + current->size(TREE_LEFT);
+        current = current->m_children[TREE_LEFT];
+        ConstNodeInfo info {current, left_size};
+        parent_stack.push(info);
+      }
+    }
+    if (true_size == 0) {
+      return end();
     } else {
-      ArrayList<NodeInfo> empty_info;
-      return m_root->lower_bound(empty_info, element, 0);
+      parent_stack.remove_range(true_size, parent_stack.size());
+      return const_iterator(parent_stack, true_left_size);
     }
   }
 
   template <typename T, typename Node>
-  typename BaseTree<T, Node>::const_iterator BaseTree<T, Node>::lower_bound(const T &element) const
+  typename BaseTree<T, Node>::iterator BaseTree<T, Node>::lower_bound(const T& element)
   {
-    if (m_root == NULL) {
-      return const_iterator();
+    NodePointer current = m_root;
+    ArrayList<NodeInfo> parent_stack;
+    NodeInfo info {m_root, 0};
+    parent_stack.push(info);
+    index_type true_size = 0;
+    index_type true_left_size = 0;
+    index_type left_size = 0;
+    while (current != NULL) {
+      if (current->get_element() < element) {
+        left_size += 1 + current->size(TREE_LEFT);
+        current = current->m_children[TREE_RIGHT];
+        NodeInfo info {current, left_size};
+        parent_stack.push(info);
+      } else {
+        true_size = parent_stack.size();
+        true_left_size = left_size + current->size(TREE_LEFT);
+        current = current->m_children[TREE_LEFT];
+        NodeInfo info {current, left_size};
+        parent_stack.push(info);
+      }
+    }
+    if (true_size == 0) {
+      return end();
     } else {
-      ArrayList<NodeInfo> empty_info;
-      return m_root->lower_bound(empty_info, element, 0);
+      parent_stack.remove_range(true_size, parent_stack.size());
+      return iterator(parent_stack, true_left_size);
+    }
+  }
+
+
+  template <typename T, typename Node>
+  typename BaseTree<T, Node>::const_iterator BaseTree<T, Node>::upper_bound(const T& element) const
+  {
+    NodePointer current = m_root;
+    ArrayList<ConstNodeInfo> parent_stack;
+    ConstNodeInfo info {m_root, 0};
+    parent_stack.push(info);
+    index_type true_size = 0;
+    index_type true_left_size = 0;
+    index_type left_size = 0;
+    while (current != NULL) {
+      if (current->get_element() <= element) {
+        left_size += 1 + current->size(TREE_LEFT);
+        current = current->m_children[TREE_RIGHT];
+        ConstNodeInfo info {current, left_size};
+        parent_stack.push(info);
+      } else {
+        true_size = parent_stack.size();
+        true_left_size = left_size + current->size(TREE_LEFT);
+        current = current->m_children[TREE_LEFT];
+        ConstNodeInfo info {current, left_size};
+        parent_stack.push(info);
+      }
+    }
+    if (true_size == 0) {
+      return end();
+    } else {
+      parent_stack.remove_range(true_size, parent_stack.size());
+      return const_iterator(parent_stack, true_left_size);
     }
   }
 
   template <typename T, typename Node>
-  typename BaseTree<T, Node>::iterator BaseTree<T, Node>::upper_bound(const T &element)
+  typename BaseTree<T, Node>::iterator BaseTree<T, Node>::upper_bound(const T& element)
   {
-    if (m_root == NULL) {
-      return iterator();
+    NodePointer current = m_root;
+    ArrayList<NodeInfo> parent_stack;
+    NodeInfo info {m_root, 0};
+    parent_stack.push(info);
+    index_type true_size = 0;
+    index_type true_left_size = 0;
+    index_type left_size = 0;
+    while (current != NULL) {
+      if (current->get_element() <= element) {
+        left_size += 1 + current->size(TREE_LEFT);
+        current = current->m_children[TREE_RIGHT];
+        NodeInfo info {current, left_size};
+        parent_stack.push(info);
+      } else {
+        true_size = parent_stack.size();
+        true_left_size = left_size + current->size(TREE_LEFT);
+        current = current->m_children[TREE_LEFT];
+        NodeInfo info {current, left_size};
+        parent_stack.push(info);
+      }
+    }
+    if (true_size == 0) {
+      return end();
     } else {
-      ArrayList<NodeInfo> empty_info;
-      return m_root->upper_bound(empty_info, element, 0);
+      parent_stack.remove_range(true_size, parent_stack.size());
+      return iterator(parent_stack, true_left_size);
     }
   }
 
   template <typename T, typename Node>
-  typename BaseTree<T, Node>::const_iterator BaseTree<T, Node>::upper_bound(const T &element) const
-  {
-    if (m_root == NULL) {
-      return const_iterator();
-    } else {
-      ArrayList<NodeInfo> empty_info;
-      return m_root->upper_bound(empty_info, element, 0);
-    }
-  }
-
-  template <typename T, typename Node>
-  typename std::pair< typename BaseTree<T, Node>::iterator, typename BaseTree<T, Node>::iterator > BaseTree<T, Node>::equal_range(const T &element)
+  inline typename std::pair< typename BaseTree<T, Node>::iterator, typename BaseTree<T, Node>::iterator > BaseTree<T, Node>::equal_range(const T &element)
   {
     if (m_root == NULL) {
       return make_pair(iterator(), iterator());
@@ -303,7 +394,7 @@ namespace DataStructures {
   }
 
   template <typename T, typename Node>
-  typename std::pair< typename BaseTree<T, Node>::const_iterator, typename BaseTree<T, Node>::const_iterator > BaseTree<T, Node>::equal_range(const T &element) const
+  inline typename std::pair< typename BaseTree<T, Node>::const_iterator, typename BaseTree<T, Node>::const_iterator > BaseTree<T, Node>::equal_range(const T &element) const
   {
     if (m_root == NULL) {
       return make_pair(const_iterator(), const_iterator());
@@ -314,7 +405,7 @@ namespace DataStructures {
   }
 
   template <typename T, typename Node>
-  bool BaseTree<T, Node>::remove(const T& element)
+  inline bool BaseTree<T, Node>::remove(const T& element)
   {
     if (m_root == NULL) {
       return false;
@@ -326,7 +417,7 @@ namespace DataStructures {
   }
 
   template <typename T, typename Node>
-  index_type BaseTree<T, Node>::remove_all(const T& element)
+  inline index_type BaseTree<T, Node>::remove_all(const T& element)
   {
     if (m_root == NULL) {
       return 0;
@@ -339,7 +430,7 @@ namespace DataStructures {
 
 
   template <typename T, typename Node>
-  std::ostream& operator<<(std::ostream& out, const BaseTree<T, Node>& BaseTree)
+  inline std::ostream& operator<<(std::ostream& out, const BaseTree<T, Node>& BaseTree)
   {
     out << "BaseTree[";
     if (BaseTree.m_root != NULL) {

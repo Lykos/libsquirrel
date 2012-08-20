@@ -125,8 +125,8 @@ namespace DataStructures {
   inline void Queue<T>::clear()
   {
     index_type part_length = std::min(BaseList<T>::size(), BaseList<T>::capacity() - m_begin);
-    BaseList<T>::destroy_segment(m_begin, part_length);
-    BaseList<T>::destroy_segment(0, BaseList<T>::size() - part_length);
+    BaseList<T>::destroy_part(m_begin, part_length);
+    BaseList<T>::destroy_part(0, BaseList<T>::size() - part_length);
     BaseList<T>::prepare_size(0);
   }
 

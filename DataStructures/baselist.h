@@ -45,9 +45,8 @@ namespace DataStructures {
 
     inline virtual void reorganize() {}
 
-/*
-    template <typename BeginIterator, typename EndIterator>
-    BaseList(const BeginIterator& begin, const EndIterator& end);*/
+    template <typename Iterator>
+    BaseList(const Iterator& begin, const Iterator& end);
 
     inline virtual ~BaseList();
 
@@ -55,7 +54,7 @@ namespace DataStructures {
 
     inline bool is_empty() const { return m_size == 0; }
 
-    inline virtual void clear() { destroy_segment(0, m_size); prepare_size(0); }
+    inline virtual void clear() { destroy_part(0, m_size); prepare_size(0); }
 
     inline index_type min_capacity() const { return m_min_capacity; }
 
@@ -103,7 +102,7 @@ namespace DataStructures {
 
     inline void destroy(index_type index) { m_content[index].~T(); }
 
-    inline void destroy_segment(index_type begin, index_type length) { for (index_type i = begin; i < begin + length; ++i) destroy(i); }
+    inline void destroy_part(index_type begin, index_type length) { for (index_type i = begin; i < begin + length; ++i) destroy(i); }
 
   };
 
@@ -113,11 +112,11 @@ namespace DataStructures {
 
   index_type log2(index_type k);
 
-  template <typename TargetBegin, typename TargetEnd, typename SourceBegin, typename SourceEnd>
-  void copy(const TargetBegin& target_begin,
-            const TargetEnd& target_end,
-            const SourceBegin& source_begin,
-            const SourceEnd& source_end);
+  template <typename TargetIterator, typename SourceIterator>
+  void copy(const TargetIterator& target_begin,
+            const TargetIterator& target_end,
+            const SourceIterator& source_begin,
+            const SourceIterator& source_end);
 
   template <typename T>
   const index_type BaseList<T>::DEFAULT_MIN_CAPACITY(16);
@@ -138,20 +137,19 @@ namespace DataStructures {
     }
     assert(m_min_capacity > 0);
   }
-/*
+
   template <typename T>
-  template <typename BeginIterator, typename EndIterator>
-  BaseList<T>::BaseList(const BeginIterator& begin, const EndIterator& end):
-    m_size(end - begin),
-    m_min_capacity(DEFAULT_MIN_CAPACITY)
+  template <typename Iterator>
+  BaseList<T>::BaseList(const Iterator& begin, const Iterator& end):
+    m_size (end - begin),
+    m_min_capacity (DEFAULT_MIN_CAPACITY)
   {
-    init_capacity(end - begin);
+    adjust_capacity (end - begin);
     index_type i = 0;
-    for (BeginIterator it = begin; it < end; ++it) {
-      m_content[i++] = *it;
+    for (Iterator it = begin; it < end; ++it, ++i) {
+      m_content[i] = *it;
     }
   }
-*/
 
   template <typename T>
   BaseList<T>::BaseList(const BaseList<T>& other):
@@ -201,6 +199,9 @@ namespace DataStructures {
   template <typename T>
   inline void BaseList<T>::move_part(index_type insert_position, index_type start, index_type length)
   {
+    if (length == 0) {
+      return;
+    }
     assert(insert_position < m_capacity);
     assert(start < m_capacity);
     assert(insert_position + length <= m_capacity);
@@ -211,6 +212,9 @@ namespace DataStructures {
   template <typename T>
   inline void BaseList<T>::swap_parts(index_type start1, index_type start2, index_type length)
   {
+    if (length == 0) {
+      return;
+    }
     assert((start1 <= start2 && start1 + length <= start2) || (start2 <= start1 && start2 + length <= start1));
     std::swap_ranges(m_content + start1, m_content + start1 + length, m_content + start2);
   }
@@ -241,14 +245,14 @@ namespace DataStructures {
     m_content = static_cast<T*>(realloc(m_content, m_capacity * sizeof(T)));
   }
 
-  template <typename TargetBegin, typename TargetEnd, typename SourceBegin, typename SourceEnd>
-  void copy(const TargetBegin& target_begin,
-            const TargetEnd& target_end,
-            const SourceBegin& source_begin,
-            const SourceEnd& source_end)
+  template <typename TargetIterator, typename SourceIterator>
+  void copy(const TargetIterator& target_begin,
+            const TargetIterator& target_end,
+            const SourceIterator& source_begin,
+            const SourceIterator& source_end)
   {
-    TargetBegin target_it (target_begin);
-    SourceBegin source_it (source_begin);
+    TargetIterator target_it (target_begin);
+    SourceIterator source_it (source_begin);
     for (; target_it < target_end && source_it < source_end; ++target_it, ++source_it)
     {
       *target_it = *source_it;

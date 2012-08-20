@@ -52,6 +52,14 @@ namespace DataStructures {
 
     inline T pop();
 
+    inline bool remove(const T& element);
+
+    inline index_type remove_all(const T& element);
+
+    inline void remove_position(index_type position);
+
+    inline void remove_range(index_type start, index_type end);
+
     inline const T& front() const { check_empty(); return BaseList<T>::at(0); }
 
     inline T& front() { check_empty(); return BaseList<T>::at(0); }
@@ -193,6 +201,65 @@ namespace DataStructures {
     BaseList<T>::destroy(BaseList<T>::size() - 1);
     BaseList<T>::prepare_size(BaseList<T>::size() - 1);
     return element;
+  }
+
+  template <typename T>
+  inline bool ArrayList<T>::remove(const T& element)
+  {
+    for (index_type i = 0; i < BaseList<T>::size(); ++i) {
+      if (BaseList<T>::at(i) == element) {
+        BaseList<T>::move_part(i, i + 1, BaseList<T>::size() - (i + 1));
+        BaseList<T>::destroy(BaseList<T>::size() - 1);
+        BaseList<T>::prepare_size(BaseList<T>::size() - 1);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  template <typename T>
+  inline index_type ArrayList<T>::remove_all(const T& element)
+  {
+    index_type removed = 0;
+    for (index_type i = 0; i < BaseList<T>::size(); ++i) {
+      while (i < BaseList<T>::size() && BaseList<T>::at(i) == element) {
+        ++removed;
+        ++i;
+      }
+      index_type good_length = 0;
+      while (i + good_length < BaseList<T>::size() && BaseList<T>::at(i + good_length) != element) {
+        ++good_length;
+      }
+      BaseList<T>::move_part(i, good_length);
+      i += good_length;
+    }
+    destroy_part(BaseList<T>::size() - removed, removed);
+    BaseList<T>::prepare_size(BaseList<T>::size() - removed);
+    return false;
+  }
+
+  template <typename T>
+  inline void ArrayList<T>::remove_position(index_type position)
+  {
+    list_check_index(position);
+    BaseList<T>::move_part(position, position + 1, BaseList<T>::size() - (position + 1));
+    destroy(BaseList<T>::size() - 1);
+    BaseList<T>::prepare_size(BaseList<T>::size() - 1);
+  }
+
+  template <typename T>
+  inline void ArrayList<T>::remove_range(index_type start, index_type end)
+  {
+    if (start >= end) {
+      return;
+    }
+    list_check_index(start);
+    end = std::min(end, BaseList<T>::size());
+    index_type length = end - start;
+    index_type tail_length = std::min(length, BaseList<T>::size() - end);
+    BaseList<T>::move_part(start, end, tail_length);
+    BaseList<T>::destroy_part(BaseList<T>::size() - length, length);
+    BaseList<T>::prepare_size(BaseList<T>::size() - length);
   }
 
 }
