@@ -5,7 +5,7 @@
 #include "treenode.h"
 
 #ifndef NDEBUG
-#include <ostream>
+#include <sstream>
 #define tree_iterator_check_index(index) if (index >= m_tree->size()) { std::ostringstream oss; oss << "Invalid index " << index << " for BaseTree of size " << m_tree->size() << "."; throw typename Tree::range_error(oss.str()); }
 #else
 #define tree_iterator_check_index(index)

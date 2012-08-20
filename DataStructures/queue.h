@@ -24,12 +24,15 @@ namespace DataStructures {
 
     inline Queue(const Queue<T>& other);
 
+    template <typename Iterator>
+    inline Queue(const Iterator& begin, const Iterator& end);
+
     inline bool operator==(const Queue<T>& other) const;
 
     inline bool operator!=(const Queue<T>& other) const { return !operator==(other); }
 
-    template <typename Begin, typename End>
-    inline void push_all(const Begin& begin, const End& end);
+    template <typename Iterator>
+    inline void push_all(const Iterator& begin, const Iterator& end);
 
     inline const T& operator[](index_type i) const { list_check_index(i); return BaseList<T>::at((i + m_begin) % BaseList<T>::capacity()); }
 
@@ -94,15 +97,22 @@ namespace DataStructures {
   }
 
   template <typename T>
-  template <typename Begin, typename End>
-  inline void Queue<T>::push_all(const Begin& begin, const End& end)
+  template <typename Iterator>
+  inline Queue<T>::Queue(const Iterator& begin, const Iterator& end)
+  {
+    push_all(begin, end);
+  }
+
+  template <typename T>
+  template <typename Iterator>
+  inline void Queue<T>::push_all(const Iterator& begin, const Iterator& end)
   {
     if (end <= begin) {
       return;
     }
     index_type i = BaseList<T>::size();
     BaseList<T>::prepare_size(BaseList<T>::size() + (end - begin));
-    for (Begin it = begin; it != end; ++it, ++i) {
+    for (Iterator it = begin; it != end; ++it, ++i) {
       operator[](i) = *it;
     }
   }

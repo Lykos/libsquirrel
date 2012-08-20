@@ -3,47 +3,36 @@
 
 #include "infiniterandom.h"
 #include "treenode.h"
-#include <iostream>
 
 namespace DataStructures {
 
   template <typename T>
-  inline std::ostream& operator<<(std::ostream& out, const TreapNode<T>& it);
-
-  template <typename T>
   class TreapNode : public TreeNode<T>
   {
-    friend std::ostream& operator<< <> (std::ostream& out, const TreapNode<T>& it);
-
-  private:
-    typedef typename TreeNode<T>::NodePointer NodePointer;
-
+  protected:
     typedef TreapNode<T>* TreapNodePointer;
 
     typedef const TreapNode<T>* ConstTreapNodePointer;
 
+  public:
+    typedef typename TreeNode<T>::NodePointer NodePointer;
+
     typedef typename TreeNode<T>::direction direction;
 
-    inline direction min_rand_direction() const;
-
-  public:
     inline TreapNode(const TreapNode& other);
 
     inline TreapNode(const T& element);
 
-    inline NodePointer insert(const T& element);
+    InfiniteRandom m_randomness;
 
-  protected:
-    inline direction remove_direction() const { return min_rand_direction(); }
-
-    inline NodePointer new_node(const T& element) { return new TreapNode<T>(element); }
-
-  private:
     inline ConstTreapNodePointer child(direction dir) const { return static_cast<const TreapNodePointer>(TreeNode<T>::m_children[dir]); }
 
     inline TreapNodePointer child(direction dir) { return static_cast<TreapNodePointer>(TreeNode<T>::m_children[dir]); }
 
-    InfiniteRandom m_randomness;
+  protected:
+    inline direction min_rand_direction() const;
+
+    inline direction remove_direction() const { return min_rand_direction(); }
 
   };
 
@@ -59,21 +48,6 @@ namespace DataStructures {
     TreeNode<T>(element),
     m_randomness ()
   {
-  }
-
-  template <typename T>
-  inline typename TreapNode<T>::NodePointer TreapNode<T>::insert(const T& element)
-  {
-    direction dir = TreeNode<T>::element_direction(element);
-    TreeNode<T>::insert(element);
-    NodePointer result = this;
-    assert(child(dir)->m_randomness.stuff());
-    assert(m_randomness.stuff());
-    if (child(dir)->m_randomness < m_randomness) {
-      result = TreeNode<T>::rotate(dir);
-    }
-    assert_size();
-    return result;
   }
 
   template <typename T>

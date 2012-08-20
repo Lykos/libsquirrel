@@ -1,7 +1,6 @@
 #ifndef DATASTRUCTURES_TREAP_H
 #define DATASTRUCTURES_TREAP_H
 
-#include <sstream>
 #include <ostream>
 #include "basetypes.h"
 #include "DataStructures_global.h"
@@ -11,7 +10,7 @@
 namespace DataStructures {
 
   template <typename T>
-  std::ostream& operator<<(std::ostream& out, const Treap<T>& it);
+  inline std::ostream& operator<<(std::ostream& out, const Treap<T>& it);
 
   template <typename T>
   class DATASTRUCTURESSHARED_EXPORT Treap : public BaseTree<T, TreapNode<T> >
@@ -19,17 +18,28 @@ namespace DataStructures {
     friend std::ostream& operator<< <> (std::ostream& out, const Treap<T>& it);
 
   public:
-    Treap();
+    inline Treap();
 
-    Treap(const Treap<T>& other);
+    inline Treap(const Treap<T>& other);
 
-    template <typename Begin, typename End>
-    Treap(Begin begin, End end);
+    template <typename Iterator>
+    inline Treap(const Iterator& begin, const Iterator& end);
+
+    inline void insert(const T &element);
+
+  protected:
+    typedef typename BaseTree<T, TreapNode<T> >::way_point_t way_point_t;
+
+    typedef typename BaseTree<T, TreapNode<T> >::parent_stack_t parent_stack_t;
+
+    typedef typename BaseTree<T, TreapNode<T> >::NodePointer NodePointer;
+
+    typedef typename BaseTree<T, TreapNode<T> >::direction direction;
 
   };
 
   template <typename T>
-  std::ostream& operator<<(std::ostream& out, const Treap<T>& treap)
+  inline std::ostream& operator<<(std::ostream& out, const Treap<T>& treap)
   {
     out << "Treap[";
     for (typename Treap<T>::const_iterator it = treap.begin(); it < treap.end(); ++it) {
@@ -43,23 +53,49 @@ namespace DataStructures {
   }
 
   template <typename T>
-  Treap<T>::Treap():
+  inline Treap<T>::Treap():
     BaseTree<T, TreapNode<T> >()
   {
   }
 
   template <typename T>
-  Treap<T>::Treap(const Treap<T>& other):
+  inline Treap<T>::Treap(const Treap<T>& other):
     BaseTree<T, TreapNode<T> >(other)
   {
   }
 
   template <typename T>
-  template <typename Begin, typename End>
-  Treap<T>::Treap(Begin begin, End end):
+  template <typename Iterator>
+  inline Treap<T>::Treap(const Iterator& begin, const Iterator& end):
     BaseTree<T, TreapNode<T> > (begin, end)
   {
   }
+
+  template <typename T>
+  inline void Treap<T>::insert(const T &element)
+  {
+    if (BaseTree<T, TreapNode<T> >::m_root == NULL) {
+      BaseTree<T, TreapNode<T> >::m_root = new TreapNode<T>(element);
+      return;
+    }
+    parent_stack_t parent_stack;
+    BaseTree<T, TreapNode<T> >::insert_with_stack(BaseTree<T, TreapNode<T> >::m_root, element, parent_stack);
+    way_point_t last_point = parent_stack.pop();
+    NodePointer current = last_point.node;
+    direction dir = last_point.dir;
+    while (current->child(dir)->m_randomness < current->m_randomness) {
+      if (parent_stack.is_empty()) {
+        BaseTree<T, TreapNode<T> >::rotate_root(dir);
+        return;
+      } else {
+        way_point_t parent = parent_stack.pop();
+        BaseTree<T, TreapNode<T> >::rotate(parent.node, parent.dir, dir);
+        current = parent.node;
+        dir = parent.dir;
+      }
+    }
+  }
+
 
 }
 

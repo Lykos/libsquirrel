@@ -4,8 +4,6 @@
 #include "infiniterandom.h"
 #include <iostream>
 
-#define assert_size() assert(TreeNode<T>::m_size == TreeNode<T>::calculated_size())
-
 namespace DataStructures {
 
   template <typename T>
@@ -20,8 +18,6 @@ namespace DataStructures {
     TreeNode(const TreeNode& other);
 
     TreeNode(const T& element);
-
-    virtual NodePointer insert(const T& element);
 
     std::pair< NodePointer, index_type > remove_all(const T& element);
 
@@ -39,16 +35,16 @@ namespace DataStructures {
 
     inline bool childless() const { return m_children[TREE_LEFT] == NULL && m_children[TREE_RIGHT] == NULL; }
 
+    inline virtual ~TreeNode() {}
+
   protected:
     inline virtual direction remove_direction() const { return size(TREE_LEFT) < size(TREE_RIGHT) ? TREE_LEFT : TREE_RIGHT; }
 
     inline NodePointer rotate(direction dir);
 
+  public:
     inline index_type calculated_size() const { return size(TREE_LEFT) + 1 + size(TREE_RIGHT); }
 
-    inline virtual NodePointer new_node(const T& element) { return new TreeNode<T>(element); }
-
-  public:
     ArrayList<NodePointer> m_children;
 
     index_type m_size;
@@ -79,20 +75,6 @@ namespace DataStructures {
   }
 
   template <typename T>
-  typename TreeNode<T>::NodePointer TreeNode<T>::insert(const T& element)
-  {
-    ++m_size;
-    direction dir = element_direction(element);
-    if (m_children[dir] == NULL) {
-      m_children[dir] = new_node(element);
-    } else {
-      m_children[dir] = m_children[dir]->insert(element);
-    }
-    assert_size();
-    return this;
-  }
-
-  template <typename T>
   std::pair<typename TreeNode<T>::NodePointer, index_type> TreeNode<T>::remove_all(const T& element)
   {
     typedef std::pair< NodePointer, index_type > Result;
@@ -115,7 +97,6 @@ namespace DataStructures {
         Result result = m_children[dir]->remove_all(element);
         m_children[dir] = result.first;
         m_size -= result.second;
-        assert_size();
         return std::make_pair(this, result.second);
       }
     }
@@ -152,37 +133,9 @@ namespace DataStructures {
         bool removed = result.second;
         m_children[dir] = result.first;
         m_size -= removed;
-        assert_size();
         return std::make_pair(this, removed);
       }
     }
-  }
-
-  template <typename T>
-  inline typename TreeNode<T>::NodePointer TreeNode<T>::rotate(direction dir)
-  {
-    // Precondition
-    assert(m_children[dir] != NULL);
-
-    // Define a few aliases
-    NodePointer new_parent = m_children[dir];
-    NodePointer new_this_child = new_parent->m_children[1 - dir];
-    NodePointer parent_child = new_parent->m_children[dir];
-
-    // Change the pointers
-    new_parent->m_children[1 - dir] = this;
-    m_children[dir] = new_this_child;
-
-    // Correct the sizes
-    index_type old_size = m_size;
-    m_size -= 1 + (parent_child == NULL ? 0 : parent_child->size());
-    new_parent->m_size = old_size;
-
-    // Postcondition
-    assert(new_parent->m_size == new_parent->size(TREE_LEFT) + 1 + new_parent->size(TREE_RIGHT));
-    assert_size();
-    assert(new_parent != NULL);
-    return new_parent;
   }
 
 }

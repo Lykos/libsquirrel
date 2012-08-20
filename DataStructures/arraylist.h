@@ -25,12 +25,12 @@ namespace DataStructures {
     inline explicit ArrayList(index_type initial_size = 0, const T& element = T());
 
     inline ArrayList(const ArrayList<T>& other);
-/*
-    template <typename Begin, typename End>
-    ArrayList(const Begin& begin, const End& end);*/
 
-    template <typename BeginIterator, typename EndIterator>
-    void push_all(const BeginIterator& begin, const EndIterator& end);
+    /*template <typename Iterator>
+    ArrayList(const Iterator& begin, const Iterator& end);*/
+
+    template <typename Iterator>
+    void push_all(const Iterator& begin, const Iterator& end);
 
     inline ArrayList<T> operator+(const ArrayList<T>& other) const;
 
@@ -98,31 +98,23 @@ namespace DataStructures {
   {
   }
 
-/*
-  template <typename T>
-  template <typename Begin, typename End>
-  ArrayList<T>::ArrayList(const Begin& begin, const End& end):
-    m_size(end - begin),
-    m_min_capacity(DEFAULT_MIN_CAPACITY)
+  /*template <typename T>
+  template <typename Iterator>
+  ArrayList<T>::ArrayList(const Iterator& begin, const Iterator& end)
   {
-    init_capacity(end - begin);
-    index_type i = 0;
-    for (Begin it = begin; it < end; ++it) {
-      m_content[i++] = *it;
-    }
-  }
-*/
+    push_all(begin, end);
+  }*/
 
   template <typename T>
-  template <typename BeginIterator, typename EndIterator>
-  inline void ArrayList<T>::push_all(const BeginIterator& begin, const EndIterator& end)
+  template <typename Iterator>
+  inline void ArrayList<T>::push_all(const Iterator& begin, const Iterator& end)
   {
     if (end <= begin) {
       return;
     }
     index_type i = BaseList<T>::size();
     BaseList<T>::prepare_size(BaseList<T>::size() + (end - begin));
-    for (BeginIterator it = begin; it != end; ++it, ++i) {
+    for (Iterator it = begin; it != end; ++it, ++i) {
       BaseList<T>::at(i) = *it;
     }
   }
