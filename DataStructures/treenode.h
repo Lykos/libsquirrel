@@ -45,18 +45,18 @@ namespace DataStructures {
   public:
     inline index_type calculated_size() const { return size(TREE_LEFT) + 1 + size(TREE_RIGHT); }
 
-    ArrayList<NodePointer> m_children;
+    T m_element;
 
     index_type m_size;
 
-    T m_element;
+    ArrayList<NodePointer> m_children;
 
   };
 
   template <typename T>
   TreeNode<T>::TreeNode(const TreeNode<T> &other):
-    m_size (other.m_size),
     m_element (other.m_element),
+    m_size (other.m_size),
     m_children (2, NULL)
   {
     for (direction dir = TREE_LEFT; dir <= TREE_RIGHT; ++dir) {
@@ -68,8 +68,8 @@ namespace DataStructures {
 
   template <typename T>
   TreeNode<T>::TreeNode(const T& element):
-    m_size (1),
     m_element (element),
+    m_size (1),
     m_children (2, NULL)
   {
   }

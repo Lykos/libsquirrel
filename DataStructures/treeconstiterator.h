@@ -33,8 +33,8 @@ namespace DataStructures {
     const T& operator[](index_type i);
   private:
     typedef typename TreeIterator<T, Tree>::NodeInfo NodeInfo;
-    ArrayList<ConstNodeInfo> m_parent_stack;
     const Tree* m_tree;
+    ArrayList<ConstNodeInfo> m_parent_stack;
     inline void local_search();
     inline const TreeNode<T>& node() const { return *m_parent_stack.back().node; }
     inline index_type left_size() const { return m_parent_stack.back().left_size; }

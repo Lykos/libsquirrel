@@ -49,8 +49,8 @@ namespace DataStructures {
 
     inline BaseTree(const BaseTree<T, Node>& other);
 
-    template <typename Begin, typename End>
-    inline BaseTree(Begin begin, End end);
+    template <typename Iterator>
+    inline BaseTree(Iterator begin, Iterator end);
 
     inline virtual ~BaseTree();
 
@@ -204,8 +204,8 @@ namespace DataStructures {
   }
 
   template <typename T, typename Node>
-  template <typename Begin, typename End>
-  inline BaseTree<T, Node>::BaseTree(Begin begin, End end):
+  template <typename Iterator>
+  inline BaseTree<T, Node>::BaseTree(Iterator begin, Iterator end):
     m_root (NULL)
   {
     insert_all(begin, end);
@@ -340,9 +340,7 @@ namespace DataStructures {
         current = current->child(TREE_LEFT);
       }
     }
-    const BaseTree<T, Node>* bla = this;
-    const_iterator it (bla, correct_index);
-    return it;
+    return const_iterator (this, correct_index);
   }
 
   template <typename T, typename Node>

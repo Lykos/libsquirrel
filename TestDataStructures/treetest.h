@@ -290,11 +290,11 @@ void TreeTest<Tree>::test_const_iterators()
 template <typename Tree>
 void TreeTest<Tree>::test_upper_bound_const()
 {
-  /*const Tree& t = m_tree;
+  const Tree& t = m_tree;
   QCOMPARE(t.upper_bound(0), t.begin() + 21);
   QCOMPARE(t.upper_bound(-1), t.begin());
   QCOMPARE(t.upper_bound(1), t.begin() + 22);
-  QCOMPARE(t.upper_bound(100), t.end());*/
+  QCOMPARE(t.upper_bound(100), t.end());
 }
 
 template <typename Tree>
@@ -311,12 +311,11 @@ void TreeTest<Tree>::test_upper_bound()
 template <typename Tree>
 void TreeTest<Tree>::test_lower_bound_const()
 {
-  /*
   const Tree& t = m_tree;
   QCOMPARE(t.lower_bound(0), t.begin());
   QCOMPARE(t.lower_bound(-1), t.begin());
   QCOMPARE(t.lower_bound(1), t.begin() + 21);
-  QCOMPARE(t.lower_bound(100), t.end());*/
+  QCOMPARE(t.lower_bound(100), t.end());
 }
 
 template <typename Tree>
