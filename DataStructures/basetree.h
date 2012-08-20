@@ -385,23 +385,13 @@ namespace DataStructures {
   template <typename T, typename Node>
   inline typename std::pair< typename BaseTree<T, Node>::iterator, typename BaseTree<T, Node>::iterator > BaseTree<T, Node>::equal_range(const T &element)
   {
-    if (m_root == NULL) {
-      return make_pair(iterator(), iterator());
-    } else {
-      ArrayList<NodeInfo> empty_info;
-      return m_root->equal_range(empty_info, element, 0);
-    }
+    return make_pair(lower_bound(element), upper_bound(element));
   }
 
   template <typename T, typename Node>
   inline typename std::pair< typename BaseTree<T, Node>::const_iterator, typename BaseTree<T, Node>::const_iterator > BaseTree<T, Node>::equal_range(const T &element) const
   {
-    if (m_root == NULL) {
-      return make_pair(const_iterator(), const_iterator());
-    } else {
-      ArrayList<NodeInfo> empty_info;
-      return m_root->equal_range(empty_info, element, 0);
-    }
+    return make_pair(lower_bound(element), upper_bound(element));
   }
 
   template <typename T, typename Node>
