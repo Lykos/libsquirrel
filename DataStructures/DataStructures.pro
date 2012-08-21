@@ -37,7 +37,8 @@ HEADERS +=\
     heap.h \
     avltree.h \
     avlnode.h \
-    binarytree.h
+    binarytree.h \
+    fibonacciheap.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN
