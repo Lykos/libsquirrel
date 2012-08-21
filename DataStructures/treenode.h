@@ -70,7 +70,7 @@ namespace DataStructures {
   TreeNode<T>::TreeNode(const T& element):
     m_element (element),
     m_size (1),
-    m_children (2, NULL)
+     m_children (2, NULL)
   {
   }
 

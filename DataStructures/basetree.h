@@ -394,13 +394,35 @@ namespace DataStructures {
   template <typename T, typename Node>
   inline bool BaseTree<T, Node>::remove(const T& element)
   {
-    if (m_root == NULL) {
-      return false;
-    } else {
-      std::pair<NodePointer, bool> result = m_root->remove(element);
-      m_root = result.first;
-      return result.second;
+    NodePointer parent = NULL;
+    direction parent_dir;
+    NodePointer current = m_root;
+    direction dir;
+    while (current != NULL) {
+      if (current->get_element() == element) {
+        while (current->m_children[TREE_LEFT] != NULL && current->m_children[TREE_RIGHT] != NULL) {
+          dir = size(TREE_LEFT) < size(TREE_RIGHT) ? TREE_LEFT : TREE_RIGHT;
+          rotate(parent, parent_dir, dir);
+          parent = parent->m_children[parent_dir];
+          parent_dir = 1 - dir;
+        }
+        for (direction dir = TREE_LEFT; dir <= TREE_RIGHT; ++dir) {
+          if (current->m_children[dir] == NULL) {
+            if (parent == NULL) {
+              m_root = current->m_chidren[1 - dir];
+            } else {
+              parent->m_children[dir] = current->m_children[1 - dir];
+            }
+          }
+        }
+        return true;
+      }
+      parent_dir = dir;
+      dir = current->element_direction(element);
+      parent = current;
+      current = current->child(dir);
     }
+    return false;
   }
 
   template <typename T, typename Node>
