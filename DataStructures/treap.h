@@ -27,12 +27,12 @@ namespace DataStructures {
 
     inline void insert(const T &element);
 
+    inline bool remove(const T &element);
+
   protected:
-    typedef typename BaseTree<T, TreapNode<T> >::way_point_t way_point_t;
-
-    typedef typename BaseTree<T, TreapNode<T> >::parent_stack_t parent_stack_t;
-
     typedef typename BaseTree<T, TreapNode<T> >::NodePointer NodePointer;
+
+    typedef TreapNode<T>* TreapNodePointer;
 
     typedef typename BaseTree<T, TreapNode<T> >::direction direction;
 
@@ -74,28 +74,34 @@ namespace DataStructures {
   template <typename T>
   inline void Treap<T>::insert(const T &element)
   {
-    if (BaseTree<T, TreapNode<T> >::m_root == NULL) {
-      BaseTree<T, TreapNode<T> >::m_root = new TreapNode<T>(element);
-      return;
-    }
-    parent_stack_t parent_stack;
-    BaseTree<T, TreapNode<T> >::insert_with_stack(BaseTree<T, TreapNode<T> >::m_root, element, parent_stack);
-    way_point_t last_point = parent_stack.pop();
-    NodePointer current = last_point.node;
-    direction dir = last_point.dir;
-    while (current->child(dir)->m_randomness < current->m_randomness) {
-      if (parent_stack.is_empty()) {
-        BaseTree<T, TreapNode<T> >::rotate_root(dir);
-        return;
-      } else {
-        way_point_t parent = parent_stack.pop();
-        BaseTree<T, TreapNode<T> >::rotate(parent.node, parent.dir, dir);
-        current = parent.node;
-        dir = parent.dir;
-      }
+    TreapNodePointer current = BaseTree<T, TreapNode<T> >::internal_insert(element);
+    TreapNodePointer parent = current->parent2();
+    direction parent_direction = current->parent_direction;
+    while (parent != NULL && current->randomness < parent->randomness) {
+      BaseTree<T, TreapNode<T> >::rotate(parent, parent_direction);
+      parent = current->parent2();
+      parent_direction = current->parent_direction;
     }
   }
 
+  template <typename T>
+  inline bool Treap<T>::remove(const T &element)
+  {
+    TreapNodePointer current = BaseTree<T, TreapNode<T> >::root();
+    while (current != NULL) {
+      if (current->element == element) {
+        while (current->is_inner()) {
+          direction dir = current->min_size_direction();
+          BaseTree<T, TreapNode<T> >::rotate(current, dir);
+        }
+        BaseTree<T, TreapNode<T> >::non_inner_remove(current);
+        return true;
+      }
+      direction dir = current->element_direction(element);
+      current = current->child(dir);
+    }
+    return false;
+  }
 
 }
 

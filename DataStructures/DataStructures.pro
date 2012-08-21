@@ -36,7 +36,8 @@ HEADERS +=\
     treeconstiterator.h \
     heap.h \
     avltree.h \
-    avlnode.h
+    avlnode.h \
+    binarytree.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

@@ -3,48 +3,79 @@
 
 #include "baseiterator.h"
 
+#ifndef NDEBUG
+#include <sstream>
+#define tree_const_iterator_check_index(index) if (index >= m_tree->size()) { std::ostringstream oss; oss << "Invalid index " << index << " for BaseTree of size " << m_tree->size() << "."; throw typename Tree::range_error(oss.str()); }
+#else
+#define tree_const_iterator_check_index(index)
+#endif
+
 namespace DataStructures {
 
   template <typename T, typename Tree>
-  TreeConstIterator<T, Tree> operator+(index_type i, const TreeConstIterator<T, Tree>& it);
+  inline TreeConstIterator<T, Tree> operator+(index_type i, const TreeConstIterator<T, Tree>& it);
 
   template <typename T, typename Tree>
   class TreeConstIterator : public BaseIterator<T>
   {
     friend TreeConstIterator<T, Tree> operator+ <> (index_type i, const TreeConstIterator<T, Tree>& it);
+
     friend class TreeIterator<T, Tree>;
+
   public:
-    typedef struct { const TreeNode<T> *node; index_type left_size; } ConstNodeInfo;
-    TreeConstIterator(const Tree* tree, index_type index = 0);
-    TreeConstIterator(const TreeIterator<T, Tree>& other);
-    TreeConstIterator(const TreeConstIterator<T, Tree>& other);
-    difference_type operator-(const TreeIterator<T, Tree>& other) const;
-    difference_type operator-(const TreeConstIterator<T, Tree>& other) const;
-    TreeConstIterator<T, Tree> operator++(int);
-    TreeConstIterator<T, Tree>& operator++();
-    TreeConstIterator<T, Tree> operator--(int);
-    TreeConstIterator<T, Tree>& operator--();
-    TreeConstIterator<T, Tree>& operator=(const TreeConstIterator<T, Tree>& other);
-    TreeConstIterator<T, Tree> operator+(index_type i) const;
-    TreeConstIterator<T, Tree> operator-(index_type i) const;
-    TreeConstIterator<T, Tree>& operator+=(index_type i);
-    TreeConstIterator<T, Tree>& operator-=(index_type i);
-    const T& operator*();
-    const T& operator[](index_type i);
+    inline TreeConstIterator(const Tree* tree, index_type index = 0);
+
+    inline TreeConstIterator(const TreeIterator<T, Tree>& other);
+
+    inline TreeConstIterator(const TreeConstIterator<T, Tree>& other);
+
+    inline difference_type operator-(const TreeIterator<T, Tree>& other) const { return BaseIterator<T>::m_index - other.m_index; }
+
+    inline difference_type operator-(const TreeConstIterator<T, Tree>& other) const { return BaseIterator<T>::m_index - other.m_index; }
+
+    inline TreeConstIterator<T, Tree> operator++(int);
+
+    inline TreeConstIterator<T, Tree>& operator++();
+
+    inline TreeConstIterator<T, Tree> operator--(int);
+
+    inline TreeConstIterator<T, Tree>& operator--();
+
+    inline TreeConstIterator<T, Tree>& operator=(const TreeConstIterator<T, Tree>& other);
+
+    inline TreeConstIterator<T, Tree> operator+(index_type i) const;
+
+    inline TreeConstIterator<T, Tree> operator-(index_type i) const;
+
+    inline TreeConstIterator<T, Tree>& operator+=(index_type i);
+
+    inline TreeConstIterator<T, Tree>& operator-=(index_type i);
+
+    inline const T& operator*();
+
+    inline const T& operator[](index_type i);
+
   private:
-    typedef typename TreeIterator<T, Tree>::NodeInfo NodeInfo;
     const Tree* m_tree;
-    ArrayList<ConstNodeInfo> m_parent_stack;
+
+    typedef const TreeNode<T>* NodePointer;
+
+    typedef typename Tree::direction direction;
+
+    NodePointer m_current;
+
+    index_type m_left_size;
+
     inline void local_search();
-    inline const TreeNode<T>& node() const { return *m_parent_stack.back().node; }
-    inline index_type left_size() const { return m_parent_stack.back().left_size; }
+
   };
 
   template <typename T, typename Tree>
   TreeConstIterator<T, Tree>::TreeConstIterator(const Tree* tree, index_type index):
     BaseIterator<T> (index),
     m_tree (tree),
-    m_parent_stack (0)
+    m_current (NULL),
+    m_left_size (0)
   {
     local_search();
   }
@@ -52,42 +83,29 @@ namespace DataStructures {
   template <typename T, typename Tree>
   TreeConstIterator<T, Tree>::TreeConstIterator(const TreeIterator<T, Tree>& other):
     BaseIterator<T> (other.m_index),
-    m_tree (other.m_tree)
+    m_tree (other.m_tree),
+    m_current (other.m_current),
+    m_left_size (other.m_left_size)
   {
-    for (typename ArrayList<NodeInfo>::const_iterator it = other.m_parent_stack.begin(); it != other.m_parent_stack.end(); ++it) {
-      ConstNodeInfo info {(*it).node, (*it).left_size};
-      m_parent_stack.push(info);
-    }
   }
 
   template <typename T, typename Tree>
   TreeConstIterator<T, Tree>::TreeConstIterator(const TreeConstIterator<T, Tree>& other):
     BaseIterator<T> (other.m_index),
     m_tree (other.m_tree),
-    m_parent_stack (other.m_parent_stack)
+    m_current (other.m_current),
+    m_left_size (other.m_left_size)
   {
   }
 
   template <typename T, typename Tree>
-  difference_type TreeConstIterator<T, Tree>::operator-(const TreeIterator<T, Tree>& other) const
-  {
-    return BaseIterator<T>::m_index - other.m_index;
-  }
-
-  template <typename T, typename Tree>
-  difference_type TreeConstIterator<T, Tree>::operator-(const TreeConstIterator<T, Tree>& other) const
-  {
-    return BaseIterator<T>::m_index - other.m_index;
-  }
-
-  template <typename T, typename Tree>
-  TreeConstIterator<T, Tree> operator+(index_type index, const TreeConstIterator<T, Tree>& other)
+  inline TreeConstIterator<T, Tree> operator+(index_type index, const TreeConstIterator<T, Tree>& other)
   {
     return other + index;
   }
 
   template <typename T, typename Tree>
-  TreeConstIterator<T, Tree> TreeConstIterator<T, Tree>::operator++(int)
+  inline TreeConstIterator<T, Tree> TreeConstIterator<T, Tree>::operator++(int)
   {
     TreeConstIterator<T, Tree> old (*this);
     operator++();
@@ -95,7 +113,7 @@ namespace DataStructures {
   }
 
   template <typename T, typename Tree>
-  TreeConstIterator<T, Tree>& TreeConstIterator<T, Tree>::operator++()
+  inline TreeConstIterator<T, Tree>& TreeConstIterator<T, Tree>::operator++()
   {
     ++BaseIterator<T>::m_index;
     local_search();
@@ -103,7 +121,7 @@ namespace DataStructures {
   }
 
   template <typename T, typename Tree>
-  TreeConstIterator<T, Tree> TreeConstIterator<T, Tree>::operator--(int)
+  inline TreeConstIterator<T, Tree> TreeConstIterator<T, Tree>::operator--(int)
   {
     TreeConstIterator<T, Tree> old (*this);
     operator--();
@@ -111,7 +129,7 @@ namespace DataStructures {
   }
 
   template <typename T, typename Tree>
-  TreeConstIterator<T, Tree>& TreeConstIterator<T, Tree>::operator--()
+  inline TreeConstIterator<T, Tree>& TreeConstIterator<T, Tree>::operator--()
   {
     --BaseIterator<T>::m_index;
     local_search();
@@ -119,29 +137,31 @@ namespace DataStructures {
   }
 
   template <typename T, typename Tree>
-  TreeConstIterator<T, Tree>& TreeConstIterator<T, Tree>::operator=(const TreeConstIterator& other)
+  inline TreeConstIterator<T, Tree>& TreeConstIterator<T, Tree>::operator=(const TreeConstIterator& other)
   {
-    BaseIterator<T>::m_index = other.m_index;
-    m_parent_stack = other.m_parent_stack;
+    BaseIterator<T>::operator=(other);
+    m_tree = other.m_tree;
+    m_current = other.m_current;
+    m_left_size = other.m_left_size;
     return *this;
   }
 
   template <typename T, typename Tree>
-  TreeConstIterator<T, Tree> TreeConstIterator<T, Tree>::operator+(index_type index) const
+  inline TreeConstIterator<T, Tree> TreeConstIterator<T, Tree>::operator+(index_type index) const
   {
     TreeConstIterator<T, Tree> other (*this);
     return other += index;
   }
 
   template <typename T, typename Tree>
-  TreeConstIterator<T, Tree> TreeConstIterator<T, Tree>::operator-(index_type index) const
+  inline TreeConstIterator<T, Tree> TreeConstIterator<T, Tree>::operator-(index_type index) const
   {
     TreeConstIterator<T, Tree> other (*this);
     return other -= index;
   }
 
   template <typename T, typename Tree>
-  TreeConstIterator<T, Tree>& TreeConstIterator<T, Tree>::operator+=(index_type index)
+  inline TreeConstIterator<T, Tree>& TreeConstIterator<T, Tree>::operator+=(index_type index)
   {
     BaseIterator<T>::m_index += index;
     local_search();
@@ -149,7 +169,7 @@ namespace DataStructures {
   }
 
   template <typename T, typename Tree>
-  TreeConstIterator<T, Tree>& TreeConstIterator<T, Tree>::operator-=(index_type index)
+  inline TreeConstIterator<T, Tree>& TreeConstIterator<T, Tree>::operator-=(index_type index)
   {
     BaseIterator<T>::m_index -= index;
     local_search();
@@ -157,13 +177,15 @@ namespace DataStructures {
   }
 
   template <typename T, typename Tree>
-  const T& TreeConstIterator<T, Tree>::operator*()
+  inline const T& TreeConstIterator<T, Tree>::operator*()
   {
-    return m_parent_stack.back().node->get_element();
+    tree_const_iterator_check_index(BaseIterator<T>::m_index);
+    assert(m_current != NULL);
+    return m_current->element;
   }
 
   template <typename T, typename Tree>
-  const T& TreeConstIterator<T, Tree>::operator[](index_type index)
+  inline const T& TreeConstIterator<T, Tree>::operator[](index_type index)
   {
     return *(operator+(index));
   }
@@ -172,30 +194,35 @@ namespace DataStructures {
   inline void TreeConstIterator<T, Tree>::local_search()
   {
     if (BaseIterator<T>::m_index >= m_tree->size()) {
-      m_parent_stack.clear();
+      m_current = NULL;
       return;
-    } else if (m_parent_stack.is_empty()) {
-      ConstNodeInfo root_info {m_tree->m_root, 0};
-      m_parent_stack.push(root_info);
+    } else if (m_current == NULL) {
+      m_current = m_tree->m_root;
+      m_left_size = 0;
     }
-    while (BaseIterator<T>::m_index < left_size() || BaseIterator<T>::m_index >= left_size() + node().size()) {
-      m_parent_stack.pop();
+    while (BaseIterator<T>::m_index < m_left_size || BaseIterator<T>::m_index >= m_left_size + m_current->size) {
+      direction parent_dir = m_current->parent_direction;
+      m_current = m_current->parent;
+      if (parent_dir == TREE_RIGHT) {
+        assert(m_left_size >= m_current->dir_size(TREE_LEFT) + 1);
+        m_left_size -= m_current->dir_size(TREE_LEFT) + 1;
+      }
     }
-    assert(!m_parent_stack.is_empty());
-    index_type current_index = left_size() + node().size(TREE_LEFT);
+    index_type current_index = m_left_size + m_current->dir_size(TREE_LEFT);
     while (current_index != BaseIterator<T>::m_index) {
-      assert(BaseIterator<T>::m_index >= left_size() && BaseIterator<T>::m_index < left_size() + node().size());
+      assert(m_current != NULL);
+      assert(BaseIterator<T>::m_index >= m_left_size);
+      assert(BaseIterator<T>::m_index < m_left_size + m_current->size);
       if (current_index > BaseIterator<T>::m_index) {
-        assert(node().m_children[TREE_LEFT] != NULL);
-        ConstNodeInfo info {node().m_children[TREE_LEFT], left_size()};
-        m_parent_stack.push(info);
+        assert(m_current->children[TREE_LEFT] != NULL);
+        m_current = m_current->children[TREE_LEFT];
       } else {
         assert(current_index < BaseIterator<T>::m_index);
-        assert(node().m_children[TREE_RIGHT] != NULL);
-        ConstNodeInfo info {node().m_children[TREE_RIGHT], current_index + 1};
-        m_parent_stack.push(info);
+        assert(m_current->children[TREE_RIGHT] != NULL);
+        m_left_size = current_index + 1;
+        m_current = m_current->children[TREE_RIGHT];
       }
-      current_index = left_size() + node().size(TREE_LEFT);
+      current_index = m_left_size + m_current->dir_size(TREE_LEFT);
     }
   }
 

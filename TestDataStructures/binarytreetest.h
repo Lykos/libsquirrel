@@ -1,15 +1,15 @@
-#ifndef AVLTREETEST_H
-#define AVLTREETEST_H
+#ifndef BASETREETEST_H
+#define BASETREETEST_H
 
-#include "avltree.h"
+#include "binarytree.h"
 #include "treetest.h"
 
-class AVLTreeTest : public QObject, public TreeTest<DataStructures::AVLTree<int> >
+class BinaryTreeTest : public QObject, public TreeTest<DataStructures::BinaryTree<int> >
 {
   Q_OBJECT
 
 private:
-  typedef TreeTest<DataStructures::AVLTree<int> > Test;
+  typedef TreeTest<DataStructures::BinaryTree<int> > Test;
 
 private Q_SLOTS:
   void init() { Test::init(); }
@@ -59,4 +59,4 @@ private Q_SLOTS:
   void test_not_equals() { Test::test_not_equals(); }
 };
 
-#endif // AVLTREETEST_H
+#endif // BASETREETEST_H

@@ -37,4 +37,5 @@ HEADERS += \
     heaptest.h \
     treetest.h \
     treaptest.h \
-    avltreetest.h
+    avltreetest.h \
+    binarytreetest.h

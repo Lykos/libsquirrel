@@ -7,46 +7,39 @@
 namespace DataStructures {
 
   template <typename T>
-  class TreapNode : public TreeNode<T>
+  struct TreapNode : public TreeNode<T>
   {
-  protected:
     typedef TreapNode<T>* TreapNodePointer;
 
-    typedef const TreapNode<T>* ConstTreapNodePointer;
-
-  public:
     typedef typename TreeNode<T>::NodePointer NodePointer;
 
     typedef typename TreeNode<T>::direction direction;
 
     inline TreapNode(const TreapNode& other);
 
-    inline TreapNode(const T& element);
+    inline TreapNode(const T& new_element, NodePointer new_parent = NULL, direction new_parent_direction = TREE_INVALID);
 
-    InfiniteRandom m_randomness;
+    InfiniteRandom randomness;
 
-    inline ConstTreapNodePointer child(direction dir) const { return static_cast<const TreapNodePointer>(TreeNode<T>::m_children[dir]); }
+    inline TreapNodePointer child(direction dir) { return static_cast<TreapNodePointer>(TreeNode<T>::children[dir]); }
 
-    inline TreapNodePointer child(direction dir) { return static_cast<TreapNodePointer>(TreeNode<T>::m_children[dir]); }
-
-  protected:
     inline direction min_rand_direction() const;
 
-    inline direction remove_direction() const { return min_rand_direction(); }
+    inline TreapNodePointer parent2() { return static_cast<TreapNodePointer>(TreeNode<T>::parent); }
 
   };
 
   template <typename T>
   inline TreapNode<T>::TreapNode(const TreapNode<T> &other):
     TreeNode<T>(other),
-    m_randomness (other.m_randomness)
+    randomness (other.randomness)
   {
   }
 
   template <typename T>
-  TreapNode<T>::TreapNode(const T& element):
-    TreeNode<T>(element),
-    m_randomness ()
+  TreapNode<T>::TreapNode(const T& new_element, NodePointer new_parent, direction new_parent_direction):
+    TreeNode<T>(new_element, new_parent, new_parent_direction),
+    randomness ()
   {
   }
 

@@ -93,7 +93,7 @@ void TreeTest<Tree>::standard_fill(Tree& tree)
 
 template <typename Tree>
 void TreeTest<Tree>::test_remove()
-{/*
+{
   m_tree.remove(17);
   COMPARE_SIZE(m_tree, 39);
   for (DataStructures::index_type i = 0; i < 10; ++i) {
@@ -107,7 +107,7 @@ void TreeTest<Tree>::test_remove()
   for (DataStructures::index_type i = 0; i < 10; ++i) {
     m_tree.remove(i);
     COMPARE_SIZE(m_tree, 28 - i);
-  }*/
+  }
 }
 
 template <typename Tree>
@@ -159,13 +159,13 @@ void TreeTest<Tree>::test_insert_all()
 
 template <typename Tree>
 void TreeTest<Tree>::test_remove_all()
-{/*
+{
   m_tree.remove_all(0);
   COMPARE_SIZE(m_tree, 19);
   QVERIFY(!m_tree.search(0));
   for (DataStructures::index_type i = 1; i < 10; ++i) {
     QVERIFY(m_tree.search(i));
-  }*/
+  }
 }
 
 template <typename Tree>
