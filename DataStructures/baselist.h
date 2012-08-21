@@ -1,7 +1,6 @@
 #ifndef DATASTRUCTURES_BASELIST_H
 #define DATASTRUCTURES_BASELIST_H
 
-#include "DataStructures_global.h"
 #include <climits>
 #include <algorithm>
 #include <iterator>
@@ -10,8 +9,9 @@
 #include <stdexcept>
 #include <cassert>
 #include <cstring>
-
+#include "DataStructures_global.h"
 #include "basetypes.h"
+
 #ifndef NDEBUG
 #define list_check_index(index) if (index >= BaseList<T>::size()) { std::ostringstream oss; oss << "Invalid index " << index << " for list of size " << BaseList<T>::size() << "."; throw typename BaseList<T>::range_error(oss.str()); }
 #else
