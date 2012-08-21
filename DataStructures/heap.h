@@ -76,7 +76,7 @@ namespace DataStructures {
     index_type i = BaseList<T>::size();
     BaseList<T>::prepare_size(BaseList<T>::size() + (end - begin));
     for (Begin it = begin; it != end; ++it, ++i) {
-      BaseList<T>::at(i) = *it;
+      BaseList<T>::create(i, *it);
       bubble_up(i);
     }
   }
@@ -86,7 +86,7 @@ namespace DataStructures {
   {
     index_type old_size = BaseList<T>::size();
     BaseList<T>::prepare_size(BaseList<T>::size() + 1);
-    BaseList<T>::at(old_size) = element;
+    BaseList<T>::create(old_size, element);
     bubble_up(old_size);
   }
 
@@ -95,8 +95,8 @@ namespace DataStructures {
   {
     check_empty();
     T element = BaseList<T>::at(0);
-    BaseList<T>::at(0) = BaseList<T>::at(BaseList<T>::size() - 1);
-    BaseList<T>::destroy(BaseList<T>::size() - 1);
+    BaseList<T>::destroy(0);
+    BaseList<T>::move(0, BaseList<T>::size() - 1);
     BaseList<T>::prepare_size(BaseList<T>::size() - 1);
     bubble_down(0);
     return element;
@@ -123,7 +123,7 @@ namespace DataStructures {
       if (BaseList<T>::at(new_index) < BaseList<T>::at(index)) {
         return;
       }
-      std::swap(BaseList<T>::at(new_index), BaseList<T>::at(index));
+      BaseList<T>::swap(new_index, index);
       index = new_index;
     }
   }
@@ -136,7 +136,7 @@ namespace DataStructures {
       if (BaseList<T>::at(index) < BaseList<T>::at(new_index)) {
         return;
       }
-      std::swap(BaseList<T>::at(new_index), BaseList<T>::at(index));
+      BaseList<T>::swap(new_index, index);
       index = new_index;
     }
   }

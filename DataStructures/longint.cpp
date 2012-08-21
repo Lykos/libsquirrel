@@ -6,13 +6,13 @@
 
 namespace DataStructures {
 
-  static const unsigned int buffer_size = (LongInt::PART_SIZE * 1233) >> 12;
+  static const unsigned int TEN_BUFFER_SIZE = (LongInt::PART_SIZE * 1233) >> 12;
 
-  static const LongInt minus_one (-1);
-  static const LongInt zero (0);
-  static const LongInt one (1);
-  static const LongInt ten (10);
-  static const LongInt buffer_factor (ten.pow(buffer_size));
+  static const LongInt MINUS_ONE (-1);
+  static const LongInt ZERO (0);
+  static const LongInt ONE (1);
+  static const LongInt TEN (10);
+  static const LongInt TEN_BUFFER_FACTOR (TEN.pow(TEN_BUFFER_SIZE));
 
   static const index_type base (10);
 
@@ -29,12 +29,12 @@ namespace DataStructures {
       i.m_positive = true;
       while (i > 0) {
         std::ostringstream s;
-        s << (i % buffer_factor).m_content[0];
+        s << (i % TEN_BUFFER_FACTOR).m_content[0];
         parts.push(s.str());
-        i /= buffer_factor;
+        i /= TEN_BUFFER_FACTOR;
         if (i > 0) {
-          assert(buffer_size >= s.str().length());
-          for (unsigned int j = 0; j < buffer_size - s.str().length(); ++j) {
+          assert(TEN_BUFFER_SIZE >= s.str().length());
+          for (unsigned int j = 0; j < TEN_BUFFER_SIZE - s.str().length(); ++j) {
             parts.push("0");
           }
         }
@@ -107,11 +107,15 @@ namespace DataStructures {
 
   LongInt::LongInt(const std::string& numerical_string)
   {
+    if (numerical_string.empty()) {
+      throw std::logic_error("Empty numerical string is not allowed.");
+    }
     m_positive = true;
     bool positive = true;
     unsigned int start_index = 0;
     m_content.push(0);
     std::string::const_iterator it = numerical_string.begin();
+    std::string::const_iterator end = numerical_string.end();
     if (*it == '-') {
       positive = false;
       ++it;
@@ -120,27 +124,75 @@ namespace DataStructures {
       ++it;
       ++start_index;
     }
+    if (it >= end) {
+      throw std::logic_error("Numerical string without digits is not allowed.");
+    }
+    index_type buffer_size, buffer_shift, base_exponent;
+    LongInt base, buffer_factor;
+    bool do_shift;
+    std::string prefix;
+    if (it[0] == 0 && it + 1 < end && it[1] == 'b') {
+      base_exponent = 1;
+      do_shift = true;
+      prefix = "0b";
+      it += 2;
+    } else if (it[0] == 0 && it + 1 < end && it[1] == 'x'){
+      base_exponent = 4;
+      do_shift = true;
+      prefix = "0x";
+      it += 2;
+    } else if (it[0] == 0) {
+      base_exponent = 3;
+      do_shift = true;
+      prefix = "0";
+      it += 1;
+    } else {
+      base = TEN;
+      buffer_size = TEN_BUFFER_SIZE;
+      buffer_factor = TEN_BUFFER_FACTOR;
+      do_shift = false;
+      prefix = "";
+    }
+    if (do_shift) {
+      buffer_size = PART_SIZE / base_exponent;
+      buffer_shift = buffer_size * base_exponent;
+    }
+    if (it >= end) {
+      throw std::logic_error("Numerical string without digits is not allowed.");
+    }
     for (; it < numerical_string.end(); ++it) {
       if (*it > '9' || *it < '0') {
         throw std::logic_error("Non digit in numerical string.");
       }
     }
     unsigned int i;
-    for (i = start_index; i + buffer_size < numerical_string.length(); i += buffer_size) {
-      operator*=(buffer_factor);
-      std::istringstream is (numerical_string.substr(i, buffer_size));
+    for (i = start_index; i + TEN_BUFFER_SIZE < numerical_string.length(); i += TEN_BUFFER_SIZE) {
+      if (do_shift) {
+        operator<<=(buffer_shift);
+      } else {
+        operator*=(buffer_factor);
+      }
+      std::stringstream ss;
+      ss << prefix;
+      ss << numerical_string.substr(i, buffer_size);
       part_type part;
-      is >> part;
+      ss >> part;
       operator+=(part);
     }
     unsigned int rest_length = numerical_string.length() - i;
     if (rest_length > 0) {
-      LongInt ten_pow (ten);
-      ten_pow.pow_eq(rest_length);
-      operator*=(ten_pow);
-      std::istringstream is (numerical_string.substr(i, buffer_size));
+      if (do_shift) {
+        operator<<=(rest_length * base_exponent);
+      } else {
+        LongInt base_power (base);
+        base_power.pow_eq(rest_length);
+        operator*=(base_power);
+      }
+      std::stringstream ss;
+      ss << prefix;
+      ss << numerical_string.substr(i, buffer_size);
       part_type part;
-      is >> part;
+      ss >> part;
       operator+=(part);
     }
     m_positive = positive;
@@ -153,7 +205,7 @@ namespace DataStructures {
 
   LongInt LongInt::operator-() const
   {
-    if (operator==(zero)) {
+    if (operator==(ZERO)) {
       return *this;
     } else {
       LongInt result(*this);
@@ -248,7 +300,7 @@ namespace DataStructures {
 
   LongInt& LongInt::operator++()
   {
-    return operator+=(one);
+    return operator+=(ONE);
   }
 
   LongInt LongInt::operator--(int)
@@ -260,7 +312,7 @@ namespace DataStructures {
 
   LongInt& LongInt::operator--()
   {
-    return operator-=(one);
+    return operator-=(ONE);
   }
 
   int LongInt::compareTo(const LongInt& other) const
@@ -378,7 +430,7 @@ namespace DataStructures {
   // *this gets copied and scaled first.
   void inline LongInt::divide(const LongInt& other, LongInt& quotient, LongInt& remainder, bool remainder_needed)
   {
-    if (other == zero) {
+    if (other == ZERO) {
       throw std::logic_error("Division by zero.");
     }
     // Maximal factor we can multiply the divisor with without increasing its size.
@@ -401,8 +453,8 @@ namespace DataStructures {
     assert(divisor_size == other.size());
     index_type i = dividend.size();
     // Initialize the results
-    quotient = zero;
-    remainder = zero;
+    quotient = ZERO;
+    remainder = ZERO;
     // Strange for loop necessary because of unsigned types.
     for (index_type i2 = 0; i2 < dividend.size(); ++i2) {
       --i;
@@ -437,7 +489,7 @@ namespace DataStructures {
         // We have to take back the scale_factor
         part_type upper = 0, lower = 0;
         LongInt old_remainder (remainder);
-        remainder = zero;
+        remainder = ZERO;
         index_type i = old_remainder.size();
         for (index_type i2 = 0; i2 < old_remainder.size(); ++i2) {
           --i;
@@ -489,7 +541,7 @@ namespace DataStructures {
     index_type part_shift = shift_offset / PART_SIZE;
     // Handle the case that the number completely disappears, this resolves nasty two complements handling for negative numbers.
     if (part_shift >= size() || (part_shift + 1 == size() && (m_content[part_shift] >> per_part_shift) == 0)) {
-      return operator=(m_positive ? zero : minus_one);
+      return operator=(m_positive ? ZERO : MINUS_ONE);
     }
     // Correction for negative numbers because of two complement semantic
     bool extra_bit = false;
@@ -530,7 +582,7 @@ namespace DataStructures {
 
   LongInt& LongInt::pow_eq(index_type exponent)
   {
-    LongInt result (one);
+    LongInt result (ONE);
     unsigned int j = sizeof(index_type) * CHAR_BIT;
     for (unsigned int j2 = 0; j2 < sizeof(index_type) * CHAR_BIT; ++j2) {
       --j;
@@ -547,7 +599,7 @@ namespace DataStructures {
   LongInt& LongInt::pow_mod_eq(const LongInt& exponent, const LongInt& modulus)
   {
     assert(exponent >= 0);
-    LongInt result (one);
+    LongInt result (ONE);
     unsigned int j = sizeof(index_type) * CHAR_BIT;
     for (unsigned int j2 = 0; j2 < sizeof(index_type) * CHAR_BIT; ++j2) {
       --j;

@@ -9,9 +9,9 @@
 #include "queuetest.h"
 #include "heaptest.h"
 
-int main(int argc, char** argv) {/*
+int main(int argc, char** argv) {
   LongIntTest long_int_test;
-  QTest::qExec(&long_int_test, argc, argv);*/
+  QTest::qExec(&long_int_test, argc, argv);
   ArrayListTest array_list_test;
   QTest::qExec(&array_list_test, argc, argv);
   InfiniteRandomTest infinite_random_test;

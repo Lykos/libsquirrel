@@ -90,19 +90,27 @@ namespace DataStructures {
 
     inline T& at(index_type index) { return m_content[index]; }
 
+    inline void create(index_type index, const T& element) { new(m_content + index) T(element); }
+
+    inline void replace(index_type index, const T& element) { m_content[index] = element; }
+
+    inline void destroy(index_type index) { m_content[index].~T(); }
+
+    inline void destroy_part(index_type begin, index_type length) { for (index_type i = begin; i < begin + length; ++i) destroy(i); }
+
     inline void add_content(const T * content, index_type insert_position, index_type length);
 
+    inline void move(index_type target, index_type source);
+
     inline void move_part(index_type insert_position, index_type start, index_type length);
+
+    inline void swap(index_type index1, index_type index2);
 
     inline void swap_parts(index_type start1, index_type start2, index_type length);
 
     inline void init_capacity(index_type initial_capacity);
 
     inline void adjust_capacity(index_type new_capacity);
-
-    inline void destroy(index_type index) { m_content[index].~T(); }
-
-    inline void destroy_part(index_type begin, index_type length) { for (index_type i = begin; i < begin + length; ++i) destroy(i); }
 
   };
 
@@ -141,8 +149,10 @@ namespace DataStructures {
   template <typename T>
   template <typename Iterator>
   BaseList<T>::BaseList(const Iterator& begin, const Iterator& end):
+    m_content (NULL),
     m_size (end - begin),
-    m_min_capacity (DEFAULT_MIN_CAPACITY)
+    m_min_capacity (DEFAULT_MIN_CAPACITY),
+    m_is_shrinkable (false)
   {
     adjust_capacity (end - begin);
     index_type i = 0;
@@ -155,7 +165,8 @@ namespace DataStructures {
   BaseList<T>::BaseList(const BaseList<T>& other):
     m_content (NULL),
     m_size (other.m_size),
-    m_min_capacity (other.m_min_capacity)
+    m_min_capacity (other.m_min_capacity),
+    m_is_shrinkable (other.m_is_shrinkable)
   {
     adjust_capacity(other.m_size);
     add_content(other.m_content, 0, other.m_size);
@@ -165,7 +176,8 @@ namespace DataStructures {
   template <typename T>
   BaseList<T>::~BaseList()
   {
-    delete[] m_content;
+    clear();
+    free(m_content);
   }
 
   template <typename T>
@@ -174,6 +186,8 @@ namespace DataStructures {
     if (this == &other) {
       return *this;
     }
+    // TODO efficiency
+    clear();
     prepare_size(other.m_size);
     add_content(other.m_content, 0, other.m_size);
     return *this;
@@ -192,8 +206,14 @@ namespace DataStructures {
   inline void BaseList<T>::add_content(const T * content, index_type insert_position, index_type length)
   {
     for (index_type i = 0; i < length; i++) {
-      m_content[insert_position + i] = content[i];
+      create(insert_position + i, content[i]);
     }
+  }
+
+  template <typename T>
+  inline void BaseList<T>::move(index_type target, index_type source)
+  {
+    memmove(m_content + target, m_content + source, sizeof(T));
   }
 
   template <typename T>
@@ -206,7 +226,16 @@ namespace DataStructures {
     assert(start < m_capacity);
     assert(insert_position + length <= m_capacity);
     assert(start + length <= m_capacity);
-    memmove(m_content + insert_position, m_content + start, length);
+    memmove(m_content + insert_position, m_content + start, length * sizeof(T));
+  }
+
+  template <typename T>
+  inline void BaseList<T>::swap(index_type index1, index_type index2)
+  {
+    if (index1 == index2) {
+      return;
+    }
+    std::swap(m_content[index1], m_content[index2]);
   }
 
   template <typename T>

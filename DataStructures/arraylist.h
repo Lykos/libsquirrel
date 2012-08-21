@@ -40,9 +40,9 @@ namespace DataStructures {
 
     inline ArrayList<T>& operator*=(index_type factor);
 
-    inline bool operator==(const ArrayList<T> other) const;
+    inline bool operator==(const ArrayList<T>& other) const;
 
-    inline bool operator!=(const ArrayList<T> other) const { return !operator==(other); }
+    inline bool operator!=(const ArrayList<T>& other) const { return !operator==(other); }
 
     inline const T& operator[](index_type i) const { list_check_index(i); return BaseList<T>::at(i); }
 
@@ -81,7 +81,7 @@ namespace DataStructures {
   template <typename T>
   inline std::ostream& operator<<(std::ostream& out, const ArrayList<T>& list)
   {
-    out << "[";
+    out << "ArrayList[";
     for (typename ArrayList<T>::const_iterator it = list.begin(); it != list.end(); it++) {
       out << *it;
       if (it + 1 != list.end()) {
@@ -106,6 +106,12 @@ namespace DataStructures {
   }*/
 
   template <typename T>
+  inline ArrayList<T>::ArrayList(const ArrayList<T>& other):
+    BaseList<T>(other)
+  {
+  }
+
+  template <typename T>
   template <typename Iterator>
   inline void ArrayList<T>::push_all(const Iterator& begin, const Iterator& end)
   {
@@ -115,14 +121,8 @@ namespace DataStructures {
     index_type i = BaseList<T>::size();
     BaseList<T>::prepare_size(BaseList<T>::size() + (end - begin));
     for (Iterator it = begin; it != end; ++it, ++i) {
-      BaseList<T>::at(i) = *it;
+      BaseList<T>::create(i, *it);
     }
-  }
-
-  template <typename T>
-  inline ArrayList<T>::ArrayList(const ArrayList<T>& other):
-    BaseList<T>(other)
-  {
   }
 
   template <typename T>
@@ -165,8 +165,11 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline bool ArrayList<T>::operator==(const ArrayList<T> other) const
+  inline bool ArrayList<T>::operator==(const ArrayList<T>& other) const
   {
+    if (this == &other) {
+      return true;
+    }
     if (BaseList<T>::size() != other.size()) {
       return false;
     }
@@ -182,7 +185,7 @@ namespace DataStructures {
   inline void ArrayList<T>::push(const T& element)
   {
     BaseList<T>::prepare_size(BaseList<T>::size() + 1);
-    BaseList<T>::at(BaseList<T>::size() - 1) = element;
+    BaseList<T>::create(BaseList<T>::size() - 1, element);
   }
 
   template <typename T>
