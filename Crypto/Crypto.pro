@@ -8,6 +8,7 @@ QT       -= gui
 
 TARGET = Crypto
 TEMPLATE = lib
+CONFIG += warn_on
 
 DEFINES += CRYPTO_LIBRARY
 

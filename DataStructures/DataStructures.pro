@@ -8,6 +8,7 @@ QT       -= core gui
 
 TARGET = DataStructures
 TEMPLATE = lib
+CONFIG += warn_on
 
 DEFINES += DATASTRUCTURES_LIBRARY
 
