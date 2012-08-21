@@ -23,7 +23,7 @@ void RSATest::init()
 void RSATest::test_key_generation()
 {
   KeyGenerator key_generator;
-  key_pair_t key_pair = key_generator.generate(6);
+  key_pair_t key_pair = key_generator.generate(20);
   public_key_t  public_key = key_pair.public_key;
   private_key_t private_key = key_pair.private_key;
   QVERIFY(private_key.p_q_available);

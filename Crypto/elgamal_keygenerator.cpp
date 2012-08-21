@@ -3,15 +3,24 @@
 namespace Crypto {
 
   namespace Elgamal {
-    
+
+    static const number_t ONE = 1;
+
+    static const number_t SEVEN = 7;
+
+    static const number_t TEN = 10;
+
     key_pair_t KeyGenerator::generate(DataStructures::index_type number_bits) const
     {
+      number_t p_bound = --(ONE << (number_bits - 1));
       number_t modulus;
       number_t p;
       do {
-        p = m_prime_tester.random_prime(number_bits - 1);
+        do {
+          p = DataStructures::rand_number(p_bound);
+        } while (p % TEN == SEVEN || !m_prime_tester.is_prime(p, number_bits + 10));
         modulus = (p << 1) + 1;
-      } while (!m_prime_tester.is_prime(modulus));
+      } while (!m_prime_tester.is_prime(modulus, number_bits + 10));
       number_t generator;
       number_t minus_one = modulus - 1;
       do {

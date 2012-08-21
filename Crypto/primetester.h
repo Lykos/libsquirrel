@@ -14,7 +14,7 @@ namespace Crypto {
 
     DataStructures::LongInt random_prime(DataStructures::index_type number_bits) const;
 
-    bool is_prime(const DataStructures::LongInt& number) const;
+    bool is_prime(const DataStructures::LongInt& number, DataStructures::index_type security) const;
 
   };
   
