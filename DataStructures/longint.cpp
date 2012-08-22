@@ -129,10 +129,10 @@ namespace DataStructures {
     if (start_index == length) {
       throw std::logic_error("Numerical string without digits is not allowed.");
     }
-    if (numerical_string.find(HEXADECIMAL_BASE) == 0) {
+    if (numerical_string.find(HEXADECIMAL_BASE, start_index) == start_index) {
       start_index += HEXADECIMAL_BASE.length();
       read_hexadecimal(numerical_string, start_index);
-    } else if (numerical_string.find(OCTAL_BASE) == 0 && length > OCTAL_BASE.length()) {
+    } else if (numerical_string.find(OCTAL_BASE, start_index) == start_index && length > OCTAL_BASE.length()) {
       start_index += OCTAL_BASE.length();
       read_octal(numerical_string, start_index);
     } else {
@@ -204,7 +204,7 @@ namespace DataStructures {
       ++size;
     }
     m_content = ArrayList<part_type>(size, 0);
-    index_type i = length;
+    index_type i = start_index + length;
     index_type j = 0;
     while (i > start_index + HEXADECIMAL_BUFFER_SIZE) {
       i -= HEXADECIMAL_BUFFER_SIZE;
