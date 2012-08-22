@@ -11,6 +11,7 @@ QT       -= gui
 TARGET = tst_performance_tests
 CONFIG   += console warn_on
 CONFIG   -= app_bundle
+QMAKE_CXXFLAGS += -std=c++0x
 
 TEMPLATE = app
 

@@ -11,7 +11,7 @@ namespace DataStructures {
 
   std::ostream& operator<<(std::ostream& out, const LongInt& longInt);
 
-  std::istream& operator>>(std::istream& in, const LongInt& longInt);
+  std::istream& operator>>(std::istream& in, LongInt& longInt);
 
   inline index_type log2(const LongInt& number);
 
@@ -19,7 +19,7 @@ namespace DataStructures {
   {
     friend std::ostream& operator<<(std::ostream& out, const LongInt& longInt);
 
-    friend std::istream& operator>>(std::istream& in, const LongInt& longInt);
+    friend std::istream& operator>>(std::istream& in, LongInt& longInt);
 
     friend index_type log2(const LongInt& number);
 
@@ -131,6 +131,20 @@ namespace DataStructures {
     static const index_type PART_SIZE = CHAR_BIT * sizeof(part_type);
 
   private:
+    inline index_type read_sign(const std::string& numerical_string);
+
+    inline void write_decimal(std::ostream& out) const;
+
+    inline void write_octal(std::ostream& out) const;
+
+    inline void write_hexadecimal(std::ostream& out) const;
+
+    inline void read_decimal(const std::string& numerical_string, index_type start_index);
+
+    inline void read_octal(const std::string& numerical_string, index_type start_index);
+
+    inline void read_hexadecimal(const std::string& numerical_string, index_type start_index);
+
     inline index_type size() const { return m_content.size(); }
 
     inline int uCompareTo(const LongInt& other) const;

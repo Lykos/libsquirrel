@@ -1,60 +1,73 @@
 #include "longint.h"
 #include <cmath>
-#include <sstream>
 #include <cassert>
 #include <iostream>
+#include <sstream>
+#include <cstdio>
+#include <string>
 
 namespace DataStructures {
 
-  static const unsigned int TEN_BUFFER_SIZE = (LongInt::PART_SIZE * 1233) >> 12;
+  static const unsigned int DECIMAL_BUFFER_SIZE = (LongInt::PART_SIZE * 1233) >> 12; // Calculates log_10(2^PART_SIZE)
+  static const unsigned int HEXADECIMAL_BUFFER_SIZE = (LongInt::PART_SIZE / 4); // Calculates log_16(2^PART_SIZE)
+  static const unsigned int OCTAL_BUFFER_SIZE = (LongInt::PART_SIZE / 3); // Calculates log_8(2^PART_SIZE)
+
+  static const std::string HEXADECIMAL_BASE = "0x";
+  static const std::string OCTAL_BASE = "0";
 
   static const LongInt MINUS_ONE (-1);
   static const LongInt ZERO (0);
   static const LongInt ONE (1);
   static const LongInt TEN (10);
-  static const LongInt TEN_BUFFER_FACTOR (TEN.pow(TEN_BUFFER_SIZE));
+  static const LongInt TEN_BUFFER_FACTOR (TEN.pow(DECIMAL_BUFFER_SIZE));
 
   static const index_type base (10);
 
   std::ostream& operator<<(std::ostream& out, const LongInt& longInt)
   {
+    std::ios_base::fmtflags ff = out.flags();
     if (!longInt.m_positive) {
       out << "-";
+    } else if (ff & std::ios_base::showpos) {
+      out << "+";
     }
-    LongInt i (longInt.abs());
-    if (i.size() == 1) {
-      return out << longInt.m_content[0];
+    if (longInt.size() == 1) {
+      out << longInt.m_content[0];
+    } else if (ff & std::ios_base::hex) {
+      if (ff & std::ios_base::showbase) {
+        out << HEXADECIMAL_BASE;
+      }
+      longInt.write_hexadecimal(out);
+    } else if (ff & std::ios_base::oct) {
+      if (ff & std::ios_base::showbase) {
+        out << OCTAL_BASE;
+      }
+      longInt.write_octal(out);
     } else {
-      ArrayList<std::string> parts;
-      i.m_positive = true;
-      while (i > 0) {
-        std::ostringstream s;
-        s << (i % TEN_BUFFER_FACTOR).m_content[0];
-        parts.push(s.str());
-        i /= TEN_BUFFER_FACTOR;
-        if (i > 0) {
-          assert(TEN_BUFFER_SIZE >= s.str().length());
-          for (unsigned int j = 0; j < TEN_BUFFER_SIZE - s.str().length(); ++j) {
-            parts.push("0");
-          }
-        }
-      }
-      if (parts.is_empty()) {
-        return out << "0";
-      }
-      while (!parts.is_empty()) {
-        out << parts.pop();
-      }
-      return out;
+      longInt.write_decimal(out);
     }
+    return out;
   }
 
   std::istream& operator>>(std::istream& in, LongInt& longInt)
   {
+    std::ios_base::fmtflags ff = in.flags();
     std::string s;
-    std::istream& res = in >> s;
-    longInt = LongInt(s);
-    return res;
+    in >> s;
+    index_type length = s.length();
+    index_type start_index = longInt.read_sign(s);
+    assert(start_index <= length);
+    if (start_index == length) {
+      throw std::logic_error("Numerical string without digits is not allowed.");
+    }
+    if (ff & std::ios_base::hex) {
+      longInt.read_hexadecimal(s, start_index);
+    } else if (ff & std::ios_base::oct) {
+      longInt.read_octal(s, start_index);
+    } else {
+      longInt.read_decimal(s, start_index);
+    }
+    return in;
   }
 
   LongInt::LongInt():
@@ -110,92 +123,147 @@ namespace DataStructures {
     if (numerical_string.empty()) {
       throw std::logic_error("Empty numerical string is not allowed.");
     }
-    m_positive = true;
-    bool positive = true;
-    unsigned int start_index = 0;
-    m_content.push(0);
-    std::string::const_iterator it = numerical_string.begin();
-    std::string::const_iterator end = numerical_string.end();
-    if (*it == '-') {
-      positive = false;
-      ++it;
-      ++start_index;
-    } else if (*it == '+') {
-      ++it;
-      ++start_index;
-    }
-    if (it >= end) {
+    index_type length = numerical_string.length();
+    index_type start_index = read_sign(numerical_string);
+    assert(start_index <= length);
+    if (start_index == length) {
       throw std::logic_error("Numerical string without digits is not allowed.");
     }
-    index_type buffer_size, buffer_shift, base_exponent;
-    LongInt base, buffer_factor;
-    bool do_shift;
-    std::string prefix;
-    if (it[0] == 0 && it + 1 < end && it[1] == 'b') {
-      base_exponent = 1;
-      do_shift = true;
-      prefix = "0b";
-      it += 2;
-    } else if (it[0] == 0 && it + 1 < end && it[1] == 'x'){
-      base_exponent = 4;
-      do_shift = true;
-      prefix = "0x";
-      it += 2;
-    } else if (it[0] == 0) {
-      base_exponent = 3;
-      do_shift = true;
-      prefix = "0";
-      it += 1;
+    if (numerical_string.find(HEXADECIMAL_BASE) == 0) {
+      start_index += HEXADECIMAL_BASE.length();
+      read_hexadecimal(numerical_string, start_index);
+    } else if (numerical_string.find(OCTAL_BASE) == 0 && length > OCTAL_BASE.length()) {
+      start_index += OCTAL_BASE.length();
+      read_octal(numerical_string, start_index);
     } else {
-      base = TEN;
-      buffer_size = TEN_BUFFER_SIZE;
-      buffer_factor = TEN_BUFFER_FACTOR;
-      do_shift = false;
-      prefix = "";
+      read_decimal(numerical_string, start_index);
     }
-    if (do_shift) {
-      buffer_size = PART_SIZE / base_exponent;
-      buffer_shift = buffer_size * base_exponent;
+  }
+
+  inline index_type LongInt::read_sign(const std::string& numerical_string)
+  {
+    assert(numerical_string.size() >= 1);
+    if (numerical_string[0] == '-') {
+      m_positive = false;
+      return 1;
+    } else if (numerical_string[1] == '+') {
+      m_positive = true;
+      return 1;
+    } else {
+      m_positive = true;
+      return 0;
     }
-    if (it >= end) {
+  }
+
+  inline void LongInt::read_decimal(const std::string& numerical_string, index_type start_index)
+  {
+    bool positive = m_positive;
+    m_positive = true;
+    if (start_index == numerical_string.length()) {
       throw std::logic_error("Numerical string without digits is not allowed.");
     }
-    for (; it < numerical_string.end(); ++it) {
+    for (std::string::const_iterator it = numerical_string.begin() + start_index; it < numerical_string.end(); ++it) {
       if (*it > '9' || *it < '0') {
         throw std::logic_error("Non digit in numerical string.");
       }
     }
     unsigned int i;
-    for (i = start_index; i + TEN_BUFFER_SIZE < numerical_string.length(); i += TEN_BUFFER_SIZE) {
-      if (do_shift) {
-        operator<<=(buffer_shift);
-      } else {
-        operator*=(buffer_factor);
-      }
-      std::stringstream ss;
-      ss << prefix;
-      ss << numerical_string.substr(i, buffer_size);
+    for (i = start_index; i + DECIMAL_BUFFER_SIZE < numerical_string.length(); i += DECIMAL_BUFFER_SIZE) {
+      operator*=(TEN_BUFFER_FACTOR);
+      std::istringstream iss (numerical_string.substr(i, DECIMAL_BUFFER_SIZE));
       part_type part;
-      ss >> part;
+      iss >> part;
       operator+=(part);
     }
     unsigned int rest_length = numerical_string.length() - i;
     if (rest_length > 0) {
-      if (do_shift) {
-        operator<<=(rest_length * base_exponent);
-      } else {
-        LongInt base_power (base);
-        base_power.pow_eq(rest_length);
-        operator*=(base_power);
-      }
-      std::stringstream ss;
-      ss << prefix;
-      ss << numerical_string.substr(i, buffer_size);
+      LongInt base_power (TEN);
+      base_power.pow_eq(rest_length);
+      operator*=(base_power);
+      std::istringstream iss (numerical_string.substr(i, DECIMAL_BUFFER_SIZE));
       part_type part;
-      ss >> part;
+      iss >> part;
       operator+=(part);
     }
     m_positive = positive;
+  }
+
+  inline void LongInt::read_hexadecimal(const std::string& numerical_string, index_type start_index)
+  {
+    if (start_index == numerical_string.length()) {
+      throw std::logic_error("Numerical string without digits is not allowed.");
+    }
+    for (std::string::const_iterator it = numerical_string.begin() + start_index; it < numerical_string.end(); ++it) {
+      if ((*it > '9' || *it < '0') && (*it > 'F' || *it < 'A') && (*it > 'f' || *it < 'a')) {
+        throw std::logic_error("Non digit in numerical string.");
+      }
+    }
+    index_type length = numerical_string.length() - start_index;
+    index_type size = length / HEXADECIMAL_BUFFER_SIZE;
+    if (size * HEXADECIMAL_BUFFER_SIZE < length) {
+      ++size;
+    }
+    m_content = ArrayList<part_type>(size, 0);
+    index_type i = length;
+    index_type j = 0;
+    while (i > start_index + HEXADECIMAL_BUFFER_SIZE) {
+      i -= HEXADECIMAL_BUFFER_SIZE;
+      std::istringstream iss (numerical_string.substr(i, HEXADECIMAL_BUFFER_SIZE));
+      iss >> std::hex >> m_content[j];
+      ++j;
+    }
+    std::istringstream iss (numerical_string.substr(start_index, i - start_index));
+    iss >> std::hex >> m_content[j];
+  }
+
+  inline void LongInt::read_octal(const std::string& numerical_string, index_type start_index)
+  {
+    assert(numerical_string.length() > start_index);
+    for (std::string::const_iterator it = numerical_string.begin() + start_index; it < numerical_string.end(); ++it) {
+      if (*it > '9' || *it < '0') {
+        throw std::logic_error("Non digit in numerical string.");
+      }
+    }
+    throw std::logic_error("Octal is not implemented yet.");
+  }
+
+  inline void LongInt::write_decimal(std::ostream& out) const
+  {
+    LongInt longInt (abs());
+    ArrayList<std::string> parts;
+    longInt.m_positive = true;
+    while (longInt > 0) {
+      std::ostringstream s;
+      LongInt remainder;
+      longInt.divide(TEN_BUFFER_FACTOR, longInt, remainder, true);
+      s << remainder.m_content[0];
+      parts.push(s.str());
+      if (longInt > 0) {
+        assert(DECIMAL_BUFFER_SIZE >= s.str().length());
+        for (unsigned int j = 0; j < DECIMAL_BUFFER_SIZE - s.str().length(); ++j) {
+          parts.push("0");
+        }
+      }
+    }
+    if (parts.is_empty()) {
+      out << "0";
+    }
+    while (!parts.is_empty()) {
+      out << parts.pop();
+    }
+  }
+
+  inline void LongInt::write_octal(std::ostream& out) const
+  {
+    throw std::logic_error("Octal is not implemented yet.");
+  }
+
+  inline void LongInt::write_hexadecimal(std::ostream& out) const
+  {
+    for (index_type i = m_content.size(); i > 0;) {
+      --i;
+      out << std::hex << m_content[i];
+    }
   }
 
   LongInt LongInt::operator~() const
@@ -362,12 +430,10 @@ namespace DataStructures {
 
   void inline LongInt::pad_zeros(index_type new_size)
   {
-    assert(new_size >= size());
-    ArrayList<part_type>::iterator old_end = m_content.end();
-    m_content.prepare_size(new_size);
-    for (; old_end < m_content.end(); ++old_end) {
-      *old_end = 0l;
+    for (index_type i = size(); i < new_size; ++i) {
+      m_content.push(0ul);
     }
+    assert(size() >= new_size);
   }
 
   LongInt& LongInt::operator-=(const LongInt& other)
@@ -401,8 +467,8 @@ namespace DataStructures {
     ArrayList<part_type> c (space_usage(size(), other.size()));
     ArrayList<part_type>::const_iterator c_end = multiply(m_content.begin(), m_content.end(), other.m_content.begin(), other.m_content.end(), c.begin(), c.end());
     ArrayList<part_type>::const_iterator c_begin = c.begin();
-    m_content.prepare_size(c_end - c_begin);
-    copy(m_content.begin(), m_content.end(), c_begin, c_end);
+    m_content.clear();
+    m_content.push_all(c_begin, c_end);
     m_positive = m_positive == other.m_positive;
     if (size() == 0) {
       m_content.push(0);
@@ -445,8 +511,13 @@ namespace DataStructures {
     }
     // This scaling does not change the result because it crosses out,
     // but it ensures that the first digit of the divisor is at least 1 << 63.
-    LongInt dividend (abs() * scale_factor);
-    LongInt divisor (other.abs() * scale_factor);
+    LongInt dividend (abs());
+    LongInt divisor (other.abs());
+    if (scale_factor > 1) {
+      LongInt scale = scale_factor;
+      dividend *= scale;
+      divisor *= scale;
+    }
     part_type divisor_first_digit = divisor.m_content.end()[-1];
     assert(divisor_first_digit >= (1ul << 63));
     index_type divisor_size = divisor.size();
@@ -475,12 +546,11 @@ namespace DataStructures {
           back_calculated -= divisor;
           --guess;
         }
+        assert(old_guess >= guess);
         assert(back_calculated + divisor > remainder);
         assert(old_guess - guess <= 2);
         remainder -= back_calculated;
-        while (quotient.size() <= i) {
-          quotient.m_content.push(0);
-        }
+        quotient.pad_zeros(i + 1);
         quotient.m_content[i] = guess;
       }
     }
@@ -494,9 +564,7 @@ namespace DataStructures {
         for (index_type i2 = 0; i2 < old_remainder.size(); ++i2) {
           --i;
           lower = old_remainder.m_content[i];
-          while (remainder.size() <= i) {
-            remainder.m_content.push(0);
-          }
+          remainder.pad_zeros(i + 1);
           // upper:lower / scale_factor, store remainder into upper
           asm("div %2;"
           : "=a" (remainder.m_content[i]), "=d" (upper) : "q" (scale_factor), "a" (lower), "d" (upper));

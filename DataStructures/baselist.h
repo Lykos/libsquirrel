@@ -66,8 +66,6 @@ namespace DataStructures {
 
     inline bool is_shrinkable() const { return m_is_shrinkable; }
 
-    inline void prepare_size(index_type new_size);
-
   private:
     static const index_type CAPACITY_DECREASE_FACTOR;
 
@@ -82,6 +80,8 @@ namespace DataStructures {
     bool m_is_shrinkable;
 
   protected:
+    inline void prepare_size(index_type new_size);
+
     inline T* content() { return m_content; }
 
     inline const T* content() const { return m_content; }

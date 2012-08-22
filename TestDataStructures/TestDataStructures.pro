@@ -9,8 +9,9 @@ QT       += testlib
 QT       -= gui
 
 TARGET = datastructures_tests
-CONFIG   += console warn_on
+CONFIG   += warn_on
 CONFIG   -= app_bundle
+QMAKE_CXXFLAGS += -std=c++0x
 
 TEMPLATE = app
 

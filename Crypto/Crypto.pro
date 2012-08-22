@@ -9,6 +9,7 @@ QT       -= gui
 TARGET = Crypto
 TEMPLATE = lib
 CONFIG += warn_on
+QMAKE_CXXFLAGS += -std=c++0x
 
 DEFINES += CRYPTO_LIBRARY
 
