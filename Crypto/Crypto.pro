@@ -22,8 +22,7 @@ SOURCES += \
     primetester.cpp \
     elgamal_decrypter.cpp \
     elgamal_encrypter.cpp \
-    elgamal_keygenerator.cpp \
-    elgamal_keypersonalizer.cpp
+    elgamal_keygenerator.cpp
 
 HEADERS +=\
         Crypto_global.h \
@@ -44,8 +43,6 @@ HEADERS +=\
     elgamal_types.h \
     elgamal_encrypter.h \
     elgamal_keygenerator.h \
-    keypersonalizer.h \
-    elgamal_keypersonalizer.h \
     keypair.h
 
 symbian {

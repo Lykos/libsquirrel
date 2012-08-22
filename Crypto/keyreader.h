@@ -9,7 +9,7 @@ namespace Crypto {
   class CRYPTOSHARED_EXPORT KeyReader
   {
   public:
-    Key read_key(std::string key_string);
+    Key read_key(const std::string& key_string);
 
   };
   
