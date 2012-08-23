@@ -1,7 +1,6 @@
 #ifndef LONGINTTEST_H
 #define LONGINTTEST_H
 #include <QtTest/QtTest>
-#include "longint.h"
 
 class LongIntTest : public QObject
 {

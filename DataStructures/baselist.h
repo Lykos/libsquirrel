@@ -13,12 +13,12 @@
 #include "basetypes.h"
 
 #ifndef NDEBUG
-#define list_check_index(index) if (index >= BaseList<T>::size()) { std::ostringstream oss; oss << "Invalid index " << index << " for list of size " << BaseList<T>::size() << "."; throw typename BaseList<T>::range_error(oss.str()); }
+#define list_check_index(index) if (index >= BaseList<T>::size()) { std::ostringstream oss; oss << __FILE__ << "(" << __LINE__ << "): Invalid index " << index << " for list of size " << BaseList<T>::size() << "."; throw typename BaseList<T>::range_error(oss.str()); }
 #else
 #define list_check_index(index)
 #endif
 #ifndef NDEBUG
-#define check_empty() if (BaseList<T>::is_empty()) { throw typename BaseList<T>::empty_list_error("Cannot take the top from an empty ArrayList."); }
+#define check_empty() if (BaseList<T>::is_empty()) {std::ostringstream oss; oss << __FILE__ << "(" << __LINE__ << "): Cannot take the top of an empty list."; throw typename BaseList<T>::empty_list_error(oss.str()); }
 #else
 #define check_empty()
 #endif
@@ -41,7 +41,11 @@ namespace DataStructures {
 
     inline BaseList(const BaseList<T>& other);
 
+    // inline BaseList(BaseList<T>&& other);
+
     inline virtual BaseList<T>& operator=(const BaseList<T>& other);
+
+    // inline virtual BaseList<T>& operator=(BaseList<T>&& other);
 
     inline virtual void reorganize() {}
 
@@ -161,6 +165,17 @@ namespace DataStructures {
     }
   }
 
+/*  template <typename T>
+  BaseList<T>::BaseList(BaseList<T>&& other):
+    m_content (other.m_content),
+    m_size (other.m_size),
+    m_min_capacity (other.m_min_capacity),
+    m_is_shrinkable (other.m_is_shrinkable)
+  {
+    other.m_content = NULL;
+    assert(m_min_capacity > 0);
+  }*/
+
   template <typename T>
   BaseList<T>::BaseList(const BaseList<T>& other):
     m_content (NULL),
@@ -180,6 +195,23 @@ namespace DataStructures {
     free(m_content);
   }
 
+  /*template <typename T>
+  inline BaseList<T>& BaseList<T>::operator=(BaseList<T>&& other)
+  {
+    if (this == &other) {
+      return *this;
+    }
+    // TODO efficiency
+    clear();
+    free(m_content);
+    m_content = other.m_content;
+    m_size = other.m_size;
+    m_min_capacity = other.m_min_capacity;
+    m_is_shrinkable = other.m_is_shrinkable;
+    other.m_content = NULL;
+    return *this;
+  }*/
+
   template <typename T>
   inline BaseList<T>& BaseList<T>::operator=(const BaseList<T>& other)
   {
@@ -188,6 +220,7 @@ namespace DataStructures {
     }
     // TODO efficiency
     clear();
+    m_min_capacity = other.m_min_capacity;
     prepare_size(other.m_size);
     add_content(other.m_content, 0, other.m_size);
     return *this;

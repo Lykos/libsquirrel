@@ -13,12 +13,11 @@ QMAKE_CXXFLAGS += -std=c++11
 DEFINES += RUBYDATASTRUCTURES_LIBRARY
 
 SOURCES += \
-    datastructures.c \
+    RubyDataStructures.c \
     longint_interface.cpp
 
 HEADERS +=\
-        RubyDataStructures_global.h \
-    datastructures.h \
+    RubyDataStructures.h \
     longint_interface.h
 
 symbian {

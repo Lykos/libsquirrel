@@ -2,12 +2,12 @@
 #define DATASTRUCTURES_LONGINT_H
 
 #include "DataStructures_global.h"
+#include "basetypes.h"
 #include "arraylist.h"
 #include <istream>
 #include <ostream>
 
 namespace DataStructures {
-  class DATASTRUCTURESSHARED_EXPORT LongInt;
 
   std::ostream& operator<<(std::ostream& out, const LongInt& longInt);
 
@@ -45,8 +45,6 @@ namespace DataStructures {
     LongInt(int initial);
 
     LongInt(unsigned int initial);
-
-    LongInt(const LongInt& other);
 
     explicit LongInt(packed_longint_t packed);
 
@@ -104,8 +102,6 @@ namespace DataStructures {
 
     bool operator!=(const LongInt& other) const { return compareTo(other) != 0; }
 
-    LongInt& operator=(const LongInt& other);
-
     LongInt& operator+=(const LongInt& other);
 
     LongInt& operator-=(const LongInt& other);
@@ -140,6 +136,18 @@ namespace DataStructures {
 
     static const index_type PART_SIZE = CHAR_BIT * sizeof(part_type);
 
+    void divide(const LongInt& other, LongInt& quotient, LongInt& remainder, bool remainder_needed = true);
+
+    static const LongInt MINUS_ONE;
+
+    static const LongInt ZERO;
+
+    static const LongInt ONE;
+
+    inline const LongInt& zero() const { return ZERO; }
+
+    inline const LongInt& one() const { return ONE; }
+
   private:
     inline index_type read_sign(const std::string& numerical_string);
 
@@ -165,8 +173,6 @@ namespace DataStructures {
 
     inline void subtract(const LongInt& other);
 
-    inline void divide(const LongInt& other, LongInt& quotient, LongInt& remainder, bool remainder_needed = false);
-
     inline void add(const LongInt& other);
 
     inline part_type part_at(index_type i) const;
@@ -176,8 +182,6 @@ namespace DataStructures {
     ArrayList<part_type> m_content;
 
   };
-
-  LongInt gcd(const LongInt& first, const LongInt& second);
 
   LongInt rand_bits(index_type number_bits);
 

@@ -5,8 +5,11 @@
 #include <sstream>
 #include <cstdio>
 #include <string>
+#include "arithmetichelper.h"
 
 namespace DataStructures {
+
+  using namespace ArithmeticHelper;
 
   static const unsigned int DECIMAL_BUFFER_SIZE = (LongInt::PART_SIZE * 1233) >> 12; // Calculates log_10(2^PART_SIZE)
   static const unsigned int HEXADECIMAL_BUFFER_SIZE = (LongInt::PART_SIZE / 4); // Calculates log_16(2^PART_SIZE)
@@ -15,9 +18,9 @@ namespace DataStructures {
   static const std::string HEXADECIMAL_BASE = "0x";
   static const std::string OCTAL_BASE = "0";
 
-  static const LongInt MINUS_ONE (-1);
-  static const LongInt ZERO (0);
-  static const LongInt ONE (1);
+  const LongInt LongInt::ZERO (0);
+  const LongInt LongInt::ONE (1);
+  const LongInt LongInt::MINUS_ONE (-1);
   static const LongInt TEN (10);
   static const LongInt TEN_BUFFER_FACTOR (TEN.pow(DECIMAL_BUFFER_SIZE));
 
@@ -112,21 +115,17 @@ namespace DataStructures {
     m_content.push(initial);
   }
 
-  LongInt::LongInt(const LongInt& other):
-    m_positive (other.m_positive),
-    m_content (other.m_content)
-  {
-  }
-
   LongInt::LongInt(packed_longint_t packed):
     m_positive (packed.sign),
-    m_content (0, packed.num_parts / 2 + packed.num_parts % 2)
+    m_content (packed.num_parts / 2 + packed.num_parts % 2, 0)
   {
     index_type i = 0;
     for (; i < packed.num_parts / 2; ++i) {
+      assert(i < size());
       m_content[i] = packed.parts[2 * i] + (part_type(packed.parts[2 * i + 1]) << (PART_SIZE / 2));
     }
     if (2 * i < packed.num_parts) {
+      assert(i < size());
       m_content[i] = packed.parts[2 * i];
     }
   }
@@ -413,16 +412,6 @@ namespace DataStructures {
     }
   }
 
-  LongInt& LongInt::operator=(const LongInt& other)
-  {
-    if (&other == this) {
-      return *this;
-    }
-    m_positive = other.m_positive;
-    m_content = other.m_content;
-    return *this;
-  }
-
   LongInt& LongInt::operator+=(const LongInt& other)
   {
     if (other.m_positive != m_positive) {
@@ -494,7 +483,7 @@ namespace DataStructures {
   LongInt& LongInt::operator/=(const LongInt& other)
   {
     LongInt remainder;
-    divide(other, *this, remainder);
+    divide(other, *this, remainder, false);
     return *this;
   }
 
@@ -507,7 +496,7 @@ namespace DataStructures {
 
   // Note that it is not a problem, if the quotient or remainder is the same as *this because
   // *this gets copied and scaled first.
-  void inline LongInt::divide(const LongInt& other, LongInt& quotient, LongInt& remainder, bool remainder_needed)
+  void LongInt::divide(const LongInt& other, LongInt& quotient, LongInt& remainder, bool remainder_needed)
   {
     if (other == ZERO) {
       throw std::logic_error("Division by zero.");
@@ -663,36 +652,14 @@ namespace DataStructures {
 
   LongInt& LongInt::pow_eq(index_type exponent)
   {
-    LongInt result (ONE);
-    unsigned int j = sizeof(index_type) * CHAR_BIT;
-    for (unsigned int j2 = 0; j2 < sizeof(index_type) * CHAR_BIT; ++j2) {
-      --j;
-      if ((exponent >> j) & 1) {
-        result *= *this;
-      }
-      if (j > 0) {
-        result *= result;
-      }
-    }
-    return operator=(result);
+    ArithmeticHelper::pow_eq(*this, exponent);
+    return *this;
   }
 
   LongInt& LongInt::pow_mod_eq(const LongInt& exponent, const LongInt& modulus)
   {
-    assert(exponent >= 0);
-    LongInt result (ONE);
-    unsigned int j = sizeof(index_type) * CHAR_BIT;
-    for (unsigned int j2 = 0; j2 < sizeof(index_type) * CHAR_BIT; ++j2) {
-      --j;
-      if (((exponent >> j) & 1) == 1) {
-        result *= *this;
-      }
-      if (j > 0) {
-        result *= result;
-      }
-      result %= modulus;
-    }
-    return operator=(result);
+    ArithmeticHelper::pow_mod_eq(*this, exponent, modulus);
+    return *this;
   }
 
   LongInt& LongInt::operator|=(const LongInt& other)
@@ -812,39 +779,6 @@ namespace DataStructures {
     return i < size() ? m_content[i] : 0l;
   }
 
-  LongInt LongInt::inv_mod(const LongInt &modulus) const
-  {
-    LongInt a = modulus.abs();
-    if (a <= 1) {
-      throw std::logic_error("Modulo 0 and 1, there are no multiplicative inverses.");
-    }
-    LongInt b = abs();
-    LongInt u_old = 0;
-    LongInt u = 1;
-    LongInt v_old = 1;
-    LongInt v = 0;
-    if (b >= a) {
-      b %= a;
-    }
-    while (b > 0) {
-      LongInt q;
-      a.divide(b, q, a, true);
-      u_old -= u * q;
-      v_old -= v * q;
-      std::swap(a, b);
-      std::swap(u, u_old);
-      std::swap(v, v_old);
-    }
-    if (a != 1) {
-      std::ostringstream oss;
-      oss << "*this (" << *this << ") and modulus (" << modulus << ") are not relatively prime, the gcd is " << a << ", hence no multiplicative inverse exists.";
-      throw std::logic_error(oss.str());
-    }
-    u_old += modulus;
-    u_old %= modulus;
-    return u_old;
-  }
-
   LongInt::packed_longint_t LongInt::pack() const
   {
     unsigned int* result = new unsigned int[size() * 2];
@@ -855,19 +789,19 @@ namespace DataStructures {
     return {result, size() * 2, m_positive};
   }
 
-  LongInt gcd(const LongInt &first, const LongInt &second)
-  {
-    LongInt a = first.abs();
-    LongInt b = second.abs();
-    if (first < second) {
-      std::swap(a, b);
-    }
-    while (b > 0) {
-      a %= b;
-      std::swap(a, b);
-    }
-    return a;
+
+LongInt LongInt::inv_mod(const LongInt &modulus) const
+{
+  LongInt a = modulus.abs();
+  if (a <= 1) {
+    throw std::logic_error("Modulo 0 and 1, there are no multiplicative inverses.");
   }
+  LongInt b = abs();
+  if (b >= a) {
+    b %= a;
+  }
+  return DataStructures::inv_mod(a, b);
+}
 
   index_type log2(const LongInt& number)
   {

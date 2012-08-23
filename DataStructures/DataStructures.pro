@@ -39,7 +39,11 @@ HEADERS +=\
     heap.h \
     avltree.h \
     avlnode.h \
-    binarytree.h
+    binarytree.h \
+    finitefield.h \
+    finiteelement.h \
+    polynomial.h \
+    arithmetichelper.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

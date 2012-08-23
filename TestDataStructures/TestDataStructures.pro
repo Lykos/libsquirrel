@@ -21,7 +21,9 @@ SOURCES += \
     infiniterandomtest.cpp \
     queuetest.cpp \
     heaptest.cpp \
-    datastructurestests.cpp
+    datastructurestests.cpp \
+    polynomialtest.cpp \
+    finiteelementtest.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 debug {
@@ -44,4 +46,6 @@ HEADERS += \
     treetest.h \
     treaptest.h \
     avltreetest.h \
-    binarytreetest.h
+    binarytreetest.h \
+    polynomialtest.h \
+    finiteelementtest.h

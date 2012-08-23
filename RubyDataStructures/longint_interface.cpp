@@ -26,12 +26,13 @@ long_int_t big_to_long(packed_bignum_t big_num)
 
 packed_bignum_t long_to_big(long_int_t long_int)
 {
-  const LongInt& i = *static_cast<LongInt*>(long_int);
-  packed_longint_t packed_longint = i.pack();
+  const LongInt* i = static_cast<LongInt*>(long_int);
+  packed_longint_t packed_longint = i->pack();
   packed_bignum_t bignum;
   bignum.sign = packed_longint.sign;
   bignum.parts = packed_longint.parts;
   bignum.num_parts = packed_longint.num_parts;
+  delete i;
   return bignum;
 }
 

@@ -1,9 +1,12 @@
 #include "rsa_keygenerator.h"
 #include "rsa_types.h"
+#include "arithmetichelper.h"
 
 namespace Crypto {
 
   namespace RSA {
+
+    using namespace DataStructures::ArithmeticHelper;
 
     key_pair_t KeyGenerator::generate(DataStructures::index_type number_bits) const {
       number_t p = m_prime_tester.random_prime(number_bits);
