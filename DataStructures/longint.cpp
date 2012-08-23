@@ -118,6 +118,19 @@ namespace DataStructures {
   {
   }
 
+  LongInt::LongInt(packed_longint_t packed):
+    m_positive (packed.sign),
+    m_content (0, packed.num_parts / 2 + packed.num_parts % 2)
+  {
+    index_type i = 0;
+    for (; i < packed.num_parts / 2; ++i) {
+      m_content[i] = packed.parts[2 * i] + (part_type(packed.parts[2 * i + 1]) << (PART_SIZE / 2));
+    }
+    if (2 * i < packed.num_parts) {
+      m_content[i] = packed.parts[2 * i];
+    }
+  }
+
   LongInt::LongInt(const std::string& numerical_string)
   {
     if (numerical_string.empty()) {
@@ -830,6 +843,16 @@ namespace DataStructures {
     u_old += modulus;
     u_old %= modulus;
     return u_old;
+  }
+
+  LongInt::packed_longint_t LongInt::pack() const
+  {
+    unsigned int* result = new unsigned int[size() * 2];
+    for (index_type i = 0; i < size(); ++i) {
+      result[2 * i] = (unsigned int)(m_content[i]);
+      result[2 * i + 1] = (unsigned int)(m_content[i] >> (PART_SIZE / 2));
+    }
+    return {result, size() * 2, m_positive};
   }
 
   LongInt gcd(const LongInt &first, const LongInt &second)

@@ -8,15 +8,18 @@ QT       -= gui
 
 TARGET = RubyDataStructures
 TEMPLATE = lib
+QMAKE_CXXFLAGS += -std=c++11
 
 DEFINES += RUBYDATASTRUCTURES_LIBRARY
 
 SOURCES += \
-    datastructures.c
+    datastructures.c \
+    longint_interface.cpp
 
 HEADERS +=\
         RubyDataStructures_global.h \
-    datastructures.h
+    datastructures.h \
+    longint_interface.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

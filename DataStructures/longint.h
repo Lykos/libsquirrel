@@ -26,6 +26,12 @@ namespace DataStructures {
   public:
     typedef u_int64_t part_type;
 
+    typedef struct {
+      unsigned int* parts;
+      unsigned long int num_parts;
+      bool sign;
+    } packed_longint_t;
+
     LongInt();
 
     LongInt(long long int initial);
@@ -41,6 +47,8 @@ namespace DataStructures {
     LongInt(unsigned int initial);
 
     LongInt(const LongInt& other);
+
+    explicit LongInt(packed_longint_t packed);
 
     explicit LongInt(const std::string& numerical_string);
 
@@ -127,6 +135,8 @@ namespace DataStructures {
     LongInt abs() const;
 
     LongInt inv_mod(const LongInt& modulus) const;
+
+    packed_longint_t pack() const;
 
     static const index_type PART_SIZE = CHAR_BIT * sizeof(part_type);
 
