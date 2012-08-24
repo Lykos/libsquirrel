@@ -1,14 +1,15 @@
 #include "aes_keyexpander.h"
-#include "aes_constants.h"
+#include "aes_helper.h"
 #include <climits>
 #include <cassert>
 #include <cstring>
+#include <stdexcept>
 
 namespace Crypto {
 
   namespace AES {
 
-    inline word_t schedule_core(word_t in, uint i)
+    inline void schedule_core(char* in, uint i)
     {
       return (SBox[in & 0xFF] << 3 * CHAR_BIT)
           + (SBOX[(in >> 3 * CHAR_BIT) & 0xFF] << 2 * CHAR_BIT)
@@ -28,7 +29,7 @@ namespace Crypto {
       } else if (key_length == AES_256_BYTES) {
         rounds = AES_256_ROUNDS;
       } else {
-        throw new logic_error("Invalid key length.");
+        throw std::logic_error("Invalid key length.");
       }
       uint j = 0;
       for (; j < key_length; ++j) {

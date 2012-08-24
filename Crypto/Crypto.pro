@@ -24,7 +24,8 @@ SOURCES += \
     elgamal_encrypter.cpp \
     elgamal_keygenerator.cpp \
     aes_keyexpander.cpp \
-    aes_encrypter.cpp
+    aes_encrypter.cpp \
+    aes_helper.cpp
 
 HEADERS +=\
         Crypto_global.h \
@@ -47,9 +48,9 @@ HEADERS +=\
     elgamal_keygenerator.h \
     keypair.h \
     aes_keyexpander.h \
-    aes_types.h \
     aes_constants.h \
-    aes_encrypter.h
+    aes_encrypter.h \
+    aes_helper.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN
