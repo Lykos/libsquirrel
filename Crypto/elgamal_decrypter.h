@@ -17,7 +17,7 @@ namespace Crypto {
     public:
       inline explicit Decrypter(const private_key_t& private_key): CryptoDecrypter(private_key) {}
 
-      plain_text_t decrypt(const cipher_text_t &cipher_text) const;
+      plain_text_t decrypt(const cipher_text_t &cipher_text);
 
     };
     

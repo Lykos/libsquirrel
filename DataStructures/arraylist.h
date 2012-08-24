@@ -22,9 +22,9 @@ namespace DataStructures {
 
     typedef typename BaseList<T>::empty_list_error empty_list_error;
 
-    inline explicit ArrayList(index_type initial_size = 0, const T& element = T());
+    inline ArrayList();
 
-    inline ArrayList(const ArrayList<T>& other);
+    inline explicit ArrayList(index_type initial_size, const T& element = T());
 
     /*template <typename Iterator>
     ArrayList(const Iterator& begin, const Iterator& end);*/
@@ -93,6 +93,12 @@ namespace DataStructures {
   }
 
   template <typename T>
+  inline ArrayList<T>::ArrayList():
+    BaseList<T>()
+  {
+  }
+
+  template <typename T>
   inline ArrayList<T>::ArrayList(index_type initial_size, const T& element):
     BaseList<T>(initial_size, element)
   {
@@ -104,12 +110,6 @@ namespace DataStructures {
   {
     push_all(begin, end);
   }*/
-
-  template <typename T>
-  inline ArrayList<T>::ArrayList(const ArrayList<T>& other):
-    BaseList<T>(other)
-  {
-  }
 
   template <typename T>
   template <typename Iterator>

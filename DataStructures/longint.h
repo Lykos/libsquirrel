@@ -130,7 +130,11 @@ namespace DataStructures {
 
     LongInt abs() const;
 
-    LongInt inv_mod(const LongInt& modulus) const;
+    LongInt mod(const LongInt& modulus) const;
+
+    LongInt mult_inv_mod(const LongInt& modulus) const;
+
+    LongInt add_inv_mod(const LongInt& modulus) const;
 
     packed_longint_t pack() const;
 
@@ -138,15 +142,9 @@ namespace DataStructures {
 
     void divide(const LongInt& other, LongInt& quotient, LongInt& remainder, bool remainder_needed = true);
 
-    static const LongInt MINUS_ONE;
+    inline LongInt zero() const { return 0; }
 
-    static const LongInt ZERO;
-
-    static const LongInt ONE;
-
-    inline const LongInt& zero() const { return ZERO; }
-
-    inline const LongInt& one() const { return ONE; }
+    inline LongInt one() const { return 1; }
 
   private:
     inline index_type read_sign(const std::string& numerical_string);

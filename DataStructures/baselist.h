@@ -18,7 +18,7 @@
 #define list_check_index(index)
 #endif
 #ifndef NDEBUG
-#define check_empty() if (BaseList<T>::is_empty()) {std::ostringstream oss; oss << __FILE__ << "(" << __LINE__ << "): Cannot take the top of an empty list."; throw typename BaseList<T>::empty_list_error(oss.str()); }
+#define check_empty() if (BaseList<T>::is_empty()) { std::ostringstream oss; oss << __FILE__ << "(" << __LINE__ << "): Cannot take the top of an empty list."; throw typename BaseList<T>::empty_list_error(oss.str()); }
 #else
 #define check_empty()
 #endif
@@ -37,7 +37,9 @@ namespace DataStructures {
 
     typedef T value_t;
 
-    explicit inline BaseList(index_type initial_size = 0, const T& element = T());
+    inline BaseList();
+
+    explicit inline BaseList(index_type initial_size, const T& element = T());
 
     inline BaseList(const BaseList<T>& other);
 
@@ -137,6 +139,16 @@ namespace DataStructures {
   const index_type BaseList<T>::CAPACITY_DECREASE_FACTOR(4);
 
   template <typename T>
+  BaseList<T>::BaseList():
+    m_content (NULL),
+    m_size (0),
+    m_min_capacity (DEFAULT_MIN_CAPACITY),
+    m_is_shrinkable (false)
+  {
+    adjust_capacity(0);
+  }
+
+  template <typename T>
   BaseList<T>::BaseList(index_type initial_size, const T& element):
     m_content (NULL),
     m_size (initial_size),
@@ -145,9 +157,8 @@ namespace DataStructures {
   {
     adjust_capacity(initial_size);
     for (index_type i = 0; i < size(); ++i) {
-      m_content[i] = element;
+      create(i, element);
     }
-    assert(m_min_capacity > 0);
   }
 
   template <typename T>
@@ -161,7 +172,7 @@ namespace DataStructures {
     adjust_capacity (end - begin);
     index_type i = 0;
     for (Iterator it = begin; it < end; ++it, ++i) {
-      m_content[i] = *it;
+      create(i, *it);
     }
   }
 
@@ -238,7 +249,7 @@ namespace DataStructures {
   template <typename T>
   inline void BaseList<T>::add_content(const T * content, index_type insert_position, index_type length)
   {
-    for (index_type i = 0; i < length; i++) {
+    for (index_type i = 0; i < length; ++i) {
       create(insert_position + i, content[i]);
     }
   }

@@ -18,10 +18,11 @@ namespace DataStructures {
   static const std::string HEXADECIMAL_BASE = "0x";
   static const std::string OCTAL_BASE = "0";
 
-  const LongInt LongInt::ZERO (0);
-  const LongInt LongInt::ONE (1);
-  const LongInt LongInt::MINUS_ONE (-1);
   static const LongInt TEN (10);
+  static const LongInt ZERO (0);
+  static const LongInt ONE (1);
+  static const LongInt MINUS_ONE (-1);
+
   static const LongInt TEN_BUFFER_FACTOR (TEN.pow(DECIMAL_BUFFER_SIZE));
 
   static const index_type base (10);
@@ -498,6 +499,15 @@ namespace DataStructures {
   // *this gets copied and scaled first.
   void LongInt::divide(const LongInt& other, LongInt& quotient, LongInt& remainder, bool remainder_needed)
   {
+    if (uCompareTo(other) == -1) {
+      if (remainder_needed) {
+        remainder = *this;
+      }
+      quotient = ZERO;
+      return;
+    }
+    bool positive = m_positive;
+    bool other_positive = other.m_positive;
     if (other == ZERO) {
       throw std::logic_error("Division by zero.");
     }
@@ -574,9 +584,13 @@ namespace DataStructures {
         // The division has to work without remainder
         assert(upper == 0);
       }
-      remainder.m_positive = m_positive;
+      if (remainder != ZERO) {
+        remainder.m_positive = positive;
+      }
     }
-    quotient.m_positive = m_positive == other.m_positive;
+    if (quotient != ZERO) {
+      quotient.m_positive = positive == other_positive;
+    }
   }
 
   LongInt& LongInt::operator<<=(index_type shift_offset)
@@ -753,9 +767,8 @@ namespace DataStructures {
   int inline LongInt::uCompareTo(const LongInt& other) const
   {
     index_type max_index = std::max(size(), other.size());
-    index_type i = max_index;
-    for (index_type j = 0; j < max_index; j++) {
-      i--;
+    for (index_type i = max_index + 1; i > 0;) {
+      --i;
       part_type my = part_at(i);
       part_type his = other.part_at(i);
       if (my > his) {
@@ -789,19 +802,33 @@ namespace DataStructures {
     return {result, size() * 2, m_positive};
   }
 
+  LongInt LongInt::mod(const LongInt &modulus) const
+  {
+    if (modulus < 2) {
+      throw std::logic_error("Modulus has to be at least 2.");
+    }
+    LongInt result (operator%(modulus));
+    if (!result.m_positive) {
+      result += modulus;
+    }
+    return result;
+  }
 
-LongInt LongInt::inv_mod(const LongInt &modulus) const
-{
-  LongInt a = modulus.abs();
-  if (a <= 1) {
-    throw std::logic_error("Modulo 0 and 1, there are no multiplicative inverses.");
+  LongInt LongInt::mult_inv_mod(const LongInt &modulus) const
+  {
+    if (modulus < 2) {
+      throw std::logic_error("Modulus has to be at least 2.");
+    }
+    return ArithmeticHelper::inv_mod(mod(modulus), modulus);
   }
-  LongInt b = abs();
-  if (b >= a) {
-    b %= a;
+
+  LongInt LongInt::add_inv_mod(const LongInt &modulus) const
+  {
+    if (modulus < 2) {
+      throw std::logic_error("Modulus has to be at least 2.");
+    }
+    return operator-().mod(modulus);
   }
-  return DataStructures::inv_mod(a, b);
-}
 
   index_type log2(const LongInt& number)
   {

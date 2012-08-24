@@ -44,25 +44,25 @@ namespace DataStructures {
 
     inline FiniteElement<T> operator++(int) { FiniteElement<T> result (*this); operator++(); return result; }
 
-    inline FiniteElement<T>& operator++() { ++m_element; normalize(); return *this; }
+    inline FiniteElement<T>& operator++() { m_element += m_field->modulus().one(); return *this; }
 
     inline FiniteElement<T> operator--(int) { FiniteElement<T> result (*this); operator--(); return result; }
 
-    inline FiniteElement<T>& operator--() { --m_element; normalize(); return *this; }
+    inline FiniteElement<T>& operator--() { m_element -= m_field->modulus().one(); return *this; }
 
     inline FiniteElement<T>& operator+=(const FiniteElement<T>& other) { m_element += other.m_element; normalize(); return *this; }
 
-    inline FiniteElement<T>& operator-=(const FiniteElement<T>& other) { m_element -= other.m_element; normalize(); return *this; }
+    inline FiniteElement<T>& operator-=(const FiniteElement<T>& other) { return operator+=(-other); }
 
     inline FiniteElement<T>& operator*=(const FiniteElement<T>& other) { m_element *= other.m_element; normalize(); return *this; }
 
-    inline FiniteElement<T>& operator/=(const FiniteElement<T>& other) { return operator*=(other.inv()); }
+    inline FiniteElement<T>& operator/=(const FiniteElement<T>& other) { return operator*=(other.mult_inv()); }
 
     inline const FiniteElement<T>& pow_eq(const LongInt& exponent) { m_element.pow_mod_eq(exponent, m_field->modulus()); normalize(); return *this; }
 
-    inline FiniteElement<T> inv() const { m_element.inv_mod(m_field->modulus()); return *this; }
+    inline FiniteElement<T> mult_inv() const { return FiniteElement<T>(m_field, m_element.mult_inv_mod(m_field->modulus())); }
 
-    inline const T& element() { return m_element; }
+    inline const T& element() const { return m_element; }
 
     inline bool operator==(const FiniteElement<T>& other) const { return m_field == other.m_field && m_element == other.m_element; }
 

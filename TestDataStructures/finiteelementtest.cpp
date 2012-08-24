@@ -29,9 +29,9 @@ static FE RESULT2 (&Z37, 33);
 
 void FiniteElementTest::test_pow_data()
 {
-  QTest::addColumn<FEP>("left");
-  QTest::addColumn<LongInt>("right");
-  QTest::addColumn<FEP>("result");
+  QTest::addColumn<FEP>("leftp");
+  QTest::addColumn<int>("right");
+  QTest::addColumn<FEP>("resultp");
 
   QTest::newRow("17 ** 33 mod 37") << FEP(&LEFT) << 33 << FEP(&RESULT1);
 }
@@ -39,7 +39,7 @@ void FiniteElementTest::test_pow_data()
 void FiniteElementTest::test_pow()
 {
   QFETCH(FEP, leftp);
-  QFETCH(L, right);
+  QFETCH(int, right);
   QFETCH(FEP, resultp);
 
   FE left = *leftp.fe;
@@ -55,9 +55,9 @@ void FiniteElementTest::test_pow()
 
 void FiniteElementTest::test_divide_data()
 {
-  QTest::addColumn<FEP>("left");
-  QTest::addColumn<FEP>("right");
-  QTest::addColumn<FEP>("result");
+  QTest::addColumn<FEP>("leftp");
+  QTest::addColumn<FEP>("rightp");
+  QTest::addColumn<FEP>("resultp");
 
   QTest::newRow("17 / 5 mod 37") << FEP(&LEFT) << FEP(&RIGHT) << FEP(&RESULT2);
 }

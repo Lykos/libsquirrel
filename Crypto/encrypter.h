@@ -9,9 +9,9 @@ namespace Crypto {
   class CRYPTOSHARED_EXPORT Encrypter
   {
   public:
-    inline Encrypter(PublicKey public_key): m_public_key (public_key) {}
+    inline Encrypter(const PublicKey& public_key): m_public_key (public_key) {}
 
-    virtual Cipher encrypt(const Plain& plain) const = 0;
+    virtual Cipher encrypt(const Plain& plain) = 0;
 
   protected:
     PublicKey m_public_key;

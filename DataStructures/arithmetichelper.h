@@ -18,22 +18,18 @@ namespace DataStructures {
     template <typename T>
     T inv_mod(const T& element, const T &modulus)
     {
-      T a (element);
-      T b (modulus);
-      T u_old = 0;
-      T u = 1;
-      T v_old = 1;
-      T v = 0;
-      while (b != 0) {
+      T a (modulus);
+      T b (element);
+      T u_old = modulus.zero();
+      T u = modulus.one();
+      while (b != modulus.zero()) {
         T q;
         a.divide(b, q, a);
         u_old -= u * q;
-        v_old -= v * q;
         std::swap(a, b);
         std::swap(u, u_old);
-        std::swap(v, v_old);
       }
-      if (a != 1) {
+      if (a != modulus.one()) {
         std::ostringstream oss;
         oss << "element (" << element << ") and modulus (" << modulus << ") are not relatively prime, the gcd is " << a << ", hence no multiplicative inverse exists.";
         throw std::logic_error(oss.str());
@@ -78,12 +74,12 @@ namespace DataStructures {
     template <typename T>
     void pow_mod_eq(T& base, const LongInt& exponent, const LongInt& modulus)
     {
-      T factor = (exponent >= LongInt::ZERO ? base : inv_mod(base, modulus));
+      T factor = (exponent.is_positive() ? base : inv_mod(base, modulus));
       T& result = base;
       result = base.one();
       for (unsigned int j = sizeof(index_type) * CHAR_BIT; j > 0;) {
         --j;
-        if (((exponent >> j) & LongInt::ONE) == LongInt::ONE) {
+        if (((exponent >> j) & exponent.one()) == exponent.one()) {
           result *= factor;
         }
         if (j > 0) {
