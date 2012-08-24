@@ -2,16 +2,16 @@
 #define DATASTRUCTURES_LONGINT_H
 
 #include "DataStructures_global.h"
+#include "basetypes.h"
 #include "arraylist.h"
 #include <istream>
 #include <ostream>
 
 namespace DataStructures {
-  class DATASTRUCTURESSHARED_EXPORT LongInt;
 
   std::ostream& operator<<(std::ostream& out, const LongInt& longInt);
 
-  std::istream& operator>>(std::istream& in, const LongInt& longInt);
+  std::istream& operator>>(std::istream& in, LongInt& longInt);
 
   inline index_type log2(const LongInt& number);
 
@@ -19,12 +19,18 @@ namespace DataStructures {
   {
     friend std::ostream& operator<<(std::ostream& out, const LongInt& longInt);
 
-    friend std::istream& operator>>(std::istream& in, const LongInt& longInt);
+    friend std::istream& operator>>(std::istream& in, LongInt& longInt);
 
     friend index_type log2(const LongInt& number);
 
   public:
     typedef u_int64_t part_type;
+
+    typedef struct {
+      unsigned int* parts;
+      unsigned long int num_parts;
+      bool sign;
+    } packed_longint_t;
 
     LongInt();
 
@@ -40,7 +46,7 @@ namespace DataStructures {
 
     LongInt(unsigned int initial);
 
-    LongInt(const LongInt& other);
+    explicit LongInt(packed_longint_t packed);
 
     explicit LongInt(const std::string& numerical_string);
 
@@ -96,8 +102,6 @@ namespace DataStructures {
 
     bool operator!=(const LongInt& other) const { return compareTo(other) != 0; }
 
-    LongInt& operator=(const LongInt& other);
-
     LongInt& operator+=(const LongInt& other);
 
     LongInt& operator-=(const LongInt& other);
@@ -126,11 +130,37 @@ namespace DataStructures {
 
     LongInt abs() const;
 
-    LongInt inv_mod(const LongInt& modulus) const;
+    LongInt mod(const LongInt& modulus) const;
+
+    LongInt mult_inv_mod(const LongInt& modulus) const;
+
+    LongInt add_inv_mod(const LongInt& modulus) const;
+
+    packed_longint_t pack() const;
 
     static const index_type PART_SIZE = CHAR_BIT * sizeof(part_type);
 
+    void divide(const LongInt& other, LongInt& quotient, LongInt& remainder, bool remainder_needed = true);
+
+    inline LongInt zero() const { return 0; }
+
+    inline LongInt one() const { return 1; }
+
   private:
+    inline index_type read_sign(const std::string& numerical_string);
+
+    inline void write_decimal(std::ostream& out) const;
+
+    inline void write_octal(std::ostream& out) const;
+
+    inline void write_hexadecimal(std::ostream& out) const;
+
+    inline void read_decimal(const std::string& numerical_string, index_type start_index);
+
+    inline void read_octal(const std::string& numerical_string, index_type start_index);
+
+    inline void read_hexadecimal(const std::string& numerical_string, index_type start_index);
+
     inline index_type size() const { return m_content.size(); }
 
     inline int uCompareTo(const LongInt& other) const;
@@ -141,8 +171,6 @@ namespace DataStructures {
 
     inline void subtract(const LongInt& other);
 
-    inline void divide(const LongInt& other, LongInt& quotient, LongInt& remainder, bool remainder_needed = false);
-
     inline void add(const LongInt& other);
 
     inline part_type part_at(index_type i) const;
@@ -152,8 +180,6 @@ namespace DataStructures {
     ArrayList<part_type> m_content;
 
   };
-
-  LongInt gcd(const LongInt& first, const LongInt& second);
 
   LongInt rand_bits(index_type number_bits);
 

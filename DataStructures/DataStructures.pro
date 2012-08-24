@@ -8,6 +8,8 @@ QT       -= core gui
 
 TARGET = DataStructures
 TEMPLATE = lib
+CONFIG += warn_on
+QMAKE_CXXFLAGS += -std=c++0x
 
 DEFINES += DATASTRUCTURES_LIBRARY
 
@@ -39,6 +41,10 @@ HEADERS +=\
     avlnode.h \
     binarytree.h \
     fibonacciheap.h
+    finitefield.h \
+    finiteelement.h \
+    polynomial.h \
+    arithmetichelper.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

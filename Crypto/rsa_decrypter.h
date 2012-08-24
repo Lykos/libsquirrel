@@ -21,7 +21,7 @@ namespace Crypto {
 
       Decrypter& operator=(const Decrypter& other);
 
-      inline plain_text_t decrypt(const cipher_text_t& cipher_text) const { return m_strategy->decrypt(cipher_text); }
+      inline plain_text_t decrypt(const cipher_text_t& cipher_text) { return m_strategy->decrypt(cipher_text); }
 
       inline virtual ~Decrypter() { delete m_strategy; }
 

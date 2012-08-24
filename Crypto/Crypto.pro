@@ -8,6 +8,8 @@ QT       -= gui
 
 TARGET = Crypto
 TEMPLATE = lib
+CONFIG += warn_on
+QMAKE_CXXFLAGS += -std=c++0x
 
 DEFINES += CRYPTO_LIBRARY
 
@@ -21,7 +23,8 @@ SOURCES += \
     elgamal_decrypter.cpp \
     elgamal_encrypter.cpp \
     elgamal_keygenerator.cpp \
-    elgamal_keypersonalizer.cpp
+    aes_keyexpander.cpp \
+    aes_encrypter.cpp
 
 HEADERS +=\
         Crypto_global.h \
@@ -42,9 +45,11 @@ HEADERS +=\
     elgamal_types.h \
     elgamal_encrypter.h \
     elgamal_keygenerator.h \
-    keypersonalizer.h \
-    elgamal_keypersonalizer.h \
-    keypair.h
+    keypair.h \
+    aes_keyexpander.h \
+    aes_types.h \
+    aes_constants.h \
+    aes_encrypter.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN
@@ -65,7 +70,13 @@ unix:!symbian {
     INSTALLS += target
 }
 
-unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
+debug {
+    unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
+}
+
+release {
+    unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Release/ -lDataStructures
+}
 
 INCLUDEPATH += $$PWD/../DataStructures
 DEPENDPATH += $$PWD/../DataStructures

@@ -1,4 +1,7 @@
 #include "primetester.h"
+#include "arithmetichelper.h"
+
+using namespace DataStructures::ArithmeticHelper;
 
 namespace Crypto {
 

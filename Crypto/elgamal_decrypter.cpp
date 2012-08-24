@@ -4,7 +4,7 @@ namespace Crypto {
 
   namespace Elgamal {
     
-    plain_text_t Decrypter::decrypt(const cipher_text_t &cipher_text) const
+    plain_text_t Decrypter::decrypt(const cipher_text_t &cipher_text)
     {
       exponent_t exponent = CryptoDecrypter::m_private_key.exponent;
       number_t modulus = CryptoDecrypter::m_private_key.modulus;

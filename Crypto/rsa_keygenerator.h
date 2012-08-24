@@ -15,10 +15,6 @@ namespace Crypto {
     public:
       inline explicit KeyGenerator(PrimeTester prime_tester = PrimeTester()): m_prime_tester (prime_tester) {}
 
-      inline KeyGenerator(const KeyGenerator& other): m_prime_tester (other.m_prime_tester) {}
-
-      inline KeyGenerator& operator=(const KeyGenerator& other) { m_prime_tester = other.m_prime_tester; return *this; }
-
       key_pair_t generate(DataStructures::index_type number_bits) const;
 
     private:

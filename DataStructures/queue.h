@@ -34,9 +34,11 @@ namespace DataStructures {
     template <typename Iterator>
     inline void push_all(const Iterator& begin, const Iterator& end);
 
-    inline const T& operator[](index_type i) const { list_check_index(i); return BaseList<T>::at((i + m_begin) % BaseList<T>::capacity()); }
+    inline index_type index_of(index_type index) const { return (index + m_begin) % BaseList<T>::capacity(); }
 
-    inline T& operator[](index_type i) { list_check_index(i); return BaseList<T>::at((i + m_begin) % BaseList<T>::capacity()); }
+    inline const T& operator[](index_type i) const { list_check_index(i); return BaseList<T>::at(index_of(i)); }
+
+    inline T& operator[](index_type i) { list_check_index(i); return BaseList<T>::at(index_of(i)); }
 
     inline void clear();
 
@@ -113,7 +115,7 @@ namespace DataStructures {
     index_type i = BaseList<T>::size();
     BaseList<T>::prepare_size(BaseList<T>::size() + (end - begin));
     for (Iterator it = begin; it != end; ++it, ++i) {
-      operator[](i) = *it;
+      BaseList<T>::create(index_of(i), *it);
     }
   }
 
@@ -145,7 +147,7 @@ namespace DataStructures {
   {
     index_type old_size = BaseList<T>::size();
     BaseList<T>::prepare_size(BaseList<T>::size() + 1);
-    operator[](old_size) = element;
+    BaseList<T>::create(old_size, element);
   }
 
   template <typename T>

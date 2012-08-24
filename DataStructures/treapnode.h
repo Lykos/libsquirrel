@@ -15,8 +15,6 @@ namespace DataStructures {
 
     typedef typename TreeNode<T>::direction direction;
 
-    inline TreapNode(const TreapNode& other);
-
     inline TreapNode(const T& new_element, NodePointer new_parent = NULL, direction new_parent_direction = TREE_INVALID);
 
     InfiniteRandom randomness;
@@ -28,13 +26,6 @@ namespace DataStructures {
     inline TreapNodePointer parent2() { return static_cast<TreapNodePointer>(TreeNode<T>::parent); }
 
   };
-
-  template <typename T>
-  inline TreapNode<T>::TreapNode(const TreapNode<T> &other):
-    TreeNode<T>(other),
-    randomness (other.randomness)
-  {
-  }
 
   template <typename T>
   TreapNode<T>::TreapNode(const T& new_element, NodePointer new_parent, direction new_parent_direction):

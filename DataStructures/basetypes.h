@@ -53,6 +53,8 @@ namespace DataStructures {
   template <typename T>
   class DATASTRUCTURESSHARED_EXPORT BinaryTree;
 
+  class DATASTRUCTURESSHARED_EXPORT LongInt;
+
 #define TREE_LEFT 0
 #define TREE_RIGHT 1
 #define TREE_INVALID 2

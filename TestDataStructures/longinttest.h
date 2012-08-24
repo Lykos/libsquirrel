@@ -1,7 +1,6 @@
 #ifndef LONGINTTEST_H
 #define LONGINTTEST_H
 #include <QtTest/QtTest>
-#include "longint.h"
 
 class LongIntTest : public QObject
 {
@@ -17,6 +16,8 @@ private Q_SLOTS:
   void test_assign();
   void test_string_constructor_data();
   void test_string_constructor();
+  void test_string_constructor2_data();
+  void test_string_constructor2();
   void test_compare_to_data();
   void test_compare_to();
   void test_inc_data();

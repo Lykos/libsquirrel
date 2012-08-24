@@ -17,11 +17,7 @@ namespace Crypto {
     public:
       inline Encrypter(const public_key_t& public_key): CryptoEncrypter (public_key)  {}
 
-      inline Encrypter(const Encrypter& other): CryptoEncrypter(other) {}
-
-      inline Encrypter& operator=(const Encrypter& other) { CryptoEncrypter::operator=(other); return *this; }
-
-      cipher_text_t encrypt(const plain_text_t& plain_text) const;
+      cipher_text_t encrypt(const plain_text_t& plain_text);
 
     };
 

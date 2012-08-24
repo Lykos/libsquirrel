@@ -31,12 +31,6 @@ namespace Crypto {
       exponent_t exponent;
     } private_key_t;
 
-    typedef struct {
-      number_t modulus;
-      number_t gen_power;
-      number_t key_inv;
-    } personalized_public_key_t;
-
     typedef KeyPair<public_key_t, private_key_t> key_pair_t;
 
   } // namespace Elgamal

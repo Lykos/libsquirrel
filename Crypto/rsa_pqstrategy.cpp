@@ -6,8 +6,8 @@ namespace Crypto {
 
     PQStrategy::PQStrategy(const private_key_t& private_key):
       DecryptStrategy(private_key),
-      m_p_inv (private_key.p.inv_mod(private_key.q)),
-      m_q_inv (private_key.q.inv_mod(private_key.p))
+      m_p_inv (private_key.p.mult_inv_mod(private_key.q)),
+      m_q_inv (private_key.q.mult_inv_mod(private_key.p))
     {
       assert(private_key.p * private_key.q == private_key.modulus);
       assert((private_key.p * m_p_inv) % private_key.q == 1);
