@@ -1,5 +1,5 @@
 #include "aes_keyexpander.h"
-#include "aes_helper.h"
+#include "aes_constants.h"
 #include <climits>
 #include <cassert>
 #include <cstring>
@@ -9,18 +9,13 @@ namespace Crypto {
 
   namespace AES {
 
-    inline void schedule_core(char* in, uint i)
+    inline void KeyExpander::schedule_core(char* in, uint i)
     {
-      return (SBox[in & 0xFF] << 3 * CHAR_BIT)
-          + (SBOX[(in >> 3 * CHAR_BIT) & 0xFF] << 2 * CHAR_BIT)
-          + (SBOX[(in >> 2 * CHAR_BIT) & 0xFF] << CHAR_BIT)
-          + (SBOX[(in >> CHAR_BIT) & 0xFF] ^ Rcon[i]);
+      m_helper.sub_word(m_helper.rotate_word(in)) ^ Rcon[i];
     }
 
-    void KeyExpander::expand(const key_t& key, ex_key_t& result) const
+    void KeyExpander::expand(char* key, uint key_length) const
     {
-      result.key_length = key.key_length;
-      uint key_length = key.key_length;
       uint rounds;
       if (key_length == AES_128_BYTES) {
         rounds = AES_128_ROUNDS;
@@ -35,17 +30,14 @@ namespace Crypto {
       for (; j < key_length; ++j) {
         result.bytes[j] = key.bytes[j];
       }
-      uint i = 1;
-      for (; j < (rounds + 1) * BLOCK_SIZE;)
+      for (uint j = key_length; j < (rounds + 1) * BLOCK_BYTE_SIZE;)
       {
         char_t t[4];
-        for (uint k = 0; k < 4; ++k) {
-          t[k] = result.bytes[j - 4 + k];
+        for (uint k = 0; k < BLOCK_ROWS; ++k) {
+          t[k] = key[j - BLOCK_ROWS + k];
         }
-        if (j % BLOCK_SIZE == 0) {
-          schedule_core(t, i);
-          ++i;
-        }
+        schedule_core(t, i);
+        ++i;
         for (uint k = 0; k < 16; ++k) {
           result.bytes[j + k] = t[k % 4] ^ result.bytes[j];
         }

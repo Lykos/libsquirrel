@@ -7,7 +7,18 @@ namespace Crypto {
     class Helper
     {
     public:
-      Helper();
+      apply_round_key(char* cipher, char* key, uint round);
+
+      sub_bytes(char* cipher);
+
+      shift_rows(char* cipher);
+
+      mix_columns(char* cipher);
+
+      rotate_word(char* word);
+
+      sub_word(char* word);
+
     };
     
   } // namespace AES

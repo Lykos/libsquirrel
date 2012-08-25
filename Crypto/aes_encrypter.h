@@ -15,7 +15,7 @@ namespace Crypto {
 
       ex_key_t m_expanded_key;
 
-      Helper m_aes_helper;
+      Helper m_helper;
 
     public:
       explicit Encrypter(const key_t& key);

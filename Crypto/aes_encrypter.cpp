@@ -29,11 +29,16 @@ namespace Crypto {
       } else {
         throw std::logic_error("Invalid key size.");
       }
-      apply_round_key(cipher, m_expanded_key);
+      m_helper.apply_round_key(cipher, m_expanded_key, 0);
       for (uint i = 1; i < rounds - 1; ++i) {
-        sub_bytes();
-        apply_round_key(cipher, m_expanded_key + i * 4);
+        m_helper.sub_bytes(cipher);
+        m_helper.shift_rows(cipher);
+        m_helper.mix_columns(cipher);
+        m_helper.apply_round_key(cipher, m_expanded_key, i);
       }
+      m_helper.sub_bytes(cipher);
+      m_helper.shift_rows(cipher);
+      m_helper.apply_round_key(cipher, m_expanded_key, rounds - 1);
     }
 
   }
