@@ -9,12 +9,8 @@ namespace Crypto {
 
   namespace AES {
 
-    inline void KeyExpander::schedule_core(char* in, uint i)
-    {
-      m_helper.sub_word(m_helper.rotate_word(in)) ^ Rcon[i];
-    }
-
-    void KeyExpander::expand(char* key, uint key_length) const
+    KeyExpander::KeyExpander(uint key_length):
+      m_key_length (key_length)
     {
       uint rounds;
       if (key_length == AES_128_BYTES) {
@@ -26,20 +22,33 @@ namespace Crypto {
       } else {
         throw std::logic_error("Invalid key length.");
       }
-      uint j = 0;
-      for (; j < key_length; ++j) {
-        result.bytes[j] = key.bytes[j];
-      }
-      for (uint j = key_length; j < (rounds + 1) * BLOCK_BYTE_SIZE;)
+      m_expanded_length = (rounds + 1) * BLOCK_BYTE_SIZE;
+    }
+
+    inline void KeyExpander::schedule_core(char* in, uint i)
+    {
+      m_helper.rotate_word(in);
+      m_helper.sub_word(in);
+      in[0] ^= Rcon[i];
+    }
+
+    void KeyExpander::expand(char* key)
+    {
+      uint i = 1;
+      for (uint j = m_key_length; j < m_expanded_length; j += BLOCK_ROWS)
       {
-        char_t t[4];
+        char t[BLOCK_ROWS];
         for (uint k = 0; k < BLOCK_ROWS; ++k) {
           t[k] = key[j - BLOCK_ROWS + k];
         }
-        schedule_core(t, i);
-        ++i;
-        for (uint k = 0; k < 16; ++k) {
-          result.bytes[j + k] = t[k % 4] ^ result.bytes[j];
+        if (j % m_key_length == 0) {
+          schedule_core(t, i);
+          ++i;
+        } else if (m_key_length > AES_192_BYTES && j % m_key_length == 4) {
+          m_helper.sub_word(t);
+        }
+        for (uint k = 0; k < BLOCK_ROWS; ++k) {
+          key[j + k] = t[k] ^ key[j - m_key_length + k];
         }
       }
     }

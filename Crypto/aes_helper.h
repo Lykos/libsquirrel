@@ -6,18 +6,35 @@ namespace Crypto {
     
     class Helper
     {
+    private:
+      inline void shift_row_1(char* cipher, uint row);
+
+      inline void shift_row_2(char* cipher, uint row);
+
+      inline void shift_row_3(char* cipher, uint row);
+
+      inline char rijndael_mult(unsigned char a, unsigned char b);
+
+      inline void mult_columns(char* cipher, char* factor);
+
     public:
-      apply_round_key(char* cipher, char* key, uint round);
+      void apply_round_key(char* cipher, char* key, uint round);
 
-      sub_bytes(char* cipher);
+      void sub_bytes(char* cipher);
 
-      shift_rows(char* cipher);
+      void shift_rows(char* cipher);
 
-      mix_columns(char* cipher);
+      void mix_columns(char* cipher);
 
-      rotate_word(char* word);
+      void inv_sub_bytes(char* cipher);
 
-      sub_word(char* word);
+      void inv_shift_rows(char* cipher);
+
+      void inv_mix_columns(char* cipher);
+
+      void rotate_word(char* word);
+
+      void sub_word(char* word);
 
     };
     

@@ -19,19 +19,17 @@ TEMPLATE = app
 SOURCES += \
     cryptotests.cpp \
     rsatest.cpp \
-    elgamaltest.cpp
+    elgamaltest.cpp \
+    aestest.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 HEADERS += \
     rsatest.h \
-    elgamaltest.h
+    elgamaltest.h \
+    aestest.h
 
 debug {
     unix:!macx:!symbian: LIBS += -L$$PWD/../Crypto-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
-}
-
-release {
-    unix:!macx:!symbian: LIBS += -L$$PWD/../Crypto-build-desktop-Qt_4_8_0_in_Pfad__System__Release/ -lDataStructures
 }
 
 INCLUDEPATH += $$PWD/../Crypto
@@ -39,10 +37,6 @@ DEPENDPATH += $$PWD/../Crypto
 
 debug {
     unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
-}
-
-release {
-    unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Release/ -lDataStructures
 }
 
 INCLUDEPATH += $$PWD/../DataStructures

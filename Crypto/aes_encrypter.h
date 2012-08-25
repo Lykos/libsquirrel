@@ -2,7 +2,7 @@
 #define CRYPTO_AES_ENCRYPTER_H
 
 #include "Crypto_global.h"
-#include "aes_types.h"
+#include "aes_helper.h"
 
 namespace Crypto {
 
@@ -11,16 +11,18 @@ namespace Crypto {
     class CRYPTOSHARED_EXPORT Encrypter
     {
     private:
-      typedef Crypto::Encrypter<key_t, plain_t, cipher_t> CryptoEncrypter;
+      char* m_expanded_key;
 
-      ex_key_t m_expanded_key;
+      uint m_rounds;
 
       Helper m_helper;
 
     public:
-      explicit Encrypter(const key_t& key);
+      explicit Encrypter(const char* key, uint key_length);
 
-      void encrypt(const plain_t &plain, cipher_t cipher);
+      ~Encrypter();
+
+      void encrypt(const char* plain, char* cipher);
 
     };
 

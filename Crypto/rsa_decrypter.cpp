@@ -7,7 +7,7 @@ namespace Crypto {
   namespace RSA {
 
     Decrypter::Decrypter(const private_key_t& private_key):
-      CryptoDecrypter(private_key)
+      m_private_key (private_key)
     {
       if (private_key.p_q_available) {
         assert(private_key.p * private_key.q == private_key.modulus);
@@ -21,7 +21,7 @@ namespace Crypto {
     {
       delete m_strategy;
       m_strategy = other.m_strategy->copy();
-      CryptoDecrypter::operator=(other);
+      m_private_key = other.m_private_key;
       return *this;
     }
 

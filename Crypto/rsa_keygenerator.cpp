@@ -8,7 +8,8 @@ namespace Crypto {
 
     using namespace DataStructures::ArithmeticHelper;
 
-    key_pair_t KeyGenerator::generate(DataStructures::index_type number_bits) const {
+    key_pair_t KeyGenerator::generate(DataStructures::index_type number_bits)
+    {
       number_t p = m_prime_tester.random_prime(number_bits);
       number_t q;
       do {

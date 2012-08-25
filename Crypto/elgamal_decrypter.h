@@ -3,19 +3,18 @@
 
 #include "Crypto_global.h"
 #include "elgamal_types.h"
-#include "decrypter.h"
 
 namespace Crypto {
 
   namespace Elgamal {
     
-    class CRYPTOSHARED_EXPORT Decrypter : public Crypto::Decrypter<private_key_t, plain_text_t, cipher_text_t>
+    class CRYPTOSHARED_EXPORT Decrypter
     {
     private:
-      typedef Crypto::Decrypter<private_key_t, plain_text_t, cipher_text_t> CryptoDecrypter;
+      private_key_t m_private_key;
 
     public:
-      inline explicit Decrypter(const private_key_t& private_key): CryptoDecrypter(private_key) {}
+      inline explicit Decrypter(const private_key_t& private_key): m_private_key (private_key) {}
 
       plain_text_t decrypt(const cipher_text_t &cipher_text);
 

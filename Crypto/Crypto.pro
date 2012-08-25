@@ -25,13 +25,12 @@ SOURCES += \
     elgamal_keygenerator.cpp \
     aes_keyexpander.cpp \
     aes_encrypter.cpp \
-    aes_helper.cpp
+    aes_helper.cpp \
+    aes_decrypter.cpp \
+    aes_constants.cpp
 
 HEADERS +=\
         Crypto_global.h \
-    decrypter.h \
-    encrypter.h \
-    keygenerator.h \
     rsa_decrypter.h \
     rsa_decryptstrategy.h \
     rsa_directstrategy.h \
@@ -40,8 +39,6 @@ HEADERS +=\
     rsa_pqstrategy.h \
     rsa_types.h \
     primetester.h \
-    keyreader.h \
-    keywriter.h \
     elgamal_decrypter.h \
     elgamal_types.h \
     elgamal_encrypter.h \
@@ -50,7 +47,8 @@ HEADERS +=\
     aes_keyexpander.h \
     aes_constants.h \
     aes_encrypter.h \
-    aes_helper.h
+    aes_helper.h \
+    aes_decrypter.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN
@@ -73,10 +71,6 @@ unix:!symbian {
 
 debug {
     unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
-}
-
-release {
-    unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Release/ -lDataStructures
 }
 
 INCLUDEPATH += $$PWD/../DataStructures

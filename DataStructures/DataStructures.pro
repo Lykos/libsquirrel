@@ -19,7 +19,7 @@ SOURCES += \
     baselist.cpp \
     heap.cpp
 
-HEADERS +=\
+HEADERS += \
     DataStructures_global.h \
     longint.h \
     infiniterandom.h \
@@ -40,7 +40,7 @@ HEADERS +=\
     avltree.h \
     avlnode.h \
     binarytree.h \
-    fibonacciheap.h
+    fibonacciheap.h \
     finitefield.h \
     finiteelement.h \
     polynomial.h \

@@ -13,8 +13,22 @@ namespace Crypto {
     private:
       Helper m_helper;
 
-    public:      
-      void expand(char* key, uint key_length) const;
+      uint m_key_length;
+
+      uint m_rounds;
+
+      uint m_expanded_length;
+
+      inline void schedule_core(char* cipher, uint i);
+
+    public:
+      KeyExpander(uint key_length);
+
+      inline uint expanded_length() const { return m_expanded_length; }
+
+      inline uint rounds() const { return m_rounds; }
+
+      void expand(char* key);
 
     };
     

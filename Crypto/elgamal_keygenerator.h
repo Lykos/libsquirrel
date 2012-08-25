@@ -2,7 +2,6 @@
 #define CRYPTO_ELGAMAL_KEYGENERATOR_H
 
 #include "Crypto_global.h"
-#include "keygenerator.h"
 #include "primetester.h"
 #include "elgamal_types.h"
 
@@ -10,7 +9,7 @@ namespace Crypto {
 
   namespace Elgamal {
 
-    class CRYPTOSHARED_EXPORT KeyGenerator : public Crypto::KeyGenerator<key_pair_t>
+    class CRYPTOSHARED_EXPORT KeyGenerator
     {
     public:
       inline explicit KeyGenerator(PrimeTester prime_tester = PrimeTester()): m_prime_tester (prime_tester) {}
