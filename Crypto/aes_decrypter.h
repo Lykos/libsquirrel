@@ -1,5 +1,5 @@
-#ifndef CRYPTO_AES_AES_DECRYPTER_H
-#define CRYPTO_AES_AES_DECRYPTER_H
+#ifndef CRYPTO_AES_DECRYPTER_H
+#define CRYPTO_AES_DECRYPTER_H
 
 #include "Crypto_global.h"
 #include "aes_helper.h"
@@ -30,4 +30,4 @@ namespace Crypto {
 
 } // namespace Crypto
 
-#endif // CRYPTO_AES_AES_DECRYPTER_H
+#endif // CRYPTO_AES_DECRYPTER_H

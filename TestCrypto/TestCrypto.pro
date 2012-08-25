@@ -28,16 +28,12 @@ HEADERS += \
     elgamaltest.h \
     aestest.h
 
-debug {
-    unix:!macx:!symbian: LIBS += -L$$PWD/../Crypto-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
-}
+unix:!macx:!symbian: LIBS += -L$$PWD/../Crypto-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lCrypto
 
 INCLUDEPATH += $$PWD/../Crypto
 DEPENDPATH += $$PWD/../Crypto
 
-debug {
-    unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
-}
+unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
 
 INCLUDEPATH += $$PWD/../DataStructures
 DEPENDPATH += $$PWD/../DataStructures

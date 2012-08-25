@@ -19,7 +19,7 @@ private:
 
 private Q_SLOTS:
   void init();
-
+/*
   void test_key_generation();
 
   void test_encrypter();
@@ -28,7 +28,7 @@ private Q_SLOTS:
 
   void test_decrypter_invalid_pq();
 
-  void test_decrypter_no_pq();
+  void test_decrypter_no_pq();*/
 
 };
 

@@ -27,7 +27,10 @@ SOURCES += \
     aes_encrypter.cpp \
     aes_helper.cpp \
     aes_decrypter.cpp \
-    aes_constants.cpp
+    aes_constants.cpp \
+    elgamal_signer.cpp \
+    elgamal_verifier.cpp \
+    cipherblockchainer.cpp
 
 HEADERS +=\
         Crypto_global.h \
@@ -48,7 +51,11 @@ HEADERS +=\
     aes_constants.h \
     aes_encrypter.h \
     aes_helper.h \
-    aes_decrypter.h
+    aes_decrypter.h \
+    rsa_signer.h \
+    elgamal_signer.h \
+    elgamal_verifier.h \
+    cipherblockchainer.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN
@@ -69,9 +76,7 @@ unix:!symbian {
     INSTALLS += target
 }
 
-debug {
-    unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
-}
+unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
 
 INCLUDEPATH += $$PWD/../DataStructures
 DEPENDPATH += $$PWD/../DataStructures

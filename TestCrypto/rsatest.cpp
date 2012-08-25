@@ -19,7 +19,7 @@ void RSATest::init()
   m_plain_text = 1735;
   m_cipher_text = 368;
 }
-
+/*
 void RSATest::test_key_generation()
 {
   KeyGenerator key_generator;
@@ -64,3 +64,4 @@ void RSATest::test_decrypter_invalid_pq()
   Decrypter decrypter (m_private_key);
   QCOMPARE(decrypter.decrypt(m_cipher_text), m_plain_text);
 }
+*/
