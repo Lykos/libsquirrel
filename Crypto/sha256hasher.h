@@ -5,10 +5,14 @@
 
 namespace Crypto {
   
-  class SHA256Hasher
+  class CRYPTOSHARED_EXPORT SHA256Hasher
   {
   public:
-    void hash(char* message, ulong message_length, char* digest);
+    typedef u_int8_t sha256_byte_t;
+
+    void hash(const sha256_byte_t* message, ulong message_length, sha256_byte_t* digest);
+
+    uint digest_length() const { return 32; }
 
   };
   

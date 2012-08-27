@@ -2,6 +2,8 @@
 #define CRYPTO_ELGAMAL_VERIFIER_H
 
 #include "elgamal_types.h"
+#include "longintconverter.h"
+#include "sha256hasher.h"
 
 namespace Crypto {
 
@@ -10,12 +12,18 @@ namespace Crypto {
     class Verifier
     {
     private:
-      public_key_t m_public_key;
+      number_t m_modulus, m_generator, m_gen_power;
+
+      uint m_r_length, m_s_length;
+
+      LongIntConverter m_converter;
+
+      SHA256Hasher hasher;
 
     public:
-      Verifier(public_key_t public_key): m_public_key (public_key) {}
+      Verifier(const public_key_t& public_key);
 
-      bool verify(plain_text_t plain_text, signature_t signature);
+      bool verify(const elgamal_byte_t* plain_text, uint length, const elgamal_byte_t* signature);
 
     };
     

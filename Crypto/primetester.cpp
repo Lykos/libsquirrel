@@ -1,33 +1,26 @@
 #include "primetester.h"
 #include "arithmetichelper.h"
-
-using namespace DataStructures::ArithmeticHelper;
+#include <boost/random/mersenne_twister.hpp>
 
 namespace Crypto {
 
-  static const DataStructures::LongInt MINUS_ONE = -1;
+  using namespace DataStructures;
 
-  static const DataStructures::LongInt ZERO = 0;
+  using namespace ArithmeticHelper;
 
-  static const DataStructures::LongInt ONE = 1;
+  static const LongInt MINUS_ONE = -1;
 
-  static const DataStructures::LongInt TWO = 2;
+  static const LongInt ZERO = 0;
 
-  DataStructures::LongInt PrimeTester::random_prime(DataStructures::index_type number_bits) const
-  {
-    DataStructures::LongInt result = 1;
-    do {
-      result = DataStructures::rand_bits(number_bits);
-    } while (!is_prime(result, number_bits + 10));
-    return result;
-  }
+  static const LongInt ONE = 1;
 
-  bool PrimeTester::is_prime(const DataStructures::LongInt& number, DataStructures::index_type security) const
+  static const LongInt TWO = 2;
+
+  bool PrimeTester::is_prime(const LongInt& number, uint security)
   {
     // We have 1/4 fail probability in each step
-    DataStructures::index_type repetitions = (security >> 1) + 1;
-    typedef DataStructures::LongInt Int;
-    Int n = number.abs();
+    uint repetitions = (security >> 1) + 1;
+    LongInt n = number.abs();
     if (n < TWO) {
       return false;
     } else if (n == TWO) {
@@ -35,14 +28,15 @@ namespace Crypto {
     } else if ((n & ONE) == ZERO) {
       return false;
     }
-    for (DataStructures::index_type i = 0; i < repetitions; ++i) {
-      Int a = rand_number(n - 2) + 2;
+    UniformLongIntDistribution a_dist (2, n - ONE);
+    for (uint i = 0; i < repetitions; ++i) {
+      LongInt a = a_dist(m_random_generator);
       if (gcd(a, number) != ONE) {
         return false;
       }
-      DataStructures::index_type j = 1;
-      Int minus_one = n - ONE;
-      Int d = minus_one >> 1;
+      uint j = 1;
+      LongInt minus_one = n - ONE;
+      LongInt d = minus_one >> 1;
       while ((d & ONE) == ZERO) {
         ++j;
         d >>= 1;
@@ -50,7 +44,7 @@ namespace Crypto {
       a.pow_mod_eq(d, n);
       if (a != ONE) {
         bool was_minus_one = false;
-        for (DataStructures::index_type r = 0; r < j; ++r, a = (a * a) % n) {
+        for (uint r = 0; r < j; ++r, a = (a * a) % n) {
           if (a == minus_one) {
             was_minus_one = true;
             break;

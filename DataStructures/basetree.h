@@ -99,6 +99,8 @@ namespace DataStructures {
 
     inline index_type size() const { return m_root == NULL ? 0 : m_root->size; }
 
+    inline bool is_empty() const { return m_root == NULL; }
+
     inline iterator begin() { return iterator(this, 0); }
 
     inline iterator end() { return iterator(this, size()); }

@@ -17,6 +17,26 @@ namespace Crypto {
       }
     }
 
+    Decrypter::Decrypter(const Decrypter& other):
+      m_private_key (other.m_private_key),
+      m_strategy (other.m_strategy->copy())
+    {}
+
+    Decrypter::Decrypter(Decrypter&& other):
+      m_private_key (other.m_private_key),
+      m_strategy (other.m_strategy)
+    {
+      other.m_strategy = NULL;
+    }
+
+    Decrypter& Decrypter::operator=(Decrypter&& other)
+    {
+      m_strategy = other.m_strategy;
+      m_private_key = other.m_private_key;
+      other.m_strategy = NULL;
+      return *this;
+    }
+
     Decrypter& Decrypter::operator=(const Decrypter& other)
     {
       delete m_strategy;

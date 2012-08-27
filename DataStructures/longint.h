@@ -23,6 +23,8 @@ namespace DataStructures {
 
     friend index_type log2(const LongInt& number);
 
+    friend class UniformLongIntDistribution;
+
   public:
     typedef u_int64_t part_type;
 
@@ -46,9 +48,23 @@ namespace DataStructures {
 
     LongInt(unsigned int initial);
 
-    explicit LongInt(packed_longint_t packed);
+    explicit LongInt(const packed_longint_t& packed);
 
     explicit LongInt(const std::string& numerical_string);
+
+    inline explicit operator bool() const { return operator!=(zero()); }
+
+    inline explicit operator int() const { return m_content[0]; }
+
+    inline explicit operator unsigned int() const { return m_content[0]; }
+
+    inline explicit operator long int() const { return m_content[0]; }
+
+    inline explicit operator unsigned long int() const { return m_content[0]; }
+
+    inline explicit operator long long int() const { return m_content[0]; }
+
+    inline explicit operator unsigned long long int() const { return m_content[0]; }
 
     LongInt operator~() const;
 
@@ -146,6 +162,10 @@ namespace DataStructures {
 
     inline LongInt one() const { return 1; }
 
+    inline index_type size() const { return m_content.size(); }
+
+    inline part_type part_at(index_type i) const { return i < size() ? m_content[i] : 0l; }
+
   private:
     inline index_type read_sign(const std::string& numerical_string);
 
@@ -161,8 +181,6 @@ namespace DataStructures {
 
     inline void read_hexadecimal(const std::string& numerical_string, index_type start_index);
 
-    inline index_type size() const { return m_content.size(); }
-
     inline int uCompareTo(const LongInt& other) const;
 
     inline void remove_zeros();
@@ -173,17 +191,11 @@ namespace DataStructures {
 
     inline void add(const LongInt& other);
 
-    inline part_type part_at(index_type i) const;
-
     bool m_positive;
 
     ArrayList<part_type> m_content;
 
   };
-
-  LongInt rand_bits(index_type number_bits);
-
-  LongInt rand_number(const LongInt& max_number);
 
   LongInt::part_type inline complement_keep(bool positive, LongInt::part_type part, bool& keep);
 

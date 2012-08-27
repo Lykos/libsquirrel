@@ -1,44 +1,48 @@
 #ifndef CRYPTO_AES_HELPER_H
 #define CRYPTO_AES_HELPER_H
 
+#include "aes_types.h"
+
 namespace Crypto {
+
   namespace AES {
     
     class Helper
     {
     private:
-      inline void shift_row_1(char* cipher, uint row);
+      inline void shift_row_1(aes_byte_t* cipher, uint row);
 
-      inline void shift_row_2(char* cipher, uint row);
+      inline void shift_row_2(aes_byte_t* cipher, uint row);
 
-      inline void shift_row_3(char* cipher, uint row);
+      inline void shift_row_3(aes_byte_t* cipher, uint row);
 
-      inline char rijndael_mult(unsigned char a, unsigned char b);
+      inline aes_byte_t rijndael_mult(aes_byte_t a, aes_byte_t b);
 
-      inline void mult_columns(char* cipher, char* factor);
+      inline void mult_columns(aes_byte_t* cipher, aes_byte_t* factor);
 
     public:
-      void apply_round_key(char* cipher, char* key, uint round);
+      void apply_round_key(aes_byte_t* cipher, aes_byte_t* key, uint round);
 
-      void sub_bytes(char* cipher);
+      void sub_bytes(aes_byte_t* cipher);
 
-      void shift_rows(char* cipher);
+      void shift_rows(aes_byte_t* cipher);
 
-      void mix_columns(char* cipher);
+      void mix_columns(aes_byte_t* cipher);
 
-      void inv_sub_bytes(char* cipher);
+      void inv_sub_bytes(aes_byte_t* cipher);
 
-      void inv_shift_rows(char* cipher);
+      void inv_shift_rows(aes_byte_t* cipher);
 
-      void inv_mix_columns(char* cipher);
+      void inv_mix_columns(aes_byte_t* cipher);
 
-      void rotate_word(char* word);
+      void rotate_word(aes_byte_t* word);
 
-      void sub_word(char* word);
+      void sub_word(aes_byte_t* word);
 
     };
     
   } // namespace AES
+
 } // namespace Crypto
 
 #endif // CRYPTO_AES_HELPER_H

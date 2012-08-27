@@ -17,7 +17,8 @@ SOURCES += \
     longint.cpp \
     infiniterandom.cpp \
     baselist.cpp \
-    heap.cpp
+    heap.cpp \
+    uniformlongintdistribution.cpp
 
 HEADERS += \
     DataStructures_global.h \
@@ -44,7 +45,8 @@ HEADERS += \
     finitefield.h \
     finiteelement.h \
     polynomial.h \
-    arithmetichelper.h
+    arithmetichelper.h \
+    uniformlongintdistribution.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN
@@ -64,3 +66,5 @@ unix:!symbian {
     }
     INSTALLS += target
 }
+
+unix|win32: LIBS += -lboost_random

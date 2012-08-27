@@ -55,6 +55,8 @@ namespace DataStructures {
 
   class DATASTRUCTURESSHARED_EXPORT LongInt;
 
+  class DATASTRUCTURESSHARED_EXPORT UniformLongIntDistribution;
+
 #define TREE_LEFT 0
 #define TREE_RIGHT 1
 #define TREE_INVALID 2

@@ -47,7 +47,7 @@ namespace DataStructures {
       if (first < second) {
         std::swap(a, b);
       }
-      while (b > 0) {
+      while (b != b.zero()) {
         a %= b;
         std::swap(a, b);
       }
@@ -77,15 +77,19 @@ namespace DataStructures {
       T factor = (exponent.is_positive() ? base : inv_mod(base, modulus));
       T& result = base;
       result = base.one();
-      for (unsigned int j = sizeof(index_type) * CHAR_BIT; j > 0;) {
-        --j;
-        if (((exponent >> j) & exponent.one()) == exponent.one()) {
-          result *= factor;
+      for (ulong i = exponent.size(); i > 0;) {
+        --i;
+        LongInt::part_type exponent_part = exponent.part_at(i);
+        for (uint j = sizeof(LongInt::part_type) * CHAR_BIT; j > 0;) {
+          --j;
+          if ((exponent_part >> j) & 1) {
+            result *= factor;
+          }
+          if (j > 0 || i > 0) {
+            result *= result;
+          }
+          result %= modulus;
         }
-        if (j > 0) {
-          result *= result;
-        }
-        result %= modulus;
       }
     }
 

@@ -16,13 +16,11 @@ DEFINES += CRYPTO_LIBRARY
 SOURCES += \
     rsa_decrypter.cpp \
     rsa_directstrategy.cpp \
-    rsa_keygenerator.cpp \
     rsa_pqstrategy.cpp \
     rsa_encrypter.cpp \
     primetester.cpp \
     elgamal_decrypter.cpp \
     elgamal_encrypter.cpp \
-    elgamal_keygenerator.cpp \
     aes_keyexpander.cpp \
     aes_encrypter.cpp \
     aes_helper.cpp \
@@ -30,7 +28,10 @@ SOURCES += \
     aes_constants.cpp \
     elgamal_signer.cpp \
     elgamal_verifier.cpp \
-    sha256hasher.cpp
+    sha256hasher.cpp \
+    longintconverter.cpp \
+    primes.cpp \
+    elgamal_constants.cpp
 
 HEADERS +=\
         Crypto_global.h \
@@ -52,10 +53,17 @@ HEADERS +=\
     aes_encrypter.h \
     aes_helper.h \
     aes_decrypter.h \
-    rsa_signer.h \
     elgamal_signer.h \
     elgamal_verifier.h \
-    sha256hasher.h
+    sha256hasher.h \
+    longintconverter.h \
+    primes.h \
+    elgamal_constants.h \
+    cbc_encrypter.h \
+    cbc_types.h \
+    cbc_decrypter.h \
+    cbc_mac.h \
+    aes_types.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

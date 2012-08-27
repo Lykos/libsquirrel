@@ -1,5 +1,6 @@
 #include "aes_keyexpander.h"
 #include "aes_constants.h"
+#include "aes_types.h"
 #include <climits>
 #include <cassert>
 #include <cstring>
@@ -24,19 +25,19 @@ namespace Crypto {
       m_expanded_length = (m_rounds + 1) * BLOCK_BYTE_SIZE;
     }
 
-    inline void KeyExpander::schedule_core(char* in, uint i)
+    inline void KeyExpander::schedule_core(aes_byte_t* in, uint i)
     {
       m_helper.rotate_word(in);
       m_helper.sub_word(in);
       in[0] ^= Rcon[i];
     }
 
-    void KeyExpander::expand(char* key)
+    void KeyExpander::expand(aes_byte_t* key)
     {
       uint i = 1;
       for (uint j = m_key_length; j < m_expanded_length; j += BLOCK_ROWS)
       {
-        char t[BLOCK_ROWS];
+        aes_byte_t t[BLOCK_ROWS];
         for (uint k = 0; k < BLOCK_ROWS; ++k) {
           t[k] = key[j - BLOCK_ROWS + k];
         }

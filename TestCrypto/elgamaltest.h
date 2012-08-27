@@ -11,6 +11,8 @@ class ElgamalTest : public QObject
 private Q_SLOTS:
   void test_key_generation();
 
+  void test_constants();
+
 };
 
 #endif // ELGAMALTEST_H

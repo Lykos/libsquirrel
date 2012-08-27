@@ -21,6 +21,7 @@ namespace DataStructures {
   static const LongInt TEN (10);
   static const LongInt ZERO (0);
   static const LongInt ONE (1);
+  static const LongInt TWO (2);
   static const LongInt MINUS_ONE (-1);
 
   static const LongInt TEN_BUFFER_FACTOR (TEN.pow(DECIMAL_BUFFER_SIZE));
@@ -116,7 +117,7 @@ namespace DataStructures {
     m_content.push(initial);
   }
 
-  LongInt::LongInt(packed_longint_t packed):
+  LongInt::LongInt(const packed_longint_t& packed):
     m_positive (packed.sign),
     m_content (packed.num_parts / 2 + packed.num_parts % 2, 0)
   {
@@ -245,13 +246,13 @@ namespace DataStructures {
     LongInt longInt (abs());
     ArrayList<std::string> parts;
     longInt.m_positive = true;
-    while (longInt > 0) {
+    while (longInt > ZERO) {
       std::ostringstream s;
       LongInt remainder;
       longInt.divide(TEN_BUFFER_FACTOR, longInt, remainder, true);
       s << remainder.m_content[0];
       parts.push(s.str());
-      if (longInt > 0) {
+      if (longInt > ZERO) {
         assert(DECIMAL_BUFFER_SIZE >= s.str().length());
         for (unsigned int j = 0; j < DECIMAL_BUFFER_SIZE - s.str().length(); ++j) {
           parts.push("0");
@@ -431,7 +432,7 @@ namespace DataStructures {
     remove_zeros();
   }
 
-  void inline LongInt::pad_zeros(index_type new_size)
+  inline void LongInt::pad_zeros(index_type new_size)
   {
     for (index_type i = size(); i < new_size; ++i) {
       m_content.push(0ul);
@@ -490,6 +491,7 @@ namespace DataStructures {
 
   LongInt& LongInt::operator%=(const LongInt& other)
   {
+    assert(other.part_at(other.size() - 1) != 0);
     LongInt quotient;
     divide(other, quotient, *this, true);
     return *this;
@@ -514,6 +516,7 @@ namespace DataStructures {
     // Maximal factor we can multiply the divisor with without increasing its size.
     part_type scale_factor = 1;
     part_type other_last_digit = other.m_content.end()[-1];
+    assert(other_last_digit != 0);
     if (other_last_digit + 1 != 0) {
       // (1 << 64) / (other_last_digit + 1)
       asm("movq $0x1, %%rdx;\n"
@@ -550,7 +553,7 @@ namespace DataStructures {
         part_type guess;
         asm("div %3;"
         : "=a" (guess) : "d" (remainder.part_at(divisor_size)), "a" (remainder.m_content[divisor_size - 1]), "q" (divisor_first_digit));
-        LongInt back_calculated (divisor * guess);
+        LongInt back_calculated (divisor * LongInt(guess));
 #ifndef NDEBUG
         index_type old_guess = guess;
 #endif
@@ -584,10 +587,12 @@ namespace DataStructures {
         // The division has to work without remainder
         assert(upper == 0);
       }
+      remainder.remove_zeros();
       if (remainder != ZERO) {
         remainder.m_positive = positive;
       }
     }
+    quotient.remove_zeros();
     if (quotient != ZERO) {
       quotient.m_positive = positive == other_positive;
     }
@@ -787,11 +792,6 @@ namespace DataStructures {
     }
   }
 
-  LongInt::part_type inline LongInt::part_at(index_type i) const
-  {
-    return i < size() ? m_content[i] : 0l;
-  }
-
   LongInt::packed_longint_t LongInt::pack() const
   {
     unsigned int* result = new unsigned int[size() * 2];
@@ -804,7 +804,8 @@ namespace DataStructures {
 
   LongInt LongInt::mod(const LongInt &modulus) const
   {
-    if (modulus < 2) {
+    if (modulus < TWO) {
+      assert(false);
       throw std::logic_error("Modulus has to be at least 2.");
     }
     LongInt result (operator%(modulus));
@@ -816,7 +817,8 @@ namespace DataStructures {
 
   LongInt LongInt::mult_inv_mod(const LongInt &modulus) const
   {
-    if (modulus < 2) {
+    if (modulus < TWO) {
+      assert(false);
       throw std::logic_error("Modulus has to be at least 2.");
     }
     return ArithmeticHelper::inv_mod(mod(modulus), modulus);
@@ -824,7 +826,8 @@ namespace DataStructures {
 
   LongInt LongInt::add_inv_mod(const LongInt &modulus) const
   {
-    if (modulus < 2) {
+    if (modulus < TWO) {
+      assert(false);
       throw std::logic_error("Modulus has to be at least 2.");
     }
     return operator-().mod(modulus);
@@ -833,30 +836,6 @@ namespace DataStructures {
   index_type log2(const LongInt& number)
   {
     return (number.size() - 1) * LongInt::PART_SIZE + log2(number.m_content[number.size() - 1]);
-  }
-
-  LongInt rand_bits(index_type number_bits)
-  {
-    static const index_type RAND_BITS = log2((index_type) RAND_MAX + 1);
-    // static_assert((1 << RAND_BITS) == RAND_MAX + 1);
-    LongInt result (0);
-    while (number_bits >= RAND_BITS) {
-      result <<= RAND_BITS;
-      result += rand();
-      number_bits -= RAND_BITS;
-    }
-    result += rand() % (1 << number_bits);
-    return result;
-  }
-
-  LongInt rand_number(const LongInt& max_number)
-  {
-    LongInt result;
-    index_type bits = log2(max_number);
-    do {
-      result = rand_bits(bits);
-    } while (result >= max_number);
-    return result;
   }
 
   LongInt::part_type inline complement_keep(bool positive, LongInt::part_type part, bool& keep)

@@ -10,7 +10,7 @@ namespace Crypto {
   {
     inline KeyPair() {}
 
-    inline KeyPair(const PublicKey& pub, const PrivateKey priv): public_key (pub), private_key (priv) {}
+    inline KeyPair(const PublicKey& pub, const PrivateKey& priv): public_key (pub), private_key (priv) {}
 
     PublicKey public_key;
 

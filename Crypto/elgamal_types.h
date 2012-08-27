@@ -12,13 +12,6 @@ namespace Crypto {
 
     typedef DataStructures::LongInt exponent_t;
 
-    typedef number_t plain_text_t;
-
-    typedef struct {
-      number_t text;
-      number_t gen_power;
-    } cipher_text_t;
-
     typedef struct {
       number_t modulus;
       number_t generator;
@@ -31,10 +24,7 @@ namespace Crypto {
       exponent_t exponent;
     } private_key_t;
 
-    typedef struct {
-      number_t r;
-      exponent_t s;
-    } signature_t;
+    typedef u_int8_t elgamal_byte_t;
 
     typedef KeyPair<public_key_t, private_key_t> key_pair_t;
 

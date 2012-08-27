@@ -13,7 +13,11 @@ namespace Crypto {
     public:
       explicit Decrypter(const private_key_t& private_key);
 
-      inline Decrypter(const Decrypter& other): m_private_key (other.m_private_key), m_strategy(other.m_strategy->copy()) {}
+      Decrypter(const Decrypter& other);
+
+      Decrypter(Decrypter&& other);
+
+      Decrypter& operator=(Decrypter&& other);
 
       Decrypter& operator=(const Decrypter& other);
 

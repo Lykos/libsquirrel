@@ -2,6 +2,7 @@
 #define CRYPTO_AES_KEYEXPANDER_H
 
 #include "Crypto_global.h"
+#include "aes_types.h"
 #include "aes_helper.h"
 
 namespace Crypto {
@@ -19,7 +20,7 @@ namespace Crypto {
 
       uint m_expanded_length;
 
-      inline void schedule_core(char* cipher, uint i);
+      inline void schedule_core(aes_byte_t* cipher, uint i);
 
     public:
       KeyExpander(uint key_length);
@@ -28,7 +29,7 @@ namespace Crypto {
 
       inline uint rounds() const { return m_rounds; }
 
-      void expand(char* key);
+      void expand(aes_byte_t* key);
 
     };
     

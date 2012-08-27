@@ -4,14 +4,16 @@ namespace Crypto {
 
   namespace RSA {
 
+    static const number_t ONE = 1;
+
     PQStrategy::PQStrategy(const private_key_t& private_key):
       DecryptStrategy(private_key),
       m_p_inv (private_key.p.mult_inv_mod(private_key.q)),
       m_q_inv (private_key.q.mult_inv_mod(private_key.p))
     {
       assert(private_key.p * private_key.q == private_key.modulus);
-      assert((private_key.p * m_p_inv) % private_key.q == 1);
-      assert((private_key.q * m_q_inv) % private_key.p == 1);
+      assert((private_key.p * m_p_inv) % private_key.q == ONE);
+      assert((private_key.q * m_q_inv) % private_key.p == ONE);
     }
 
     plain_text_t PQStrategy::decrypt(const cipher_text_t& cipher_text) const

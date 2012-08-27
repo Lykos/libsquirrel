@@ -18,7 +18,6 @@ namespace Crypto {
       PQStrategy* copy() const { return new PQStrategy(DecryptStrategy::m_private_key); }
 
     private:
-
       number_t m_p_inv;
 
       number_t m_q_inv;

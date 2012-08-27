@@ -2,10 +2,13 @@
 #include "rsa_keygenerator.h"
 #include "rsa_encrypter.h"
 #include "rsa_decrypter.h"
+#include "uniformlongintdistribution.h"
+#include <boost/random/mersenne_twister.hpp>
 #include <QtTest/QtTest>
 #include <iostream>
 
 using namespace Crypto::RSA;
+using namespace DataStructures;
 
 void RSATest::init()
 {
@@ -20,20 +23,24 @@ void RSATest::init()
   m_cipher_text = 368;
 }
 
+static const DataStructures::LongInt ONE = 1;
+
 void RSATest::test_key_generation()
 {
+  std::mt19937_64 rng;
   KeyGenerator key_generator;
-  key_pair_t key_pair = key_generator.generate(20);
+  key_pair_t key_pair = key_generator.generate(rng, 20);
   public_key_t  public_key = key_pair.public_key;
   private_key_t private_key = key_pair.private_key;
   QVERIFY(private_key.p_q_available);
   QCOMPARE(private_key.p * private_key.q, private_key.modulus);
   QCOMPARE(private_key.modulus, public_key.modulus);
-  DataStructures::LongInt exponent_product = (private_key.exponent * public_key.exponent) % ((private_key.p - 1) * (private_key.q - 1));
-  QCOMPARE(exponent_product, DataStructures::LongInt(1));
+  LongInt exponent_product = (private_key.exponent * public_key.exponent) % ((private_key.p - ONE) * (private_key.q - ONE));
+  QCOMPARE(exponent_product, LongInt(1));
   Encrypter encrypter (public_key);
   Decrypter decrypter (private_key);
-  plain_text_t plain_text = rand_number(public_key.modulus);
+  UniformLongIntDistribution dist (0, public_key.modulus - ONE);
+  plain_text_t plain_text = dist(rng);
   cipher_text_t cipher_text = encrypter.encrypt(plain_text);
   QCOMPARE(decrypter.decrypt(cipher_text), plain_text);
 }

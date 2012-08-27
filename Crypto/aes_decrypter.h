@@ -3,6 +3,8 @@
 
 #include "Crypto_global.h"
 #include "aes_helper.h"
+#include "aes_constants.h"
+#include "aes_types.h"
 
 namespace Crypto {
 
@@ -11,18 +13,32 @@ namespace Crypto {
     class CRYPTOSHARED_EXPORT Decrypter
     {
     private:
-      char* m_expanded_key;
+      uint m_expanded_key_length;
+
+      aes_byte_t* m_expanded_key;
 
       uint m_rounds;
 
       Helper m_helper;
 
     public:
-      explicit Decrypter(const char* key, uint key_length);
+      Decrypter(const aes_byte_t* key, uint key_length);
+
+      Decrypter(const Decrypter& other);
+
+      Decrypter(Decrypter&& other);
+
+      Decrypter& operator=(const Decrypter& other);
+
+      Decrypter& operator=(Decrypter&& other);
 
       ~Decrypter();
 
-      void decrypt(const char* cipher, char* plain);
+      void decrypt(const aes_byte_t* cipher, aes_byte_t* plain);
+
+      uint cipher_block_size() const { return BLOCK_BYTE_SIZE; }
+
+      uint plain_block_size() const { return BLOCK_BYTE_SIZE; }
 
     };
     
