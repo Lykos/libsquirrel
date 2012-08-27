@@ -22,7 +22,7 @@ namespace Crypto {
 
       ~Decrypter();
 
-      void decrypt(const char* plain, char* cipher);
+      void decrypt(const char* cipher, char* plain);
 
     };
     

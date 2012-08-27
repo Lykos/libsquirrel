@@ -6,7 +6,7 @@
 #include <iostream>
 
 using namespace Crypto::Elgamal;
-/*
+
 void ElgamalTest::test_key_generation()
 {
   KeyGenerator key_generator;
@@ -25,4 +25,4 @@ void ElgamalTest::test_key_generation()
   plain_text_t plain_text = rand_number(public_key.modulus);
   cipher_text_t cipher_text = encrypter.encrypt(plain_text);
   QCOMPARE(decrypter.decrypt(cipher_text), plain_text);
-}*/
+}

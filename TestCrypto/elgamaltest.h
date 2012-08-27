@@ -9,7 +9,7 @@ class ElgamalTest : public QObject
   Q_OBJECT
 
 private Q_SLOTS:
-//  void test_key_generation();
+  void test_key_generation();
 
 };
 

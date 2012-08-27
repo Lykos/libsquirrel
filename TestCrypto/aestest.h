@@ -8,7 +8,7 @@ class AESTest : public QObject
   Q_OBJECT
 
 private Q_SLOTS:
-  void test_bla();
+  void test_enc_dec();
 
 };
 

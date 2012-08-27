@@ -12,17 +12,16 @@ namespace Crypto {
     KeyExpander::KeyExpander(uint key_length):
       m_key_length (key_length)
     {
-      uint rounds;
       if (key_length == AES_128_BYTES) {
-        rounds = AES_128_ROUNDS;
+        m_rounds = AES_128_ROUNDS;
       } else if (key_length == AES_192_BYTES) {
-        rounds = AES_192_ROUNDS;
+        m_rounds = AES_192_ROUNDS;
       } else if (key_length == AES_256_BYTES) {
-        rounds = AES_256_ROUNDS;
+        m_rounds = AES_256_ROUNDS;
       } else {
         throw std::logic_error("Invalid key length.");
       }
-      m_expanded_length = (rounds + 1) * BLOCK_BYTE_SIZE;
+      m_expanded_length = (m_rounds + 1) * BLOCK_BYTE_SIZE;
     }
 
     inline void KeyExpander::schedule_core(char* in, uint i)

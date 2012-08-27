@@ -30,7 +30,7 @@ SOURCES += \
     aes_constants.cpp \
     elgamal_signer.cpp \
     elgamal_verifier.cpp \
-    cipherblockchainer.cpp
+    sha256hasher.cpp
 
 HEADERS +=\
         Crypto_global.h \
@@ -55,7 +55,7 @@ HEADERS +=\
     rsa_signer.h \
     elgamal_signer.h \
     elgamal_verifier.h \
-    cipherblockchainer.h
+    sha256hasher.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN
