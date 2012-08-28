@@ -20,7 +20,7 @@ namespace DataStructures {
   public:
     typedef LongInt result_type;
 
-    explicit UniformLongIntDistribution(result_type min, result_type max);
+    explicit UniformLongIntDistribution(result_type min = 0, result_type max = 0);
 
     void reset();
 

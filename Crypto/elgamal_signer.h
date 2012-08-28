@@ -4,7 +4,7 @@
 #include "elgamal_types.h"
 #include "uniformlongintdistribution.h"
 #include "longintconverter.h"
-#include "sha256hasher.h"
+#include "sha2hasher.h"
 #include <boost/random/random_device.hpp>
 
 namespace Crypto {
@@ -13,6 +13,37 @@ namespace Crypto {
     
     class Signer
     {
+    public:
+      typedef LongIntConverter::number_size_t number_size_t;
+
+      typedef struct {
+        number_t r;
+        number_t s;
+      } signature_t;
+
+      explicit Signer(const private_key_t& private_key);
+
+      Signer(const elgamal_byte_t* raw_private_key, number_size_t length);
+
+
+      // We have to reimplement them all because random_device is not copyable
+      Signer(const Signer& other);
+
+      Signer(Signer&& other);
+
+      Signer& operator=(const Signer& other);
+
+      Signer& operator=(Signer&& other);
+
+      ~Signer();
+
+      signature_t sign(const number_t& message);
+
+      // Appends the signature directly after the end of the message
+      ulong sign(elgamal_byte_t* message, ulong length);
+
+      number_size_t signature_length() const { return m_signature_length; }
+
     private:
       number_t m_modulus, m_generator, m_phi_modulus;
 
@@ -22,19 +53,11 @@ namespace Crypto {
 
       DataStructures::UniformLongIntDistribution m_k_distribution;
 
-      uint m_r_length, m_s_length, m_signature_length;
+      number_size_t m_r_length, m_s_length, m_signature_length;
 
       LongIntConverter m_converter;
 
-      SHA256Hasher hasher;
-
-    public:
-      explicit Signer(const private_key_t& private_key);
-
-      // Appends the signature directly after the end of the message
-      ulong sign(elgamal_byte_t* message, ulong length);
-
-      uint signature_length() const { return m_signature_length; }
+      SHA2Hasher hasher;
 
     };
     

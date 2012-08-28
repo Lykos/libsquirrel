@@ -5,7 +5,7 @@ namespace Crypto {
 
   namespace DH {
 
-    group_t Converter::read_group(const dh_byte_t* raw_group, number_size_t length)
+    group_t Converter::read_group(const dh_byte_t* raw_group, number_size_t length) const
     {
       assert(length >= sizeof(number_size_t));
       number_size_t modulus_length = read_length(raw_group);
@@ -16,7 +16,7 @@ namespace Crypto {
       return {modulus, generator};
     }
 
-    Converter::number_size_t Converter::write_group(const group_t& group, dh_byte_t* raw_group)
+    Converter::number_size_t Converter::write_group(const group_t& group, dh_byte_t* raw_group) const
     {
       number_size_t modulus_length = write_number(group.modulus, raw_group);
       raw_group += modulus_length;
@@ -29,7 +29,7 @@ namespace Crypto {
       return number_length(group.modulus) + number_length(group.generator);
     }
 
-    number_t Converter::read_number(const dh_byte_t* raw_number, number_size_t length)
+    number_t Converter::read_number(const dh_byte_t* raw_number, number_size_t length) const
     {
       assert(length >= sizeof(number_size_t));
       number_size_t number_length = read_length(raw_number);
@@ -37,7 +37,7 @@ namespace Crypto {
       return m_converter.read_number(raw_number + sizeof(number_size_t), number_length);
     }
 
-    Converter::number_size_t Converter::write_number(const number_t& number, dh_byte_t* raw_number)
+    Converter::number_size_t Converter::write_number(const number_t& number, dh_byte_t* raw_number) const
     {
       number_size_t number_length = m_converter.number_length(number);
       write_length(number_length, raw_number);
@@ -52,12 +52,12 @@ namespace Crypto {
 
 
     // We use big endian format
-    Converter::number_size_t Converter::read_length(const dh_byte_t* raw_length)
+    Converter::number_size_t Converter::read_length(const dh_byte_t* raw_length) const
     {
       return (raw_length[0] << 3 * CHAR_BIT) + (raw_length[1] << 2 * CHAR_BIT) + (raw_length[2] << CHAR_BIT) + raw_length[3];
     }
 
-    void Converter::write_length(number_size_t length, dh_byte_t* raw_length)
+    void Converter::write_length(number_size_t length, dh_byte_t* raw_length) const
     {
       raw_length[0] = (length >> 3 * CHAR_BIT) & 0xFF;
       raw_length[1] = (length >> 2 * CHAR_BIT) & 0xFF;

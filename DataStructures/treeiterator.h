@@ -28,6 +28,8 @@ namespace DataStructures {
 
     inline TreeIterator(const TreeIterator<T, Tree>& other);
 
+    inline TreeIterator(TreeIterator<T, Tree>&& other);
+
     inline difference_type operator-(const TreeIterator<T, Tree>& other) const { return BaseIterator<T>::m_index - other.m_index; }
 
     inline difference_type operator-(const TreeConstIterator<T, Tree>& other) const { return BaseIterator<T>::m_index - other.m_index; }
@@ -39,6 +41,8 @@ namespace DataStructures {
     inline TreeIterator<T, Tree> operator--(int);
 
     inline TreeIterator<T, Tree>& operator--();
+
+    inline TreeIterator<T, Tree>& operator=(TreeIterator<T, Tree>&& other);
 
     inline TreeIterator<T, Tree>& operator=(const TreeIterator<T, Tree>& other);
 
@@ -77,6 +81,15 @@ namespace DataStructures {
     m_left_size (0)
   {
     local_search();
+  }
+
+  template <typename T, typename Tree>
+  TreeIterator<T, Tree>::TreeIterator(TreeIterator<T, Tree>&& other):
+    BaseIterator<T> (other.m_index),
+    m_tree (other.m_tree),
+    m_current (other.m_current),
+    m_left_size (other.m_left_size)
+  {
   }
 
   template <typename T, typename Tree>
@@ -127,8 +140,24 @@ namespace DataStructures {
   }
 
   template <typename T, typename Tree>
+  inline TreeIterator<T, Tree>& TreeIterator<T, Tree>::operator=(TreeIterator&& other)
+  {
+    if (this == &other) {
+      return *this;
+    }
+    BaseIterator<T>::operator=(other);
+    m_tree = other.m_tree;
+    m_current = other.m_current;
+    m_left_size = other.m_left_size;
+    return *this;
+  }
+
+  template <typename T, typename Tree>
   inline TreeIterator<T, Tree>& TreeIterator<T, Tree>::operator=(const TreeIterator& other)
   {
+    if (this == &other) {
+      return *this;
+    }
     BaseIterator<T>::operator=(other);
     m_tree = other.m_tree;
     m_current = other.m_current;

@@ -23,8 +23,8 @@ static void printit(const uchar* bla, ulong length)
 void CBCTest::test_enc_dec()
 {
   uchar key[16];
-  uchar *initial1 = new uchar[16];
-  uchar *initial2 = new uchar[16];
+  uchar initial1[16];
+  uchar initial2[16];
   mt19937_64 rng;
   uniform_int_distribution<uchar> dist;
   for (uint i = 0; i < 16; ++i) {
@@ -38,8 +38,8 @@ void CBCTest::test_enc_dec()
   }
   AES::Encrypter aes_enc (key, 16);
   AES::Decrypter aes_dec (key, 16);
-  CBC::Encrypter<AES::Encrypter> enc (aes_enc, initial1);
-  CBC::Decrypter<AES::Decrypter> dec (aes_dec, initial2);
+  CBC::Encrypter<AES::Encrypter> enc (aes_enc, initial1, 16);
+  CBC::Decrypter<AES::Decrypter> dec (aes_dec, initial2, 16);
   ulong cipher_length = enc.get_cipher_length(plain_length);
   uchar *cipher = new uchar[cipher_length];
   enc.encrypt(plain, plain_length, cipher);

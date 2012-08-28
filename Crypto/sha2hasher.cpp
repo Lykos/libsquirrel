@@ -1,10 +1,17 @@
-#include "sha256hasher.h"
+#include "sha2hasher.h"
 #include "string.h"
 #include <climits>
 #include <cassert>
 
 // This should only be used for sha256_word_t, in particular, it should be unsigned.
-#define right_rotate(number, bits) (((number) >> (bits)) | ((number) << ((word_length) * byte_length - (bits))))
+#define shr(x, n) ((x) >> (n))
+#define rotr(x, n) (((x) >> (n)) | ((x) << (word_length * CHAR_BIT - (n))))
+#define Ch(x, y, z) (((x) & (y)) ^ (~(x) & (z)))
+#define Maj(x, y, z) (((x) & (y)) ^ ((x) & (z)) ^ ((y) & (z)))
+#define S0(x) (rotr((x), 2) ^ rotr((x), 13) ^ rotr((x), 22))
+#define S1(x) (rotr((x), 6) ^ rotr((x), 11) ^ rotr((x), 25))
+#define s0(x) (rotr((x), 7) ^ rotr((x), 18) ^ shr((x), 3))
+#define s1(x) (rotr((x), 17) ^ rotr((x), 19) ^ shr((x), 10))
 
 namespace Crypto {
 
@@ -35,40 +42,38 @@ namespace Crypto {
 
   const static uint word_length = sizeof(sha256_word_t);
 
-  const static uint byte_length = 8;
-
   const static uint chunk_words = chunk_length / word_length;
 
-  void SHA256Hasher::hash(const sha256_byte_t* message, ulong message_length, sha256_byte_t* digest)
+  void SHA2Hasher::hash(const sha2_byte_t* message, ulong message_length, sha2_byte_t* digest) const
   {
-    // Pad message such that the length in bytes modulo 64 is 0 after we put the length there.
-    uint zeroes = ((2 * chunk_length - length_length) - (message_length + 1) % 64) % 64;
+    // Pad message such that the length in bytes modulo chunk_length is 0 after we put the length there.
+    uint zeroes = ((2 * chunk_length - length_length) - (message_length + 1) % chunk_length) % chunk_length;
     ulong whole_length = (length_length + message_length + 1 + zeroes);
     assert(whole_length % chunk_length == 0);
     ulong chunks = whole_length / chunk_length;
-    sha256_byte_t *message2 = new sha256_byte_t[whole_length];
+    sha2_byte_t *message2 = new sha2_byte_t[whole_length];
     memcpy(message2, message, message_length);
     message2[message_length] = 0x80; // A 1 with 7 zeroes
     memset(message2 + message_length + 1, 0, zeroes);
     // Store the length in the last bits in big endian.
     ulong length_position = message_length + 1 + zeroes;
     for (uint i = 0; i < length_length; ++i) {
-      message2[length_position + i] = ((message_length * byte_length) >> byte_length * (length_length - 1 - i)) & 0xFF;
+      message2[length_position + i] = ((message_length * CHAR_BIT) >> CHAR_BIT * (length_length - 1 - i)) & 0xFF;
     }
     sha256_word_t hash[n_hash_values];
-    memcpy(hash, initial_hash_values, n_hash_values * word_length);
+    for (uint i = 0; i < n_hash_values; ++i) {
+      hash[i] = initial_hash_values[i];
+    }
     for (ulong j = 0; j < chunks; ++j) {
       sha256_word_t words[n_rounds];
       for (ulong i = 0; i < chunk_words; ++i) {
-        words[i] = (message2[j * chunk_length + word_length * i] << 3 * byte_length)
-            + (message2[j * chunk_length + word_length * i + 1] << 2 * byte_length)
-            + (message2[j * chunk_length + word_length * i + 2] << byte_length)
+        words[i] = (message2[j * chunk_length + word_length * i] << 3 * CHAR_BIT)
+            + (message2[j * chunk_length + word_length * i + 1] << 2 * CHAR_BIT)
+            + (message2[j * chunk_length + word_length * i + 2] << CHAR_BIT)
             + (message2[j * chunk_length + word_length * i + 3]);
       }
       for (ulong i = chunk_words; i < n_rounds; ++i) {
-        sha256_word_t s0 = right_rotate(words[i - 15], 7) ^ right_rotate(words[i - 15], 18) ^ (words[i - 15] >> 3);
-        sha256_word_t s1 = right_rotate(words[i - 2], 17) ^ right_rotate(words[i - 2], 19) ^ (words[i - 2] >> 10);
-        words[i] = words[i - 16] + s0 + words[i - 7] + s1;
+        words[i] = words[i - 16] + s0(words[i - 15]) + words[i - 7] + s1(words[i - 2]);
       }
       sha256_word_t a = hash[0];
       sha256_word_t b = hash[1];
@@ -79,12 +84,8 @@ namespace Crypto {
       sha256_word_t g = hash[6];
       sha256_word_t h = hash[7];
       for (uint i = 0; i < n_rounds; ++i) {
-        sha256_word_t S0 = right_rotate(a, 2) ^ right_rotate(a, 13) ^ right_rotate(a, 22);
-        sha256_word_t maj = (a & b) ^ (a & c) ^ (b & c);
-        sha256_word_t t2 = S0 + maj;
-        sha256_word_t S1 = right_rotate(e, 6) ^ right_rotate(e, 11) xor right_rotate(e, 25);
-        sha256_word_t ch = (e & f) ^ ((~e) & g);
-        sha256_word_t t1 = h + S1 + ch + round_constants[i] + words[i];
+        sha256_word_t t1 = h + S1(e) + Ch(e, f, g) + round_constants[i] + words[i];
+        sha256_word_t t2 = S0(a) + Maj(a, b, c);
 
         h = g;
         g = f;
@@ -99,14 +100,14 @@ namespace Crypto {
       hash[1] += b;
       hash[2] += c;
       hash[3] += d;
-      hash[4] += a;
-      hash[5] += b;
-      hash[6] += c;
-      hash[7] += d;
+      hash[4] += e;
+      hash[5] += f;
+      hash[6] += g;
+      hash[7] += h;
     }
     for (uint i = 0; i < n_hash_values; ++i) {
       for (uint j = 0; j < word_length; ++j) {
-        digest[i * word_length + j] = (hash[i] >> (word_length - 1 - j) * byte_length) & 0xFF;
+        digest[i * word_length + j] = (hash[i] >> (word_length - 1 - j) * CHAR_BIT) & 0xFF;
       }
     }
     delete[] message2;

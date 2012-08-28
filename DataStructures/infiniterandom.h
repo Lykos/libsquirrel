@@ -12,11 +12,17 @@ namespace DataStructures {
 
     InfiniteRandom(const InfiniteRandom& other);
 
+    InfiniteRandom(InfiniteRandom&& other);
+
+    ~InfiniteRandom() {}
+
     typedef u_int64_t part_type;
 
     part_type part_at(index_type index) const;
 
     int compareTo(const InfiniteRandom& other) const;
+
+    InfiniteRandom& operator=(InfiniteRandom&& other);
 
     InfiniteRandom& operator=(const InfiniteRandom& other);
 

@@ -4,7 +4,7 @@
 #include "elgamaltest.h"
 #include "aestest.h"
 #include "cbctest.h"
-#include "sha256test.h"
+#include "sha2test.h"
 #include "dhtest.h"
 
 int main(int argc, char** argv) {
@@ -12,8 +12,8 @@ int main(int argc, char** argv) {
   QTest::qExec(&aes_test, argc, argv);
   CBCTest cbc_test;
   QTest::qExec(&cbc_test, argc, argv);
-  SHA256Test sha256_test;
-  QTest::qExec(&sha256_test, argc, argv);
+  SHA2Test sha2_test;
+  QTest::qExec(&sha2_test, argc, argv);
   RSATest rsa_test;
   QTest::qExec(&rsa_test, argc, argv);
   ElgamalTest elgamal_test;

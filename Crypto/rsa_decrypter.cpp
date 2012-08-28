@@ -31,6 +31,9 @@ namespace Crypto {
 
     Decrypter& Decrypter::operator=(Decrypter&& other)
     {
+      if (this == &other) {
+        return *this;
+      }
       m_strategy = other.m_strategy;
       m_private_key = other.m_private_key;
       other.m_strategy = NULL;
@@ -39,6 +42,9 @@ namespace Crypto {
 
     Decrypter& Decrypter::operator=(const Decrypter& other)
     {
+      if (this == &other) {
+        return *this;
+      }
       delete m_strategy;
       m_strategy = other.m_strategy->copy();
       m_private_key = other.m_private_key;

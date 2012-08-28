@@ -11,23 +11,29 @@ namespace Crypto {
     
     class CRYPTOSHARED_EXPORT Decrypter
     {
+    public:
+      typedef LongIntConverter::number_size_t number_size_t;
+
+      explicit Decrypter(const private_key_t& private_key);
+
+      Decrypter(const elgamal_byte_t* raw_private_key, number_size_t length);
+
+      number_t decrypt(const number_t& cipher, const number_t& other_gen_power) const;
+
+      void decrypt(const elgamal_byte_t* cipher_text, elgamal_byte_t* plain_text) const;
+
+      number_size_t plain_block_size() const { return m_plain_length; }
+
+      number_size_t cipher_block_size() const { return m_cipher_length; }
+
     private:
       number_t m_modulus;
 
       exponent_t m_exponent;
 
-      uint m_plain_length, m_exponent_length, m_cipher_length;
+      number_size_t m_plain_length, m_exponent_length, m_cipher_length;
 
       LongIntConverter m_converter;
-
-    public:
-      explicit Decrypter(const private_key_t& private_key);
-
-      void decrypt(const elgamal_byte_t* cipher_text, elgamal_byte_t* plain_text);
-
-      uint plain_block_size() const { return m_plain_length; }
-
-      uint cipher_block_size() const { return m_cipher_length; }
 
     };
     

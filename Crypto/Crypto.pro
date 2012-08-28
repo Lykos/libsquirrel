@@ -28,7 +28,6 @@ SOURCES += \
     aes_constants.cpp \
     elgamal_signer.cpp \
     elgamal_verifier.cpp \
-    sha256hasher.cpp \
     longintconverter.cpp \
     primes.cpp \
     elgamal_keygenerator.cpp \
@@ -36,7 +35,8 @@ SOURCES += \
     dh_converter.cpp \
     dh_constants.cpp \
     elgamal_converter.cpp \
-    dh_keyexchange.cpp
+    dh_keyexchange.cpp \
+    sha2hasher.cpp
 
 HEADERS +=\
         Crypto_global.h \
@@ -59,7 +59,6 @@ HEADERS +=\
     aes_decrypter.h \
     elgamal_signer.h \
     elgamal_verifier.h \
-    sha256hasher.h \
     longintconverter.h \
     primes.h \
     cbc_encrypter.h \
@@ -73,7 +72,8 @@ HEADERS +=\
     dh_constants.h \
     elgamal_types.h \
     elgamal_converter.h \
-    dh_keyexchange.h
+    dh_keyexchange.h \
+    sha2hasher.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

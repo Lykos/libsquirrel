@@ -18,7 +18,7 @@ namespace DataStructures {
   public:
     typedef ListIterator<T, ArrayList<T> > iterator;
 
-    typedef ListConstIterator<T, ArrayList<T> > const_iterator;
+    typedef ListIterator<T const, ArrayList<T> const > const_iterator;
 
     typedef typename BaseList<T>::empty_list_error empty_list_error;
 

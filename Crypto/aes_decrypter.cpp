@@ -39,6 +39,9 @@ namespace Crypto {
 
     Decrypter& Decrypter::operator=(const Decrypter& other)
     {
+      if (this == &other) {
+        return *this;
+      }
       m_expanded_key_length = other.m_expanded_key_length;
       m_expanded_key = new aes_byte_t[m_expanded_key_length];
       memcpy(m_expanded_key, other.m_expanded_key, m_expanded_key_length);
@@ -49,10 +52,13 @@ namespace Crypto {
 
     Decrypter& Decrypter::operator=(Decrypter&& other)
     {
+      if (this == &other) {
+        return *this;
+      }
       m_expanded_key_length = other.m_expanded_key_length;
       m_expanded_key = other.m_expanded_key;
       m_rounds = other.m_rounds;
-      m_helper = other.m_helper;
+      m_helper = std::move(other.m_helper);
       other.m_expanded_key = NULL;
       return *this;
     }

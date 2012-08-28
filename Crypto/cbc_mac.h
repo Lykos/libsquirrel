@@ -10,9 +10,13 @@ namespace Crypto {
   namespace CBC {
 
     template <typename BlockCipher>
-    class Mac : private Encrypter<BlockCipher>
+    class MAC
     {
     public:
+      inline MAC(BlockCipher&& block_cipher, const cbc_byte_t* initial_state, uint state_length);
+
+      inline MAC(const BlockCipher& block_cipher, const cbc_byte_t* initial_state, uint state_length);
+
       inline uint signature_length() const { return Encrypter<BlockCipher>::plain_block_size(); }
 
       // Appends the MAC directly after the end of the message. Note that this changes the state.
@@ -22,25 +26,39 @@ namespace Crypto {
       // In case of failure, the state is undefined.
       inline bool verify(const cbc_byte_t* message, ulong length);
 
+    private:
+      CBC::Encrypter<BlockCipher> m_encrypter;
+
     };
 
     template <typename BlockCipher>
-    inline ulong Mac<BlockCipher>::mac(const cbc_byte_t* message, ulong length)
+    inline MAC<BlockCipher>::MAC(BlockCipher&& block_cipher, const cbc_byte_t *initial_state, uint state_length):
+      m_encrypter (block_cipher, initial_state, state_length)
+    {}
+
+    template <typename BlockCipher>
+    inline MAC<BlockCipher>::MAC(const BlockCipher& block_cipher, const cbc_byte_t *initial_state, uint state_length):
+      m_encrypter (block_cipher, initial_state, state_length)
+    {}
+
+    template <typename BlockCipher>
+    inline ulong MAC<BlockCipher>::mac(cbc_byte_t* message, ulong length)
     {
-      Encrypter::encrypt(message, length, NULL);
-      memcpy(message + length, Encrypter<BlockCipher>::get_state(), mac_length());
-      return length + mac_length();
+      m_encrypter.encrypt(message, length, NULL);
+      memcpy(message + length, m_encrypter.get_state(), signature_length());
+      return length + signature_length();
     }
 
     template <typename BlockCipher>
-    inline bool Mac<BlockCipher>::verify(const cbc_byte_t* message, ulong length)
+    inline bool MAC<BlockCipher>::verify(const cbc_byte_t* message, ulong length)
     {
-      if (length < mac_length()) {
+      uint sig_len = signature_length();
+      if (length < sig_len) {
         return false;
       }
-      Encrypter::encrypt(message, length - mac_length(), NULL);
-      const cbc_byte_t* mac = message + length - mac_length();
-      for (uint i = 0; i < mac_length(); ++i) {
+      m_encrypter.encrypt(message, length - sig_len, NULL);
+      const cbc_byte_t* mac = message + length - sig_len;
+      for (uint i = 0; i < sig_len; ++i) {
         if (Encrypter<BlockCipher>::m_state[i] != mac[i]) {
           return false;
         }

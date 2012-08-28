@@ -4,7 +4,7 @@ namespace Crypto {
 
   using namespace DataStructures;
   
-  LongInt LongIntConverter::read_number(const u_int8_t* text, uint length)
+  LongInt LongIntConverter::read_number(const u_int8_t* text, number_size_t length) const
   {
     LongInt::packed_longint_t packed;
     packed.sign = true;
@@ -15,23 +15,23 @@ namespace Crypto {
     return LongInt(packed);
   }
 
-  uint LongIntConverter::number_length(const LongInt& number) const
+  LongIntConverter::number_size_t LongIntConverter::number_length(const LongInt& number) const
   {
     return sizeof(LongInt::part_type) * number.size();
   }
 
-  void LongIntConverter::write_number(const LongInt& number, u_int8_t* text, uint length)
+  void LongIntConverter::write_number(const LongInt& number, u_int8_t* text, number_size_t length) const
   {
-    uint len = number_length(number);
+    number_size_t len = number_length(number);
     assert(len <= length);
     LongInt::packed_longint_t packed = number.pack();
-    for (uint i = 0; i < packed.num_parts; ++i) {
-      for (uint j = 0; j < sizeof(unsigned int); ++j) {
+    for (number_size_t i = 0; i < packed.num_parts; ++i) {
+      for (number_size_t j = 0; j < sizeof(unsigned int); ++j) {
         text[i * sizeof(unsigned int) + j] = (packed.parts[i] >> j * 8) & 0xFF;
       }
     }
     assert(packed.num_parts * sizeof(unsigned int) == len);
-    for (uint i = len; i < length; ++i) {
+    for (number_size_t i = len; i < length; ++i) {
       text[i] = 0;
     }
   }

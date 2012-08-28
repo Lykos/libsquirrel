@@ -30,11 +30,9 @@ namespace Crypto {
       cbc_byte_t* m_state;
 
     public:
-      // Captures the block_cipher and the initial vector
-      inline Encrypter(BlockCipher&& block_cipher, cbc_byte_t* initial_state);
+      inline Encrypter(BlockCipher&& block_cipher, const cbc_byte_t* initial_state, uint state_length);
 
-      // Captures the initial vector
-      inline Encrypter(const BlockCipher& block_cipher, cbc_byte_t* initial_state);
+      inline Encrypter(const BlockCipher& block_cipher, const cbc_byte_t* initial_state, uint state_length);
 
       inline Encrypter(const Encrypter& other);
 
@@ -54,22 +52,27 @@ namespace Crypto {
 
     };
 
-
     template <typename BlockCipher>
-    inline Encrypter<BlockCipher>::Encrypter(BlockCipher&& block_cipher, cbc_byte_t* initial_state):
+    inline Encrypter<BlockCipher>::Encrypter(BlockCipher&& block_cipher, const cbc_byte_t* initial_state, uint state_length):
       m_block_cipher (block_cipher),
       m_plain_block_size (block_cipher.plain_block_size()),
       m_cipher_block_size (block_cipher.cipher_block_size()),
-      m_state (initial_state)
-    {}
+      m_state (new cbc_byte_t[m_plain_block_size])
+    {
+      assert(state_length >= m_plain_block_size);
+      memcpy(m_state, initial_state, m_plain_block_size);
+    }
 
     template <typename BlockCipher>
-    inline Encrypter<BlockCipher>::Encrypter(const BlockCipher& block_cipher, cbc_byte_t* initial_state):
+    inline Encrypter<BlockCipher>::Encrypter(const BlockCipher& block_cipher, const cbc_byte_t* initial_state, uint state_length):
       m_block_cipher (block_cipher),
       m_plain_block_size (block_cipher.plain_block_size()),
       m_cipher_block_size (block_cipher.cipher_block_size()),
-      m_state (initial_state)
-    {}
+      m_state (new cbc_byte_t[m_plain_block_size])
+    {
+      assert(state_length >= m_plain_block_size);
+      memcpy(m_state, initial_state, m_plain_block_size);
+    }
 
     template <typename BlockCipher>
     inline Encrypter<BlockCipher>::Encrypter(const Encrypter& other):
@@ -98,6 +101,9 @@ namespace Crypto {
     template <typename BlockCipher>
     inline Encrypter<BlockCipher>& Encrypter<BlockCipher>::operator=(const Encrypter& other)
     {
+      if (this == &other) {
+        return *this;
+      }
       m_block_cipher = other.m_block_cipher;
       m_plain_block_size = other.m_plain_block_size;
       m_cipher_block_size = other.m_cipher_block_size;
@@ -109,10 +115,14 @@ namespace Crypto {
     template <typename BlockCipher>
     inline Encrypter<BlockCipher>& Encrypter<BlockCipher>::operator=(Encrypter&& other)
     {
-      m_block_cipher = other.m_block_cipher;
+      if (this == &other) {
+        return *this;
+      }
+      m_block_cipher = std::move(other.m_block_cipher);
       m_plain_block_size = other.m_plain_block_size;
       m_cipher_block_size = other.m_cipher_block_size;
       m_state = other.m_state;
+      other.m_state = NULL;
       return *this;
     }
 

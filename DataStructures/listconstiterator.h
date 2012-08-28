@@ -106,6 +106,9 @@ namespace DataStructures {
   template <typename T, typename List>
   ListConstIterator<T, List>& ListConstIterator<T, List>::operator=(const ListIterator<T, List>& other)
   {
+    if (this == &other) {
+      return *this;
+    }
     m_list = other.m_list;
     BaseIterator<T>::m_index = other.m_index;
     return *this;
@@ -114,6 +117,9 @@ namespace DataStructures {
   template <typename T, typename List>
   ListConstIterator<T, List>& ListConstIterator<T, List>::operator=(const ListConstIterator<T, List>& other)
   {
+    if (this == &other) {
+      return *this;
+    }
     m_list = other.m_list;
     BaseIterator<T>::m_index = other.m_index;
     return *this;

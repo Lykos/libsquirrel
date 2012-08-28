@@ -12,6 +12,11 @@ namespace DataStructures {
   {
   }
 
+  InfiniteRandom::InfiniteRandom(InfiniteRandom&& other):
+    m_randomness (std::move(other.m_randomness))
+  {
+  }
+
   InfiniteRandom::part_type InfiniteRandom::part_at(index_type index) const
   {
     assert(index <= m_randomness.size());
@@ -35,8 +40,20 @@ namespace DataStructures {
     }
   }
 
+  InfiniteRandom& InfiniteRandom::operator=(InfiniteRandom&& other)
+  {
+    if (this == &other) {
+      return *this;
+    }
+    m_randomness = std::move(other.m_randomness);
+    return *this;
+  }
+
   InfiniteRandom& InfiniteRandom::operator=(const InfiniteRandom& other)
   {
+    if (this == &other) {
+      return *this;
+    }
     m_randomness = other.m_randomness;
     return *this;
   }

@@ -3,7 +3,7 @@
 
 #include "elgamal_types.h"
 #include "longintconverter.h"
-#include "sha256hasher.h"
+#include "sha2hasher.h"
 
 namespace Crypto {
 
@@ -11,22 +11,28 @@ namespace Crypto {
     
     class Verifier
     {
+    public:
+      typedef LongIntConverter::number_size_t number_size_t;
+
+      explicit Verifier(const public_key_t& public_key);
+
+      Verifier(const elgamal_byte_t* raw_public_key, number_size_t length);
+
+      bool verify(const number_t& message, const number_t& r, const number_t& s) const;
+
+      // Assumes that the signature is directly before the end of the message.
+      bool verify(const elgamal_byte_t* message, ulong length) const;
+
+      number_size_t signature_length() const { return m_signature_length; }
+
     private:
       number_t m_modulus, m_generator, m_gen_power;
 
-      uint m_r_length, m_s_length, m_signature_length;
+      number_size_t m_r_length, m_s_length, m_signature_length;
 
       LongIntConverter m_converter;
 
-      SHA256Hasher hasher;
-
-    public:
-      Verifier(const public_key_t& public_key);
-
-      // Assumes that the signature is directly before the end of the message.
-      bool verify(const elgamal_byte_t* message, ulong length);
-
-      uint signature_length() const { return m_signature_length; }
+      SHA2Hasher hasher;
 
     };
     
