@@ -5,7 +5,6 @@
 #include "primetester.h"
 #include "elgamal_types.h"
 #include "elgamal_constants.h"
-#include <iostream>
 
 namespace Crypto {
 
@@ -25,7 +24,10 @@ namespace Crypto {
       static const number_t ZERO = 0;
       static const number_t ONE = 1;
       number_t modulus, generator;
-      if (number_bits == 2048) {
+      if (number_bits == 1024) {
+        modulus = diffie_hellman_modulus_1024;
+        generator = diffie_hellman_generator_1024;
+      } else if (number_bits == 2048) {
         modulus = diffie_hellman_modulus_2048_1;
         generator = diffie_hellman_generator_2048_1;
       } else if (number_bits == 2560) {

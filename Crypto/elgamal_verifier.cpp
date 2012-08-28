@@ -18,9 +18,14 @@ namespace Crypto {
       hasher.hash(plain_text, length, hash);
       number_t hash_number = m_converter.convert(hash, 32);
       number_t r = m_converter.convert(signature, m_r_length);
-      number_t s = m_converter.convert(signature, m_s_length);
-      return m_generator.pow_mod(hash_number, m_modulus)
-          == (m_gen_power.pow_mod(r, m_modulus) * r.pow_mod(s, m_modulus)).mod(m_modulus);
+      number_t s = m_converter.convert(signature + m_r_length, m_s_length);
+      if (r < 0 || s < 0 || r >= m_modulus || s >= m_modulus - 1) {
+        return false;
+      }
+      number_t g_h = m_generator.pow_mod(hash_number, m_modulus);
+      number_t g_a_r = m_gen_power.pow_mod(r, m_modulus);
+      number_t r_s = r.pow_mod(s, m_modulus);
+      return g_h == (g_a_r * r_s).mod(m_modulus);
     }
 
   } // namespace Elgamal

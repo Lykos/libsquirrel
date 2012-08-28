@@ -15,9 +15,18 @@ using namespace Crypto;
 using namespace Elgamal;
 using namespace DataStructures;
 
+static void printit(const uchar* bla, ulong length)
+{
+  static const char hex_chars[17] = "0123456789ABCDEF";
+  for (ulong i = 0; i < length; ++i) {
+    std::cout << hex_chars[bla[i] >> 4] << hex_chars[bla[i] & 0xF];
+  }
+  std::cout << std::endl;
+}
+
 void ElgamalTest::test_key_generation()
 {
-  uint key_bits = 2048;
+  uint key_bits = 1024;
   KeyGenerator key_generator;
   std::mt19937_64 rng;
   key_pair_t key_pair = key_generator.generate(rng, key_bits);
@@ -37,6 +46,7 @@ void ElgamalTest::test_key_generation()
   Decrypter decrypter (private_key);
   QCOMPARE(encrypter.cipher_block_size(), decrypter.cipher_block_size());
   QCOMPARE(encrypter.plain_block_size(), decrypter.plain_block_size());
+
   // Check if key is usable for enc/dec.
   std::uniform_int_distribution<unsigned char> dist;
   unsigned char *plain = new unsigned char[encrypter.plain_block_size()];
@@ -64,7 +74,10 @@ void ElgamalTest::test_key_generation()
   unsigned char *signature = new unsigned char[signer.signature_length()];
   signer.sign(message, 5000, signature);
   QVERIFY(verifier.verify(message, 5000, signature));
-  message[2332] = ~message[2332];
+  SHA256Hasher hasher;
+  uchar digest1[hasher.digest_length()];
+  uchar digest2[hasher.digest_length()];
+  message[233] = ~message[233];
   QVERIFY(!verifier.verify(message, 5000, signature));
   delete[] message;
   delete[] signature;
@@ -73,15 +86,17 @@ void ElgamalTest::test_key_generation()
 void ElgamalTest::test_constants()
 {
   PrimeTester tester;
-  LongInt moduli[8] = {diffie_hellman_modulus_2048_1,
-                         diffie_hellman_modulus_2048_2,
-                         diffie_hellman_modulus_2048_3,
-                         diffie_hellman_modulus_2560,
-                         diffie_hellman_modulus_3072,
-                         diffie_hellman_modulus_3584,
-                         diffie_hellman_modulus_4096,
-                         diffie_hellman_modulus_8192};
-  LongInt generators[8] = {diffie_hellman_generator_2048_1,
+  LongInt moduli[9] = {diffie_hellman_modulus_1024,
+                       diffie_hellman_modulus_2048_1,
+                       diffie_hellman_modulus_2048_2,
+                       diffie_hellman_modulus_2048_3,
+                       diffie_hellman_modulus_2560,
+                       diffie_hellman_modulus_3072,
+                       diffie_hellman_modulus_3584,
+                       diffie_hellman_modulus_4096,
+                       diffie_hellman_modulus_8192};
+  LongInt generators[9] = {diffie_hellman_generator_1024,
+                           diffie_hellman_generator_2048_1,
                            diffie_hellman_generator_2048_2,
                            diffie_hellman_generator_2048_3,
                            diffie_hellman_generator_2560,

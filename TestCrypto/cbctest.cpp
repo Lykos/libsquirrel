@@ -11,7 +11,7 @@
 using namespace Crypto;
 using namespace std;
 
-void printit(const uchar* bla, ulong length)
+static void printit(const uchar* bla, ulong length)
 {
   static const char hex_chars[17] = "0123456789ABCDEF";
   for (ulong i = 0; i < length; ++i) {

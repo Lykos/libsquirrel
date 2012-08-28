@@ -30,14 +30,14 @@ namespace Crypto {
       hasher.hash(plain_text, length, hash + 0);
       number_t hash_number = m_converter.convert(hash, 32);
       number_t r, s;
+      number_t k, k_inv;
       do {
-        number_t k;
         do {
           k = m_k_distribution(m_random_generator);
         } while (gcd(k, m_phi_modulus) != ONE);
         r = m_generator.pow_mod(k, m_modulus);
-        number_t k_inv = k.mult_inv_mod(m_modulus);
-        s = ((hash_number - m_exponent * r) * k_inv).mod(m_modulus);
+        k_inv = k.mult_inv_mod(m_modulus - 1);
+        s = ((hash_number - m_exponent * r) * k_inv).mod(m_modulus - 1);
       } while (s == ZERO);
       m_converter.convert(r, signature, m_r_length);
       m_converter.convert(s, signature + m_r_length, m_s_length);

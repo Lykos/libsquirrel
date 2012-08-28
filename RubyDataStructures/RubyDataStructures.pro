@@ -14,11 +14,13 @@ DEFINES += RUBYDATASTRUCTURES_LIBRARY
 
 SOURCES += \
     RubyDataStructures.c \
-    longint_interface.cpp
+    longint_interface.cpp \
+    crypto_interface.cpp
 
 HEADERS +=\
     RubyDataStructures.h \
-    longint_interface.h
+    longint_interface.h \
+    crypto_interface.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN
@@ -39,24 +41,13 @@ unix:!symbian {
     INSTALLS += target
 }
 
-debug {
-    unix:!macx:!symbian: LIBS += -L$$PWD/../Crypto-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
-}
-
-release {
-    unix:!macx:!symbian: LIBS += -L$$PWD/../Crypto-build-desktop-Qt_4_8_0_in_Pfad__System__Release/ -lDataStructures
-}
+unix:!macx:!symbian: LIBS += -L$$PWD/../Crypto-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lCrypto
 
 INCLUDEPATH += $$PWD/../Crypto
 DEPENDPATH += $$PWD/../Crypto
 
-debug {
-    unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
-}
+unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
 
-release {
-    unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Release/ -lDataStructures
-}
 
 INCLUDEPATH += $$PWD/../DataStructures
 DEPENDPATH += $$PWD/../DataStructures

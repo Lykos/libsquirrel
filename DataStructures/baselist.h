@@ -176,7 +176,8 @@ namespace DataStructures {
     }
   }
 
-/*  template <typename T>
+  /*
+  template <typename T>
   BaseList<T>::BaseList(BaseList<T>&& other):
     m_content (other.m_content),
     m_size (other.m_size),
@@ -184,6 +185,7 @@ namespace DataStructures {
     m_is_shrinkable (other.m_is_shrinkable)
   {
     other.m_content = NULL;
+    other.m_size = 0;
     assert(m_min_capacity > 0);
   }*/
 
@@ -206,7 +208,8 @@ namespace DataStructures {
     free(m_content);
   }
 
-  /*template <typename T>
+  /*
+  template <typename T>
   inline BaseList<T>& BaseList<T>::operator=(BaseList<T>&& other)
   {
     if (this == &other) {
@@ -220,6 +223,7 @@ namespace DataStructures {
     m_min_capacity = other.m_min_capacity;
     m_is_shrinkable = other.m_is_shrinkable;
     other.m_content = NULL;
+    other.m_size = 0;
     return *this;
   }*/
 
