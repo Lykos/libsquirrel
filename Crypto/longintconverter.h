@@ -11,9 +11,11 @@ namespace Crypto {
   public:
     typedef u_int8_t byte_t;
 
-    DataStructures::LongInt convert(const u_int8_t* text, uint length);
+    DataStructures::LongInt read_number(const u_int8_t* text, uint length);
 
-    void convert(const DataStructures::LongInt& number, u_int8_t* text, uint length);
+    uint number_length(const DataStructures::LongInt& number) const;
+
+    void write_number(const DataStructures::LongInt& number, u_int8_t* text, uint length);
   };
   
 } // namespace Crypto

@@ -15,6 +15,16 @@ namespace Crypto {
     typedef struct {
       number_t modulus;
       number_t generator;
+    } group_t;
+
+    typedef struct {
+      number_t gen_power;
+      exponent_t exponent;
+    } partial_key_t;
+
+    typedef struct {
+      number_t modulus;
+      number_t generator;
       number_t gen_power;
     } public_key_t;
 

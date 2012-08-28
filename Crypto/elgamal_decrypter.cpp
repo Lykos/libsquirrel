@@ -21,15 +21,15 @@ namespace Crypto {
     void Decrypter::decrypt(const elgamal_byte_t* cipher, elgamal_byte_t* plain)
     {
       // Convert to numbers
-      number_t cipher_number = m_converter.convert(cipher, m_plain_length + sizeof(number_t::part_type));
-      number_t cipher_power = m_converter.convert(cipher + m_plain_length + sizeof(number_t::part_type), m_exponent_length);
+      number_t cipher_number = m_converter.read_number(cipher, m_plain_length + sizeof(number_t::part_type));
+      number_t cipher_power = m_converter.read_number(cipher + m_plain_length + sizeof(number_t::part_type), m_exponent_length);
 
       // Decrypt
       number_t key = cipher_power.pow_mod(m_exponent, m_modulus);
       number_t result = (cipher_number * key) % m_modulus;
 
       // Convert back
-      m_converter.convert(result, plain, m_plain_length);
+      m_converter.write_number(result, plain, m_plain_length);
     }
     
   } // namespace Elgamal

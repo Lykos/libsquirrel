@@ -31,7 +31,10 @@ SOURCES += \
     sha256hasher.cpp \
     longintconverter.cpp \
     primes.cpp \
-    elgamal_constants.cpp
+    elgamal_constants.cpp \
+    elgamal_keyexchange.cpp \
+    elgamal_keygenerator.cpp \
+    elgamal_converter.cpp
 
 HEADERS +=\
         Crypto_global.h \
@@ -63,7 +66,9 @@ HEADERS +=\
     cbc_types.h \
     cbc_decrypter.h \
     cbc_mac.h \
-    aes_types.h
+    aes_types.h \
+    elgamal_keyexchange.h \
+    elgamal_converter.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

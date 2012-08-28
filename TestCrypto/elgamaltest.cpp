@@ -67,20 +67,16 @@ void ElgamalTest::test_key_generation()
   // Check if key is usable for signatures.
   Signer signer (private_key);
   Verifier verifier (public_key);
-  unsigned char *message = new unsigned char[5000];
+  ulong signature_length = signer.signature_length();
+  unsigned char *message = new unsigned char[5000 + signature_length];
   for (uint i = 0; i < 5000; ++i) {
     message[i] = dist(rng);
   }
-  unsigned char *signature = new unsigned char[signer.signature_length()];
-  signer.sign(message, 5000, signature);
-  QVERIFY(verifier.verify(message, 5000, signature));
-  SHA256Hasher hasher;
-  uchar digest1[hasher.digest_length()];
-  uchar digest2[hasher.digest_length()];
+  signer.sign(message, 5000);
+  QVERIFY(verifier.verify(message, 5000 + signature_length));
   message[233] = ~message[233];
-  QVERIFY(!verifier.verify(message, 5000, signature));
+  QVERIFY(!verifier.verify(message, 5000 + signature_length));
   delete[] message;
-  delete[] signature;
 }
 
 void ElgamalTest::test_constants()

@@ -14,7 +14,7 @@ namespace Crypto {
     private:
       number_t m_modulus, m_generator, m_gen_power;
 
-      uint m_r_length, m_s_length;
+      uint m_r_length, m_s_length, m_signature_length;
 
       LongIntConverter m_converter;
 
@@ -23,7 +23,10 @@ namespace Crypto {
     public:
       Verifier(const public_key_t& public_key);
 
-      bool verify(const elgamal_byte_t* plain_text, uint length, const elgamal_byte_t* signature);
+      // Assumes that the signature is directly before the end of the message.
+      bool verify(const elgamal_byte_t* message, ulong length);
+
+      uint signature_length() const { return m_signature_length; }
 
     };
     

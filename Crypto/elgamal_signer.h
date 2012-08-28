@@ -31,7 +31,8 @@ namespace Crypto {
     public:
       explicit Signer(const private_key_t& private_key);
 
-      void sign(const elgamal_byte_t* plain_text, uint length, elgamal_byte_t* signature);
+      // Appends the signature directly after the end of the message
+      ulong sign(elgamal_byte_t* message, ulong length);
 
       uint signature_length() const { return m_signature_length; }
 

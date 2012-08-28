@@ -27,7 +27,7 @@ namespace Crypto {
     void Encrypter::encrypt(const elgamal_byte_t* plain, elgamal_byte_t* cipher)
     {
       // Convert to numbers
-      number_t plain_number = m_converter.convert(plain, m_plain_length);
+      number_t plain_number = m_converter.read_number(plain, m_plain_length);
 
       // Encrypt and generate additional key part
       exponent_t exponent = m_exponent_distribution(m_random_generator);
@@ -37,8 +37,8 @@ namespace Crypto {
       number_t cipher_number = (plain_number * key_inv) % m_modulus;
 
       // Convert back back
-      m_converter.convert(cipher_number, cipher, m_plain_length + sizeof(number_t::part_type));
-      m_converter.convert(own_gen_power, cipher + m_plain_length + sizeof(number_t::part_type), m_exponent_length);
+      m_converter.write_number(cipher_number, cipher, m_plain_length + sizeof(number_t::part_type));
+      m_converter.write_number(own_gen_power, cipher + m_plain_length + sizeof(number_t::part_type), m_exponent_length);
     }
     
   } // namespace Elgamal

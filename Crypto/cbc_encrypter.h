@@ -50,7 +50,7 @@ namespace Crypto {
 
       inline ulong encrypt(const cbc_byte_t* plain, ulong length, cbc_byte_t* cipher);
 
-      inline const cbc_byte_t* get_initial_vector() const { return m_state; }
+      inline const cbc_byte_t* get_state() const { return m_state; }
 
     };
 

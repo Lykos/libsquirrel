@@ -13,22 +13,23 @@ namespace Crypto {
     class Mac : private Encrypter<BlockCipher>
     {
     public:
-      inline ulong mac_length() const { return Encrypter<BlockCipher>::m_plain_block_size; }
+      inline uint signature_length() const { return Encrypter<BlockCipher>::plain_block_size(); }
 
-      // Appends the MAC directly at the end of the message. Note that this changes the state.
-      inline void mac(const cbc_byte_t* message, ulong length);
+      // Appends the MAC directly after the end of the message. Note that this changes the state.
+      inline ulong mac(cbc_byte_t* message, ulong length);
 
-      // Assumes that the MAC is directly at the end of the message. Note that this changes the state.
+      // Assumes that the MAC is directly before the end of the message. Note that this changes the state.
       // In case of failure, the state is undefined.
       inline bool verify(const cbc_byte_t* message, ulong length);
 
     };
 
     template <typename BlockCipher>
-    inline void Mac<BlockCipher>::mac(const cbc_byte_t* message, ulong length)
+    inline ulong Mac<BlockCipher>::mac(const cbc_byte_t* message, ulong length)
     {
       Encrypter::encrypt(message, length, NULL);
-      memcpy(message + length, Encrypter<BlockCipher>::m_state, mac_length());
+      memcpy(message + length, Encrypter<BlockCipher>::get_state(), mac_length());
+      return length + mac_length();
     }
 
     template <typename BlockCipher>

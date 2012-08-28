@@ -24,11 +24,11 @@ namespace Crypto {
       m_signature_length (m_r_length + m_s_length)
     {}
 
-    void Signer::sign(const elgamal_byte_t* plain_text, uint length, elgamal_byte_t* signature)
+    ulong Signer::sign(elgamal_byte_t* message, ulong length)
     {
       elgamal_byte_t hash[32];
-      hasher.hash(plain_text, length, hash + 0);
-      number_t hash_number = m_converter.convert(hash, 32);
+      hasher.hash(message, length, hash + 0);
+      number_t hash_number = m_converter.read_number(hash, 32);
       number_t r, s;
       number_t k, k_inv;
       do {
@@ -39,8 +39,9 @@ namespace Crypto {
         k_inv = k.mult_inv_mod(m_modulus - 1);
         s = ((hash_number - m_exponent * r) * k_inv).mod(m_modulus - 1);
       } while (s == ZERO);
-      m_converter.convert(r, signature, m_r_length);
-      m_converter.convert(s, signature + m_r_length, m_s_length);
+      m_converter.write_number(r, message + length, m_r_length);
+      m_converter.write_number(s, message + length + m_r_length, m_s_length);
+      return length + m_signature_length;
     }
     
   } // namespace Elgamal
