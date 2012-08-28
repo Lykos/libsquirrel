@@ -10,30 +10,22 @@
 namespace DataStructures {
 
   template <typename T>
-  struct AVLNode : public TreeNode<T>
+  struct AVLNode : public TreeNode<T, AVLNode<T> >
   {
     typedef char balance_t;
 
-    typedef typename TreeNode<T>::NodePointer NodePointer;
+    typedef typename TreeNode<T, AVLNode<T> >::direction direction;
 
-    typedef AVLNode<T>* AVLNodePointer;
-
-    typedef typename TreeNode<T>::direction direction;
-
-    inline AVLNode(const T& new_element, NodePointer new_parent = NULL, direction new_parent_direction = TREE_INVALID);
+    inline AVLNode(const T& new_element, AVLNode<T>* new_parent = NULL, direction new_parent_direction = TREE_INVALID);
 
     balance_t balance;
-
-    inline AVLNodePointer child(direction dir) { return static_cast<AVLNodePointer>(TreeNode<T>::children[dir]); }
-
-    inline AVLNodePointer parent2() { return static_cast<AVLNodePointer>(TreeNode<T>::parent); }
 
   };
 
 
   template <typename T>
-  AVLNode<T>::AVLNode(const T& new_element, NodePointer new_parent, direction new_parent_direction):
-    TreeNode<T>(new_element, new_parent, new_parent_direction),
+  AVLNode<T>::AVLNode(const T& new_element, AVLNode<T>* new_parent, direction new_parent_direction):
+    TreeNode<T, AVLNode<T> >(new_element, new_parent, new_parent_direction),
     balance (0)
   {
   }

@@ -35,11 +35,9 @@ HEADERS += \
     basetree.h \
     treenode.h \
     treeiterator.h \
-    treeconstiterator.h \
     heap.h \
     avltree.h \
     avlnode.h \
-    binarytree.h \
     fibonacciheap.h \
     finitefield.h \
     finiteelement.h \

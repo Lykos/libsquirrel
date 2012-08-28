@@ -26,13 +26,13 @@ namespace DataStructures {
   template <typename T, typename Node>
   class BaseTree;
 
-  template <typename T, typename Tree>
+  template <typename T, typename Node, typename Tree>
   class TreeIterator;
 
   template <typename T, typename Tree>
   class TreeConstIterator;
 
-  template <typename T>
+  template <typename T, typename Node>
   class TreeNode;
 
   template <typename T>
@@ -46,9 +46,6 @@ namespace DataStructures {
 
   template <typename T>
   class DATASTRUCTURESSHARED_EXPORT AVLTree;
-
-  template <typename T>
-  class DATASTRUCTURESSHARED_EXPORT BinaryTree;
 
   class DATASTRUCTURESSHARED_EXPORT LongInt;
 

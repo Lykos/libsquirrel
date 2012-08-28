@@ -30,10 +30,6 @@ namespace DataStructures {
     inline bool remove(const T &element);
 
   protected:
-    typedef typename BaseTree<T, TreapNode<T> >::NodePointer NodePointer;
-
-    typedef TreapNode<T>* TreapNodePointer;
-
     typedef typename BaseTree<T, TreapNode<T> >::direction direction;
 
   };
@@ -74,12 +70,12 @@ namespace DataStructures {
   template <typename T>
   inline void Treap<T>::insert(const T &element)
   {
-    TreapNodePointer current = BaseTree<T, TreapNode<T> >::internal_insert(element);
-    TreapNodePointer parent = current->parent2();
+    TreapNode<T>* current = BaseTree<T, TreapNode<T> >::internal_insert(element);
+    TreapNode<T>* parent = current->parent;
     direction parent_direction = current->parent_direction;
     while (parent != NULL && current->randomness < parent->randomness) {
       BaseTree<T, TreapNode<T> >::rotate(parent, parent_direction);
-      parent = current->parent2();
+      parent = current->parent;
       parent_direction = current->parent_direction;
     }
   }
@@ -87,7 +83,7 @@ namespace DataStructures {
   template <typename T>
   inline bool Treap<T>::remove(const T &element)
   {
-    TreapNodePointer current = BaseTree<T, TreapNode<T> >::root();
+    TreapNode<T>* current = BaseTree<T, TreapNode<T> >::root();
     while (current != NULL) {
       if (current->element == element) {
         while (current->is_inner()) {
@@ -98,7 +94,7 @@ namespace DataStructures {
         return true;
       }
       direction dir = current->element_direction(element);
-      current = current->child(dir);
+      current = current->children[dir];
     }
     return false;
   }

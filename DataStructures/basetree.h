@@ -6,7 +6,6 @@
 #include <cassert>
 #include "basetypes.h"
 #include "treeiterator.h"
-#include "treeconstiterator.h"
 #include "DataStructures_global.h"
 
 #ifndef NDEBUG
@@ -30,22 +29,18 @@ namespace DataStructures {
   {
     friend std::ostream& operator<< <> (std::ostream& out, const BaseTree<T, Node>& it);
 
-    friend class TreeConstIterator<T, BaseTree<T, Node> >;
+    friend class TreeIterator<T, Node, BaseTree<T, Node> >;
 
-    friend class TreeIterator<T, BaseTree<T, Node> >;
+    friend class TreeIterator<T const, Node const, BaseTree<T, Node> const >;
 
   public:
-    typedef TreeConstIterator<T, BaseTree<T, Node> > const_iterator;
+    typedef TreeIterator<T const, Node const, BaseTree<T, Node> const> const_iterator;
 
-    typedef TreeIterator<T, BaseTree<T, Node> > iterator;
+    typedef TreeIterator<T, Node, BaseTree<T, Node> > iterator;
 
     typedef bool (*predicate_t)(const T&);
 
   protected:
-    typedef TreeNode<T>* NodePointer;
-
-    typedef const TreeNode<T>* ConstNodePointer;
-
     typedef typename Node::direction direction;
 
   public:
@@ -110,13 +105,13 @@ namespace DataStructures {
     inline const_iterator end() const { return const_iterator(this, size()); }
 
   protected:
-    NodePointer m_root;
+    Node* m_root;
 
-    inline void rotate(NodePointer node, direction dir);
+    inline void rotate(Node* node, direction dir);
 
     inline Node* internal_insert(const T& element);
 
-    inline void non_inner_remove(NodePointer node);
+    inline void non_inner_remove(Node* node);
 
     inline Node* root() { return static_cast<Node*>(m_root); }
 
@@ -139,7 +134,7 @@ namespace DataStructures {
   template <typename T, typename Node>
   inline bool BaseTree<T, Node>::search(const T& element) const
   {
-    NodePointer current = m_root;
+    Node* current = m_root;
     while (current != NULL) {
       if (current->element == element) {
         return true;
@@ -154,7 +149,7 @@ namespace DataStructures {
   inline const T& BaseTree<T, Node>::operator[](index_type index) const
   {
     tree_check_index(index);
-    NodePointer current = m_root;
+    Node* current = m_root;
     while (true) {
       assert(current != NULL);
       assert(index < current->size);
@@ -174,7 +169,7 @@ namespace DataStructures {
   inline T& BaseTree<T, Node>::operator[](index_type index)
   {
     tree_check_index(index);
-    NodePointer current = m_root;
+    Node* current = m_root;
     while (true) {
       assert(current != NULL);
       assert(index < current->size);
@@ -249,7 +244,7 @@ namespace DataStructures {
     if (m_root == NULL) {
       return;
     }
-    NodePointer current = m_root;
+    Node* current = m_root;
     while (!(current->is_root() && current->is_leaf())) {
       if (current->is_leaf()) {
         assert(current != m_root);
@@ -279,7 +274,7 @@ namespace DataStructures {
       m_root = new_node;
       return new_node;
     }
-    NodePointer current = m_root;
+    Node* current = m_root;
     direction dir = m_root->element_direction(element);
     ++(current->size);
     while (current->children[dir] != NULL) {
@@ -304,7 +299,7 @@ namespace DataStructures {
   template <typename T, typename Node>
   typename BaseTree<T, Node>::iterator BaseTree<T, Node>::lower_bound(const T& element)
   {
-    NodePointer current = m_root;
+    Node* current = m_root;
     index_type correct_index = size();
     index_type left_size = 0;
     while (current != NULL) {
@@ -322,7 +317,7 @@ namespace DataStructures {
   template <typename T, typename Node>
   inline typename BaseTree<T, Node>::const_iterator BaseTree<T, Node>::lower_bound(const T& element) const
   {
-    NodePointer current = m_root;
+    Node* current = m_root;
     index_type correct_index = size();
     index_type left_size = 0;
     while (current != NULL) {
@@ -340,7 +335,7 @@ namespace DataStructures {
   template <typename T, typename Node>
   typename BaseTree<T, Node>::iterator BaseTree<T, Node>::upper_bound(const T& element)
   {
-    NodePointer current = m_root;
+    Node* current = m_root;
     index_type correct_index = size();
     index_type left_size = 0;
     while (current != NULL) {
@@ -358,7 +353,7 @@ namespace DataStructures {
   template <typename T, typename Node>
   typename BaseTree<T, Node>::const_iterator BaseTree<T, Node>::upper_bound(const T& element) const
   {
-    NodePointer current = m_root;
+    Node* current = m_root;
     index_type correct_index = size();
     index_type left_size = 0;
     while (current != NULL) {
@@ -397,7 +392,7 @@ namespace DataStructures {
   template <typename T, typename Node>
   inline bool BaseTree<T, Node>::remove(const T& element)
   {
-    NodePointer current = m_root;
+    Node* current = m_root;
     while (current != NULL) {
       if (current->element == element) {
         while (current->is_inner()) {
@@ -414,13 +409,13 @@ namespace DataStructures {
   }
 
   template <typename T, typename Node>
-  inline void BaseTree<T, Node>::non_inner_remove(NodePointer node)
+  inline void BaseTree<T, Node>::non_inner_remove(Node* node)
   {
     assert(node != NULL);
     assert(!(node->is_inner()));
-    NodePointer parent = node->parent;
+    Node* parent = node->parent;
     direction dir = node->parent_direction;
-    NodePointer child = NULL;
+    Node* child = NULL;
     if (!node->is_leaf()) {
       if (node->children[TREE_LEFT] == NULL) {
         child = node->children[TREE_RIGHT];
@@ -447,16 +442,16 @@ namespace DataStructures {
   }
 
   template <typename T, typename Node>
-  inline void BaseTree<T, Node>::rotate(NodePointer node, direction dir)
+  inline void BaseTree<T, Node>::rotate(Node* node, direction dir)
   {
     // Precondition
     assert(node != NULL);
     assert(node->children[dir] != NULL);
 
     // Define a few aliases
-    NodePointer parent = node->parent;
-    NodePointer new_node = node->children[dir];
-    NodePointer new_node_child = new_node->children[1 - dir];
+    Node* parent = node->parent;
+    Node* new_node = node->children[dir];
+    Node* new_node_child = new_node->children[1 - dir];
     direction parent_direction = node->parent_direction;
     index_type lost_child_size = new_node->dir_size(dir);
 

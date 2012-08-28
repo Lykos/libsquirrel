@@ -5,7 +5,6 @@
 #include "polynomialtest.h"
 #include "arraylisttest.h"
 #include "infiniterandomtest.h"
-#include "binarytreetest.h"
 #include "treaptest.h"
 #include "avltreetest.h"
 #include "queuetest.h"
@@ -22,8 +21,6 @@ int main(int argc, char** argv) {
   QTest::qExec(&array_list_test, argc, argv);
   InfiniteRandomTest infinite_random_test;
   QTest::qExec(&infinite_random_test, argc, argv);
-  BinaryTreeTest base_tree_test;
-  QTest::qExec(&base_tree_test, argc, argv);
   TreapTest treap_test;
   QTest::qExec(&treap_test, argc, argv);
   AVLTreeTest avl_tree_test;

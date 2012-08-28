@@ -1,19 +1,18 @@
 #ifndef DATASTRUCTURES_TREENODE_H
 #define DATASTRUCTURES_TREENODE_H
 
+#include "basetypes.h"
 #include "infiniterandom.h"
 #include <iostream>
 
 namespace DataStructures {
 
-  template <typename T>
+  template <typename T, typename Node>
   struct TreeNode
   {
-    typedef TreeNode<T>* NodePointer;
-
     typedef unsigned char direction;
 
-    inline TreeNode(const T& new_element, NodePointer new_parent = NULL, direction new_parent_direction = TREE_INVALID);
+    inline TreeNode(const T& new_element, Node* new_parent = NULL, direction new_parent_direction = TREE_INVALID);
 
     inline direction element_direction(const T& other_element) const { return other_element < element ? TREE_LEFT : TREE_RIGHT; }
 
@@ -35,16 +34,16 @@ namespace DataStructures {
 
     index_type size;
 
-    NodePointer parent;
+    Node* parent;
 
     direction parent_direction;
 
-    NodePointer children[2] = {NULL, NULL};
+    Node* children[2] = {NULL, NULL};
 
   };
 
-  template <typename T>
-  TreeNode<T>::TreeNode(const T& new_element, NodePointer new_parent, direction new_parent_direction):
+  template <typename T, typename Node>
+  TreeNode<T, Node>::TreeNode(const T& new_element, Node* new_parent, direction new_parent_direction):
     element (new_element),
     size (1),
     parent (new_parent),

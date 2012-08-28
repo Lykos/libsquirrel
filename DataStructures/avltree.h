@@ -35,19 +35,15 @@ namespace DataStructures {
   private:
     typedef typename AVLNode<T>::balance_t balance_t;
 
-    typedef typename BaseTree<T, AVLNode<T> >::NodePointer NodePointer;
-
-    typedef AVLNode<T>* AVLNodePointer;
-
     typedef typename BaseTree<T, AVLNode<T> >::direction direction;
 
-    inline void rebalance(AVLNodePointer current, direction dir);
+    inline void rebalance(AVLNode<T>* current, direction dir);
 
-    inline void inner_remove(AVLNodePointer node);
+    inline void inner_remove(AVLNode<T>* node);
 
-    inline void exchange_content(AVLNodePointer node1, AVLNodePointer node2);
+    inline void exchange_content(AVLNode<T>* node1, AVLNode<T>* node2);
 
-    inline void non_inner_remove_rebalance(AVLNodePointer node);
+    inline void non_inner_remove_rebalance(AVLNode<T>* node);
 
   };
 
@@ -87,7 +83,7 @@ namespace DataStructures {
   template <typename T>
   inline bool AVLTree<T>::remove(const T &element)
   {
-    AVLNodePointer current = BaseTree<T, AVLNode<T> >::root();
+    AVLNode<T>* current = BaseTree<T, AVLNode<T> >::root();
     while (current != NULL) {
       if (current->element == element) {
         if (current->is_inner()) {
@@ -98,37 +94,37 @@ namespace DataStructures {
         return true;
       }
       direction dir = current->element_direction(element);
-      current = current->child(dir);
+      current = current->children[dir];
     }
     return false;
   }
 
   template <typename T>
-  inline void AVLTree<T>::inner_remove(AVLNodePointer node)
+  inline void AVLTree<T>::inner_remove(AVLNode<T>* node)
   {
     assert(node != NULL);
-    AVLNodePointer current = node->child(TREE_LEFT);
+    AVLNode<T>* current = node->children[TREE_LEFT];
     assert(current != NULL);
     while (current->children[TREE_RIGHT] != NULL) {
-      current = current->child(TREE_RIGHT);
+      current = current->children[TREE_RIGHT];
     }
     exchange_content(current, node);
     non_inner_remove_rebalance(current);
   }
 
   template <typename T>
-  inline void AVLTree<T>::non_inner_remove_rebalance(AVLNodePointer node)
+  inline void AVLTree<T>::non_inner_remove_rebalance(AVLNode<T>* node)
   {
     assert(node != NULL);
     assert(!(node->is_inner()));
-    AVLNodePointer current = node->parent2();
+    AVLNode<T>* current = node->parent;
     direction dir = node->parent_direction;
     BaseTree<T, AVLNode<T> >::non_inner_remove(node);
     balance_t old_balance = current->balance;
     current->balance -= BALANCE_SIGN[dir];
     balance_t new_balance = current->balance;
     dir = current->parent_direction;
-    current = current->parent2();
+    current = current->parent;
     while (current != NULL && old_balance != new_balance && new_balance == 0) {
       old_balance = current->balance;
       if (old_balance == -BALANCE_SIGN[dir]) {
@@ -138,12 +134,12 @@ namespace DataStructures {
       current->balance -= BALANCE_SIGN[dir];
       new_balance = current->balance;
       dir = current->parent_direction;
-      current = current->parent2();
+      current = current->parent;
     }
   }
 
   template <typename T>
-  inline void AVLTree<T>::exchange_content(AVLNodePointer node1, AVLNodePointer node2)
+  inline void AVLTree<T>::exchange_content(AVLNode<T>* node1, AVLNode<T>* node2)
   {
     std::swap(node1->element, node2->element);
   }
@@ -155,14 +151,14 @@ namespace DataStructures {
       BaseTree<T, AVLNode<T> >::m_root = new AVLNode<T>(element);
       return;
     }
-    AVLNodePointer new_node = BaseTree<T, AVLNode<T> >::internal_insert(element);
+    AVLNode<T>* new_node = BaseTree<T, AVLNode<T> >::internal_insert(element);
     direction dir = new_node->parent_direction;
-    AVLNodePointer current = new_node->parent2();
+    AVLNode<T>* current = new_node->parent;
     balance_t old_balance = current->balance;
     current->balance += BALANCE_SIGN[dir];
     balance_t new_balance = current->balance;
     dir = current->parent_direction;
-    current = current->parent2();
+    current = current->parent;
     while (current != NULL && old_balance != new_balance && new_balance != 0) {
       old_balance = current->balance;
       if (old_balance == BALANCE_SIGN[dir]) {
@@ -172,16 +168,16 @@ namespace DataStructures {
       current->balance += BALANCE_SIGN[dir];
       new_balance = current->balance;
       dir = current->parent_direction;
-      current = current->parent2();
+      current = current->parent;
     }
   }
 
   template <typename T>
-  inline void AVLTree<T>::rebalance(AVLNodePointer current, direction dir)
+  inline void AVLTree<T>::rebalance(AVLNode<T>* current, direction dir)
   {
     assert(current != NULL);
     assert(current->balance == BALANCE_SIGN[dir]);
-    AVLNodePointer child = current->child(dir);
+    AVLNode<T>* child = current->children[dir];
     assert(child != NULL);
     if (current->balance == child->balance) {
       // Normal rotate
@@ -191,7 +187,7 @@ namespace DataStructures {
     } else {
       // Zic zac rotate
       assert(current->balance == -child->balance);
-      AVLNodePointer new_parent = child->child(1 - dir);
+      AVLNode<T>* new_parent = child->children[1 - dir];
       if (new_parent->balance == BALANCE_SIGN[dir]) {
         current->balance = -BALANCE_SIGN[dir];
         child->balance = 0;

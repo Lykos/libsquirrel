@@ -40,6 +40,5 @@ HEADERS += \
     treetest.h \
     treaptest.h \
     avltreetest.h \
-    binarytreetest.h \
     polynomialtest.h \
     finiteelementtest.h
