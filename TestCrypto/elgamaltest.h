@@ -2,7 +2,6 @@
 #define ELGAMALTEST_H
 
 #include <QObject>
-#include "elgamal_types.h"
 
 class ElgamalTest : public QObject
 {
@@ -10,8 +9,6 @@ class ElgamalTest : public QObject
 
 private Q_SLOTS:
   void test_key_generation();
-
-  void test_constants();
 
 };
 

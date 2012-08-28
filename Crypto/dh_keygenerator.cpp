@@ -1,11 +1,22 @@
-#include "elgamal_keyexchange.h"
-#include "elgamal_constants.h"
+#include "dh_keygenerator.h"
+#include "dh_constants.h"
 
 namespace Crypto {
 
-  namespace Elgamal {
+  namespace DH {
 
-    group_t KeyExchange::choose_group(uint number_bits)
+    bool KeyGenerator::valid_key_bits(uint number_bits) const
+    {
+      return number_bits == 1024
+          || number_bits == 2048
+          || number_bits == 2560
+          || number_bits == 3072
+          || number_bits == 3584
+          || number_bits == 4096
+          || number_bits == 8192;
+    }
+
+    group_t KeyGenerator::choose_group(uint number_bits)
     {
       number_t modulus, generator;
       if (number_bits == 1024) {
@@ -33,11 +44,6 @@ namespace Crypto {
         throw std::logic_error("Unsupported key length");
       }
       return {modulus, generator};
-    }
-
-    number_t KeyExchange::complete(const number_t& gen_power, const exponent_t& own_exponent, const group_t& group)
-    {
-      return gen_power.pow_mod(own_exponent, group.modulus);
     }
 
   } // namespace Elgamal

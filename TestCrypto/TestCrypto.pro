@@ -22,7 +22,8 @@ SOURCES += \
     elgamaltest.cpp \
     aestest.cpp \
     sha256test.cpp \
-    cbctest.cpp
+    cbctest.cpp \
+    dhtest.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 HEADERS += \
@@ -30,7 +31,8 @@ HEADERS += \
     elgamaltest.h \
     aestest.h \
     sha256test.h \
-    cbctest.h
+    cbctest.h \
+    dhtest.h
 
 unix:!macx:!symbian: LIBS += -L$$PWD/../Crypto-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lCrypto
 

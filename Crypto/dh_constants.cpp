@@ -1,8 +1,8 @@
-#include "elgamal_constants.h"
+#include "dh_constants.h"
 
 namespace Crypto {
 
-  namespace Elgamal {
+  namespace DH {
 
     const number_t diffie_hellman_modulus_1024 = number_t("0xF488FD584E49DBCD20B49DE49107366B336C380D451D0F7C88B31C7C5B2D8EF6"
                                                             "F3C923C043F0A55B188D8EBB558CB85D38D334FD7C175743A31D186CDE33212C"

@@ -6,7 +6,7 @@ namespace Crypto {
 
     group_t KeyGenerator::choose_group(uint number_bits)
     {
-      return KeyExchange::choose_group(number_bits);
+      return DH::KeyGenerator::choose_group(number_bits);
     }
 
   }

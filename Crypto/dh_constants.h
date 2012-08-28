@@ -1,11 +1,11 @@
-#ifndef CRYPTO_ELGAMAL_CONSTANTS_H
-#define CRYPTO_ELGAMAL_CONSTANTS_H
+#ifndef CRYPTO_DH_CONSTANTS_H
+#define CRYPTO_DH_CONSTANTS_H
 
-#include "elgamal_types.h"
+#include "dh_types.h"
 
 namespace Crypto {
 
-  namespace Elgamal {
+  namespace DH {
 
     extern const number_t diffie_hellman_modulus_1024;
 
@@ -47,4 +47,4 @@ namespace Crypto {
 
 }
 
-#endif // CRYPTO_ELGAMAL_CONSTANTS_H
+#endif // CRYPTO_DH_CONSTANTS_H

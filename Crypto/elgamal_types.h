@@ -1,26 +1,16 @@
 #ifndef CRYPTO_ELGAMAL_TYPES_H
 #define CRYPTO_ELGAMAL_TYPES_H
 
+#include "dh_types.h"
 #include "keypair.h"
-#include "longint.h"
 
 namespace Crypto {
 
   namespace Elgamal {
 
-    typedef DataStructures::LongInt number_t;
+    typedef DH::number_t number_t;
 
-    typedef DataStructures::LongInt exponent_t;
-
-    typedef struct {
-      number_t modulus;
-      number_t generator;
-    } group_t;
-
-    typedef struct {
-      number_t gen_power;
-      exponent_t exponent;
-    } partial_key_t;
+    typedef DH::exponent_t exponent_t;
 
     typedef struct {
       number_t modulus;
@@ -34,7 +24,9 @@ namespace Crypto {
       exponent_t exponent;
     } private_key_t;
 
-    typedef u_int8_t elgamal_byte_t;
+    typedef DH::group_t group_t;
+
+    typedef DH::dh_byte_t elgamal_byte_t;
 
     typedef KeyPair<public_key_t, private_key_t> key_pair_t;
 
