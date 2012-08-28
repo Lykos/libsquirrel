@@ -3,7 +3,6 @@
 
 #include "baselist.h"
 #include "listiterator.h"
-#include "listconstiterator.h"
 #include <cassert>
 
 namespace DataStructures {

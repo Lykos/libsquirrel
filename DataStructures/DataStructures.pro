@@ -29,7 +29,6 @@ HEADERS += \
     basetypes.h \
     baseiterator.h \
     queue.h \
-    listconstiterator.h \
     listiterator.h \
     baselist.h \
     arraylist.h \

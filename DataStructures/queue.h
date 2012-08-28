@@ -4,7 +4,6 @@
 #include "DataStructures_global.h"
 #include "baselist.h"
 #include "listiterator.h"
-#include "listconstiterator.h"
 
 namespace DataStructures {
 
@@ -18,7 +17,7 @@ namespace DataStructures {
   public:
     typedef ListIterator<T, Queue<T> > iterator;
 
-    typedef ListConstIterator<T, Queue<T> > const_iterator;
+    typedef ListIterator<T const, Queue<T> const > const_iterator;
 
     inline Queue();
 

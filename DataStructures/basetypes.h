@@ -14,9 +14,6 @@ namespace DataStructures {
   template <typename T, typename List>
   class ListIterator;
 
-  template <typename T, typename List>
-  class ListConstIterator;
-
   template <typename T>
   class DATASTRUCTURESSHARED_EXPORT ArrayList;
 

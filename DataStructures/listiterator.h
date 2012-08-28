@@ -12,12 +12,11 @@ namespace DataStructures {
   class ListIterator : public BaseIterator<T>
   {
     friend ListIterator<T, List> operator+ <> (index_type i, const ListIterator<T, List>& it);
-    friend class ListConstIterator<T, List>;
+
   public:
     ListIterator(List* list, index_type index = 0);
     ListIterator(const ListIterator<T, List>& other);
     difference_type operator-(const ListIterator<T, List>& other) const;
-    difference_type operator-(const ListConstIterator<T, List>& other) const;
     ListIterator<T, List> operator++(int);
     ListIterator<T, List>& operator++();
     ListIterator<T, List> operator--(int);
@@ -57,12 +56,6 @@ namespace DataStructures {
 
   template <typename T, typename List>
   difference_type ListIterator<T, List>::operator-(const ListIterator<T, List>& other) const
-  {
-    return BaseIterator<T>::m_index - other.m_index;
-  }
-
-  template <typename T, typename List>
-  difference_type ListIterator<T, List>::operator-(const ListConstIterator<T, List>& other) const
   {
     return BaseIterator<T>::m_index - other.m_index;
   }
