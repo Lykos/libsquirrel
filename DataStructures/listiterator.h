@@ -9,7 +9,7 @@ namespace DataStructures {
   ListIterator<T, List> operator+(index_type i, const ListIterator<T, List>& it);
 
   template <typename T, typename List>
-  class ListIterator : public BaseIterator<T>
+  class ListIterator : public BaseIterator<T, List, ListIterator<T, List> >
   {
     friend ListIterator<T, List> operator+ <> (index_type i, const ListIterator<T, List>& it);
 
@@ -37,19 +37,19 @@ namespace DataStructures {
   template <typename T, typename List>
   inline ListIterator<T, List>::operator ListIterator<T const, List const>() const
   {
-    return ListIterator<T const, List const>(m_list, BaseIterator<T>::m_index);
+    return ListIterator<T const, List const>(m_list, BaseIterator<T, List, ListIterator<T, List> >::m_index);
   }
 
   template <typename T, typename List>
   ListIterator<T, List>::ListIterator(List* list, index_type index):
-    BaseIterator<T>(index),
+    BaseIterator<T, List, ListIterator<T, List> >(index),
     m_list(list)
   {
   }
 
   template <typename T, typename List>
   ListIterator<T, List>::ListIterator(const ListIterator<T, List>& other):
-    BaseIterator<T>(other.m_index),
+    BaseIterator<T, List, ListIterator<T, List> >(other.m_index),
     m_list(other.m_list)
   {
   }
@@ -57,7 +57,7 @@ namespace DataStructures {
   template <typename T, typename List>
   difference_type ListIterator<T, List>::operator-(const ListIterator<T, List>& other) const
   {
-    return BaseIterator<T>::m_index - other.m_index;
+    return BaseIterator<T, List, ListIterator<T, List> >::m_index - other.m_index;
   }
 
   template <typename T, typename List>
@@ -70,14 +70,14 @@ namespace DataStructures {
   ListIterator<T, List> ListIterator<T, List>::operator++(int)
   {
     ListIterator<T, List> old (*this);
-    BaseIterator<T>::m_index++;
+    BaseIterator<T, List, ListIterator<T, List> >::m_index++;
     return old;
   }
 
   template <typename T, typename List>
   ListIterator<T, List>& ListIterator<T, List>::operator++()
   {
-    ++BaseIterator<T>::m_index;
+    ++BaseIterator<T, List, ListIterator<T, List> >::m_index;
     return *this;
   }
 
@@ -85,14 +85,14 @@ namespace DataStructures {
   ListIterator<T, List> ListIterator<T, List>::operator--(int)
   {
     ListIterator<T, List> old (*this);
-    BaseIterator<T>::m_index--;
+    BaseIterator<T, List, ListIterator<T, List> >::m_index--;
     return old;
   }
 
   template <typename T, typename List>
   ListIterator<T, List>& ListIterator<T, List>::operator--()
   {
-    --BaseIterator<T>::m_index;
+    --BaseIterator<T, List, ListIterator<T, List> >::m_index;
     return *this;
   }
 
@@ -103,7 +103,7 @@ namespace DataStructures {
       return *this;
     }
     m_list = other.m_list;
-    BaseIterator<T>::m_index = other.m_index;
+    BaseIterator<T, List, ListIterator<T, List> >::m_index = other.m_index;
     return *this;
   }
 
@@ -124,27 +124,27 @@ namespace DataStructures {
   template <typename T, typename List>
   ListIterator<T, List>& ListIterator<T, List>::operator+=(index_type index)
   {
-    BaseIterator<T>::m_index += index;
+    BaseIterator<T, List, ListIterator<T, List> >::m_index += index;
     return *this;
   }
 
   template <typename T, typename List>
   ListIterator<T, List>& ListIterator<T, List>::operator-=(index_type index)
   {
-    BaseIterator<T>::m_index -= index;
+    BaseIterator<T, List, ListIterator<T, List> >::m_index -= index;
     return *this;
   }
 
   template <typename T, typename List>
   T& ListIterator<T, List>::operator*() const
   {
-    return (*m_list)[BaseIterator<T>::m_index];
+    return (*m_list)[BaseIterator<T, List, ListIterator<T, List> >::m_index];
   }
 
   template <typename T, typename List>
   T& ListIterator<T, List>::operator[](index_type index) const
   {
-    return (*m_list)[BaseIterator<T>::m_index + index];
+    return (*m_list)[BaseIterator<T, List, ListIterator<T, List> >::m_index + index];
   }
 
 }
