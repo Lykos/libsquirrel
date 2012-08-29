@@ -1,7 +1,7 @@
 #ifndef CRYPTO_SHA2HASHER_H
 #define CRYPTO_SHA2HASHER_H
 
-#include "Crypto_global.h"
+#include "Crypto/Crypto_global.h"
 
 #define SHA2_DIGEST_BYTE_SIZE 32
 

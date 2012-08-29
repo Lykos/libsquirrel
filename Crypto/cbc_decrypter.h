@@ -1,8 +1,8 @@
 #ifndef CRYPTO_CBC_DECRYPTER_H
 #define CRYPTO_CBC_DECRYPTER_H
 
-#include "Crypto_global.h"
-#include "cbc_types.h"
+#include "Crypto/Crypto_global.h"
+#include "Crypto/cbc_types.h"
 #include <cstring>
 
 namespace std {

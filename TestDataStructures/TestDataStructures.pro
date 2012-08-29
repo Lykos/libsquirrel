@@ -11,7 +11,7 @@ QT       -= gui
 TARGET = datastructures_tests
 CONFIG   += console warn_on
 CONFIG   -= app_bundle
-QMAKE_CXXFLAGS += -std=c++0x
+QMAKE_CXXFLAGS += -std=c++11
 
 TEMPLATE = app
 
@@ -28,7 +28,7 @@ DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
 
-INCLUDEPATH += $$PWD/../DataStructures
+INCLUDEPATH += $$PWD/..
 DEPENDPATH += $$PWD/../DataStructures
 
 HEADERS += \

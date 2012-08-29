@@ -2,7 +2,7 @@
 #define HEAPTEST_H
 
 #include <QObject>
-#include "heap.h"
+#include "DataStructures/heap.h"
 
 class HeapTest : public QObject
 {

@@ -1,9 +1,9 @@
 #ifndef CRYPTO_ELGAMAL_VERIFIER_H
 #define CRYPTO_ELGAMAL_VERIFIER_H
 
-#include "elgamal_types.h"
-#include "longintconverter.h"
-#include "sha2hasher.h"
+#include "Crypto/elgamal_types.h"
+#include "Crypto/longintconverter.h"
+#include "Crypto/sha2hasher.h"
 
 namespace Crypto {
 

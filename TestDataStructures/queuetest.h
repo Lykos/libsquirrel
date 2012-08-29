@@ -2,7 +2,7 @@
 #define QUEUETEST_H
 
 #include <QObject>
-#include "queue.h"
+#include "DataStructures/queue.h"
 
 class QueueTest : public QObject
 {

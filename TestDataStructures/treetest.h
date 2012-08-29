@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QtTest/QtTest>
 #include <iostream>
-#include "basetypes.h"
+#include "DataStructures/basetypes.h"
 #include "treetest.h"
 
 template <typename Tree>

@@ -1,8 +1,8 @@
 #ifndef CRYPTO_ELGAMAL_CONVERTER_H
 #define CRYPTO_ELGAMAL_CONVERTER_H
 
-#include "dh_converter.h"
-#include "elgamal_types.h"
+#include "Crypto/dh_converter.h"
+#include "Crypto/elgamal_types.h"
 
 namespace Crypto {
 

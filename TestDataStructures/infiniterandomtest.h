@@ -1,7 +1,7 @@
 #ifndef INFINITERANDOMTEST_H
 #define INFINITERANDOMTEST_H
 #include <QtTest/QtTest>
-#include "infiniterandom.h"
+#include "DataStructures/infiniterandom.h"
 
 class InfiniteRandomTest : public QObject
 {

@@ -1,5 +1,5 @@
 #include "longint_interface.h"
-#include "longint.h"
+#include "DataStructures/longint.h"
 
 using namespace DataStructures;
 

@@ -1,7 +1,7 @@
 #ifndef AVLTREETEST_H
 #define AVLTREETEST_H
 
-#include "avltree.h"
+#include "DataStructures/avltree.h"
 #include "treetest.h"
 
 class AVLTreeTest : public QObject, public TreeTest<DataStructures::AVLTree<int> >

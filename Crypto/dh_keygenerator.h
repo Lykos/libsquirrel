@@ -1,8 +1,8 @@
 #ifndef CRYPTO_DH_KEYGENERATOR_H
 #define CRYPTO_DH_KEYGENERATOR_H
 
-#include "Crypto_global.h"
-#include "dh_types.h"
+#include "Crypto/Crypto_global.h"
+#include "Crypto/dh_types.h"
 
 namespace Crypto {
 

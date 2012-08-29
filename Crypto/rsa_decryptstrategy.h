@@ -1,7 +1,7 @@
 #ifndef CRYPTO_RSA_DECRYPTSTRATEGY_H
 #define CRYPTO_RSA_DECRYPTSTRATEGY_H
 
-#include "rsa_types.h"
+#include "Crypto/rsa_types.h"
 
 namespace Crypto {
 

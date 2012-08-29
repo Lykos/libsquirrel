@@ -1,8 +1,8 @@
 #ifndef CRYPTO_CBC_MAC_H
 #define CRYPTO_CBC_MAC_H
 
-#include "cbc_encrypter.h"
-#include "cbc_types.h"
+#include "Crypto/cbc_encrypter.h"
+#include "Crypto/cbc_types.h"
 #include <cstring>
 
 namespace Crypto {

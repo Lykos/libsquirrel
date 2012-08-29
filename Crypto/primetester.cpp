@@ -1,5 +1,5 @@
 #include "primetester.h"
-#include "arithmetichelper.h"
+#include "DataStructures/arithmetichelper.h"
 #include <boost/random/mersenne_twister.hpp>
 
 namespace Crypto {

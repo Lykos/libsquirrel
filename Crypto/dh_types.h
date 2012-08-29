@@ -1,7 +1,7 @@
 #ifndef CRYPTO_DH_TYPES_H
 #define CRYPTO_DH_TYPES_H
 
-#include "longint.h"
+#include "DataStructures/longint.h"
 
 namespace Crypto {
 

@@ -1,8 +1,8 @@
 #ifndef CRYPTO_RSA_TYPES_H
 #define CRYPTO_RSA_TYPES_H
 
-#include "longint.h"
-#include "keypair.h"
+#include "DataStructures/longint.h"
+#include "Crypto/keypair.h"
 
 namespace Crypto {
 

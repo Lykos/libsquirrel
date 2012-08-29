@@ -9,7 +9,7 @@ QT       -= core gui
 TARGET = DataStructures
 TEMPLATE = lib
 CONFIG += warn_on
-QMAKE_CXXFLAGS += -std=c++0x
+QMAKE_CXXFLAGS += -std=c++11
 
 DEFINES += DATASTRUCTURES_LIBRARY
 
@@ -44,6 +44,10 @@ HEADERS += \
     polynomial.h \
     arithmetichelper.h \
     uniformlongintdistribution.h
+
+header_files.files = $$HEADERS
+header_files.path = /usr/local/include/DataStructures
+INSTALLS += header_files
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

@@ -1,7 +1,7 @@
 #ifndef TREAPTEST_H
 #define TREAPTEST_H
 
-#include "treap.h"
+#include "DataStructures/treap.h"
 #include "treetest.h"
 
 class TreapTest : public QObject, public TreeTest<DataStructures::Treap<int> >

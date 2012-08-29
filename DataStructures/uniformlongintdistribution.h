@@ -36,9 +36,9 @@ namespace DataStructures {
 
     index_type m_size;
 
-    std::uniform_int_distribution<LongInt::part_type> m_first_distribution;
+    boost::random::uniform_int_distribution<LongInt::part_type> m_first_distribution;
 
-    std::uniform_int_distribution<LongInt::part_type> m_part_distribution;
+    boost::random::uniform_int_distribution<LongInt::part_type> m_part_distribution;
 
   };
 

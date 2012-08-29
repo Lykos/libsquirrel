@@ -1,7 +1,7 @@
 #include "dhtest.h"
-#include "dh_constants.h"
-#include "primetester.h"
-#include "longint.h"
+#include "Crypto/dh_constants.h"
+#include "Crypto/primetester.h"
+#include "DataStructures/longint.h"
 #include <QtTest/QTest>
 
 using namespace Crypto;

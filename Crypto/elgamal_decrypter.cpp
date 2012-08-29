@@ -1,5 +1,5 @@
 #include "elgamal_decrypter.h"
-#include "arithmetichelper.h"
+#include "DataStructures/arithmetichelper.h"
 #include "elgamal_converter.h"
 
 namespace Crypto {

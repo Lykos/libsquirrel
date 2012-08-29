@@ -1,9 +1,9 @@
 #ifndef CRYPTO_ELGAMAL_DECRYPTER_H
 #define CRYPTO_ELGAMAL_DECRYPTER_H
 
-#include "Crypto_global.h"
-#include "elgamal_types.h"
-#include "longintconverter.h"
+#include "Crypto/Crypto_global.h"
+#include "Crypto/elgamal_types.h"
+#include "Crypto/longintconverter.h"
 
 namespace Crypto {
 

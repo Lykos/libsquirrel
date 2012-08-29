@@ -1,10 +1,10 @@
 #ifndef CRYPTO_DH_KEYEXCHANGE_H
 #define CRYPTO_DH_KEYEXCHANGE_H
 
-#include "Crypto_global.h"
-#include "dh_converter.h"
-#include "dh_types.h"
-#include "dh_keygenerator.h"
+#include "Crypto/Crypto_global.h"
+#include "Crypto/dh_converter.h"
+#include "Crypto/dh_types.h"
+#include "Crypto/dh_keygenerator.h"
 
 namespace Crypto {
 

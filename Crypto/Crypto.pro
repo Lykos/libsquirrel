@@ -9,7 +9,7 @@ QT       -= gui
 TARGET = Crypto
 TEMPLATE = lib
 CONFIG += warn_on
-QMAKE_CXXFLAGS += -std=c++0x
+QMAKE_CXXFLAGS += -std=c++11
 
 DEFINES += CRYPTO_LIBRARY
 
@@ -75,6 +75,10 @@ HEADERS +=\
     dh_keyexchange.h \
     sha2hasher.h
 
+header_files.files = $$HEADERS
+header_files.path = /usr/local/include/Crypto
+INSTALLS += header_files
+
 symbian {
     MMP_RULES += EXPORTUNFROZEN
     TARGET.UID3 = 0xE86CA0F1
@@ -95,6 +99,7 @@ unix:!symbian {
 }
 
 unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
+LIBS += -lboost_random
 
-INCLUDEPATH += $$PWD/../DataStructures
+INCLUDEPATH += $$PWD/..
 DEPENDPATH += $$PWD/../DataStructures

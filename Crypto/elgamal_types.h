@@ -1,8 +1,8 @@
 #ifndef CRYPTO_ELGAMAL_TYPES_H
 #define CRYPTO_ELGAMAL_TYPES_H
 
-#include "dh_types.h"
-#include "keypair.h"
+#include "Crypto/dh_types.h"
+#include "Crypto/keypair.h"
 
 namespace Crypto {
 

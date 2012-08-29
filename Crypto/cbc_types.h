@@ -1,7 +1,7 @@
 #ifndef CRYPTO_CBC_TYPES_H
 #define CRYPTO_CBC_TYPES_H
 
-#include "Crypto_global.h"
+#include "Crypto/Crypto_global.h"
 
 namespace Crypto {
 

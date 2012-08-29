@@ -1,5 +1,5 @@
-#ifndef DATASTRUCTURES_H
-#define DATASTRUCTURES_H
+#ifndef RUBY_DATASTRUCTURES_H
+#define RUBY_DATASTRUCTURES_H
 
 #include <ruby.h>
 #include "longint_interface.h"
@@ -14,4 +14,4 @@ inline VALUE unpack_bignum(packed_bignum_t packed_bignum);
 
 void Init_RubyDataStructures(void);
 
-#endif // DATASTRUCTURES_H
+#endif // RUBY_DATASTRUCTURES_H

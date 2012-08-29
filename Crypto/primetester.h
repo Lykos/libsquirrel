@@ -1,12 +1,12 @@
 #ifndef CRYPTO_PRIMETESTER_H
 #define CRYPTO_PRIMETESTER_H
 
-#include "longint.h"
-#include "arraylist.h"
-#include "Crypto_global.h"
-#include "uniformlongintdistribution.h"
-#include "primes.h"
-#include "treap.h"
+#include "DataStructures/longint.h"
+#include "DataStructures/arraylist.h"
+#include "Crypto/Crypto_global.h"
+#include "DataStructures/uniformlongintdistribution.h"
+#include "Crypto/primes.h"
+#include "DataStructures/treap.h"
 #include <cstring>
 
 namespace Crypto {

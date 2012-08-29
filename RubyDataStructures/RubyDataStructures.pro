@@ -15,12 +15,14 @@ DEFINES += RUBYDATASTRUCTURES_LIBRARY
 SOURCES += \
     RubyDataStructures.c \
     longint_interface.cpp \
-    crypto_interface.cpp
+    crypto_interface.cpp \
+    RubyCrypto.c
 
 HEADERS +=\
     RubyDataStructures.h \
     longint_interface.h \
-    crypto_interface.h
+    crypto_interface.h \
+    RubyCrypto.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN
@@ -43,13 +45,13 @@ unix:!symbian {
 
 unix:!macx:!symbian: LIBS += -L$$PWD/../Crypto-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lCrypto
 
-INCLUDEPATH += $$PWD/../Crypto
+INCLUDEPATH += $$PWD/..
 DEPENDPATH += $$PWD/../Crypto
 
 unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
 
 
-INCLUDEPATH += $$PWD/../DataStructures
+INCLUDEPATH += $$PWD/..
 DEPENDPATH += $$PWD/../DataStructures
 
 unix|win32: LIBS += -lruby

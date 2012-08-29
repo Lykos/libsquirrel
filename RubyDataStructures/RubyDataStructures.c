@@ -1,7 +1,7 @@
+#include <limits.h>
+#include <assert.h>
+#include <string.h>
 #include "RubyDataStructures.h"
-#include "limits.h"
-#include "assert.h"
-#include "string.h"
 
 #define CTC(X) ({ extern int __attribute__((error("assertion failure: '" #X "' not true"))) compile_time_check(); ((X)?0:compile_time_check()),0; })
 #define RBIGNUM_DIGITS_SET(b, v, l) \

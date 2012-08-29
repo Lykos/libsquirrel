@@ -1,7 +1,7 @@
 #ifndef ARRAYLISTTEST_H
 #define ARRAYLISTTEST_H
 #include <QtTest/QtTest>
-#include "arraylist.h"
+#include "DataStructures/arraylist.h"
 
 class ArrayListTest : public QObject
 {

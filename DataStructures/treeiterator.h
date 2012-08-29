@@ -63,7 +63,7 @@ namespace DataStructures {
   template <typename T, typename Node, typename Tree>
   inline TreeIterator<T, Node, Tree>::operator TreeIterator<T const, Node const, Tree const>() const
   {
-    return TreeIterator<T const, Node const, Tree const>(*this);
+    return TreeIterator<T const, Node const, Tree const>(BaseIt::m_container, BaseIt::m_index);
   }
 
   template <typename T, typename Node, typename Tree>

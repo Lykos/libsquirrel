@@ -1,10 +1,10 @@
 #ifndef CRYPTO_ELGAMAL_ENCRYPTER_H
 #define CRYPTO_ELGAMAL_ENCRYPTER_H
 
-#include "Crypto_global.h"
-#include "elgamal_types.h"
-#include "uniformlongintdistribution.h"
-#include "longintconverter.h"
+#include "Crypto/Crypto_global.h"
+#include "Crypto/elgamal_types.h"
+#include "DataStructures/uniformlongintdistribution.h"
+#include "Crypto/longintconverter.h"
 #include <boost/random/random_device.hpp>
 
 namespace Crypto {

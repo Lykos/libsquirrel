@@ -1,8 +1,8 @@
 #include "cbctest.h"
-#include "aes_encrypter.h"
-#include "aes_decrypter.h"
-#include "cbc_encrypter.h"
-#include "cbc_decrypter.h"
+#include "Crypto/aes_encrypter.h"
+#include "Crypto/aes_decrypter.h"
+#include "Crypto/cbc_encrypter.h"
+#include "Crypto/cbc_decrypter.h"
 #include <iostream>
 #include <QtTest/QTest>
 #include <boost/random/uniform_int_distribution.hpp>

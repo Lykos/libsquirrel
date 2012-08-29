@@ -11,7 +11,7 @@ QT       -= gui
 TARGET = crypto_tests
 CONFIG   += console warn_on
 CONFIG   -= app_bundle
-QMAKE_CXXFLAGS += -std=c++0x
+QMAKE_CXXFLAGS += -std=c++11
 
 TEMPLATE = app
 
@@ -36,10 +36,10 @@ HEADERS += \
 
 unix:!macx:!symbian: LIBS += -L$$PWD/../Crypto-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lCrypto
 
-INCLUDEPATH += $$PWD/../Crypto
+INCLUDEPATH += $$PWD/..
 DEPENDPATH += $$PWD/../Crypto
 
 unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
 
-INCLUDEPATH += $$PWD/../DataStructures
+INCLUDEPATH += $$PWD/..
 DEPENDPATH += $$PWD/../DataStructures

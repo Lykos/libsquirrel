@@ -1,8 +1,8 @@
 #include "rsatest.h"
-#include "rsa_keygenerator.h"
-#include "rsa_encrypter.h"
-#include "rsa_decrypter.h"
-#include "uniformlongintdistribution.h"
+#include "Crypto/rsa_keygenerator.h"
+#include "Crypto/rsa_encrypter.h"
+#include "Crypto/rsa_decrypter.h"
+#include "DataStructures/uniformlongintdistribution.h"
 #include <boost/random/mersenne_twister.hpp>
 #include <QtTest/QtTest>
 #include <iostream>

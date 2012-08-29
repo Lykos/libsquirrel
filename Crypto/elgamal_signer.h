@@ -1,10 +1,10 @@
 #ifndef CRYPTO_ELGAMAL_SIGNER_H
 #define CRYPTO_ELGAMAL_SIGNER_H
 
-#include "elgamal_types.h"
-#include "uniformlongintdistribution.h"
-#include "longintconverter.h"
-#include "sha2hasher.h"
+#include "Crypto/elgamal_types.h"
+#include "DataStructures/uniformlongintdistribution.h"
+#include "Crypto/longintconverter.h"
+#include "Crypto/sha2hasher.h"
 #include <boost/random/random_device.hpp>
 
 namespace Crypto {

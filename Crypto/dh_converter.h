@@ -1,8 +1,8 @@
 #ifndef CRYPTO_DH_CONVERTER_H
 #define CRYPTO_DH_CONVERTER_H
 
-#include "dh_types.h"
-#include "longintconverter.h"
+#include "Crypto/dh_types.h"
+#include "Crypto/longintconverter.h"
 
 namespace Crypto {
 

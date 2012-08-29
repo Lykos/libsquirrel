@@ -2,7 +2,7 @@
 #define TESTRSA_H
 
 #include <QObject>
-#include "rsa_types.h"
+#include "Crypto/rsa_types.h"
 
 class RSATest : public QObject
 {

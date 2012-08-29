@@ -1,8 +1,8 @@
 #ifndef CRYPTO_LONGINTCONVERTER_H
 #define CRYPTO_LONGINTCONVERTER_H
 
-#include "Crypto_global.h"
-#include "longint.h"
+#include "Crypto/Crypto_global.h"
+#include "DataStructures/longint.h"
 
 namespace Crypto {
   

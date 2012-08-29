@@ -1,8 +1,7 @@
 #ifndef CRYPTO_PRIMES_H
 #define CRYPTO_PRIMES_H
 
-#include "longint.h"
-#include "Crypto_global.h"
+#include "Crypto/Crypto_global.h"
 
 namespace Crypto {
 

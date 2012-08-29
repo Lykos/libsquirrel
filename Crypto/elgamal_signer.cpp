@@ -1,8 +1,8 @@
 #include "elgamal_signer.h"
 #include "elgamal_types.h"
 #include "elgamal_converter.h"
-#include "arithmetichelper.h"
-#include "longint.h"
+#include "DataStructures/arithmetichelper.h"
+#include "DataStructures/longint.h"
 #include "sha2hasher.h"
 
 namespace Crypto {

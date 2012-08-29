@@ -1,5 +1,5 @@
 #include "sha2test.h"
-#include "sha2hasher.h"
+#include "Crypto/sha2hasher.h"
 #include <iostream>
 #include <QtTest/QTest>
 

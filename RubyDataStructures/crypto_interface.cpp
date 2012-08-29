@@ -1,17 +1,18 @@
 #include "crypto_interface.h"
-#include "elgamal_encrypter.h"
-#include "elgamal_decrypter.h"
-#include "elgamal_verifier.h"
-#include "elgamal_signer.h"
-#include "cbc_encrypter.h"
-#include "cbc_decrypter.h"
-#include "cbc_mac.h"
-#include "aes_encrypter.h"
-#include "aes_decrypter.h"
-#include "dh_keyexchange.h"
-#include "sha2hasher.h"
+#include "Crypto/elgamal_encrypter.h"
+#include "Crypto/elgamal_decrypter.h"
+#include "Crypto/elgamal_verifier.h"
+#include "Crypto/elgamal_signer.h"
+#include "Crypto/cbc_encrypter.h"
+#include "Crypto/cbc_decrypter.h"
+#include "Crypto/cbc_mac.h"
+#include "Crypto/aes_encrypter.h"
+#include "Crypto/aes_decrypter.h"
+#include "Crypto/dh_keyexchange.h"
+#include "Crypto/sha2hasher.h"
 #include <cstring>
 #include <boost/random/random_device.hpp>
+#include <typeinfo>
 
 extern "C" {
 
@@ -29,7 +30,7 @@ typedef CBC::MAC<AES::Encrypter> CBCAESSigner;
 
 typedef CBC::MAC<AES::Encrypter> CBCAESVerifier;
 
-static std::random_device random_device;
+static boost::random::random_device random_device;
 
 // Constructors
 Crypto_cbc_elgamal_encrypter_t Crypto_init_cbc_elgamal_encrypter(const byte_t* raw_public_key, uint key_length, const byte_t* initial_state, number_size_t state_length)
