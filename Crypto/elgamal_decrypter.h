@@ -31,7 +31,9 @@ namespace Crypto {
 
       exponent_t m_exponent;
 
-      number_size_t m_plain_length, m_exponent_length, m_cipher_length;
+      // cipher_part_length is the length of the encrypted text itself, cipher_length also includes
+      // the key part, which also has to be sent
+      number_size_t m_plain_length, m_key_part_length, m_cipher_part_length, m_cipher_length;
 
       LongIntConverter m_converter;
 

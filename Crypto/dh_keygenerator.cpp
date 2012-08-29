@@ -8,7 +8,8 @@ namespace Crypto {
 
     bool KeyGenerator::valid_key_bits(uint number_bits) const
     {
-      return number_bits == 1024
+      return number_bits == 512
+          || number_bits == 1024
           || number_bits == 2048
           || number_bits == 2560
           || number_bits == 3072
@@ -21,7 +22,11 @@ namespace Crypto {
     {
       PREC(KeyLength, valid_key_bits(number_bits));
       number_t modulus, generator;
-      if (number_bits == 1024) {
+      // TODO Do this automatically.
+      if (number_bits == 512) {
+        modulus = diffie_hellman_modulus_512;
+        generator = diffie_hellman_generator_512;
+      } else if (number_bits == 1024) {
         modulus = diffie_hellman_modulus_1024;
         generator = diffie_hellman_generator_1024;
       } else if (number_bits == 2048) {

@@ -7,6 +7,8 @@ namespace Crypto {
 
   namespace DH {
 
+    extern const number_t diffie_hellman_modulus_512;
+
     extern const number_t diffie_hellman_modulus_1024;
 
     extern const number_t diffie_hellman_modulus_2048_1;
@@ -24,6 +26,8 @@ namespace Crypto {
     extern const number_t diffie_hellman_modulus_4096;
 
     extern const number_t diffie_hellman_modulus_8192;
+
+    extern const number_t diffie_hellman_generator_512;
 
     extern const number_t diffie_hellman_generator_1024;
 

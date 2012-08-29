@@ -4,10 +4,13 @@ namespace Crypto {
 
   namespace DH {
 
+    const number_t diffie_hellman_modulus_512 = number_t("0xFFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E088A67CC74"
+                                                         "020BBEA63B139B22514A08798E3404DDEF9519B3CD3A439DFFFFFFFFFFFFFFFF");
+
     const number_t diffie_hellman_modulus_1024 = number_t("0xF488FD584E49DBCD20B49DE49107366B336C380D451D0F7C88B31C7C5B2D8EF6"
-                                                            "F3C923C043F0A55B188D8EBB558CB85D38D334FD7C175743A31D186CDE33212C"
-                                                            "B52AFF3CE1B1294018118D7C84A70A72D686C40319C807297ACA950CD9969FAB"
-                                                            "D00A509B0246D3083D66A45D419F9C7CBD894B221926BAABA25EC355E92F78C7");
+                                                          "F3C923C043F0A55B188D8EBB558CB85D38D334FD7C175743A31D186CDE33212C"
+                                                          "B52AFF3CE1B1294018118D7C84A70A72D686C40319C807297ACA950CD9969FAB"
+                                                          "D00A509B0246D3083D66A45D419F9C7CBD894B221926BAABA25EC355E92F78C7");
 
     const number_t diffie_hellman_modulus_2048_1 = number_t("0x9aebdbd054a6cfc9db5bcb8f3eaa82c9d8b925018b77954013e170025a7f420b"
                                                             "eb57b7b905869b53a24d08ce5cb76dc812e8081e4140704e0d3875dee731962f"
@@ -124,6 +127,8 @@ namespace Crypto {
                                                           "dea62e98a1ea40943c998142a9947a13eef3e1531506a30b369b399bf22868cf"
                                                           "c79684e07e8dad0a936d8db81e876f3711dc1ea0c53fc19e234f00f826ccc2f8"
                                                           "8aa0e2ae60eebaff8a98977924c2054429454ca000c5c2aa22fccfc5e2fdd553");
+
+    const number_t diffie_hellman_generator_512 = 5;
 
     const number_t diffie_hellman_generator_1024 = 5;
 

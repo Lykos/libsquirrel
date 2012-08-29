@@ -21,7 +21,8 @@ namespace Crypto {
       m_exponent_distribution (ZERO, (m_modulus >> 1) - TWO),
       m_plain_length (LongIntConverter::fitting_length(m_modulus)),
       m_key_part_length (LongIntConverter::required_length(m_modulus)),
-      m_cipher_length (m_key_part_length + sizeof(number_t::part_type) + m_plain_length)
+      m_cipher_part_length (LongIntConverter::required_length(m_modulus)),
+      m_cipher_length (m_key_part_length + m_cipher_part_length)
     {}
 
     Encrypter::Encrypter(const elgamal_byte_t* raw_public_key, number_size_t length)
@@ -34,7 +35,8 @@ namespace Crypto {
       m_exponent_distribution = UniformLongIntDistribution(ZERO, (m_modulus >> 1) - TWO);
       m_plain_length = LongIntConverter::fitting_length(m_modulus);
       m_key_part_length = LongIntConverter::required_length(m_modulus);
-      m_cipher_length = m_key_part_length + sizeof(number_t::part_type) + m_plain_length;
+      m_cipher_part_length = LongIntConverter::required_length(m_modulus);
+      m_cipher_length = m_key_part_length + m_cipher_part_length;
     }
 
     Encrypter::Encrypter(const Encrypter& other):
@@ -44,6 +46,7 @@ namespace Crypto {
       m_exponent_distribution (other.m_exponent_distribution),
       m_plain_length (other.m_plain_length),
       m_key_part_length (other.m_key_part_length),
+      m_cipher_part_length (other.m_cipher_part_length),
       m_cipher_length (other.m_cipher_length)
     {
     }
@@ -53,9 +56,10 @@ namespace Crypto {
       m_generator (std::move(other.m_generator)),
       m_gen_power (std::move(other.m_gen_power)),
       m_exponent_distribution (std::move(other.m_exponent_distribution)),
-      m_plain_length (std::move(other.m_plain_length)),
-      m_key_part_length (std::move(other.m_key_part_length)),
-      m_cipher_length (std::move(other.m_cipher_length))
+      m_plain_length (other.m_plain_length),
+      m_key_part_length (other.m_key_part_length),
+      m_cipher_part_length (other.m_cipher_part_length),
+      m_cipher_length (other.m_cipher_length)
     {
     }
 
@@ -70,6 +74,7 @@ namespace Crypto {
       m_exponent_distribution = other.m_exponent_distribution;
       m_plain_length = other.m_plain_length;
       m_key_part_length = other.m_key_part_length;
+      m_cipher_part_length = other.m_cipher_part_length;
       m_cipher_length = other.m_cipher_length;
       return *this;
     }
@@ -85,6 +90,7 @@ namespace Crypto {
       m_exponent_distribution = std::move(other.m_exponent_distribution);
       m_plain_length = other.m_plain_length;
       m_key_part_length = other.m_key_part_length;
+      m_cipher_part_length = other.m_cipher_part_length;
       m_cipher_length = other.m_cipher_length;
       return *this;
     }
@@ -96,11 +102,14 @@ namespace Crypto {
       // Generate additional key part
       exponent_t exponent = m_exponent_distribution(m_random_generator);
       number_t own_gen_power = m_generator.pow_mod(exponent, m_modulus);
+
       // Calculate encryption key
       number_t key = m_gen_power.pow_mod(exponent, m_modulus);
       number_t key_inv = key.mult_inv_mod(m_modulus);
+
       // encrypt
-      return {(plain * key_inv) % m_modulus, own_gen_power};
+      number_t cipher = (plain * key_inv) % m_modulus;
+      return {cipher, own_gen_power};
     }
 
     void Encrypter::encrypt(const elgamal_byte_t* plain, elgamal_byte_t* cipher)
@@ -112,8 +121,8 @@ namespace Crypto {
       cipher_t cipher_pair = encrypt(plain_number);
 
       // Convert back back
-      m_converter.write_number(cipher_pair.cipher, cipher, m_plain_length + sizeof(number_t::part_type));
-      m_converter.write_number(cipher_pair.gen_power, cipher + m_plain_length + sizeof(number_t::part_type), m_key_part_length);
+      m_converter.write_number(cipher_pair.cipher, cipher, m_cipher_part_length);
+      m_converter.write_number(cipher_pair.gen_power, cipher + m_cipher_part_length, m_key_part_length);
     }
     
   } // namespace Elgamal

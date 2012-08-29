@@ -1,12 +1,11 @@
 #ifndef READNUMBER_MACRO_H
 #define READNUMBER_MACRO_H
 
-#define READ_NUMBER(errll, errl, erra, var, raw) \
+#define READ_NUMBER(errll, errl, var, raw) \
   number_t var;\
 { \
   PREC(errll, length >= length_length); \
   number_size_t var_length = read_length(raw); \
-  PREC(erra, length % m_converter.alignment() == 0); \
   raw += length_length; \
   length -= length_length; \
   PREC(errl, length >= var_length); \

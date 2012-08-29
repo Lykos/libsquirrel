@@ -138,8 +138,10 @@ namespace DataStructures {
     m_content (length / sizeof(part_type) + 1, 0)
   {
     for (index_type i = 0; i < length; ++i) {
-      m_content[i / sizeof(part_type)] |= parts[i] << (i % sizeof(part_type));
+      part_type c = parts[i];
+      m_content[i / sizeof(part_type)] |= c << CHAR_BIT * (i % sizeof(part_type));
     }
+    remove_zeros();
   }
 
   LongInt::LongInt(const std::string& numerical_string)
@@ -277,7 +279,7 @@ namespace DataStructures {
     }
   }
 
-  index_type LongInt::write(char* dest) const throw()
+  index_type LongInt::write(u_int8_t* dest) const throw()
   {
     for (index_type i = 0; i < size() - 1; ++i) {
       for (uint j = 0; j < sizeof(part_type); ++j) {

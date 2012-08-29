@@ -2,6 +2,7 @@
 #define CRYPTO_LONGINTCONVERTER_H
 
 #include "Crypto/Crypto_global.h"
+#include "Crypto/preconditionviolation.h"
 #include "DataStructures/longint.h"
 
 namespace Crypto {
@@ -19,13 +20,9 @@ namespace Crypto {
     // Bytes required to store this number
     static number_size_t required_length(const DataStructures::LongInt& number);
 
-    number_size_t alignment() const throw() { return sizeof(unsigned int); }
-
     DataStructures::LongInt read_number(const u_int8_t* text, number_size_t length) const;
 
-    number_size_t number_length(const DataStructures::LongInt& number) const;
-
-    void write_number(const DataStructures::LongInt& number, u_int8_t* text, number_size_t length) const;
+    void write_number(const DataStructures::LongInt& number, u_int8_t* text, number_size_t length) const throw(PreconditionViolation);
   };
   
 } // namespace Crypto

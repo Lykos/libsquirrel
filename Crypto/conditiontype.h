@@ -32,16 +32,7 @@ namespace Crypto {
     NoOtherPartSet = 24,
     KeyNotReady = 25,
     StateLength = 26,
-    CipherAlignment = 27,
-    NumberAlignment = 28,
-    GroupModulusAlignment = 29,
-    GroupGeneratorAlignment = 30,
-    PublicKeyModulusAlignment = 31,
-    PublicKeyGeneratorAlignment = 32,
-    PublicKeyGenPowerAlignment = 33,
-    PrivateKeyModulusAlignment = 34,
-    PrivateKeyGeneratorAlignment = 35,
-    PrivateKeyExponentAlignment = 36
+    CipherAlignment = 27
   } ConditionType;
 
 #ifdef __cplusplus

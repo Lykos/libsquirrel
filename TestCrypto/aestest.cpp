@@ -1,6 +1,7 @@
 #include "aestest.h"
 #include "Crypto/aes_encrypter.h"
 #include "Crypto/aes_decrypter.h"
+#include "Crypto/conditiontype.h"
 #include "Crypto/preconditionviolation.h"
 #include <iostream>
 #include <QtTest/QTest>
@@ -30,6 +31,6 @@ void AESTest::test_exception()
     Encrypter enc (key, 3);
     QFAIL("No exception after invalid key length.");
   } catch (PreconditionViolation &e) {
-    QCOMPARE(e.get_type(), PreconditionViolation::ConditionType::KeyLength);
+    QCOMPARE(e.get_type(), ConditionType::KeyLength);
   }
 }

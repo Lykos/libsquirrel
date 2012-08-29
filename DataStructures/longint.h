@@ -13,7 +13,7 @@ namespace DataStructures {
 
   std::istream& operator>>(std::istream& in, LongInt& longInt);
 
-  inline index_type log2(const LongInt& number);
+  index_type log2(const LongInt& number);
 
   class DATASTRUCTURESSHARED_EXPORT LongInt
   {
@@ -159,7 +159,7 @@ namespace DataStructures {
 
     inline index_type byte_size() const throw() { return log2(*this) / sizeof(part_type) + 1; }
 
-    index_type write(char* dest) const throw();
+    index_type write(u_int8_t* dest) const throw();
 
     static const index_type PART_SIZE = CHAR_BIT * sizeof(part_type);
 
