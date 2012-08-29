@@ -13,6 +13,8 @@ namespace Crypto {
 
     typedef u_int32_t number_size_t;
 
+    number_size_t alignment() const throw() { return sizeof(unsigned int); }
+
     DataStructures::LongInt read_number(const u_int8_t* text, number_size_t length) const;
 
     number_size_t number_length(const DataStructures::LongInt& number) const;

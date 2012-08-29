@@ -1,6 +1,6 @@
-#include "elgamal_encrypter.h"
-#include "elgamal_converter.h"
-#include "longintconverter.h"
+#include "Crypto/elgamal_encrypter.h"
+#include "Crypto/elgamal_converter.h"
+#include "Crypto/longintconverter.h"
 
 namespace Crypto {
 

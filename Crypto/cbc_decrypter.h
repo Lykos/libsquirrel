@@ -3,7 +3,9 @@
 
 #include "Crypto/Crypto_global.h"
 #include "Crypto/cbc_types.h"
+#include "Crypto/preconditionviolation.h"
 #include <cstring>
+#define PREC_STATE_LENGTH() PREC(StateLength, length >= state_length());
 
 namespace std {
 
@@ -60,24 +62,24 @@ namespace Crypto {
     };
 
     template <typename BlockCipher>
-    inline Decrypter<BlockCipher>::Decrypter(BlockCipher&& block_cipher, const cbc_byte_t* initial_state, uint state_length):
+    inline Decrypter<BlockCipher>::Decrypter(BlockCipher&& block_cipher, const cbc_byte_t* initial_state, uint length):
       m_block_cipher (block_cipher),
       m_plain_block_size (block_cipher.plain_block_size()),
       m_cipher_block_size (block_cipher.cipher_block_size()),
       m_state (new cbc_byte_t[m_plain_block_size])
     {
-      assert(state_length >= m_plain_block_size);
+      PREC_STATE_LENGTH();
       memcpy(m_state, initial_state, m_plain_block_size);
     }
 
     template <typename BlockCipher>
-    inline Decrypter<BlockCipher>::Decrypter(const BlockCipher& block_cipher, const cbc_byte_t* initial_state, uint state_length):
+    inline Decrypter<BlockCipher>::Decrypter(const BlockCipher& block_cipher, const cbc_byte_t* initial_state, uint length):
       m_block_cipher (block_cipher),
       m_plain_block_size (block_cipher.plain_block_size()),
       m_cipher_block_size (block_cipher.cipher_block_size()),
       m_state (new cbc_byte_t[m_plain_block_size])
     {
-      assert(state_length >= m_plain_block_size);
+      PREC_STATE_LENGTH();
       memcpy(m_state, initial_state, m_plain_block_size);
     }
 
@@ -136,7 +138,7 @@ namespace Crypto {
     template <typename BlockCipher>
     inline ulong Decrypter<BlockCipher>::max_plain_length(ulong cipher_length) const
     {
-      assert(cipher_length % m_cipher_block_size == 0);
+      PREC(CipherAlignment, cipher_length % m_cipher_block_size == 0);
       return cipher_length / m_cipher_block_size * m_plain_block_size - 1;
     }
 
@@ -180,8 +182,7 @@ namespace Crypto {
     template <typename BlockCipher>
     inline void Decrypter<BlockCipher>::set_state(const cbc_byte_t* new_state, uint length)
     {
-      assert(length >= m_plain_block_size);
-      memcpy(m_state, new_state, m_plain_block_size);
+      memcpy(m_state, new_state, state_length());
     }
 
   } // namespace CBC

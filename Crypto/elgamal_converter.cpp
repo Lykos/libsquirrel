@@ -8,9 +8,9 @@ namespace Crypto {
 
     public_key_t Converter::read_public_key(const elgamal_byte_t* raw_key, number_size_t length)
     {
-      READ_NUMBER(PublicKeyModulusLengthLength, PublicKeyModulusLength, modulus, raw_key);
-      READ_NUMBER(PublicKeyGeneratorLengthLength, PublicKeyGeneratorLength, generator, raw_key);
-      READ_NUMBER(PublicKeyGenPowerLengthLength, PublicKeyGenPowerLength, gen_power, raw_key);
+      READ_NUMBER(PublicKeyModulusLengthLength, PublicKeyModulusLength, PublicKeyModulusAlignment, modulus, raw_key);
+      READ_NUMBER(PublicKeyGeneratorLengthLength, PublicKeyGeneratorLength, PublicKeyGeneratorAlignment, generator, raw_key);
+      READ_NUMBER(PublicKeyGenPowerLengthLength, PublicKeyGenPowerLength, PublicKeyGenPowerAlignment, gen_power, raw_key);
       return {modulus, generator, gen_power};
     }
 
@@ -31,9 +31,9 @@ namespace Crypto {
 
     private_key_t Converter::read_private_key(const elgamal_byte_t* raw_key, number_size_t length)
     {
-      READ_NUMBER(PrivateKeyModulusLengthLength, PrivateKeyModulusLength, modulus, raw_key);
-      READ_NUMBER(PrivateKeyGeneratorLengthLength, PrivateKeyGeneratorLength, generator, raw_key);
-      READ_NUMBER(PrivateKeyGenPowerLengthLength, PrivateKeyGenPowerLength, exponent, raw_key);
+      READ_NUMBER(PrivateKeyModulusLengthLength, PrivateKeyModulusLength, PrivateKeyModulusAlignment, modulus, raw_key);
+      READ_NUMBER(PrivateKeyGeneratorLengthLength, PrivateKeyGeneratorLength, PrivateKeyGeneratorAlignment, generator, raw_key);
+      READ_NUMBER(PrivateKeyGenPowerLengthLength, PrivateKeyGenPowerLength, PrivateKeyExponentAlignment, exponent, raw_key);
       return {modulus, generator, exponent};
     }
 

@@ -7,9 +7,9 @@ namespace Crypto {
   
   LongInt LongIntConverter::read_number(const u_int8_t* text, number_size_t length) const
   {
+    PREC(NumberAlignment, length % alignment() == 0);
     LongInt::packed_longint_t packed;
     packed.sign = true;
-    assert(length % sizeof(unsigned int) == 0);
     packed.num_parts = length / sizeof(unsigned int);
     // If it is converted back using this class, it is no problem if the machine is actually big endian.
     packed.parts = (unsigned int*) text;

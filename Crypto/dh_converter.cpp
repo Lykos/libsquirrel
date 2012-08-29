@@ -11,8 +11,8 @@ namespace Crypto {
 
     group_t Converter::read_group(const dh_byte_t* raw_group, number_size_t length) const
     {
-      READ_NUMBER(GroupModulusLengthLength, GroupModulusLength, modulus, raw_group);
-      READ_NUMBER(GroupGeneratorLengthLength, GroupGeneratorLength, generator, raw_group);
+      READ_NUMBER(GroupModulusLengthLength, GroupModulusLength, GroupModulusAlignment, modulus, raw_group);
+      READ_NUMBER(GroupGeneratorLengthLength, GroupGeneratorLength, GroupGeneratorAlignment, generator, raw_group);
       return {modulus, generator};
     }
 
@@ -31,7 +31,7 @@ namespace Crypto {
 
     number_t Converter::read_number(const dh_byte_t* raw_number, number_size_t length) const
     {
-      READ_NUMBER(NumberLengthLength, NumberLength, number, raw_number);
+      READ_NUMBER(NumberLengthLength, NumberLength, NumberAlignment, number, raw_number);
       return number;
     }
 
