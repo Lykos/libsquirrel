@@ -3,6 +3,6 @@
 
 #include <ruby.h>
 
-void Init_RubyDataStructures(void);
+void Init_Crypto(void);
 
 #endif // RUBY_CRYPTO_H
