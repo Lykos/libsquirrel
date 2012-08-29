@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 // Error codes
-#define NO_ERROR 1
+#define NO_EXCEPTION 1
 #define UNKNOWN_EXCEPTION (-1)
 #define CAST_EXCEPTION (-2)
 #define KEY_EXCHANGE_NO_GROUP_CHOSEN (-12)
@@ -28,11 +28,6 @@ typedef char returned_bool_t;
 // Either the size or a negative error code
 typedef long int returned_message_size_t;
 
-typedef struct {
-  byte_t* cipher_key;
-  byte_t* mac_key;
-} Crypto_aes_key_pair_t;
-
 typedef void* Crypto_cbc_elgamal_encrypter_t;
 
 typedef void* Crypto_cbc_elgamal_decrypter_t;
@@ -53,28 +48,91 @@ typedef void* Crypto_dh_key_exchange_t;
 
 typedef void* Crypto_group_t;
 
-typedef void* Crypto_partial_key_t;
+extern const message_size_t Crypto_cbc_elgamal_encrypter_length;
+
+typedef struct {
+  Crypto_cbc_elgamal_encrypter_t encrypter;
+  error_code_t error_code;
+} returned_Crypto_cbc_elgamal_encrypter_t;
+
+typedef struct {
+  Crypto_cbc_elgamal_decrypter_t decrypter;
+  error_code_t error_code;
+} returned_Crypto_cbc_elgamal_decrypter_t;
+
+typedef struct {
+  Crypto_cbc_aes_encrypter_t encrypter;
+  error_code_t error_code;
+} returned_Crypto_cbc_aes_encrypter_t;
+
+
+typedef struct {
+  Crypto_cbc_aes_decrypter_t decrypter;
+  error_code_t error_code;
+} returned_Crypto_cbc_aes_decrypter_t;
+
+
+typedef struct {
+  Crypto_elgamal_signer_t signer;
+  error_code_t error_code;
+} returned_Crypto_elgamal_signer_t;
+
+
+typedef struct {
+  Crypto_elgamal_verifier_t verifier;
+  error_code_t error_code;
+} returned_Crypto_elgamal_verifier_t;
+
+
+typedef struct {
+  Crypto_cbc_aes_signer_t signer;
+  error_code_t error_code;
+} returned_Crypto_cbc_aes_signer_t;
+
+
+typedef struct {
+  Crypto_cbc_aes_verifier_t verifier;
+  error_code_t error_code;
+} returned_Crypto_cbc_aes_verifier_t;
+
+
+typedef struct {
+  Crypto_dh_key_exchange_t key_exchange;
+  error_code_t error_code;
+} returned_Crypto_dh_key_exchange_t;
+
+
+typedef struct {
+  Crypto_group_t group;
+  error_code_t error_code;
+} returned_Crypto_group_t;
+
+typedef struct {
+  byte_t* cipher_key;
+  byte_t* mac_key;
+  error_code_t error_code;
+} returned_Crypto_aes_key_pair_t;
 
 // Constructors
-Crypto_cbc_elgamal_encrypter_t Crypto_init_cbc_elgamal_encrypter(const byte_t* raw_public_key, number_size_t key_length, const byte_t* initial_state, number_size_t state_length);
+error_code_t Crypto_init_cbc_elgamal_encrypter(Crypto_cbc_elgamal_encrypter_t encrypter, const byte_t* raw_public_key, number_size_t key_length, const byte_t* initial_state, number_size_t state_length);
 
-Crypto_cbc_elgamal_decrypter_t Crypto_init_cbc_elgamal_decrypter(const byte_t* raw_private_key, number_size_t key_length, const byte_t* initial_state, number_size_t state_length);
+returned_Crypto_cbc_elgamal_decrypter_t Crypto_init_cbc_elgamal_decrypter(const byte_t* raw_private_key, number_size_t key_length, const byte_t* initial_state, number_size_t state_length);
 
-Crypto_cbc_aes_encrypter_t Crypto_init_cbc_aes_encrypter(const byte_t* cipher_key, number_size_t key_length, const byte_t* initial_state, number_size_t state_length);
+returned_Crypto_cbc_aes_encrypter_t Crypto_init_cbc_aes_encrypter(const byte_t* cipher_key, number_size_t key_length, const byte_t* initial_state, number_size_t state_length);
 
-Crypto_cbc_aes_decrypter_t Crypto_init_cbc_aes_decrypter(const byte_t* cipher_key, number_size_t key_length, const byte_t* initial_state, number_size_t state_length);
+returned_Crypto_cbc_aes_decrypter_t Crypto_init_cbc_aes_decrypter(const byte_t* cipher_key, number_size_t key_length, const byte_t* initial_state, number_size_t state_length);
 
-Crypto_elgamal_signer_t Crypto_init_elgamal_signer(const byte_t* raw_private_key, number_size_t key_length);
+returned_Crypto_elgamal_signer_t Crypto_init_elgamal_signer(const byte_t* raw_private_key, number_size_t key_length);
 
-Crypto_elgamal_verifier_t Crypto_init_elgamal_verifier(const byte_t* raw_public_key, number_size_t key_length);
+returned_Crypto_elgamal_verifier_t Crypto_init_elgamal_verifier(const byte_t* raw_public_key, number_size_t key_length);
 
-Crypto_cbc_aes_signer_t Crypto_init_cbc_aes_signer(const byte_t* mac_key, number_size_t key_length, const byte_t* initial_state, number_size_t state_length);
+returned_Crypto_cbc_aes_signer_t Crypto_init_cbc_aes_signer(const byte_t* mac_key, number_size_t key_length, const byte_t* initial_state, number_size_t state_length);
 
-Crypto_cbc_aes_verifier_t Crypto_init_cbc_aes_verifier(const byte_t* mac_key, number_size_t key_length, const byte_t* initial_state, number_size_t state_length);
+returned_Crypto_cbc_aes_verifier_t Crypto_init_cbc_aes_verifier(const byte_t* mac_key, number_size_t key_length, const byte_t* initial_state, number_size_t state_length);
 
-Crypto_dh_key_exchange_t Crypto_init_dh_key_exchange();
+returned_Crypto_dh_key_exchange_t Crypto_init_dh_key_exchange();
 
-Crypto_aes_key_pair_t Crypto_generate_aes_keys(const byte_t* secret, message_size_t secret_length);
+returned_Crypto_aes_key_pair_t Crypto_generate_aes_keys(const byte_t* secret, message_size_t secret_length);
 
 // Destructors
 error_code_t Crypto_deinit_cbc_elgamal_encrypter(Crypto_cbc_elgamal_encrypter_t encrypter);
@@ -94,8 +152,6 @@ error_code_t Crypto_deinit_cbc_aes_signer(Crypto_cbc_aes_signer_t signer);
 error_code_t Crypto_deinit_cbc_aes_verifier(Crypto_cbc_aes_verifier_t verifier);
 
 error_code_t Crypto_deinit_dh_key_exchange(Crypto_dh_key_exchange_t dh_key_exchange);
-
-error_code_t Crypto_deinit_aes_keys(Crypto_aes_key_pair_t key_pair);
 
 // Queries
 returned_message_size_t Crypto_cbc_elgamal_cipher_length(Crypto_cbc_elgamal_encrypter_t encrypter, message_size_t plain_length);

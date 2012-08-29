@@ -49,7 +49,7 @@ namespace Crypto {
 
       DataStructures::UniformLongIntDistribution m_exponent_distribution;
 
-      std::random_device m_random_generator;
+      boost::random::random_device m_random_generator;
 
       number_size_t m_plain_length, m_key_part_length, m_cipher_length;
 

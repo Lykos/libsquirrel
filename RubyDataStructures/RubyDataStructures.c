@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <string.h>
 #include "RubyDataStructures.h"
+#include "RubyCrypto.h"
 
 #define CTC(X) ({ extern int __attribute__((error("assertion failure: '" #X "' not true"))) compile_time_check(); ((X)?0:compile_time_check()),0; })
 #define RBIGNUM_DIGITS_SET(b, v, l) \
@@ -18,6 +19,7 @@ void Init_RubyDataStructures(void)
 {
   DataStructures = rb_define_class("DataStructures", rb_cObject);
   rb_define_method(DataStructures, "multiply", method_multiply, 2);
+  Init_RubyCrypto();
 }
 
 inline packed_bignum_t pack_bignum(VALUE bignum)

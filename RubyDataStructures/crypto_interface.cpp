@@ -32,103 +32,107 @@ typedef CBC::MAC<AES::Encrypter> CBCAESVerifier;
 
 static boost::random::random_device random_device;
 
+const message_size_t Crypto_cbc_elgamal_encrypter_length = sizeof(CBCElgamalEncrypter);
+
 // Constructors
-Crypto_cbc_elgamal_encrypter_t Crypto_init_cbc_elgamal_encrypter(const byte_t* raw_public_key, uint key_length, const byte_t* initial_state, number_size_t state_length)
+error_code_t Crypto_init_cbc_elgamal_encrypter(Crypto_cbc_elgamal_encrypter_t encrypter, const byte_t* raw_public_key, uint key_length, const byte_t* initial_state, number_size_t state_length)
 {
   try {
-    return new CBCElgamalEncrypter(Elgamal::Encrypter(raw_public_key, key_length), initial_state, state_length);
+    new(encrypter) CBCElgamalEncrypter(Elgamal::Encrypter(raw_public_key, key_length), initial_state, state_length);
+    return NO_EXCEPTION;
   } catch (...) {
-    return NULL;
+    return UNKNOWN_EXCEPTION;
   }
 }
 
-Crypto_cbc_elgamal_decrypter_t Crypto_init_cbc_elgamal_decrypter(const byte_t* raw_private_key, uint key_length, const byte_t* initial_state, number_size_t state_length)
+returned_Crypto_cbc_elgamal_decrypter_t Crypto_init_cbc_elgamal_decrypter(const byte_t* raw_private_key, uint key_length, const byte_t* initial_state, number_size_t state_length)
 {
   try {
-    return new CBCElgamalDecrypter(Elgamal::Decrypter(raw_private_key, key_length), initial_state, state_length);
+    return {new CBCElgamalDecrypter(Elgamal::Decrypter(raw_private_key, key_length), initial_state, state_length), NO_EXCEPTION};
   } catch (...) {
-    return NULL;
+    return {NULL, UNKNOWN_EXCEPTION};
   }
 }
 
-Crypto_cbc_aes_encrypter_t Crypto_init_cbc_aes_encrypter(const byte_t* cipher_key, uint key_length, const byte_t* initial_state, number_size_t state_length)
+returned_Crypto_cbc_aes_encrypter_t Crypto_init_cbc_aes_encrypter(const byte_t* cipher_key, uint key_length, const byte_t* initial_state, number_size_t state_length)
 {
   try {
-    return new CBCAESEncrypter(AES::Encrypter(cipher_key, key_length), initial_state, state_length);
+    return {new CBCAESEncrypter(AES::Encrypter(cipher_key, key_length), initial_state, state_length), NO_EXCEPTION};
   } catch (...) {
-    return NULL;
+    return {NULL, UNKNOWN_EXCEPTION};
   }
 }
 
-Crypto_cbc_aes_decrypter_t Crypto_init_cbc_aes_decrypter(const byte_t* cipher_key, uint key_length, const byte_t* initial_state, number_size_t state_length)
+returned_Crypto_cbc_aes_decrypter_t Crypto_init_cbc_aes_decrypter(const byte_t* cipher_key, uint key_length, const byte_t* initial_state, number_size_t state_length)
 {
   try {
-    return new CBCAESDecrypter(AES::Decrypter(cipher_key, key_length), initial_state, state_length);
+    return {new CBCAESDecrypter(AES::Decrypter(cipher_key, key_length), initial_state, state_length), NO_EXCEPTION};
   } catch (...) {
-    return NULL;
+    return {NULL, UNKNOWN_EXCEPTION};
   }
 }
 
-Crypto_elgamal_signer_t Crypto_init_elgamal_signer(const byte_t* raw_private_key, uint key_length)
+returned_Crypto_elgamal_signer_t Crypto_init_elgamal_signer(const byte_t* raw_private_key, uint key_length)
 {
   try {
-    return new Elgamal::Signer(raw_private_key, key_length);
+    return {new Elgamal::Signer(raw_private_key, key_length), NO_EXCEPTION};
   } catch (...) {
-    return NULL;
+    return {NULL, UNKNOWN_EXCEPTION};
   }
 }
 
-Crypto_elgamal_verifier_t Crypto_init_elgamal_verifier(const byte_t* raw_public_key, uint key_length)
+returned_Crypto_elgamal_verifier_t Crypto_init_elgamal_verifier(const byte_t* raw_public_key, uint key_length)
 {
   try {
-    return new Elgamal::Verifier(raw_public_key, key_length);
+    return {new Elgamal::Verifier(raw_public_key, key_length), NO_EXCEPTION};
   } catch (...) {
-    return NULL;
+    return {NULL, UNKNOWN_EXCEPTION};
   }
 }
 
-Crypto_cbc_aes_signer_t Crypto_init_cbc_aes_signer(const byte_t* mac_key, uint key_length, const byte_t* initial_state, number_size_t state_length)
+returned_Crypto_cbc_aes_signer_t Crypto_init_cbc_aes_signer(const byte_t* mac_key, uint key_length, const byte_t* initial_state, number_size_t state_length)
 {
   try {
-    return new CBCAESSigner(AES::Encrypter(mac_key, key_length), initial_state, state_length);
+    return {new CBCAESSigner(AES::Encrypter(mac_key, key_length), initial_state, state_length), NO_EXCEPTION};
   } catch (...) {
-    return NULL;
+    return {NULL, UNKNOWN_EXCEPTION};
   }
 }
 
-Crypto_cbc_aes_verifier_t Crypto_init_cbc_aes_verifier(const byte_t* mac_key, uint key_length, const byte_t* initial_state, number_size_t state_length)
+returned_Crypto_cbc_aes_verifier_t Crypto_init_cbc_aes_verifier(const byte_t* mac_key, uint key_length, const byte_t* initial_state, number_size_t state_length)
 {
   try {
-    return new CBCAESVerifier(AES::Encrypter(mac_key, key_length), initial_state, state_length);
+    return {new CBCAESVerifier(AES::Encrypter(mac_key, key_length), initial_state, state_length), NO_EXCEPTION};
   } catch (...) {
-    return NULL;
+    return {NULL, UNKNOWN_EXCEPTION};
   }
 }
 
-Crypto_dh_key_exchange_t Crypto_init_dh_key_exchange()
+returned_Crypto_dh_key_exchange_t Crypto_init_dh_key_exchange()
 {
   try {
-    return new DH::KeyExchange();
+    return {new DH::KeyExchange(), NO_EXCEPTION};
   } catch (...) {
-    return NULL;
+    return {NULL, UNKNOWN_EXCEPTION};
   }
 }
 
-Crypto_aes_key_pair_t Crypto_generate_aes_keys(const byte_t* secret, message_size_t secret_length)
+returned_Crypto_aes_key_pair_t Crypto_generate_aes_keys(const byte_t* secret, message_size_t secret_length)
 {
   try {
     // TODO This has to be exchanged since it might be insecure for some hash functions. (Probably not for SHA-2, though)
     byte_t digest[256];
     SHA2Hasher hasher;
     hasher.hash(secret, secret_length, digest + 0);
-    Crypto_aes_key_pair_t pair;
+    returned_Crypto_aes_key_pair_t pair;
     pair.cipher_key = new byte_t[128];
     pair.mac_key = new byte_t[128];
     memcpy(pair.cipher_key, digest + 0, 128);
     memcpy(pair.cipher_key, digest + 128, 128);
+    pair.error_code = NO_EXCEPTION;
     return pair;
   } catch (...) {
-    return {NULL, NULL};
+    return {NULL, NULL, UNKNOWN_EXCEPTION};
   }
 }
 
@@ -140,7 +144,7 @@ error_code_t Crypto_deinit_cbc_elgamal_encrypter(Crypto_cbc_elgamal_encrypter_t 
       return CAST_EXCEPTION;
     }
     delete static_cast<CBCElgamalEncrypter*>(encrypter);
-    return NO_ERROR;
+    return NO_EXCEPTION;
   } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
@@ -153,7 +157,7 @@ error_code_t Crypto_deinit_cbc_elgamal_decrypter(Crypto_cbc_elgamal_decrypter_t 
       return CAST_EXCEPTION;
     }
     delete static_cast<CBCElgamalDecrypter*>(decrypter);
-    return NO_ERROR;
+    return NO_EXCEPTION;
   } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
@@ -166,7 +170,7 @@ error_code_t Crypto_deinit_cbc_aes_encrypter(Crypto_cbc_aes_encrypter_t encrypte
       return CAST_EXCEPTION;
     }
     delete static_cast<CBCAESEncrypter*>(encrypter);
-    return NO_ERROR;
+    return NO_EXCEPTION;
   } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
@@ -179,7 +183,7 @@ error_code_t Crypto_deinit_cbc_aes_decrypter(Crypto_cbc_aes_decrypter_t decrypte
       return CAST_EXCEPTION;
     }
     delete static_cast<CBCAESDecrypter*>(decrypter);
-    return NO_ERROR;
+    return NO_EXCEPTION;
   } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
@@ -192,7 +196,7 @@ error_code_t Crypto_deinit_elgamal_signer(Crypto_elgamal_signer_t signer)
       return CAST_EXCEPTION;
     }
     delete static_cast<Elgamal::Signer*>(signer);
-    return NO_ERROR;
+    return NO_EXCEPTION;
   } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
@@ -205,7 +209,7 @@ error_code_t Crypto_deinit_elgamal_verifier(Crypto_elgamal_verifier_t verifier)
       return CAST_EXCEPTION;
     }
     delete static_cast<Elgamal::Verifier*>(verifier);
-    return NO_ERROR;
+    return NO_EXCEPTION;
   } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
@@ -218,7 +222,7 @@ error_code_t Crypto_deinit_cbc_aes_signer(Crypto_cbc_aes_signer_t signer)
       return CAST_EXCEPTION;
     }
     delete static_cast<CBCAESSigner*>(signer);
-    return NO_ERROR;
+    return NO_EXCEPTION;
   } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
@@ -231,7 +235,7 @@ error_code_t Crypto_deinit_cbc_aes_verifier(Crypto_cbc_aes_verifier_t verifier)
       return CAST_EXCEPTION;
     }
     delete static_cast<CBCAESVerifier*>(verifier);
-    return NO_ERROR;
+    return NO_EXCEPTION;
   } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
@@ -244,18 +248,7 @@ error_code_t Crypto_deinit_dh_key_exchange(Crypto_dh_key_exchange_t dh_key_excha
       return CAST_EXCEPTION;
     }
     delete static_cast<DH::KeyExchange*>(dh_key_exchange);
-    return NO_ERROR;
-  } catch (...) {
-    return UNKNOWN_EXCEPTION;
-  }
-}
-
-error_code_t Crypto_deinit_aes_keys(Crypto_aes_key_pair_t key_pair)
-{
-  try {
-    delete[] key_pair.cipher_key;
-    delete[] key_pair.mac_key;
-    return NO_ERROR;
+    return NO_EXCEPTION;
   } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
@@ -567,7 +560,7 @@ error_code_t Crypto_dh_key_exchange_choose_group(Crypto_dh_key_exchange_t key_ex
       return CAST_EXCEPTION;
     }
     static_cast<DH::KeyExchange*>(key_exchange)->choose_group(bits);
-    return NO_ERROR;
+    return NO_EXCEPTION;
   } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
@@ -616,7 +609,7 @@ returned_message_size_t Crypto_dh_key_exchange_set_other_gen_power(Crypto_dh_key
       return CAST_EXCEPTION;
     }
     static_cast<DH::KeyExchange*>(key_exchange)->read_other_part(raw_gen_power, length);
-    return NO_ERROR;
+    return NO_EXCEPTION;
   } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
@@ -629,7 +622,7 @@ returned_message_size_t Crypto_dh_key_exchange_set_group(Crypto_dh_key_exchange_
       return CAST_EXCEPTION;
     }
     static_cast<DH::KeyExchange*>(key_exchange)->read_group(raw_group, length);
-    return NO_ERROR;
+    return NO_EXCEPTION;
   } catch (...) {
     return UNKNOWN_EXCEPTION;
   }

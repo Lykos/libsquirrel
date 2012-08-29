@@ -3,6 +3,6 @@
 
 #include <ruby.h>
 
-void Init_Crypto(void);
+void Init_RubyCrypto(void);
 
 #endif // RUBY_CRYPTO_H
