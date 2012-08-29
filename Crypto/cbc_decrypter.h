@@ -45,9 +45,17 @@ namespace Crypto {
 
       inline ulong max_plain_length(ulong cipher_length) const;
 
+      inline ulong plain_block_size() const { return m_plain_block_size; }
+
+      inline ulong cipher_block_size() const { return m_cipher_block_size; }
+
+      inline ulong state_length() const { return m_plain_block_size; }
+
       inline ulong decrypt(const cbc_byte_t* plain, ulong length, cbc_byte_t* cipher);
 
-      inline const cbc_byte_t* get_initial_vector() const { return m_state; }
+      inline const cbc_byte_t* get_state() const { return m_state; }
+
+      inline void set_state(const cbc_byte_t* new_state, uint length);
 
     };
 
@@ -167,6 +175,13 @@ namespace Crypto {
       }
       delete[] block;
       return plain_length;
+    }
+
+    template <typename BlockCipher>
+    inline void Decrypter<BlockCipher>::set_state(const cbc_byte_t* new_state, uint length)
+    {
+      assert(length >= m_plain_block_size);
+      memcpy(m_state, new_state, m_plain_block_size);
     }
 
   } // namespace CBC

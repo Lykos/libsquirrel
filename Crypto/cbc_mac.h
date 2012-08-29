@@ -17,10 +17,10 @@ namespace Crypto {
 
       inline MAC(const BlockCipher& block_cipher, const cbc_byte_t* initial_state, uint state_length);
 
-      inline uint signature_length() const { return Encrypter<BlockCipher>::plain_block_size(); }
+      inline uint signature_length() const { return m_encrypter.plain_block_size(); }
 
       // Appends the MAC directly after the end of the message. Note that this changes the state.
-      inline ulong mac(cbc_byte_t* message, ulong length);
+      inline ulong sign(cbc_byte_t* message, ulong length);
 
       // Assumes that the MAC is directly before the end of the message. Note that this changes the state.
       // In case of failure, the state is undefined.
@@ -42,7 +42,7 @@ namespace Crypto {
     {}
 
     template <typename BlockCipher>
-    inline ulong MAC<BlockCipher>::mac(cbc_byte_t* message, ulong length)
+    inline ulong MAC<BlockCipher>::sign(cbc_byte_t* message, ulong length)
     {
       m_encrypter.encrypt(message, length, NULL);
       memcpy(message + length, m_encrypter.get_state(), signature_length());
@@ -58,8 +58,9 @@ namespace Crypto {
       }
       m_encrypter.encrypt(message, length - sig_len, NULL);
       const cbc_byte_t* mac = message + length - sig_len;
+      const cbc_byte_t* state = m_encrypter.get_state();
       for (uint i = 0; i < sig_len; ++i) {
-        if (Encrypter<BlockCipher>::m_state[i] != mac[i]) {
+        if (state[i] != mac[i]) {
           return false;
         }
       }

@@ -44,11 +44,19 @@ namespace Crypto {
 
       inline Encrypter<BlockCipher>& operator=(Encrypter&& other);
 
-      inline ulong get_cipher_length(ulong plain_length) const;
+      inline ulong cipher_length(ulong plain_length) const;
+
+      inline ulong plain_block_size() const { return m_plain_block_size; }
+
+      inline ulong cipher_block_size() const { return m_cipher_block_size; }
+
+      inline ulong state_length() const { return m_plain_block_size; }
 
       inline ulong encrypt(const cbc_byte_t* plain, ulong length, cbc_byte_t* cipher);
 
       inline const cbc_byte_t* get_state() const { return m_state; }
+
+      inline void set_state(const cbc_byte_t* new_state, uint length);
 
     };
 
@@ -127,7 +135,7 @@ namespace Crypto {
     }
 
     template <typename BlockCipher>
-    inline ulong Encrypter<BlockCipher>::get_cipher_length(ulong plain_length) const
+    inline ulong Encrypter<BlockCipher>::cipher_length(ulong plain_length) const
     {
       // Add at least one bit for padding and then adjust to multiple of block_size
       uint padding = m_plain_block_size - (plain_length + 1) % m_plain_block_size;
@@ -140,10 +148,10 @@ namespace Crypto {
     template <typename BlockCipher>
     inline ulong Encrypter<BlockCipher>::encrypt(const cbc_byte_t* plain, ulong plain_length, cbc_byte_t* cipher)
     {
-      ulong cipher_length = get_cipher_length(plain_length);
+      ulong cipher_len = cipher_length(plain_length);
       cbc_byte_t *block = new cbc_byte_t[m_plain_block_size];
       cbc_byte_t *null_cipher = (cipher == NULL ? new cbc_byte_t[m_cipher_block_size] : NULL);
-      ulong blocks = cipher_length / m_plain_block_size;
+      ulong blocks = cipher_len / m_plain_block_size;
       for (ulong i = 0; i < blocks; ++i) {
         if (i == blocks - 1) {
           ulong remaining_length = plain_length % m_plain_block_size;
@@ -171,7 +179,14 @@ namespace Crypto {
         }
       }
       delete[] block;
-      return cipher_length;
+      return cipher_len;
+    }
+
+    template <typename BlockCipher>
+    inline void Encrypter<BlockCipher>::set_state(const cbc_byte_t* new_state, uint length)
+    {
+      assert(length >= m_plain_block_size);
+      memcpy(m_state, new_state, m_plain_block_size);
     }
 
   } // namespace CBC

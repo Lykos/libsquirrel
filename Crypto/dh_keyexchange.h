@@ -21,10 +21,10 @@ namespace Crypto {
       bool group_chosen() const { return m_group_chosen; }
 
       // Is the exponent already set?
-      bool exponent_chosen() const { return m_own_part_chosen; }
+      bool own_part_chosen() const { return m_own_part_chosen; }
 
       // Is the partial key of the other party already set?
-      bool other_partial_set() const { return m_other_part_set; }
+      bool other_part_set() const { return m_other_part_set; }
 
       // Is the key ready?
       bool key_ready() const { return m_key_ready; }
