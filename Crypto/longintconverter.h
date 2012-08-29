@@ -13,6 +13,12 @@ namespace Crypto {
 
     typedef u_int32_t number_size_t;
 
+    // Bytes that fit into this number
+    static number_size_t fitting_length(const DataStructures::LongInt& number);
+
+    // Bytes required to store this number
+    static number_size_t required_length(const DataStructures::LongInt& number);
+
     number_size_t alignment() const throw() { return sizeof(unsigned int); }
 
     DataStructures::LongInt read_number(const u_int8_t* text, number_size_t length) const;

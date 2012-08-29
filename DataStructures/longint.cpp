@@ -130,6 +130,16 @@ namespace DataStructures {
       assert(i < size());
       m_content[i] = packed.parts[2 * i];
     }
+    remove_zeros();
+  }
+
+  LongInt::LongInt(const u_int8_t* parts, index_type length):
+    m_positive (true),
+    m_content (length / sizeof(part_type) + 1, 0)
+  {
+    for (index_type i = 0; i < length; ++i) {
+      m_content[i / sizeof(part_type)] |= parts[i] << (i % sizeof(part_type));
+    }
   }
 
   LongInt::LongInt(const std::string& numerical_string)
@@ -265,6 +275,21 @@ namespace DataStructures {
     while (!parts.is_empty()) {
       out << parts.pop();
     }
+  }
+
+  index_type LongInt::write(char* dest) const throw()
+  {
+    for (index_type i = 0; i < size() - 1; ++i) {
+      for (uint j = 0; j < sizeof(part_type); ++j) {
+        dest[sizeof(part_type) * i + j] = (m_content[i] >> j * sizeof(part_type)) & 0xFF;
+      }
+    }
+    index_type length = sizeof(part_type) * (size() - 1);
+    part_type first_digit = m_content[size() - 1];
+    for (; first_digit != 0; first_digit >>= sizeof(part_type), ++length) {
+      dest[length] = first_digit & 0xFF;
+    }
+    return length;
   }
 
   inline void LongInt::write_octal(std::ostream& out) const
@@ -845,7 +870,7 @@ namespace DataStructures {
     } else {
       part = ~part;
       if (keep) {
-        asm("incq %0;\n"
+        asm("\nincq %0;\n"
         "\tsetc %1;\n"
         : "=q" (part), "=q" (keep) : "0" (part), "1" (keep));
       }

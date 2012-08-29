@@ -19,8 +19,8 @@ namespace Crypto {
       m_generator (public_key.generator),
       m_gen_power (public_key.gen_power),
       m_exponent_distribution (ZERO, (m_modulus >> 1) - TWO),
-      m_plain_length ((m_modulus.size() - 1) * sizeof(number_t::part_type)),
-      m_key_part_length (m_modulus.size() * sizeof(number_t::part_type)),
+      m_plain_length (LongIntConverter::fitting_length(m_modulus)),
+      m_key_part_length (LongIntConverter::required_length(m_modulus)),
       m_cipher_length (m_key_part_length + sizeof(number_t::part_type) + m_plain_length)
     {}
 
@@ -32,8 +32,8 @@ namespace Crypto {
       m_generator = public_key.generator;
       m_gen_power = public_key.gen_power;
       m_exponent_distribution = UniformLongIntDistribution(ZERO, (m_modulus >> 1) - TWO);
-      m_plain_length = (m_modulus.size() - 1) * sizeof(number_t::part_type);
-      m_key_part_length = m_modulus.size() * sizeof(number_t::part_type);
+      m_plain_length = LongIntConverter::fitting_length(m_modulus);
+      m_key_part_length = LongIntConverter::required_length(m_modulus);
       m_cipher_length = m_key_part_length + sizeof(number_t::part_type) + m_plain_length;
     }
 

@@ -1,7 +1,7 @@
 #include "finiteelementtest.h"
-#include "longint.h"
-#include "finitefield.h"
-#include "finiteelement.h"
+#include "DataStructures/longint.h"
+#include "DataStructures/finitefield.h"
+#include "DataStructures/finiteelement.h"
 
 using namespace DataStructures;
 

@@ -1,7 +1,7 @@
-#include "polynomial.h"
-#include "longint.h"
+#include "DataStructures/polynomial.h"
+#include "DataStructures/longint.h"
 #include "polynomialtest.h"
-#include "arraylist.h"
+#include "DataStructures/arraylist.h"
 #include <iostream>
 #include <climits>
 #include <ostream>

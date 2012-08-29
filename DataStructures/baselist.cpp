@@ -31,7 +31,10 @@ namespace DataStructures {
       return 0;
     }
     index_type result;
-    for (result = 0; k > 1; k >>= 1, ++result);
+    asm ( "\tbsrq %1, %0\n"
+          : "=r"(result)
+          : "r" (k)
+      );
     return result;
   }
 }
