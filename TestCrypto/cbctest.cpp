@@ -40,7 +40,7 @@ void CBCTest::test_enc_dec()
   AES::Decrypter aes_dec (key, 16);
   CBC::Encrypter<AES::Encrypter> enc (aes_enc, initial1, 16);
   CBC::Decrypter<AES::Decrypter> dec (aes_dec, initial2, 16);
-  ulong cipher_length = enc.get_cipher_length(plain_length);
+  ulong cipher_length = enc.cipher_length(plain_length);
   uchar *cipher = new uchar[cipher_length];
   enc.encrypt(plain, plain_length, cipher);
   uchar *replain = new uchar[dec.max_plain_length(cipher_length)];

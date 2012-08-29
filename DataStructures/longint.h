@@ -183,9 +183,9 @@ namespace DataStructures {
 
     inline int uCompareTo(const LongInt& other) const;
 
-    inline void remove_zeros();
+    void remove_zeros();
 
-    inline void pad_zeros(index_type new_size);
+    void pad_zeros(index_type new_size);
 
     inline void subtract(const LongInt& other);
 
