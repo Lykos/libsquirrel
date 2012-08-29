@@ -1,4 +1,5 @@
-#include "dh_keyexchange.h"
+#include "Crypto/dh_keyexchange.h"
+#include "Crypto/preconditionviolation.h"
 
 namespace Crypto {
 
@@ -11,7 +12,7 @@ namespace Crypto {
 
     void KeyExchange::choose_group(uint number_bits)
     {
-      assert(m_key_generator.valid_key_bits(number_bits));
+      PREC(KeyLength, m_key_generator.valid_key_bits(number_bits));
       m_own_part_chosen = false;
       m_other_part_set = false;
       m_key_ready = false;
@@ -21,19 +22,19 @@ namespace Crypto {
 
     group_t KeyExchange::get_group() const
     {
-      assert(m_group_chosen);
+      PREC(NoGroupChosen, m_group_chosen);
       return m_group;
     }
 
     number_t KeyExchange::get_own_part() const
     {
-      assert(m_own_part_chosen);
+      PREC(NoOwnPartChosen, m_own_part_chosen);
       return m_own_gen_power;
     }
 
     number_t KeyExchange::get_key() const
     {
-      assert(m_key_ready);
+      PREC(KeyNotReady, m_key_ready);
       return m_key;
     }
 

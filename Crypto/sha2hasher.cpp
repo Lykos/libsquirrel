@@ -1,5 +1,6 @@
-#include "sha2hasher.h"
-#include "string.h"
+#include "Crypto/sha2hasher.h"
+#include "Crypto/preconditionviolation.h"
+#include <cstring>
 #include <climits>
 #include <cassert>
 

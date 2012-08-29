@@ -10,6 +10,8 @@ class AESTest : public QObject
 private Q_SLOTS:
   void test_enc_dec();
 
+  void test_exception();
+
 };
 
 #endif // AESTEST_H

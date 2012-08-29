@@ -1,18 +1,18 @@
-#include "dh_converter.h"
+#include "Crypto/dh_converter.h"
+#include "Crypto/preconditionviolation.h"
+#include "Crypto/readnumber_macro.h"
 #include <climits>
 
 namespace Crypto {
 
   namespace DH {
 
+    const Converter::number_size_t Converter::length_length = sizeof(Converter::number_size_t);
+
     group_t Converter::read_group(const dh_byte_t* raw_group, number_size_t length) const
     {
-      assert(length >= sizeof(number_size_t));
-      number_size_t modulus_length = read_length(raw_group);
-      number_t modulus = read_number(raw_group, length);
-      raw_group += modulus_length;
-      length -= modulus_length;
-      number_t generator = read_number(raw_group, length);
+      READ_NUMBER(GroupModulusLengthLength, GroupModulusLength, modulus, raw_group);
+      READ_NUMBER(GroupGeneratorLengthLength, GroupGeneratorLength, generator, raw_group);
       return {modulus, generator};
     }
 
@@ -31,23 +31,21 @@ namespace Crypto {
 
     number_t Converter::read_number(const dh_byte_t* raw_number, number_size_t length) const
     {
-      assert(length >= sizeof(number_size_t));
-      number_size_t number_length = read_length(raw_number);
-      assert(length >= sizeof(number_size_t) + number_length);
-      return m_converter.read_number(raw_number + sizeof(number_size_t), number_length);
+      READ_NUMBER(NumberLengthLength, NumberLength, number, raw_number);
+      return number;
     }
 
     Converter::number_size_t Converter::write_number(const number_t& number, dh_byte_t* raw_number) const
     {
       number_size_t number_length = m_converter.number_length(number);
       write_length(number_length, raw_number);
-      m_converter.write_number(number, raw_number + sizeof(number_size_t), number_length);
-      return sizeof(number_size_t) + number_length;
+      m_converter.write_number(number, raw_number + length_length, number_length);
+      return length_length + number_length;
     }
 
     Converter::number_size_t Converter::number_length(const number_t& number) const
     {
-      return sizeof(number_size_t) + m_converter.number_length(number);
+      return length_length + m_converter.number_length(number);
     }
 
 

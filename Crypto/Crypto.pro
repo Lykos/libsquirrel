@@ -36,7 +36,8 @@ SOURCES += \
     dh_constants.cpp \
     elgamal_converter.cpp \
     dh_keyexchange.cpp \
-    sha2hasher.cpp
+    sha2hasher.cpp \
+    preconditionviolation.cpp
 
 HEADERS +=\
         Crypto_global.h \
@@ -73,7 +74,10 @@ HEADERS +=\
     elgamal_types.h \
     elgamal_converter.h \
     dh_keyexchange.h \
-    sha2hasher.h
+    sha2hasher.h \
+    preconditionviolation.h \
+    readnumber_macro.h \
+    conditiontype.h
 
 header_files.files = $$HEADERS
 header_files.path = /usr/local/include/Crypto

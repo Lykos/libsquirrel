@@ -13,6 +13,7 @@ extern "C" {
 #define KEY_EXCHANGE_NO_OWN_PART_CHOSEN (-13)
 #define KEY_EXCHANGE_NO_OTHER_PART_SET (-14)
 #define KEY_EXCHANGE_KEY_NOT_READY (-15)
+#define PRECONDITION_BASE (-20)
 
 typedef unsigned char byte_t;
 

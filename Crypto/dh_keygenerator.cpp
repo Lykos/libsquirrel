@@ -1,5 +1,6 @@
-#include "dh_keygenerator.h"
-#include "dh_constants.h"
+#include "Crypto/dh_keygenerator.h"
+#include "Crypto/dh_constants.h"
+#include "Crypto/preconditionviolation.h"
 
 namespace Crypto {
 
@@ -18,6 +19,7 @@ namespace Crypto {
 
     group_t KeyGenerator::choose_group(uint number_bits)
     {
+      PREC(KeyLength, valid_key_bits(number_bits));
       number_t modulus, generator;
       if (number_bits == 1024) {
         modulus = diffie_hellman_modulus_1024;
@@ -40,8 +42,6 @@ namespace Crypto {
       } else if (number_bits == 8192) {
         modulus = diffie_hellman_modulus_8192;
         generator = diffie_hellman_generator_8192;
-      } else {
-        throw std::logic_error("Unsupported key length");
       }
       return {modulus, generator};
     }

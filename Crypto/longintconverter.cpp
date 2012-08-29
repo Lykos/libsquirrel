@@ -1,4 +1,5 @@
-#include "longintconverter.h"
+#include "Crypto/longintconverter.h"
+#include "Crypto/preconditionviolation.h"
 
 namespace Crypto {
 
@@ -23,7 +24,7 @@ namespace Crypto {
   void LongIntConverter::write_number(const LongInt& number, u_int8_t* text, number_size_t length) const
   {
     number_size_t len = number_length(number);
-    assert(len <= length);
+    PREC(NumberFits, len <= length);
     LongInt::packed_longint_t packed = number.pack();
     for (number_size_t i = 0; i < packed.num_parts; ++i) {
       for (number_size_t j = 0; j < sizeof(unsigned int); ++j) {

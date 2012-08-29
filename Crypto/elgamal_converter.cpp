@@ -1,4 +1,6 @@
-#include "elgamal_converter.h"
+#include "Crypto/elgamal_converter.h"
+#include "Crypto/readnumber_macro.h"
+#include "Crypto/preconditionviolation.h"
 
 namespace Crypto {
 
@@ -6,17 +8,9 @@ namespace Crypto {
 
     public_key_t Converter::read_public_key(const elgamal_byte_t* raw_key, number_size_t length)
     {
-      assert(length >= sizeof(number_size_t));
-      number_size_t modulus_length = DH::Converter::read_length(raw_key);
-      number_t modulus = DH::Converter::read_number(raw_key, length);
-      raw_key += modulus_length;
-      length -= modulus_length;
-      assert(length >= sizeof(number_size_t));
-      number_size_t generator_length = DH::Converter::read_length(raw_key);
-      number_t generator = DH::Converter::read_number(raw_key, length);
-      raw_key += generator_length;
-      length -= generator_length;
-      number_t gen_power = DH::Converter::read_number(raw_key, length);
+      READ_NUMBER(PublicKeyModulusLengthLength, PublicKeyModulusLength, modulus, raw_key);
+      READ_NUMBER(PublicKeyGeneratorLengthLength, PublicKeyGeneratorLength, generator, raw_key);
+      READ_NUMBER(PublicKeyGenPowerLengthLength, PublicKeyGenPowerLength, gen_power, raw_key);
       return {modulus, generator, gen_power};
     }
 
@@ -37,17 +31,9 @@ namespace Crypto {
 
     private_key_t Converter::read_private_key(const elgamal_byte_t* raw_key, number_size_t length)
     {
-      assert(length >= sizeof(number_size_t));
-      number_size_t modulus_length = DH::Converter::read_length(raw_key);
-      number_t modulus = DH::Converter::read_number(raw_key, length);
-      raw_key += modulus_length;
-      length -= modulus_length;
-      assert(length >= sizeof(number_size_t));
-      number_size_t generator_length = DH::Converter::read_length(raw_key);
-      number_t generator = DH::Converter::read_number(raw_key, length);
-      raw_key += generator_length;
-      length -= generator_length;
-      exponent_t exponent = DH::Converter::read_number(raw_key, length);
+      READ_NUMBER(PrivateKeyModulusLengthLength, PrivateKeyModulusLength, modulus, raw_key);
+      READ_NUMBER(PrivateKeyGeneratorLengthLength, PrivateKeyGeneratorLength, generator, raw_key);
+      READ_NUMBER(PrivateKeyGenPowerLengthLength, PrivateKeyGenPowerLength, exponent, raw_key);
       return {modulus, generator, exponent};
     }
 

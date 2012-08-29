@@ -2,9 +2,9 @@
 #include "aes_constants.h"
 #include "aes_types.h"
 #include <climits>
-#include <cassert>
 #include <cstring>
 #include <stdexcept>
+#include "preconditionviolation.h"
 
 namespace Crypto {
 
@@ -13,14 +13,13 @@ namespace Crypto {
     KeyExpander::KeyExpander(uint key_length):
       m_key_length (key_length)
     {
+      PREC(KeyLength, key_length == AES_128_BYTES || key_length == AES_192_BYTES || key_length == AES_256_BYTES);
       if (key_length == AES_128_BYTES) {
         m_rounds = AES_128_ROUNDS;
       } else if (key_length == AES_192_BYTES) {
         m_rounds = AES_192_ROUNDS;
       } else if (key_length == AES_256_BYTES) {
         m_rounds = AES_256_ROUNDS;
-      } else {
-        throw std::logic_error("Invalid key length.");
       }
       m_expanded_length = (m_rounds + 1) * BLOCK_BYTE_SIZE;
     }

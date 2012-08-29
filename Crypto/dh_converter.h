@@ -13,6 +13,8 @@ namespace Crypto {
     public:
       typedef LongIntConverter::number_size_t number_size_t;
 
+      static const number_size_t length_length;
+
       group_t read_group(const dh_byte_t* raw_group, number_size_t length) const;
 
       number_size_t write_group(const group_t& group, dh_byte_t* raw_group) const;
