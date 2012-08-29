@@ -21,11 +21,10 @@ namespace DataStructures {
   {
     friend TreeIterator<T, Node, Tree> operator+ <> (index_type i, const TreeIterator<T, Node, Tree>& it);
 
-  private:
-    typedef BaseIterator<T, Tree, TreeIterator<T, Node, Tree> > BaseIt; // Shortcut for terribly complicated type
-
   public:
     inline explicit TreeIterator(Tree* tree, index_type index = 0);
+
+    inline TreeIterator(Tree *tree, index_type index, Node* current, index_type left_size);
 
     inline TreeIterator<T, Node, Tree> operator++(int);
 
@@ -50,6 +49,8 @@ namespace DataStructures {
     inline operator TreeIterator<T const, Node const, Tree const>() const;
 
   private:
+    typedef BaseIterator<T, Tree, TreeIterator<T, Node, Tree> > BaseIt; // Shortcut for terribly complicated type
+
     typedef typename Tree::direction direction;
 
     Node* m_current;
@@ -63,17 +64,24 @@ namespace DataStructures {
   template <typename T, typename Node, typename Tree>
   inline TreeIterator<T, Node, Tree>::operator TreeIterator<T const, Node const, Tree const>() const
   {
-    return TreeIterator<T const, Node const, Tree const>(BaseIt::m_container, BaseIt::m_index);
+    return TreeIterator<T const, Node const, Tree const>(BaseIt::m_container, BaseIt::m_index, m_current, m_left_size);
   }
 
   template <typename T, typename Node, typename Tree>
-  TreeIterator<T, Node, Tree>::TreeIterator(Tree* tree, index_type index):
+  inline TreeIterator<T, Node, Tree>::TreeIterator(Tree* tree, index_type index):
     BaseIt (tree, index),
     m_current (NULL),
     m_left_size (0)
   {
     local_search();
   }
+
+  template <typename T, typename Node, typename Tree>
+  inline TreeIterator<T, Node, Tree>::TreeIterator(Tree *tree, index_type index, Node* current, index_type left_size):
+    BaseIt (tree, index),
+    m_current (current),
+    m_left_size (left_size)
+  {}
 
   template <typename T, typename Node, typename Tree>
   inline TreeIterator<T, Node, Tree> operator+(index_type index, const TreeIterator<T, Node, Tree>& other)
