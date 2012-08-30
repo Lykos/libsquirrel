@@ -20,7 +20,7 @@ namespace Crypto {
 
       number_t decrypt(const number_t& cipher, const number_t& other_gen_power) const;
 
-      void decrypt(const elgamal_byte_t* cipher_text, elgamal_byte_t* plain_text) const;
+      bool decrypt(const elgamal_byte_t* cipher_text, elgamal_byte_t* plain_text) const;
 
       number_size_t plain_block_size() const { return m_plain_length; }
 

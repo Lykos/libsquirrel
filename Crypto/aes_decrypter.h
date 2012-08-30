@@ -34,7 +34,7 @@ namespace Crypto {
 
       ~Decrypter();
 
-      void decrypt(const aes_byte_t* cipher, aes_byte_t* plain);
+      bool decrypt(const aes_byte_t* cipher, aes_byte_t* plain);
 
       uint cipher_block_size() const { return BLOCK_BYTE_SIZE; }
 

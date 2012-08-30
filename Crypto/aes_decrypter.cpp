@@ -68,7 +68,7 @@ namespace Crypto {
       delete[] m_expanded_key;
     }
 
-    void Decrypter::decrypt(const aes_byte_t* cipher, aes_byte_t* plain)
+    bool Decrypter::decrypt(const aes_byte_t* cipher, aes_byte_t* plain)
     {
       for (uint i = 0; i < BLOCK_BYTE_SIZE; ++i) {
         plain[i] = cipher[i];
@@ -83,6 +83,7 @@ namespace Crypto {
         m_helper.inv_sub_bytes(plain);
       }
       m_helper.apply_round_key(plain, m_expanded_key, 0);
+      return true;
     }
     
   } // namespace AES

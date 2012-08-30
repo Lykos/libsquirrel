@@ -30,7 +30,7 @@ namespace Crypto {
 
       uint m_plain_block_size, m_cipher_block_size;
 
-      cbc_byte_t* m_state;
+      cbc_byte_t* m_state, *m_block;
 
     public:
       inline Encrypter(BlockCipher&& block_cipher, const cbc_byte_t* initial_state, uint state_length);
@@ -68,7 +68,8 @@ namespace Crypto {
       m_block_cipher (block_cipher),
       m_plain_block_size (block_cipher.plain_block_size()),
       m_cipher_block_size (block_cipher.cipher_block_size()),
-      m_state (new cbc_byte_t[m_plain_block_size])
+      m_state (new cbc_byte_t[m_plain_block_size]),
+      m_block (new cbc_byte_t[m_plain_block_size])
     {
       PREC_STATE_LENGTH();
       memcpy(m_state, initial_state, m_plain_block_size);
@@ -79,7 +80,8 @@ namespace Crypto {
       m_block_cipher (block_cipher),
       m_plain_block_size (block_cipher.plain_block_size()),
       m_cipher_block_size (block_cipher.cipher_block_size()),
-      m_state (new cbc_byte_t[m_plain_block_size])
+      m_state (new cbc_byte_t[m_plain_block_size]),
+      m_block (new cbc_byte_t[m_plain_block_size])
     {
       PREC_STATE_LENGTH();
       memcpy(m_state, initial_state, m_plain_block_size);
@@ -90,7 +92,8 @@ namespace Crypto {
       m_block_cipher (other.m_block_cipher),
       m_plain_block_size (other.m_plain_block_size),
       m_cipher_block_size (other.m_cipher_block_size),
-      m_state (new cbc_byte_t[m_plain_block_size])
+      m_state (new cbc_byte_t[m_plain_block_size]),
+      m_block (new cbc_byte_t[m_plain_block_size])
     {
       memcpy(m_state, other.m_state, m_block_cipher.plain_block_size());
     }
@@ -100,13 +103,18 @@ namespace Crypto {
       m_block_cipher (other.m_block_cipher),
       m_plain_block_size (other.m_plain_block_size),
       m_cipher_block_size (other.m_cipher_block_size),
-      m_state (other.m_state)
-    {}
+      m_state (other.m_state),
+      m_block (other.m_block)
+    {
+      other.m_state = NULL;
+      other.m_block = NULL;
+    }
 
     template <typename BlockCipher>
     inline Encrypter<BlockCipher>::~Encrypter()
     {
       delete[] m_state;
+      delete[] m_block;
     }
 
     template <typename BlockCipher>
@@ -115,10 +123,15 @@ namespace Crypto {
       if (this == &other) {
         return *this;
       }
+      if (m_plain_block_size != other.m_plain_block_size) {
+        delete[] m_state;
+        delete[] m_block;
+        m_state = new cbc_byte_t[other.m_plain_block_size];
+        m_block = new cbc_byte_t[other.m_plain_block_size];
+      }
       m_block_cipher = other.m_block_cipher;
       m_plain_block_size = other.m_plain_block_size;
       m_cipher_block_size = other.m_cipher_block_size;
-      m_state = new cbc_byte_t[m_plain_block_size];
       memcpy(m_state, other.m_state, m_block_cipher.plain_block_size());
       return *this;
     }
@@ -129,11 +142,15 @@ namespace Crypto {
       if (this == &other) {
         return *this;
       }
+      if (m_plain_block_size != other.m_plain_block_size) {
+        m_state = other.m_state;
+        m_block = other.m_block;
+        other.m_state = NULL;
+        other.m_block = NULL;
+      }
       m_block_cipher = std::move(other.m_block_cipher);
       m_plain_block_size = other.m_plain_block_size;
       m_cipher_block_size = other.m_cipher_block_size;
-      m_state = other.m_state;
-      other.m_state = NULL;
       return *this;
     }
 
@@ -152,36 +169,33 @@ namespace Crypto {
     inline ulong Encrypter<BlockCipher>::encrypt(const cbc_byte_t* plain, ulong plain_length, cbc_byte_t* cipher)
     {
       ulong cipher_len = cipher_length(plain_length);
-      cbc_byte_t *block = new cbc_byte_t[m_plain_block_size];
-      cbc_byte_t *null_cipher = (cipher == NULL ? new cbc_byte_t[m_cipher_block_size] : NULL);
       ulong blocks = cipher_len / m_plain_block_size;
       for (ulong i = 0; i < blocks; ++i) {
         if (i == blocks - 1) {
           ulong remaining_length = plain_length % m_plain_block_size;
-          memcpy(block, plain + i * m_plain_block_size, remaining_length);
-          block[remaining_length] = 0x80;
-          memset(block + 1 + remaining_length, 0, m_plain_block_size - remaining_length - 1);
+          memcpy(m_block, plain + i * m_plain_block_size, remaining_length);
+          m_block[remaining_length] = 0x80;
+          memset(m_block + 1 + remaining_length, 0, m_plain_block_size - remaining_length - 1);
         } else {
-          memcpy(block, plain + i * m_plain_block_size, m_plain_block_size);
+          memcpy(m_block, plain + i * m_plain_block_size, m_plain_block_size);
         }
         for (uint j = 0; j < m_plain_block_size; ++j) {
-          block[j] ^= m_state[j];
+          m_block[j] ^= m_state[j];
         }
         if (cipher == NULL) {
           // If this encryption should only change the state, i.e. the initial vector
-          m_block_cipher.encrypt(block, null_cipher);
+          m_block_cipher.encrypt(m_block, m_block);
           for (uint j = 0; j < m_plain_block_size; ++j) {
-            m_state[j] = null_cipher[j];
+            m_state[j] = m_block[j];
           }
         } else {
-          m_block_cipher.encrypt(block, cipher + i * m_cipher_block_size);
+          m_block_cipher.encrypt(m_block, cipher + i * m_cipher_block_size);
           // It should be clear that the cipher block size is at least the plain block size.
           for (uint j = 0; j < m_plain_block_size; ++j) {
             m_state[j] = cipher[i * m_cipher_block_size + j];
           }
         }
       }
-      delete[] block;
       return cipher_len;
     }
 

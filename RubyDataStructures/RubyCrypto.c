@@ -2,9 +2,9 @@
 #include "crypto_interface.h"
 #include "Crypto/conditiontype.h"
 
-#define READ_BINARY(str, n, k, bin, len) \
+#define READ_BINARY(str, n, bin, len) \
   if (!TYPE(str) == T_STRING) { \
-    rb_raise(rb_eTypeError, "Argument " #n " " #str " for " #k " has to be a String."); \
+    rb_raise(rb_eTypeError, "Argument " #n " " #str " has to be a String."); \
   } \
   number_size_t len; \
   byte_t* bin; \
@@ -14,9 +14,9 @@
     len = RSTRING_LEN(ret_str); \
   }
 
-#define READ_HEX(str, n, k, hex, len) \
+#define READ_HEX(str, n, hex, len) \
   if (!TYPE(str) == T_STRING) { \
-    rb_raise(rb_eTypeError, "Argument " #n " " #str " for " #k " has to be a String."); \
+    rb_raise(rb_eTypeError, "Argument " #n " " #str " has to be a String."); \
   } \
   number_size_t len; \
   byte_t* hex; \
@@ -27,11 +27,18 @@
     hex = from_hex(hex_str, len); \
     len /= 2; \
     if (hex == NULL) { \
-      rb_raise(rb_eArgError, "The " #n " argument " #str " for " #k " has to be a String with hexadecimal content."); \
+      rb_raise(rb_eArgError, "The " #n " argument " #str " has to be a String with hexadecimal content."); \
     } \
   }
 
+
+static VALUE Crypto;
+
 static VALUE CryptoException;
+
+static VALUE ElgamalEncrypter;
+
+static VALUE ElgamalDecrypter;
 
 void check_error(error_code_t err)
 {
@@ -88,11 +95,67 @@ VALUE ElgamalEncrypter_alloc(VALUE klass)
 
 VALUE ElgamalEncrypter_init(VALUE self, VALUE key, VALUE state)
 {
-  READ_HEX(key, 1, ElgamalEncrypter.initialize, raw_public_key, key_length);
-  READ_HEX(state, 2, ElgamalEncrypter.initialize, initial_state, state_length);
+  READ_HEX(key, 1, raw_private_key, key_length);
+  READ_HEX(state, 2, initial_state, state_length);
   Crypto_cbc_elgamal_encrypter_t encrypter;
   Data_Get_Struct(self, Crypto_cbc_elgamal_encrypter_t, encrypter);
-  error_code_t err = Crypto_init_cbc_elgamal_encrypter(encrypter, raw_public_key, key_length, initial_state, state_length);
+  error_code_t err = Crypto_init_cbc_elgamal_encrypter(encrypter, raw_private_key, key_length, initial_state, state_length);
+  free(raw_private_key);
+  free(initial_state);
+  ConditionType prec_err = -(err - PRECONDITION_BASE);
+  switch (prec_err) {
+  case PrivateKeyModulusLengthLength:
+    rb_raise(rb_eArgError, "Argument 1 is too short to store the length of the modulus of the key.");
+    break;
+  case PrivateKeyModulusLength:
+    rb_raise(rb_eArgError, "Argument 1 is too short to store the modulus of the key or the modulus length is wrong.");
+    break;
+  case PrivateKeyGeneratorLengthLength:
+    rb_raise(rb_eArgError, "Argument 1 is too short to store the length of the generator of the key.");
+    break;
+  case PrivateKeyGeneratorLength:
+    rb_raise(rb_eArgError, "Argument 1 is too short to store the generator of the key or the generator length is wrong.");
+    break;
+  case PrivateKeyExponentLengthLength:
+    rb_raise(rb_eArgError, "Argument 1 is too short to store the length of the exponent of the key.");
+    break;
+  case PrivateKeyExponentLength:
+    rb_raise(rb_eArgError, "Argument 1 is too short to store the exponent of the key or the exponent length is wrong.");
+    break;
+  case StateLength:
+    rb_raise(rb_eArgError, "Argument 2 is too short to store a valid initial state.");
+    break;
+  default: nop(NULL);
+  }
+  check_error(err);
+  return self;
+}
+
+VALUE ElgamalEncrypter_encrypt(VALUE self, VALUE str)
+{
+  READ_BINARY(str, 1, plain, length);
+  Crypto_cbc_elgamal_encrypter_t encrypter;
+  Data_Get_Struct(self, Crypto_cbc_elgamal_encrypter_t, encrypter);
+  message_size_t cipher_length = Crypto_cbc_elgamal_cipher_length(encrypter, length);
+  check_error(cipher_length);
+  byte_t *cipher = (byte_t*)malloc(cipher_length * sizeof(byte_t));
+  error_code_t err = Crypto_cbc_elgamal_encrypt(encrypter, plain, length, cipher);
+  check_error(err);
+  return rb_str_new((char*)cipher, cipher_length);
+}
+
+VALUE ElgamalDecrypter_alloc(VALUE klass)
+{
+  return Data_Wrap_Struct(klass, nop, Crypto_deinit_cbc_elgamal_decrypter, malloc(Crypto_cbc_elgamal_decrypter_length));
+}
+
+VALUE ElgamalDecrypter_init(VALUE self, VALUE key, VALUE state)
+{
+  READ_HEX(key, 1, raw_public_key, key_length);
+  READ_HEX(state, 2, initial_state, state_length);
+  Crypto_cbc_elgamal_decrypter_t decrypter;
+  Data_Get_Struct(self, Crypto_cbc_elgamal_decrypter_t, decrypter);
+  error_code_t err = Crypto_init_cbc_elgamal_decrypter(decrypter, raw_public_key, key_length, initial_state, state_length);
   free(raw_public_key);
   free(initial_state);
   ConditionType prec_err = -(err - PRECONDITION_BASE);
@@ -124,23 +187,18 @@ VALUE ElgamalEncrypter_init(VALUE self, VALUE key, VALUE state)
   return self;
 }
 
-VALUE ElgamalEncrypter_encrypt(VALUE self, VALUE str)
+VALUE ElgamalDecrypter_decrypt(VALUE self, VALUE str)
 {
-  READ_BINARY(str, 1, ElgamalEncrypter.encrypt, plain, length);
-  Crypto_cbc_elgamal_encrypter_t encrypter;
-  Data_Get_Struct(self, Crypto_cbc_elgamal_encrypter_t, encrypter);
-  message_size_t cipher_length = Crypto_cbc_elgamal_cipher_length(encrypter, length);
-  check_error(cipher_length);
-  byte_t *cipher = (byte_t*)malloc(cipher_length * sizeof(byte_t));
-  error_code_t err = Crypto_cbc_elgamal_encrypt(encrypter, plain, length, cipher);
+  READ_BINARY(str, 1, cipher, length);
+  Crypto_cbc_elgamal_decrypter_t decrypter;
+  Data_Get_Struct(self, Crypto_cbc_elgamal_decrypter_t, decrypter);
+  message_size_t plain_length = Crypto_cbc_elgamal_max_plain_length(decrypter, length);
+  check_error(plain_length);
+  byte_t *plain = (byte_t*)malloc(plain_length * sizeof(byte_t));
+  error_code_t err = Crypto_cbc_elgamal_decrypt(decrypter, cipher, length, plain);
   check_error(err);
-  free(plain);
-  return rb_str_new((char*)cipher, cipher_length);
+  return rb_str_new((char*)plain, plain_length);
 }
-
-static VALUE Crypto;
-
-static VALUE ElgamalEncrypter;
 
 void Init_RubyCrypto(void)
 {
@@ -150,5 +208,9 @@ void Init_RubyCrypto(void)
   rb_define_alloc_func(ElgamalEncrypter, ElgamalEncrypter_alloc);
   rb_define_method(ElgamalEncrypter, "initialize", ElgamalEncrypter_init, 2);
   rb_define_method(ElgamalEncrypter, "encrypt", ElgamalEncrypter_encrypt, 1);
+  ElgamalDecrypter = rb_define_class_under(Crypto, "ElgamalDecrypter", rb_cObject);
+  rb_define_alloc_func(ElgamalDecrypter, ElgamalDecrypter_alloc);
+  rb_define_method(ElgamalDecrypter, "initialize", ElgamalDecrypter_init, 2);
+  rb_define_method(ElgamalDecrypter, "decrypt", ElgamalDecrypter_decrypt, 1);
 }
 

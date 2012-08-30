@@ -33,7 +33,7 @@ namespace Crypto {
     {
       READ_NUMBER(PrivateKeyModulusLengthLength, PrivateKeyModulusLength, modulus, raw_key);
       READ_NUMBER(PrivateKeyGeneratorLengthLength, PrivateKeyGeneratorLength, generator, raw_key);
-      READ_NUMBER(PrivateKeyGenPowerLengthLength, PrivateKeyGenPowerLength, exponent, raw_key);
+      READ_NUMBER(PrivateKeyExponentLengthLength, PrivateKeyExponentLength, exponent, raw_key);
       return {modulus, generator, exponent};
     }
 
