@@ -2,21 +2,17 @@
 #include "crypto_interface.h"
 #include "Crypto/conditiontype.h"
 
-#define READ_STRING(str, n, k, len) \
+#define READ_BINARY(str, n, k, bin, len) \
   if (!TYPE(str) == T_STRING) { \
     rb_raise(rb_eTypeError, "Argument " #n " " #str " for " #k " has to be a String."); \
   } \
   number_size_t len; \
-{ \
-  VALUE ret_str = StringValue(str); \
-  const char* hex_str = RSTRING_PTR(ret_str); \
-  len = RSTRING_LEN(ret_str); \
-  hex = from_hex(hex_str, len); \
-  len /= 2; \
-  if (hex == NULL) { \
-  rb_raise(rb_eArgError, "The " #n " argument " #str " for " #k " has to be a String with hexadecimal content."); \
-  } \
-}
+  byte_t* bin; \
+  { \
+    VALUE ret_str = StringValue(str); \
+    bin = (byte_t*)RSTRING_PTR(ret_str); \
+    len = RSTRING_LEN(ret_str); \
+  }
 
 #define READ_HEX(str, n, k, hex, len) \
   if (!TYPE(str) == T_STRING) { \
@@ -35,12 +31,14 @@
     } \
   }
 
+static VALUE CryptoException;
+
 void check_error(error_code_t err)
 {
   if (err < 0) {
     char msg[100];
     sprintf(msg, "Something in the extension went wrong. Internal error code is %d.", err);
-    rb_raise(rb_eException, msg);
+    rb_raise(CryptoException, msg);
   }
 }
 
@@ -57,7 +55,7 @@ char* to_hex(const byte_t* binary_string, number_size_t length) {
 }
 
 byte_t* from_hex(const char* hex_string, number_size_t length) {
-  char *binary = (char*) malloc(length / 2 * sizeof(char));
+  byte_t *binary = (byte_t*) malloc(length / 2 * sizeof(byte_t));
   uint i;
   for (i = 0; i < length; ++i) {
     char c = hex_string[i];
@@ -81,10 +79,6 @@ byte_t* from_hex(const char* hex_string, number_size_t length) {
   return binary;
 }
 
-static VALUE Crypto;
-
-static VALUE ElgamalEncrypter;
-
 void nop(void* self) {}
 
 VALUE ElgamalEncrypter_alloc(VALUE klass)
@@ -94,8 +88,8 @@ VALUE ElgamalEncrypter_alloc(VALUE klass)
 
 VALUE ElgamalEncrypter_init(VALUE self, VALUE key, VALUE state)
 {
-  READ_HEX(key, 1, ElgamalEncrypter, raw_public_key, key_length);
-  READ_HEX(state, 2, ElgamalEncrypter, initial_state, state_length);
+  READ_HEX(key, 1, ElgamalEncrypter.initialize, raw_public_key, key_length);
+  READ_HEX(state, 2, ElgamalEncrypter.initialize, initial_state, state_length);
   Crypto_cbc_elgamal_encrypter_t encrypter;
   Data_Get_Struct(self, Crypto_cbc_elgamal_encrypter_t, encrypter);
   error_code_t err = Crypto_init_cbc_elgamal_encrypter(encrypter, raw_public_key, key_length, initial_state, state_length);
@@ -130,17 +124,31 @@ VALUE ElgamalEncrypter_init(VALUE self, VALUE key, VALUE state)
   return self;
 }
 
-VALUE ElgamalEncrypter_encrypt(VALUE self, VALUE key, VALUE state)
+VALUE ElgamalEncrypter_encrypt(VALUE self, VALUE str)
 {
-
+  READ_BINARY(str, 1, ElgamalEncrypter.encrypt, plain, length);
   Crypto_cbc_elgamal_encrypter_t encrypter;
+  Data_Get_Struct(self, Crypto_cbc_elgamal_encrypter_t, encrypter);
+  message_size_t cipher_length = Crypto_cbc_elgamal_cipher_length(encrypter, length);
+  check_error(cipher_length);
+  byte_t *cipher = (byte_t*)malloc(cipher_length * sizeof(byte_t));
+  error_code_t err = Crypto_cbc_elgamal_encrypt(encrypter, plain, length, cipher);
+  check_error(err);
+  free(plain);
+  return rb_str_new((char*)cipher, cipher_length);
 }
+
+static VALUE Crypto;
+
+static VALUE ElgamalEncrypter;
 
 void Init_RubyCrypto(void)
 {
   Crypto = rb_define_module("Crypto");
+  CryptoException = rb_define_class("CryptoException", rb_eStandardError);
   ElgamalEncrypter = rb_define_class_under(Crypto, "ElgamalEncrypter", rb_cObject);
-  rb_define_alloc_func(ElgamalEncrypter, alloc_elgamal_encrypter);
-  rb_define_method(ElgamalEncrypter, "initialize", init_elgamal_encrypter, 2);
+  rb_define_alloc_func(ElgamalEncrypter, ElgamalEncrypter_alloc);
+  rb_define_method(ElgamalEncrypter, "initialize", ElgamalEncrypter_init, 2);
+  rb_define_method(ElgamalEncrypter, "encrypt", ElgamalEncrypter_encrypt, 1);
 }
 

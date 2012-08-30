@@ -54,7 +54,7 @@ unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in
 INCLUDEPATH += $$PWD/..
 DEPENDPATH += $$PWD/../DataStructures
 
-unix|win32: LIBS += -lruby
+unix|win32: LIBS += -lruby -lboost_random
 
 INCLUDEPATH += /usr/include/ruby-1.9.1/ /usr/include/ruby-1.9.1/x86_64-linux
 DEPENDPATH += /usr/include/ruby-1.9.1/ /usr/include/ruby-1.9.1/x86_64-linux

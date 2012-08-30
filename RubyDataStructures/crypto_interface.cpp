@@ -153,7 +153,9 @@ error_code_t Crypto_init_dh_key_exchange(Crypto_dh_key_exchange_t key_exchange)
   try {
     new(key_exchange) DH::KeyExchange();
     return NO_EXCEPTION;
-  } catch(Crypto::PreconditionViolation& e) { return PRECONDITION_BASE - e.get_type(); } catch (...) {
+  } catch(Crypto::PreconditionViolation& e) {
+    return PRECONDITION_BASE - e.get_type();
+  } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
 }
@@ -184,7 +186,9 @@ error_code_t Crypto_deinit_cbc_elgamal_encrypter(Crypto_cbc_elgamal_encrypter_t 
     }
     delete static_cast<CBCElgamalEncrypter*>(encrypter);
     return NO_EXCEPTION;
-  } catch(Crypto::PreconditionViolation& e) { return PRECONDITION_BASE - e.get_type(); } catch (...) {
+  } catch(Crypto::PreconditionViolation& e) {
+    return PRECONDITION_BASE - e.get_type();
+  } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
 }
@@ -197,7 +201,9 @@ error_code_t Crypto_deinit_cbc_elgamal_decrypter(Crypto_cbc_elgamal_decrypter_t 
     }
     delete static_cast<CBCElgamalDecrypter*>(decrypter);
     return NO_EXCEPTION;
-  } catch(Crypto::PreconditionViolation& e) { return PRECONDITION_BASE - e.get_type(); } catch (...) {
+  } catch(Crypto::PreconditionViolation& e) {
+    return PRECONDITION_BASE - e.get_type();
+  } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
 }
@@ -210,7 +216,9 @@ error_code_t Crypto_deinit_cbc_aes_encrypter(Crypto_cbc_aes_encrypter_t encrypte
     }
     delete static_cast<CBCAESEncrypter*>(encrypter);
     return NO_EXCEPTION;
-  } catch(Crypto::PreconditionViolation& e) { return PRECONDITION_BASE - e.get_type(); } catch (...) {
+  } catch(Crypto::PreconditionViolation& e) {
+    return PRECONDITION_BASE - e.get_type();
+  } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
 }
@@ -223,7 +231,9 @@ error_code_t Crypto_deinit_cbc_aes_decrypter(Crypto_cbc_aes_decrypter_t decrypte
     }
     delete static_cast<CBCAESDecrypter*>(decrypter);
     return NO_EXCEPTION;
-  } catch(Crypto::PreconditionViolation& e) { return PRECONDITION_BASE - e.get_type(); } catch (...) {
+  } catch(Crypto::PreconditionViolation& e) {
+    return PRECONDITION_BASE - e.get_type();
+  } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
 }
@@ -236,7 +246,9 @@ error_code_t Crypto_deinit_elgamal_signer(Crypto_elgamal_signer_t signer)
     }
     delete static_cast<Elgamal::Signer*>(signer);
     return NO_EXCEPTION;
-  } catch(Crypto::PreconditionViolation& e) { return PRECONDITION_BASE - e.get_type(); } catch (...) {
+  } catch(Crypto::PreconditionViolation& e) {
+    return PRECONDITION_BASE - e.get_type();
+  } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
 }
@@ -249,7 +261,9 @@ error_code_t Crypto_deinit_elgamal_verifier(Crypto_elgamal_verifier_t verifier)
     }
     delete static_cast<Elgamal::Verifier*>(verifier);
     return NO_EXCEPTION;
-  } catch(Crypto::PreconditionViolation& e) { return PRECONDITION_BASE - e.get_type(); } catch (...) {
+  } catch(Crypto::PreconditionViolation& e) {
+    return PRECONDITION_BASE - e.get_type();
+  } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
 }
@@ -262,7 +276,9 @@ error_code_t Crypto_deinit_cbc_aes_signer(Crypto_cbc_aes_signer_t signer)
     }
     delete static_cast<CBCAESSigner*>(signer);
     return NO_EXCEPTION;
-  } catch(Crypto::PreconditionViolation& e) { return PRECONDITION_BASE - e.get_type(); } catch (...) {
+  } catch(Crypto::PreconditionViolation& e) {
+    return PRECONDITION_BASE - e.get_type();
+  } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
 }
@@ -275,7 +291,9 @@ error_code_t Crypto_deinit_cbc_aes_verifier(Crypto_cbc_aes_verifier_t verifier)
     }
     delete static_cast<CBCAESVerifier*>(verifier);
     return NO_EXCEPTION;
-  } catch(Crypto::PreconditionViolation& e) { return PRECONDITION_BASE - e.get_type(); } catch (...) {
+  } catch(Crypto::PreconditionViolation& e) {
+    return PRECONDITION_BASE - e.get_type();
+  } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
 }
@@ -284,11 +302,14 @@ error_code_t Crypto_deinit_dh_key_exchange(Crypto_dh_key_exchange_t dh_key_excha
 {
   try {
     if (typeid(dh_key_exchange) != typeid(DH::KeyExchange*)) {
+      std::cout << typeid(dh_key_exchange).name() << " " << typeid(DH::KeyExchange*).name() << std::endl;
       return CAST_EXCEPTION;
     }
     delete static_cast<DH::KeyExchange*>(dh_key_exchange);
     return NO_EXCEPTION;
-  } catch(Crypto::PreconditionViolation& e) { return PRECONDITION_BASE - e.get_type(); } catch (...) {
+  } catch(Crypto::PreconditionViolation& e) {
+    return PRECONDITION_BASE - e.get_type();
+  } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
 }
@@ -301,7 +322,9 @@ returned_message_size_t Crypto_cbc_elgamal_cipher_length(Crypto_cbc_elgamal_encr
       return CAST_EXCEPTION;
     }
     return static_cast<CBCElgamalEncrypter*>(encrypter)->cipher_length(plain_length);
-  } catch(Crypto::PreconditionViolation& e) { return PRECONDITION_BASE - e.get_type(); } catch (...) {
+  } catch(Crypto::PreconditionViolation& e) {
+    return PRECONDITION_BASE - e.get_type();
+  } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
 }
@@ -313,7 +336,9 @@ returned_message_size_t Crypto_cbc_elgamal_max_plain_length(Crypto_cbc_elgamal_d
       return CAST_EXCEPTION;
     }
     return static_cast<CBCElgamalDecrypter*>(decrypter)->max_plain_length(cipher_length);
-  } catch(Crypto::PreconditionViolation& e) { return PRECONDITION_BASE - e.get_type(); } catch (...) {
+  } catch(Crypto::PreconditionViolation& e) {
+    return PRECONDITION_BASE - e.get_type();
+  } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
 }
@@ -325,7 +350,9 @@ returned_message_size_t Crypto_cbc_aes_cipher_length(Crypto_cbc_aes_encrypter_t 
       return CAST_EXCEPTION;
     }
     return static_cast<CBCAESEncrypter*>(encrypter)->cipher_length(plain_length);
-  } catch(Crypto::PreconditionViolation& e) { return PRECONDITION_BASE - e.get_type(); } catch (...) {
+  } catch(Crypto::PreconditionViolation& e) {
+    return PRECONDITION_BASE - e.get_type();
+  } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
 }
@@ -337,7 +364,9 @@ returned_message_size_t Crypto_cbc_aes_max_plain_length(Crypto_cbc_aes_decrypter
       return CAST_EXCEPTION;
     }
     return static_cast<CBCAESDecrypter*>(decrypter)->max_plain_length(cipher_length);
-  } catch(Crypto::PreconditionViolation& e) { return PRECONDITION_BASE - e.get_type(); } catch (...) {
+  } catch(Crypto::PreconditionViolation& e) {
+    return PRECONDITION_BASE - e.get_type();
+  } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
 }
@@ -349,7 +378,9 @@ returned_message_size_t Crypto_elgamal_signature_length_signer(Crypto_elgamal_si
       return CAST_EXCEPTION;
     }
     return static_cast<Elgamal::Signer*>(signer)->signature_length();
-  } catch(Crypto::PreconditionViolation& e) { return PRECONDITION_BASE - e.get_type(); } catch (...) {
+  } catch(Crypto::PreconditionViolation& e) {
+    return PRECONDITION_BASE - e.get_type();
+  } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
 }
@@ -361,7 +392,9 @@ returned_message_size_t Crypto_cbc_aes_signature_length_signer(Crypto_cbc_aes_si
       return CAST_EXCEPTION;
     }
     return static_cast<CBCAESSigner*>(signer)->signature_length();
-  } catch(Crypto::PreconditionViolation& e) { return PRECONDITION_BASE - e.get_type(); } catch (...) {
+  } catch(Crypto::PreconditionViolation& e) {
+    return PRECONDITION_BASE - e.get_type();
+  } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
 }
@@ -373,7 +406,9 @@ returned_message_size_t Crypto_elgamal_signature_length_verifier(Crypto_elgamal_
       return CAST_EXCEPTION;
     }
     return static_cast<Elgamal::Verifier*>(verifier)->signature_length();
-  } catch(Crypto::PreconditionViolation& e) { return PRECONDITION_BASE - e.get_type(); } catch (...) {
+  } catch(Crypto::PreconditionViolation& e) {
+    return PRECONDITION_BASE - e.get_type();
+  } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
 }
@@ -385,7 +420,9 @@ returned_message_size_t Crypto_cbc_aes_signature_length_verifier(Crypto_cbc_aes_
       return CAST_EXCEPTION;
     }
     return static_cast<CBCAESVerifier*>(verifier)->signature_length();
-  } catch(Crypto::PreconditionViolation& e) { return PRECONDITION_BASE - e.get_type(); } catch (...) {
+  } catch(Crypto::PreconditionViolation& e) {
+    return PRECONDITION_BASE - e.get_type();
+  } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
 }
@@ -401,7 +438,9 @@ returned_message_size_t Crypto_dh_key_exchange_group_length(Crypto_dh_key_exchan
       return PRECONDITION_BASE + ConditionType::NoGroupChosen;
     }
     return ke->group_length();
-  } catch(Crypto::PreconditionViolation& e) { return PRECONDITION_BASE - e.get_type(); } catch (...) {
+  } catch(Crypto::PreconditionViolation& e) {
+    return PRECONDITION_BASE - e.get_type();
+  } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
 }
@@ -420,7 +459,9 @@ returned_message_size_t Crypto_dh_key_exchange_gen_power_length(Crypto_dh_key_ex
       ke->choose_own_part(random_device);
     }
     return ke->own_part_length();
-  } catch(Crypto::PreconditionViolation& e) { return PRECONDITION_BASE - e.get_type(); } catch (...) {
+  } catch(Crypto::PreconditionViolation& e) {
+    return PRECONDITION_BASE - e.get_type();
+  } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
 }
@@ -442,7 +483,9 @@ returned_message_size_t Crypto_dh_key_exchange_key_length(Crypto_dh_key_exchange
       return PRECONDITION_BASE + ConditionType::KeyNotReady;
     }
     return ke->key_length();
-  } catch(Crypto::PreconditionViolation& e) { return PRECONDITION_BASE - e.get_type(); } catch (...) {
+  } catch(Crypto::PreconditionViolation& e) {
+    return PRECONDITION_BASE - e.get_type();
+  } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
 }
@@ -454,7 +497,9 @@ returned_bool_t Crypto_dh_key_exchange_group_chosen(Crypto_dh_key_exchange_t key
       return CAST_EXCEPTION;
     }
     return static_cast<DH::KeyExchange*>(key_exchange)->group_chosen();
-  } catch(Crypto::PreconditionViolation& e) { return PRECONDITION_BASE - e.get_type(); } catch (...) {
+  } catch(Crypto::PreconditionViolation& e) {
+    return PRECONDITION_BASE - e.get_type();
+  } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
 }
@@ -466,7 +511,9 @@ returned_bool_t Crypto_dh_key_exchange_own_part_chosen(Crypto_dh_key_exchange_t 
       return CAST_EXCEPTION;
     }
     return static_cast<DH::KeyExchange*>(key_exchange)->own_part_chosen();
-  } catch(Crypto::PreconditionViolation& e) { return PRECONDITION_BASE - e.get_type(); } catch (...) {
+  } catch(Crypto::PreconditionViolation& e) {
+    return PRECONDITION_BASE - e.get_type();
+  } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
 }
@@ -478,7 +525,9 @@ returned_bool_t Crypto_dh_key_exchange_other_part_set(Crypto_dh_key_exchange_t k
       return CAST_EXCEPTION;
     }
     return static_cast<DH::KeyExchange*>(key_exchange)->other_part_set();
-  } catch(Crypto::PreconditionViolation& e) { return PRECONDITION_BASE - e.get_type(); } catch (...) {
+  } catch(Crypto::PreconditionViolation& e) {
+    return PRECONDITION_BASE - e.get_type();
+  } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
 }
@@ -490,7 +539,9 @@ returned_bool_t Crypto_dh_key_exchange_key_ready(Crypto_dh_key_exchange_t key_ex
       return CAST_EXCEPTION;
     }
     return static_cast<DH::KeyExchange*>(key_exchange)->key_ready();
-  } catch(Crypto::PreconditionViolation& e) { return PRECONDITION_BASE - e.get_type(); } catch (...) {
+  } catch(Crypto::PreconditionViolation& e) {
+    return PRECONDITION_BASE - e.get_type();
+  } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
 }
@@ -503,7 +554,9 @@ returned_message_size_t Crypto_cbc_elgamal_encrypt(Crypto_cbc_elgamal_encrypter_
       return CAST_EXCEPTION;
     }
     return static_cast<CBCElgamalEncrypter*>(encrypter)->encrypt(plain, length, cipher);
-  } catch(Crypto::PreconditionViolation& e) { return PRECONDITION_BASE - e.get_type(); } catch (...) {
+  } catch(Crypto::PreconditionViolation& e) {
+    return PRECONDITION_BASE - e.get_type();
+  } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
 }
@@ -515,7 +568,9 @@ returned_message_size_t Crypto_cbc_elgamal_decrypt(Crypto_cbc_elgamal_decrypter_
       return CAST_EXCEPTION;
     }
     return static_cast<CBCElgamalDecrypter*>(decrypter)->decrypt(cipher, length, plain);
-  } catch(Crypto::PreconditionViolation& e) { return PRECONDITION_BASE - e.get_type(); } catch (...) {
+  } catch(Crypto::PreconditionViolation& e) {
+    return PRECONDITION_BASE - e.get_type();
+  } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
 }
@@ -527,7 +582,9 @@ returned_message_size_t Crypto_cbc_aes_encrypt(Crypto_cbc_aes_encrypter_t encryp
       return CAST_EXCEPTION;
     }
     return static_cast<CBCAESEncrypter*>(encrypter)->encrypt(plain, length, cipher);
-  } catch(Crypto::PreconditionViolation& e) { return PRECONDITION_BASE - e.get_type(); } catch (...) {
+  } catch(Crypto::PreconditionViolation& e) {
+    return PRECONDITION_BASE - e.get_type();
+  } catch (...) {
     return UNKNOWN_EXCEPTION;
   }
 }

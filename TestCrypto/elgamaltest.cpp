@@ -97,6 +97,10 @@ void ElgamalTest::test_enc_dec_char()
   delete[] plain;
   delete[] cipher;
   delete[] replain;
+  std::cout << typeid(Encrypter).name() << std::endl;
+  std::cout << typeid(Encrypter*).name() << std::endl;
+  std::cout << typeid(encrypter).name() << std::endl;
+  std::cout << typeid(&encrypter).name() << std::endl;
 }
 
 void ElgamalTest::test_sign()
