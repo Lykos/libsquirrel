@@ -31,8 +31,7 @@ namespace Crypto {
     NoOwnPartChosen = 23,
     NoOtherPartSet = 24,
     KeyNotReady = 25,
-    StateLength = 26,
-    CipherAlignment = 27
+    StateLength = 26
   } ConditionType;
 
 #ifdef __cplusplus

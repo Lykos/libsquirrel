@@ -14,7 +14,8 @@ void AESTest::test_enc_dec()
   uchar plain[16] = "Halli hallo.";
   uchar cipher[16];
   uchar replain[16];
-  uchar key[16];
+  uchar key[16] = {0x12, 0x23, 0x53, 0x43, 0x32, 0x34, 0x34, 0x43,
+                  0x43, 0x45, 0xFF, 0xFE, 0xAB, 0xAD, 0xCC, 0xAA};
   Encrypter enc (key, 16);
   enc.encrypt(plain + 0, cipher + 0);
   Decrypter dec (key, 16);

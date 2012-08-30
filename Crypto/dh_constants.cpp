@@ -146,7 +146,7 @@ namespace Crypto {
 
     const number_t diffie_hellman_generator_4096 = 2;
 
-    const number_t diffie_hellman_generator_8192 = 3;
+    const number_t diffie_hellman_generator_8192 = 2;
 
   }
 

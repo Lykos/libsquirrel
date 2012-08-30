@@ -38,12 +38,14 @@ static const DataStructures::LongInt LONGINT_SIEVE_RANGE = SIEVE_RANGE;
     DataStructures::UniformLongIntDistribution point_dist (min, max);
     DataStructures::LongInt candidate;
     bool not_found = true;
-    bool *sieve = new bool[std::min(SIEVE_RANGE, ulong(max - min))];
+    ulong sieve_length = std::min(LONGINT_SIEVE_RANGE, max + ONE - min);
+    bool *sieve = new bool[sieve_length];
     while (not_found) {
       // Sample one point in the available range and construct a range of length SIEVE_RANGE (truncate near the ends)
       DataStructures::LongInt point = point_dist(engine);
       DataStructures::LongInt start = std::max(min, point - point % LONGINT_SIEVE_RANGE);
       uint length = std::min(max + ONE - start, LONGINT_SIEVE_RANGE);
+      assert(length < sieve_length);
       DataStructures::LongInt number = start;
       for (ulong i = 0; i < length; ++i, ++number) {
         sieve[i] = false;
