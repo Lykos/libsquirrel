@@ -9,9 +9,10 @@ include Crypto
 ENC = ElgamalEncrypter.new(KEY[:public_key], KEY[:initial_state])
 DEC = ElgamalDecrypter.new(KEY[:private_key], KEY[:initial_state])
 
-p = "Affe"
-c = ENC.encrypt(p)
-rp = DEC.decrypt(c)
-puts p == rp
-puts rp
-
+P = "Affe"
+C = ENC.encrypt(P)
+RP = DEC.decrypt(C)
+if P != RP
+puts P
+puts RP
+end

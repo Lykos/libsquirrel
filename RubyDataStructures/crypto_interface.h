@@ -85,7 +85,7 @@ error_code_t Crypto_deinit_cbc_aes_signer(Crypto_object_t* signer);
 
 error_code_t Crypto_deinit_cbc_aes_verifier(Crypto_object_t* verifier);
 
-error_code_t Crypto_deinit_dh_key_exchange(Crypto_object_t* dh_key_exchange);
+error_code_t Crypto_deinit_dh_key_exchange(Crypto_object_t* key_exchange);
 
 // Queries
 returned_message_size_t Crypto_cbc_elgamal_cipher_length(Crypto_object_t* encrypter, message_size_t plain_length);

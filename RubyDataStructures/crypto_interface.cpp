@@ -21,13 +21,13 @@
   }
 #define CAST(src, dst, type, typid) \
   TYPECHECK(src, typid); \
-  if (src == NULL) { \
+  if (src->ptr == NULL) { \
     return NO_INITIALIZE_EXCEPTION; \
   } \
   type* dst = reinterpret_cast<type*>(src->ptr);
 #define INIT_CHECK(var, typid) \
   TYPECHECK(var, typid) \
-  if (var != NULL) { \
+  if (var->ptr != NULL) { \
     return DOUBLE_INITIALIZE_EXCEPTION; \
   }
 #define BEGIN_EXCEPTIONS() try {
@@ -66,7 +66,7 @@ error_code_t Crypto_init_elgamal_key_generator(Crypto_object_t* key_generator)
   END_EXCEPTIONS();
 }
 
-error_code_t Crypto_init_elgamal_encrypter(Crypto_object_t* encrypter, const byte_t* raw_public_key, uint key_length, const byte_t* initial_state, number_size_t state_length)
+error_code_t Crypto_init_cbc_elgamal_encrypter(Crypto_object_t* encrypter, const byte_t* raw_public_key, uint key_length, const byte_t* initial_state, number_size_t state_length)
 {
   BEGIN_EXCEPTIONS();
   INIT_CHECK(encrypter, CryptoCBCElgamalEncrypter);
@@ -144,14 +144,16 @@ error_code_t Crypto_deinit_cbc_elgamal_encrypter(Crypto_object_t* encrypter)
   BEGIN_EXCEPTIONS();
   CAST(encrypter, enc, CBCElgamalEncrypter, CryptoCBCElgamalEncrypter);
   delete enc;
+  encrypter->ptr = NULL;
   END_EXCEPTIONS();
 }
 
 error_code_t Crypto_deinit_cbc_elgamal_decrypter(Crypto_object_t* decrypter)
 {
   BEGIN_EXCEPTIONS();
-  CAST(decrypter, dec, CBCElgamalDecrypter, CryptoCBCElgamalEncrypter);
+  CAST(decrypter, dec, CBCElgamalDecrypter, CryptoCBCElgamalDecrypter);
   delete dec;
+  decrypter->ptr = NULL;
   END_EXCEPTIONS();
 }
 
@@ -160,6 +162,7 @@ error_code_t Crypto_deinit_cbc_aes_encrypter(Crypto_object_t* encrypter)
   BEGIN_EXCEPTIONS();
   CAST(encrypter, enc, CBCAESEncrypter, CryptoCBCAESEncrypter);
   delete enc;
+  encrypter->ptr = NULL;
   END_EXCEPTIONS();
 }
 
@@ -168,6 +171,7 @@ error_code_t Crypto_deinit_cbc_aes_decrypter(Crypto_object_t* decrypter)
   BEGIN_EXCEPTIONS();
   CAST(decrypter, dec, CBCAESDecrypter, CryptoCBCAESEncrypter);
   delete dec;
+  decrypter->ptr = NULL;
   END_EXCEPTIONS();
 }
 
@@ -176,6 +180,7 @@ error_code_t Crypto_deinit_elgamal_signer(Crypto_object_t* signer)
   BEGIN_EXCEPTIONS();
   CAST(signer, sig, Elgamal::Signer, CryptoElgamalSigner);
   delete sig;
+  signer->ptr = NULL;
   END_EXCEPTIONS();
 }
 
@@ -184,6 +189,7 @@ error_code_t Crypto_deinit_elgamal_verifier(Crypto_object_t* verifier)
   BEGIN_EXCEPTIONS();
   CAST(verifier, ver, CBCElgamalEncrypter, CryptoElgamalVerifier);
   delete ver;
+  verifier->ptr = NULL;
   END_EXCEPTIONS();
 }
 
@@ -192,6 +198,7 @@ error_code_t Crypto_deinit_cbc_aes_signer(Crypto_object_t* signer)
   BEGIN_EXCEPTIONS();
   CAST(signer, sig, CBCAESSigner, CryptoCBCAESSigner);
   delete sig;
+  signer->ptr = NULL;
   END_EXCEPTIONS();
 }
 
@@ -200,14 +207,16 @@ error_code_t Crypto_deinit_cbc_aes_verifier(Crypto_object_t* verifier)
   BEGIN_EXCEPTIONS();
   CAST(verifier, ver, CBCAESVerifier, CryptoCBCAESVerifier);
   delete ver;
+  verifier->ptr = NULL;
   END_EXCEPTIONS();
 }
 
-error_code_t Crypto_deinit_dh_key_exchange(Crypto_object_t* dh_key_exchange)
+error_code_t Crypto_deinit_dh_key_exchange(Crypto_object_t* key_exchange)
 {
   BEGIN_EXCEPTIONS();
-  CAST(dh_key_exchange, ke, CBCElgamalEncrypter, CryptoDHKeyExchange);
+  CAST(key_exchange, ke, CBCElgamalEncrypter, CryptoDHKeyExchange);
   delete ke;
+  key_exchange->ptr = NULL;
   END_EXCEPTIONS();
 }
 

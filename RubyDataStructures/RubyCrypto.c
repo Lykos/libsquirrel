@@ -40,13 +40,13 @@
   Crypto_object_t* var; \
   Data_Get_Struct(self, Crypto_object_t, var);
 
-static VALUE Crypto;
+static VALUE Crypto = Qnil;
 
-static VALUE CryptoException;
+static VALUE CryptoException = Qnil;
 
-static VALUE ElgamalEncrypter;
+static VALUE ElgamalEncrypter = Qnil;
 
-static VALUE ElgamalDecrypter;
+static VALUE ElgamalDecrypter = Qnil;
 
 void check_error(error_code_t err)
 {
@@ -54,6 +54,8 @@ void check_error(error_code_t err)
     rb_raise(CryptoException, "Somehow an object has been used without being initialized, probably a dynamic hack in Ruby messing with C initialization.");
   } else if (err == DOUBLE_INITIALIZE_EXCEPTION) {
     rb_raise(CryptoException, "Somehow an object has been initialized twice, probably a dynamic hack in Ruby messing with C initialization.");
+  } else if (err == TYPE_EXCEPTION) {
+    rb_raise(CryptoException, "An internal type conversion has not worked.");
   } else if (err < 0) {
     rb_raise(CryptoException, "Something in the extension went wrong. Internal error code is %d.", err);
   }
@@ -96,11 +98,15 @@ byte_t* from_hex(const char* hex_string, number_size_t length) {
   return binary;
 }
 
+void ElgamalEncrypter_destroy(Crypto_object_t *encrypter)
+{
+  check_error(Crypto_deinit_cbc_elgamal_encrypter(encrypter));
+}
 
 VALUE ElgamalEncrypter_alloc(VALUE klass)
 {
   CRYPTO_ALLOC(obj, CryptoCBCElgamalEncrypter);
-  return Data_Wrap_Struct(klass, NULL, Crypto_deinit_cbc_elgamal_encrypter, obj);
+  return Data_Wrap_Struct(klass, NULL, ElgamalEncrypter_destroy, obj);
 }
 
 VALUE ElgamalEncrypter_init(VALUE self, VALUE key, VALUE state)
@@ -152,10 +158,15 @@ VALUE ElgamalEncrypter_encrypt(VALUE self, VALUE str)
   return rb_str_new((char*)cipher, cipher_length);
 }
 
+void ElgamalDecrypter_destroy(Crypto_object_t* decrypter)
+{
+  check_error(Crypto_deinit_cbc_elgamal_decrypter(decrypter));
+}
+
 VALUE ElgamalDecrypter_alloc(VALUE klass)
 {
-  CRYPTO_ALLOC(decrypter, CryptoCBCElgamalEncrypter);
-  return Data_Wrap_Struct(klass, NULL, Crypto_deinit_cbc_elgamal_decrypter, decrypter);
+  CRYPTO_ALLOC(decrypter, CryptoCBCElgamalDecrypter);
+  return Data_Wrap_Struct(klass, NULL, ElgamalDecrypter_destroy, decrypter);
 }
 
 VALUE ElgamalDecrypter_init(VALUE self, VALUE key, VALUE state)
@@ -211,10 +222,12 @@ void Init_RubyCrypto(void)
 {
   Crypto = rb_define_module("Crypto");
   CryptoException = rb_define_class("CryptoException", rb_eStandardError);
+
   ElgamalEncrypter = rb_define_class_under(Crypto, "ElgamalEncrypter", rb_cObject);
   rb_define_alloc_func(ElgamalEncrypter, ElgamalEncrypter_alloc);
   rb_define_method(ElgamalEncrypter, "initialize", ElgamalEncrypter_init, 2);
   rb_define_method(ElgamalEncrypter, "encrypt", ElgamalEncrypter_encrypt, 1);
+
   ElgamalDecrypter = rb_define_class_under(Crypto, "ElgamalDecrypter", rb_cObject);
   rb_define_alloc_func(ElgamalDecrypter, ElgamalDecrypter_alloc);
   rb_define_method(ElgamalDecrypter, "initialize", ElgamalDecrypter_init, 2);
