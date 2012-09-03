@@ -4,26 +4,9 @@
 #include "Crypto/types.h"
 #include "Crypto/Crypto_global.h"
 #include "Crypto/preconditionviolation.h"
-#include <cstring>
-#define PREC_STATE_LENGTH() PREC(StateLength, length >= state_length());
-
-namespace Crypto {
-
-  namespace CBC {
-
-    template <typename BlockCipher>
-    class CRYPTOSHARED_EXPORT Decrypter;
-
-  }
-
-}
-
-namespace std {
-
-  template <typename BlockCipher>
-  inline void swap(Crypto::CBC::Decrypter<BlockCipher>& first, Crypto::CBC::Decrypter<BlockCipher>& second);
-
-}
+#include "Crypto/conditiontype.h"
+#include <string>
+#define DEC_PREC_STATE_LENGTH() PREC(StateLength, initial_state.length() >= state_length());
 
 namespace Crypto {
 
@@ -37,14 +20,20 @@ namespace Crypto {
     private:
       BlockCipher m_block_cipher;
 
-      uint m_plain_block_size, m_cipher_block_size;
+      number_size_t m_plain_block_size, m_cipher_block_size;
 
-      byte_t* m_state, *m_block;
+      std::string m_state, m_block;
+
+      byte_t* m_tmp_plain;
 
     public:
-      inline Decrypter(BlockCipher&& block_cipher, const byte_t* initial_state, uint state_length);
+      inline Decrypter(BlockCipher&& block_cipher, std::string&& initial_state);
 
-      inline Decrypter(const BlockCipher& block_cipher, const byte_t* initial_state, uint state_length);
+      inline Decrypter(const BlockCipher& block_cipher, std::string&& initial_state);
+
+      inline Decrypter(BlockCipher&& block_cipher, const std::string& initial_state);
+
+      inline Decrypter(const BlockCipher& block_cipher, const std::string& initial_state);
 
       inline Decrypter(const Decrypter& other);
 
@@ -56,44 +45,68 @@ namespace Crypto {
 
       inline Decrypter<BlockCipher>& operator=(Decrypter&& other);
 
-      inline ulong max_plain_length(ulong cipher_length) const;
+      inline message_size_t max_plain_length(message_size_t cipher_length) const;
 
-      inline ulong plain_block_size() const { return m_plain_block_size; }
+      inline message_size_t plain_block_size() const { return m_plain_block_size; }
 
-      inline ulong cipher_block_size() const { return m_cipher_block_size; }
+      inline message_size_t cipher_block_size() const { return m_cipher_block_size; }
 
-      inline ulong state_length() const { return m_plain_block_size; }
+      inline message_size_t state_length() const { return m_plain_block_size; }
 
-      inline ulong decrypt(const byte_t* plain, ulong length, byte_t* cipher);
+      inline std::string decrypt(const std::string& plain);
 
-      inline const byte_t* get_state() const { return m_state; }
+      inline const std::string& get_state() const { return m_state; }
 
-      inline void set_state(const byte_t* new_state, uint length);
+      inline void set_state(const std::string& initial_state);
 
     };
 
     template <typename BlockCipher>
-    inline Decrypter<BlockCipher>::Decrypter(BlockCipher&& block_cipher, const byte_t* initial_state, uint length):
+    inline Decrypter<BlockCipher>::Decrypter(BlockCipher&& block_cipher, std::string&& initial_state):
       m_block_cipher (block_cipher),
       m_plain_block_size (block_cipher.plain_block_size()),
       m_cipher_block_size (block_cipher.cipher_block_size()),
-      m_state (new byte_t[m_plain_block_size]),
-      m_block (new byte_t[m_plain_block_size])
+      m_state (initial_state),
+      m_block (m_plain_block_size, 0),
+      m_tmp_plain (new byte_t[m_plain_block_size])
     {
-      PREC_STATE_LENGTH();
-      memcpy(m_state, initial_state, m_plain_block_size);
+      DEC_PREC_STATE_LENGTH();
     }
 
     template <typename BlockCipher>
-    inline Decrypter<BlockCipher>::Decrypter(const BlockCipher& block_cipher, const byte_t* initial_state, uint length):
+    inline Decrypter<BlockCipher>::Decrypter(const BlockCipher& block_cipher, std::string&& initial_state):
       m_block_cipher (block_cipher),
       m_plain_block_size (block_cipher.plain_block_size()),
       m_cipher_block_size (block_cipher.cipher_block_size()),
-      m_state (new byte_t[m_plain_block_size]),
-      m_block (new byte_t[m_plain_block_size])
+      m_state (initial_state),
+      m_block (m_plain_block_size, 0),
+      m_tmp_plain (new byte_t[m_plain_block_size])
     {
-      PREC_STATE_LENGTH();
-      memcpy(m_state, initial_state, m_plain_block_size);
+      DEC_PREC_STATE_LENGTH();
+    }
+
+    template <typename BlockCipher>
+    inline Decrypter<BlockCipher>::Decrypter(BlockCipher&& block_cipher, const std::string& initial_state):
+      m_block_cipher (block_cipher),
+      m_plain_block_size (block_cipher.plain_block_size()),
+      m_cipher_block_size (block_cipher.cipher_block_size()),
+      m_state (initial_state),
+      m_block (m_plain_block_size, 0),
+      m_tmp_plain (new byte_t[m_plain_block_size])
+    {
+      DEC_PREC_STATE_LENGTH();
+    }
+
+    template <typename BlockCipher>
+    inline Decrypter<BlockCipher>::Decrypter(const BlockCipher& block_cipher, const std::string& initial_state):
+      m_block_cipher (block_cipher),
+      m_plain_block_size (block_cipher.plain_block_size()),
+      m_cipher_block_size (block_cipher.cipher_block_size()),
+      m_state (initial_state),
+      m_block (m_plain_block_size, 0),
+      m_tmp_plain (new byte_t[m_plain_block_size])
+    {
+      DEC_PREC_STATE_LENGTH();
     }
 
     template <typename BlockCipher>
@@ -101,26 +114,27 @@ namespace Crypto {
       m_block_cipher (other.m_block_cipher),
       m_plain_block_size (other.m_plain_block_size),
       m_cipher_block_size (other.m_cipher_block_size),
-      m_state (new byte_t[m_plain_block_size]),
-      m_block (new byte_t[m_plain_block_size])
-    {
-      memcpy(m_state, other.m_state, m_block_cipher.plain_block_size());
-    }
+      m_state (other.m_state),
+      m_block (m_plain_block_size, 0),
+      m_tmp_plain (new byte_t[m_plain_block_size])
+    {}
 
     template <typename BlockCipher>
     inline Decrypter<BlockCipher>::Decrypter(Decrypter&& other):
       m_block_cipher (other.m_block_cipher),
       m_plain_block_size (other.m_plain_block_size),
       m_cipher_block_size (other.m_cipher_block_size),
-      m_state (other.m_state),
-      m_block (other.m_block)
-    {}
+      m_state (std::move(other.m_state)),
+      m_block (std::move(other.m_block)),
+      m_tmp_plain (other.m_tmp_plain)
+    {
+      other.m_tmp_plain = NULL;
+    }
 
     template <typename BlockCipher>
     inline Decrypter<BlockCipher>::~Decrypter()
     {
-      delete[] m_block;
-      delete[] m_state;
+      delete[] m_tmp_plain;
     }
 
     template <typename BlockCipher>
@@ -130,15 +144,14 @@ namespace Crypto {
         return *this;
       }
       if (m_plain_block_size != other.m_plain_block_size) {
-        delete[] m_state;
-        delete[] m_block;
-        m_state = new byte_t[other.m_plain_block_size];
-        m_block = new byte_t[other.m_plain_block_size];
+        m_block = std::string(other.m_plain_block_size, 0);
+        delete[] m_tmp_plain;
+        m_tmp_plain = new byte_t[other.m_plain_block_size];
       }
       m_block_cipher = other.m_block_cipher;
       m_plain_block_size = other.m_plain_block_size;
       m_cipher_block_size = other.m_cipher_block_size;
-      memcpy(m_state, other.m_state, m_block_cipher.plain_block_size());
+      m_state = other.m_state;
       return *this;
     }
 
@@ -149,10 +162,10 @@ namespace Crypto {
         return *this;
       }
       if (m_plain_block_size != other.m_plain_block_size) {
-        m_state = other.m_state;
-        m_block = other.m_block;
-        other.m_state = NULL;
-        other.m_block = NULL;
+        m_state = std::move(other.m_state);
+        m_block = std::move(other.m_block);
+        m_tmp_plain = other.m_tmp_plain;
+        other.m_tmp_plain = NULL;
       }
       m_block_cipher = std::move(other.m_block_cipher);
       m_plain_block_size = other.m_plain_block_size;
@@ -161,7 +174,7 @@ namespace Crypto {
     }
 
     template <typename BlockCipher>
-    inline ulong Decrypter<BlockCipher>::max_plain_length(ulong cipher_length) const
+    inline message_size_t Decrypter<BlockCipher>::max_plain_length(message_size_t cipher_length) const
     {
       if (cipher_length % m_cipher_block_size != 0) {
         // Invalid ciphertext, treat message as empty message
@@ -171,61 +184,46 @@ namespace Crypto {
     }
 
     template <typename BlockCipher>
-    inline ulong Decrypter<BlockCipher>::decrypt(const byte_t* cipher, ulong cipher_length, byte_t* plain)
+    inline std::string Decrypter<BlockCipher>::decrypt(const std::string& cipher)
     {
-      if (cipher_length % m_cipher_block_size != 0) {
-        // Invalid ciphertext, treat message as empty message
-        return 0;
-      }
-      ulong blocks = cipher_length / m_cipher_block_size;
-      for (ulong i = 0; i < blocks; ++i) {
-        if (!m_block_cipher.decrypt(cipher + i * m_cipher_block_size, m_block)) {
+      message_size_t cipher_length = cipher.length();
+      PREC(MessageLength, cipher_length % m_cipher_block_size == 0);
+      message_size_t blocks = cipher_length / m_cipher_block_size;
+      std::string plain (blocks * m_plain_block_size, 0);
+      for (message_size_t i = 0; i < blocks; ++i) {
+        if (!m_block_cipher.decrypt((const byte_t*)cipher.substr(i * m_cipher_block_size, m_cipher_block_size).data(), m_tmp_plain)) {
           // Invalid ciphertext, treat message as empty message
-          return 0;
+          return std::string();
         }
+        m_block.replace(0, m_plain_block_size, (const char*) m_tmp_plain, m_plain_block_size);
         // It should be clear that the cipher block size is at least the plain block size.
-        for (uint j = 0; j < m_plain_block_size; ++j) {
+        for (number_size_t j = 0; j < m_plain_block_size; ++j) {
           m_block[j] ^= m_state[j];
           m_state[j] = cipher[i * m_cipher_block_size + j];
         }
         if (i < blocks - 1) {
-          memcpy(plain + i * m_plain_block_size, m_block, m_plain_block_size);
+          plain.replace(i * m_plain_block_size, m_plain_block_size, m_block);
         }
       }
-      ulong remaining_length = m_plain_block_size - 1;
+      message_size_t remaining_length = m_plain_block_size - 1;
       while (remaining_length > 0 && m_block[remaining_length] == 0) {
         --remaining_length;
       }
-      if (m_block[remaining_length] != 0x80) {
-        // Invalid ciphertext, treat message as empty message
-        return 0;
-      }
-      memcpy(plain + (blocks - 1) * m_plain_block_size, m_block, remaining_length);
-      return (blocks - 1) * m_plain_block_size + remaining_length;
+      PREC(MessagePadding, (byte_t)m_block[remaining_length] == 0x80);
+      plain.replace((blocks - 1) * m_plain_block_size, m_plain_block_size, m_block.substr(0, remaining_length));
+      return plain;
     }
 
     template <typename BlockCipher>
-    inline void Decrypter<BlockCipher>::set_state(const byte_t* new_state, uint length)
+    inline void Decrypter<BlockCipher>::set_state(const std::string& initial_state)
     {
-      PREC_STATE_LENGTH();
-      memcpy(m_state, new_state, state_length());
+      DEC_PREC_STATE_LENGTH();
+      m_state.replace(0, m_plain_block_size, initial_state);
     }
 
   } // namespace CBC
 
 } // namespace Crypto
-
-namespace std {
-
-  template <typename BlockCipher>
-  inline void swap(Crypto::CBC::Decrypter<BlockCipher>& first, Crypto::CBC::Decrypter<BlockCipher>& second)
-  {
-    swap(first.m_block_cipher, second.m_block_cipher);
-    swap(first.m_plain_block_size, second.m_plain_block_size);
-    swap(first.m_state, second.m_state);
-  }
-
-}
 
 #endif // CRYPTO_CBC_DECRYPTER_H
 

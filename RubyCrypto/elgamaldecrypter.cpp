@@ -24,8 +24,7 @@ ElgamalDecrypter::ElgamalDecrypter(const string& private_key, const string& init
   }
   m_decrypter = new CBC::Decrypter<Elgamal::Decrypter>(
         Elgamal::Decrypter((const uchar*)binary_private_key.data(), binary_private_key.size()),
-        (const uchar*)binary_initial_state.data(),
-        binary_initial_state.size());
+        binary_initial_state);
 }
 
 ElgamalDecrypter::~ElgamalDecrypter()
@@ -35,11 +34,7 @@ ElgamalDecrypter::~ElgamalDecrypter()
 
 string ElgamalDecrypter::decrypt(const string& cipher)
 {
-  uchar* plain = new uchar[m_decrypter->max_plain_length(cipher.size())];
-  ulong plain_length = m_decrypter->decrypt((const uchar*)cipher.data(), cipher.size(), (uchar*)plain);
-  string result ((const char*)plain, plain_length);
-  delete[] plain;
-  return result;
+  return m_decrypter->decrypt(cipher);
 }
 
 Rice::Data_Type<ElgamalDecrypter> rb_cElgamalDecrypter;

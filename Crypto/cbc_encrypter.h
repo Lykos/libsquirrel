@@ -5,28 +5,9 @@
 #include "Crypto/conditiontype.h"
 #include "Crypto/preconditionviolation.h"
 #include "Crypto/types.h"
-#include <cstring>
 #include <cassert>
 #include <string>
 #define ENC_PREC_STATE_LENGTH() PREC(StateLength, initial_state.length() >= state_length());
-
-namespace Crypto {
-
-  namespace CBC {
-
-    template <typename BlockCipher>
-    class CRYPTOSHARED_EXPORT Encrypter;
-
-  }
-
-}
-
-namespace std {
-
-  template <typename BlockCipher>
-  inline void swap(Crypto::CBC::Encrypter<BlockCipher>& first, Crypto::CBC::Encrypter<BlockCipher>& second);
-
-}
 
 namespace Crypto {
 
@@ -47,6 +28,10 @@ namespace Crypto {
       byte_t* m_tmp_cipher;
 
     public:
+      inline Encrypter(BlockCipher&& block_cipher, std::string&& initial_state);
+
+      inline Encrypter(const BlockCipher& block_cipher, std::string&& initial_state);
+
       inline Encrypter(BlockCipher&& block_cipher, const std::string& initial_state);
 
       inline Encrypter(const BlockCipher& block_cipher, const std::string& initial_state);
@@ -55,7 +40,7 @@ namespace Crypto {
 
       inline Encrypter(Encrypter&& other);
 
-      inline ~Encrypter() {}
+      inline ~Encrypter();
 
       inline Encrypter<BlockCipher>& operator=(const Encrypter& other);
 
@@ -78,6 +63,30 @@ namespace Crypto {
     };
 
     template <typename BlockCipher>
+    inline Encrypter<BlockCipher>::Encrypter(BlockCipher&& block_cipher, std::string&& initial_state):
+      m_block_cipher (block_cipher),
+      m_plain_block_size (block_cipher.plain_block_size()),
+      m_cipher_block_size (block_cipher.cipher_block_size()),
+      m_state (initial_state),
+      m_block (m_plain_block_size, 0),
+      m_tmp_cipher (new byte_t[m_cipher_block_size])
+    {
+      ENC_PREC_STATE_LENGTH();
+    }
+
+    template <typename BlockCipher>
+    inline Encrypter<BlockCipher>::Encrypter(const BlockCipher& block_cipher, std::string&& initial_state):
+      m_block_cipher (block_cipher),
+      m_plain_block_size (block_cipher.plain_block_size()),
+      m_cipher_block_size (block_cipher.cipher_block_size()),
+      m_state (initial_state),
+      m_block (m_plain_block_size, 0),
+      m_tmp_cipher (new byte_t[m_cipher_block_size])
+    {
+      ENC_PREC_STATE_LENGTH();
+    }
+
+    template <typename BlockCipher>
     inline Encrypter<BlockCipher>::Encrypter(BlockCipher&& block_cipher, const std::string& initial_state):
       m_block_cipher (block_cipher),
       m_plain_block_size (block_cipher.plain_block_size()),
@@ -95,7 +104,8 @@ namespace Crypto {
       m_plain_block_size (block_cipher.plain_block_size()),
       m_cipher_block_size (block_cipher.cipher_block_size()),
       m_state (initial_state),
-      m_block (m_plain_block_size, 0)
+      m_block (m_plain_block_size, 0),
+      m_tmp_cipher (new byte_t[m_cipher_block_size])
     {
       ENC_PREC_STATE_LENGTH();
     }
@@ -106,7 +116,8 @@ namespace Crypto {
       m_plain_block_size (other.m_plain_block_size),
       m_cipher_block_size (other.m_cipher_block_size),
       m_state (other.m_state),
-      m_block (m_plain_block_size, '0')
+      m_block (m_plain_block_size, 0),
+      m_tmp_cipher (new byte_t[m_cipher_block_size])
     {}
 
     template <typename BlockCipher>
@@ -115,8 +126,16 @@ namespace Crypto {
       m_plain_block_size (other.m_plain_block_size),
       m_cipher_block_size (other.m_cipher_block_size),
       m_state (std::move(other.m_state)),
-      m_block (std::move(other.m_block))
+      m_block (std::move(other.m_block)),
+      m_tmp_cipher (other.m_tmp_cipher)
     {
+      other.m_tmp_cipher = NULL;
+    }
+
+    template <typename BlockCipher>
+    inline Encrypter<BlockCipher>::~Encrypter()
+    {
+      delete[] m_tmp_cipher;
     }
 
     template <typename BlockCipher>
@@ -126,15 +145,16 @@ namespace Crypto {
         return *this;
       }
       if (m_plain_block_size != other.m_plain_block_size) {
-        delete[] m_state;
-        delete[] m_block;
-        m_state = new byte_t[other.m_plain_block_size];
-        m_block = new byte_t[other.m_plain_block_size];
+        m_block = std::string(other.m_plain_block_size, 0);
+      }
+      if (m_cipher_block_size != other.m_cipher_block_size) {
+        delete[] m_tmp_cipher;
+        m_tmp_cipher = new byte_t[other.m_cipher_block_size];
       }
       m_block_cipher = other.m_block_cipher;
       m_plain_block_size = other.m_plain_block_size;
       m_cipher_block_size = other.m_cipher_block_size;
-      memcpy(m_state, other.m_state, m_block_cipher.plain_block_size());
+      m_state = other.m_state;
       return *this;
     }
 
@@ -145,14 +165,16 @@ namespace Crypto {
         return *this;
       }
       if (m_plain_block_size != other.m_plain_block_size) {
-        m_state = other.m_state;
-        m_block = other.m_block;
-        other.m_state = NULL;
-        other.m_block = NULL;
+        m_block = std::move(other.m_block);
+      }
+      if (m_cipher_block_size != other.m_cipher_block_size) {
+        m_tmp_cipher = other.m_tmp_cipher;
+        other.m_tmp_cipher = NULL;
       }
       m_block_cipher = std::move(other.m_block_cipher);
       m_plain_block_size = other.m_plain_block_size;
       m_cipher_block_size = other.m_cipher_block_size;
+      m_state = std::move(other.m_state);
       return *this;
     }
 
@@ -179,9 +201,9 @@ namespace Crypto {
       for (message_size_t i = 0; i < blocks; ++i) {
         if (i == blocks - 1) {
           message_size_t remaining_length = plain_length % m_plain_block_size;
-          m_block.replace(0, m_plain_block_size, plain.substr(i * m_plain_block_size, remaining_length));
+          m_block.replace(0, remaining_length, plain.substr(i * m_plain_block_size, remaining_length));
           m_block[remaining_length] = 0x80;
-          m_block.replace(remaining_length + 1, m_plain_block_size - remaining_length - 1, m_plain_block_size - remaining_length - 1, 0);
+          m_block.replace(remaining_length + 1, m_plain_block_size - remaining_length - 1, m_plain_block_size - remaining_length - 1, (char)0);
         } else {
           m_block.replace(0, m_plain_block_size, plain.substr(i * m_plain_block_size, m_plain_block_size));
         }
@@ -208,17 +230,5 @@ namespace Crypto {
   } // namespace CBC
 
 } // namespace Crypto
-
-namespace std {
-
-  template <typename BlockCipher>
-  inline void swap(Crypto::CBC::Encrypter<BlockCipher>& first, Crypto::CBC::Encrypter<BlockCipher>& second)
-  {
-    swap(first.m_block_cipher, second.m_block_cipher);
-    swap(first.m_plain_block_size, second.m_plain_block_size);
-    swap(first.m_state, second.m_state);
-  }
-
-}
 
 #endif // CRYPTO_CBC_ENCRYPTER_H

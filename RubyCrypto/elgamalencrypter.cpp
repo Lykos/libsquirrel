@@ -7,6 +7,7 @@
 #include "hexconverters.h"
 #include <rice/Data_Type.hpp>
 #include <rice/Constructor.hpp>
+#include <iostream>
 
 using namespace std;
 using namespace Rice;
