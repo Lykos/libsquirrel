@@ -4,6 +4,7 @@
 #include "Crypto/elgamal_types.h"
 #include "Crypto/longintconverter.h"
 #include "Crypto/sha2hasher.h"
+#include <string>
 
 namespace Crypto {
 
@@ -19,7 +20,7 @@ namespace Crypto {
       bool verify(const number_t& message, const number_t& r, const number_t& s) const;
 
       // Assumes that the signature is directly before the end of the message.
-      bool verify(const byte_t* message, ulong length) const;
+      bool verify(const std::string& message) const;
 
       number_size_t signature_length() const { return m_signature_length; }
 

@@ -15,8 +15,6 @@ namespace Crypto {
     class CRYPTOSHARED_EXPORT Encrypter
     {
     public:
-      typedef LongIntConverter::number_size_t number_size_t;
-
       typedef struct {
         number_t cipher;
         number_t gen_power;
@@ -39,7 +37,7 @@ namespace Crypto {
 
       cipher_t encrypt(const number_t& plain);
 
-      void encrypt(const byte_t* plain, byte_t* cipher);
+      std::string encrypt(const std::string& plain);
 
       number_size_t plain_block_size() const { return m_plain_length; }
 

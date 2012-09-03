@@ -1,5 +1,8 @@
-#include "elgamal_verifier.h"
-#include "elgamal_converter.h"
+#include "Crypto/elgamal_verifier.h"
+#include "Crypto/elgamal_converter.h"
+#include <string>
+
+using namespace std;
 
 namespace Crypto {
 
@@ -37,8 +40,10 @@ namespace Crypto {
       return g_h == (g_a_r * r_s).mod(m_modulus);
     }
 
-    bool Verifier::verify(const byte_t* message, ulong length) const
+    bool Verifier::verify(const string& message) const
     {
+      number_size_t length = message.length();
+
       // If message is too short for a signature, reject immediately.
       if (length < m_signature_length) {
         return false;
@@ -46,11 +51,10 @@ namespace Crypto {
 
       // Read numbers
       byte_t hash[32];
-      hasher.hash(message, length - m_signature_length, hash);
-      const byte_t* signature = message + length - m_signature_length;
-      number_t hash_number = m_converter.read_number(hash, 32);
-      number_t r = m_converter.read_number(signature, m_r_length);
-      number_t s = m_converter.read_number(signature + m_r_length, m_s_length);
+      hasher.hash((const byte_t*)message.substr(0, length - m_signature_length).data(), length - m_signature_length, hash);
+      number_t hash_number = m_converter.read_number(string((const char*)hash));
+      number_t r = m_converter.read_number(message.substr(length, m_r_length));
+      number_t s = m_converter.read_number(message.substr(length + m_r_length, m_s_length));
 
       // Verify
       return verify(hash_number, r, s);

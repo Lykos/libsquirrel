@@ -2,6 +2,8 @@
 #include "DataStructures/arithmetichelper.h"
 #include "Crypto/elgamal_converter.h"
 #include "Crypto/longintconverter.h"
+#include "Crypto/preconditionviolation.h"
+#include "Crypto/conditiontype.h"
 
 namespace Crypto {
 
@@ -36,21 +38,18 @@ namespace Crypto {
       return (key * cipher) % m_modulus;
     }
 
-    bool Decrypter::decrypt(const byte_t* cipher, byte_t* plain) const
+    std::string Decrypter::decrypt(const std::string& cipher) const
     {
       // Convert to numbers
-      number_t cipher_number = m_converter.read_number(cipher, m_cipher_part_length);
-      number_t cipher_power = m_converter.read_number(cipher + m_cipher_part_length, m_key_part_length);
+      number_t cipher_number = m_converter.read_number(cipher.substr(0, m_cipher_part_length));
+      number_t cipher_power = m_converter.read_number(cipher.substr(m_cipher_part_length, m_key_part_length));
 
       // Decrypt
       number_t plain_number = decrypt(cipher_number, cipher_power);
 
       // Convert back
-      if (m_converter.required_length(plain_number) > m_plain_length) {
-        return false;
-      }
-      m_converter.write_number(plain_number, plain, m_plain_length);
-      return true;
+      PREC(PlainBlockLength, m_converter.required_length(plain_number) <= m_plain_length);
+      return m_converter.write_number(plain_number, m_plain_length);
     }
     
   } // namespace Elgamal

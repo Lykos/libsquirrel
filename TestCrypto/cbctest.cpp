@@ -36,21 +36,11 @@ void CBCTest::test_enc_dec()
   for (uint i = 0; i < plain_length; ++i) {
     plain[i] = dist(rng);
   }
-  AES::Encrypter aes_enc (key, 16);
-  AES::Decrypter aes_dec (key, 16);
-  CBC::Encrypter<AES::Encrypter> enc (aes_enc, initial1, 16);
-  CBC::Decrypter<AES::Decrypter> dec (aes_dec, initial2, 16);
-  ulong cipher_length = enc.cipher_length(plain_length);
-  string cipher (cipher_length, 0);
-  enc.encrypt(plain, plain_length, cipher);
-  string replain (dec.max_plain_length(cipher_length), 0);
-  ulong replain_length = dec.decrypt(cipher, cipher_length, replain);
-  QCOMPARE(replain_length, plain_length);
-  for (uint i = 0; i < plain_length; ++i) {
-    QCOMPARE(plain[i], replain[i]);
-  }
-
-  delete[] plain;
-  delete[] cipher;
-  delete[] replain;
+  AES::Encrypter aes_enc (key);
+  AES::Decrypter aes_dec (key);
+  CBC::Encrypter<AES::Encrypter> enc (aes_enc, initial1);
+  CBC::Decrypter<AES::Decrypter> dec (aes_dec, initial2);
+  string cipher = enc.encrypt(plain);
+  string replain = dec.decrypt(cipher);
+  QCOMPARE(replain, plain);
 }

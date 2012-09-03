@@ -13,7 +13,7 @@
   pos += length_length; \
   length -= length_length; \
   PREC(errl, length >= var_length); \
-  var = m_converter.read_number((const byte_t*)raw.substr(pos, var_length).data(), var_length); \
+  var = m_converter.read_number(raw.substr(pos, var_length)); \
   pos += var_length; \
   length -= var_length; \
 }

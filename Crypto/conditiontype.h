@@ -31,7 +31,8 @@ namespace Crypto {
     KeyNotReady,
     StateLength,
     MessagePadding,
-    MessageLength
+    MessageLength,
+    PlainBlockLength
   };
 
 }

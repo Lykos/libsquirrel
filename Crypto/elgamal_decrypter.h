@@ -4,6 +4,7 @@
 #include "Crypto/Crypto_global.h"
 #include "Crypto/elgamal_types.h"
 #include "Crypto/longintconverter.h"
+#include <string>
 
 namespace Crypto {
 
@@ -12,15 +13,13 @@ namespace Crypto {
     class CRYPTOSHARED_EXPORT Decrypter
     {
     public:
-      typedef LongIntConverter::number_size_t number_size_t;
-
       explicit Decrypter(const private_key_t& private_key);
 
       Decrypter(const std::string& raw_private_key);
 
       number_t decrypt(const number_t& cipher, const number_t& other_gen_power) const;
 
-      bool decrypt(const byte_t* cipher_text, byte_t* plain_text) const;
+      std::string decrypt(const std::string& cipher_text) const;
 
       number_size_t plain_block_size() const { return m_plain_length; }
 

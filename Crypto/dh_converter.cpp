@@ -33,10 +33,7 @@ namespace Crypto {
     std::string Converter::write_number(const number_t& number) const
     {
       number_size_t number_length = m_converter.required_length(number);
-      byte_t *raw_number = new byte_t[number_length];
-      m_converter.write_number(number, raw_number + length_length, number_length);
-      std::string number_string ((const char*)raw_number);
-      return write_length(number_length) + number_string;
+      return write_length(number_length) + m_converter.write_number(number, number_length);
     }
 
     // We use big endian format
@@ -47,10 +44,10 @@ namespace Crypto {
 
     std::string Converter::write_length(number_size_t length) const
     {
-      return std::string({(length >> 3 * CHAR_BIT) & 0xFF,
-                         (length >> 2 * CHAR_BIT) & 0xFF,
-                         (length >> CHAR_BIT) & 0xFF,
-                         length & 0xFF});
+      return std::string({(char)((length >> 3 * CHAR_BIT) & 0xFF),
+                         (char)((length >> 2 * CHAR_BIT) & 0xFF),
+                         (char)((length >> CHAR_BIT) & 0xFF),
+                         (char)(length & 0xFF)});
     }
 
   } // namespace Elgamal

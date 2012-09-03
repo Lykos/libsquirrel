@@ -191,11 +191,7 @@ namespace Crypto {
       message_size_t blocks = cipher_length / m_cipher_block_size;
       std::string plain (blocks * m_plain_block_size, 0);
       for (message_size_t i = 0; i < blocks; ++i) {
-        if (!m_block_cipher.decrypt((const byte_t*)cipher.substr(i * m_cipher_block_size, m_cipher_block_size).data(), m_tmp_plain)) {
-          // Invalid ciphertext, treat message as empty message
-          return std::string();
-        }
-        m_block.replace(0, m_plain_block_size, (const char*) m_tmp_plain, m_plain_block_size);
+        m_block.replace(0, m_plain_block_size, m_block_cipher.decrypt(cipher.substr(i * m_cipher_block_size, m_cipher_block_size)));
         // It should be clear that the cipher block size is at least the plain block size.
         for (number_size_t j = 0; j < m_plain_block_size; ++j) {
           m_block[j] ^= m_state[j];

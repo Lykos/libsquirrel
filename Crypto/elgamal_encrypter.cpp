@@ -1,6 +1,9 @@
 #include "Crypto/elgamal_encrypter.h"
 #include "Crypto/elgamal_converter.h"
 #include "Crypto/longintconverter.h"
+#include <string>
+
+using namespace std;
 
 namespace Crypto {
 
@@ -110,17 +113,17 @@ namespace Crypto {
       return {cipher, own_gen_power};
     }
 
-    void Encrypter::encrypt(const byte_t* plain, byte_t* cipher)
+    string Encrypter::encrypt(const string& plain)
     {
       // Convert to numbers
-      number_t plain_number = m_converter.read_number(plain, m_plain_length);
+      number_t plain_number = m_converter.read_number(plain);
 
       // Encrypt and generate additional key part
       cipher_t cipher_pair = encrypt(plain_number);
 
       // Convert back back
-      m_converter.write_number(cipher_pair.cipher, cipher, m_cipher_part_length);
-      m_converter.write_number(cipher_pair.gen_power, cipher + m_cipher_part_length, m_key_part_length);
+      return m_converter.write_number(cipher_pair.cipher, m_cipher_part_length)
+          + m_converter.write_number(cipher_pair.gen_power, m_key_part_length);
     }
     
   } // namespace Elgamal

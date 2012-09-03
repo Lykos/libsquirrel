@@ -6,6 +6,8 @@
 #include "sha2hasher.h"
 #include <string>
 
+using namespace std;
+
 namespace Crypto {
 
   namespace Elgamal {
@@ -115,20 +117,19 @@ namespace Crypto {
       return {r, s};
     }
 
-    ulong Signer::sign(byte_t* message, ulong length)
+    void Signer::sign(string& message)
     {
       // Generate hash of message
       byte_t hash[32];
-      hasher.hash(message, length, hash + 0);
-      number_t hash_number = m_converter.read_number(hash, 32);
+      hasher.hash((const byte_t*)message.data(), message.length(), hash + 0);
+      number_t hash_number = m_converter.read_number(string((const char*)hash));
 
       // Sign hash
       signature_t sig = sign(hash_number);
 
       // Append signature
-      m_converter.write_number(sig.r, message + length, m_r_length);
-      m_converter.write_number(sig.s, message + length + m_r_length, m_s_length);
-      return length + m_signature_length;
+      message.append(m_converter.write_number(sig.r, m_r_length));
+      message.append(m_converter.write_number(sig.s, m_s_length));
     }
     
   } // namespace Elgamal

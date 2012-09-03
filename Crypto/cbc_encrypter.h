@@ -210,8 +210,7 @@ namespace Crypto {
         for (number_size_t j = 0; j < m_plain_block_size; ++j) {
           m_block[j] ^= m_state[j];
         }
-        m_block_cipher.encrypt((const byte_t*)m_block.data(), m_tmp_cipher);
-        cipher.replace(i * m_cipher_block_size, m_cipher_block_size, (const char*)m_tmp_cipher, m_cipher_block_size);
+        cipher.replace(i * m_cipher_block_size, m_cipher_block_size, m_block_cipher.encrypt(m_block));
         // It should be clear that the cipher block size is at least the plain block size.
         for (number_size_t j = 0; j < m_plain_block_size; ++j) {
           m_state[j] = cipher[i * m_cipher_block_size + j];

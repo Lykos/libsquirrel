@@ -3,6 +3,7 @@
 
 #include "Crypto/Crypto_global.h"
 #include "Crypto/preconditionviolation.h"
+#include "Crypto/types.h"
 #include "DataStructures/longint.h"
 
 namespace Crypto {
@@ -10,19 +11,15 @@ namespace Crypto {
   class LongIntConverter
   {
   public:
-    typedef u_int8_t byte_t;
-
-    typedef u_int32_t number_size_t;
-
     // Bytes that fit into this number
     static number_size_t fitting_length(const DataStructures::LongInt& number);
 
     // Bytes required to store this number
     static number_size_t required_length(const DataStructures::LongInt& number);
 
-    DataStructures::LongInt read_number(const u_int8_t* text, number_size_t length) const;
+    DataStructures::LongInt read_number(const std::string& text) const;
 
-    void write_number(const DataStructures::LongInt& number, u_int8_t* text, number_size_t length) const throw(PreconditionViolation);
+    std::string write_number(const DataStructures::LongInt& number, number_size_t length) const throw(PreconditionViolation);
   };
   
 } // namespace Crypto
