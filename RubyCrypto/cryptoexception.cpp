@@ -17,8 +17,14 @@ void handle(const Crypto::PreconditionViolation& e)
 {
   char const* error_message;
   switch (e.get_type()) {
-  case KeyLength:
-    error_message = "Invalid key length.";
+  case ElgamalKeyLength:
+    error_message = "Invalid Elgamal key length.";
+    break;
+  case AESKeyLength:
+    error_message = "Invalid AES key length";
+    break;
+  case DHKeyLength:
+    error_message = "Invalid DH key length";
     break;
   case GroupModulusLengthLength:
     error_message = "The group string is too short to store the length of the modulus.";
@@ -94,6 +100,15 @@ void handle(const Crypto::PreconditionViolation& e)
     break;
   case StateLength:
     error_message = "The length of the given initial state is too short.";
+    break;
+  case MessagePadding:
+    error_message = "The padding of the message has an invalid format";
+    break;
+  case MessageLength:
+    error_message = "The cipher has a length which is not divisible by the block size.";
+    break;
+  case PlainBlockLength:
+    error_message = "The decrypted plain text is too big for a block.";
     break;
   default:
     throw Exception(rb_eCryptoException, "Unknown exception thrown in extension. Internal error code is %d", int(e.get_type()));

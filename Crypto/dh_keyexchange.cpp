@@ -16,7 +16,7 @@ namespace Crypto {
 
     void KeyExchange::choose_group(uint number_bits)
     {
-      PREC(KeyLength, m_key_generator.valid_key_bits(number_bits));
+      PREC(DHKeyLength, m_key_generator.valid_key_bits(number_bits));
       m_own_part_chosen = false;
       m_other_part_set = false;
       m_key_ready = false;

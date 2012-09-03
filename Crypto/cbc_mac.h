@@ -3,7 +3,7 @@
 
 #include "Crypto/cbc_encrypter.h"
 #include "Crypto/types.h"
-#include <cstring>
+#include <string>
 
 namespace Crypto {
 
@@ -13,18 +13,22 @@ namespace Crypto {
     class MAC
     {
     public:
-      inline MAC(BlockCipher&& block_cipher, const byte_t* initial_state, uint state_length);
+      inline MAC(BlockCipher&& block_cipher, std::string&& initial_state);
 
-      inline MAC(const BlockCipher& block_cipher, const byte_t* initial_state, uint state_length);
+      inline MAC(const BlockCipher& block_cipher, std::string&& initial_state);
 
-      inline uint signature_length() const { return m_encrypter.plain_block_size(); }
+      inline MAC(BlockCipher&& block_cipher, const std::string& initial_state);
+
+      inline MAC(const BlockCipher& block_cipher, const std::string& initial_state);
+
+      inline number_size_t signature_length() const { return m_encrypter.plain_block_size(); }
 
       // Appends the MAC directly after the end of the message. Note that this changes the state.
-      inline ulong sign(byte_t* message, ulong length);
+      inline void sign(std::string& message);
 
       // Assumes that the MAC is directly before the end of the message. Note that this changes the state.
       // In case of failure, the state is undefined.
-      inline bool verify(const byte_t* message, ulong length);
+      inline bool verify(const std::string& message);
 
     private:
       CBC::Encrypter<BlockCipher> m_encrypter;
@@ -32,39 +36,44 @@ namespace Crypto {
     };
 
     template <typename BlockCipher>
-    inline MAC<BlockCipher>::MAC(BlockCipher&& block_cipher, const byte_t *initial_state, uint state_length):
-      m_encrypter (block_cipher, initial_state, state_length)
+    inline MAC<BlockCipher>::MAC(BlockCipher&& block_cipher, std::string&& initial_state):
+      m_encrypter (block_cipher, initial_state)
     {}
 
     template <typename BlockCipher>
-    inline MAC<BlockCipher>::MAC(const BlockCipher& block_cipher, const byte_t *initial_state, uint state_length):
-      m_encrypter (block_cipher, initial_state, state_length)
+    inline MAC<BlockCipher>::MAC(const BlockCipher& block_cipher, std::string&& initial_state):
+      m_encrypter (block_cipher, initial_state)
     {}
 
     template <typename BlockCipher>
-    inline ulong MAC<BlockCipher>::sign(byte_t* message, ulong length)
+    inline MAC<BlockCipher>::MAC(BlockCipher&& block_cipher, const std::string& initial_state):
+      m_encrypter (block_cipher, initial_state)
+    {}
+
+    template <typename BlockCipher>
+    inline MAC<BlockCipher>::MAC(const BlockCipher& block_cipher, const std::string& initial_state):
+      m_encrypter (block_cipher, initial_state)
+    {}
+
+    template <typename BlockCipher>
+    inline void MAC<BlockCipher>::sign(std::string& message)
     {
-      m_encrypter.encrypt(message, length, NULL);
-      memcpy(message + length, m_encrypter.get_state(), signature_length());
-      return length + signature_length();
+      m_encrypter.encrypt(message);
+      message.append(m_encrypter.get_state());
     }
 
     template <typename BlockCipher>
-    inline bool MAC<BlockCipher>::verify(const byte_t* message, ulong length)
+    inline bool MAC<BlockCipher>::verify(const std::string& message)
     {
-      uint sig_len = signature_length();
+      number_size_t sig_len = signature_length();
+      number_size_t length = message.length();
       if (length < sig_len) {
         return false;
       }
-      m_encrypter.encrypt(message, length - sig_len, NULL);
-      const byte_t* mac = message + length - sig_len;
-      const byte_t* state = m_encrypter.get_state();
-      for (uint i = 0; i < sig_len; ++i) {
-        if (state[i] != mac[i]) {
-          return false;
-        }
-      }
-      return true;
+      m_encrypter.encrypt(message);
+      const std::string& mac = message.substr(length - sig_len, sig_len);
+      const std::string& state = m_encrypter.get_state();
+      return mac == state;
     }
     
   } // namespace CBC

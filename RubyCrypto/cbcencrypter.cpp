@@ -1,6 +1,7 @@
 #include "cbcencrypter.h"
 #include "Crypto/cbc_encrypter.h"
 #include "Crypto/elgamal_encrypter.h"
+#include "Crypto/aes_encrypter.h"
 #include "Crypto/preconditionviolation.h"
 #include "cryptoexception.h"
 #include "crypto.h"
