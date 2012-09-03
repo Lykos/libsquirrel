@@ -23,8 +23,8 @@ ElgamalDecrypter::ElgamalDecrypter(const string& private_key, const string& init
     throw Exception(rb_eCryptoException, "Argument 2 has to be a hexadecimal string.");
   }
   m_decrypter = new CBC::Decrypter<Elgamal::Decrypter>(
-        Elgamal::Decrypter((const uchar*)binary_private_key.c_str(), binary_private_key.size()),
-        (const uchar*)binary_initial_state.c_str(),
+        Elgamal::Decrypter((const uchar*)binary_private_key.data(), binary_private_key.size()),
+        (const uchar*)binary_initial_state.data(),
         binary_initial_state.size());
 }
 
@@ -36,7 +36,7 @@ ElgamalDecrypter::~ElgamalDecrypter()
 string ElgamalDecrypter::decrypt(const string& cipher)
 {
   uchar* plain = new uchar[m_decrypter->max_plain_length(cipher.size())];
-  ulong plain_length = m_decrypter->decrypt((const uchar*)cipher.c_str(), cipher.size(), (uchar*)plain);
+  ulong plain_length = m_decrypter->decrypt((const uchar*)cipher.data(), cipher.size(), (uchar*)plain);
   string result ((const char*)plain, plain_length);
   delete[] plain;
   return result;

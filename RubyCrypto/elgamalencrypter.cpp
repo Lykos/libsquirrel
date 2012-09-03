@@ -23,8 +23,8 @@ ElgamalEncrypter::ElgamalEncrypter(const std::string& public_key, const std::str
     throw Exception(rb_eCryptoException, "Argument 2 has to be a hexadecimal string.");
   }
   m_encrypter = new CBC::Encrypter<Elgamal::Encrypter>(
-        Elgamal::Encrypter((const uchar*)binary_public_key.c_str(), binary_public_key.size()),
-        (const uchar*)binary_initial_state.c_str(), binary_initial_state.size());
+        Elgamal::Encrypter((const uchar*)binary_public_key.data(), binary_public_key.size()),
+        (const uchar*)binary_initial_state.data(), binary_initial_state.size());
 }
 
 ElgamalEncrypter::~ElgamalEncrypter()
@@ -35,7 +35,7 @@ ElgamalEncrypter::~ElgamalEncrypter()
 string ElgamalEncrypter::encrypt(const string& plain)
 {
   uchar* cipher = new uchar[m_encrypter->cipher_length(plain.size())];
-  ulong cipher_length = m_encrypter->encrypt((const uchar*)plain.c_str(), plain.size(), (uchar*)cipher);
+  ulong cipher_length = m_encrypter->encrypt((const uchar*)plain.data(), plain.size(), (uchar*)cipher);
   string result ((const char*)cipher, cipher_length);
   delete[] cipher;
   return result;
