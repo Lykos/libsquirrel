@@ -1,8 +1,8 @@
 #!/usr/bin/ruby
 
-require "mkmf"
+require "mkmf-rice"
 
-extension_name = "RubyDataStructures"
+extension_name = "RubyCrypto"
 dir_config(extension_name)
 
 raise "could not find boost_random library" unless have_library("boost_random")

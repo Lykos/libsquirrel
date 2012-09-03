@@ -14,23 +14,23 @@ DEFINES += RUBYCRYPTO_LIBRARY
 
 SOURCES += \
     RubyCrypto.c \
-    longint_interface.cpp \
     crypto_interface.cpp \
     elgamalencrypter.cpp \
     cryptoexception.cpp \
     crypto.cpp \
     elgamaldecrypter.cpp \
-    hexconverters.cpp
+    hexconverters.cpp \
+    longint.cpp
 
 HEADERS +=\
     RubyCrypto.h \
-    longint_interface.h \
     crypto_interface.h \
     elgamalencrypter.h \
     cryptoexception.h \
     crypto.h \
     elgamaldecrypter.h \
-    hexconverters.h
+    hexconverters.h \
+    longint.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

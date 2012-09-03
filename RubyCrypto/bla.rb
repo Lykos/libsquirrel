@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-require 'RubyDataStructures'
+require 'RubyCrypto'
 require 'yaml'
 
 KEY_FILE = File.join(File.dirname(__FILE__), 'key.yml')
