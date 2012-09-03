@@ -35,7 +35,8 @@ namespace Crypto {
     MessagePadding,
     MessageLength,
     PlainBlockLength,
-    InvalidState
+    InvalidState,
+    SignatureLength
   };
 
 }

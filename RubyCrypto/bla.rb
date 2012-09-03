@@ -11,7 +11,10 @@ include Crypto
 ELGAMAL_ENC = ElgamalEncrypter.new(KEY[:public_key], KEY[:initial_state])
 ELGAMAL_DEC = ElgamalDecrypter.new(KEY[:private_key], KEY[:initial_state])
 
-P = <<EOS
+ELGAMAL_SIG = ElgamalEncrypter.new(KEY[:private_key], KEY[:initial_state])
+ELGAMAL_VER = ElgamalDecrypter.new(KEY[:public_key], KEY[:initial_state])
+
+PLAIN = <<EOS
 Arbeitsschule nannte zu Beginn des 20. Jahrhunderts eine Richtung der deutschen 
 Reformp?dagogik ihr Reformprojekt einer neuen Schule. Dabei wurde der Begriff 
 sehr heterogen verstanden.
@@ -24,12 +27,23 @@ der obrigkeitsorientierten Schule des 19. Jahrhunderts. Allerdings wurde
 Arbeitsp?dagogik schon auf der Reichsschulkonferenz sehr unterschiedlich gefasst.
 EOS
 
-C = ENC.encrypt(P)
-RP = DEC.decrypt(C)
+success = true
 
-if P != RP
-  puts P
-  puts RP
+cipher = ELGAMAL_ENC.encrypt(plain)
+replain = ELGAMAL_DEC.decrypt(cipher)
+if PLAIN != replain
+  puts "PLAIN:"
+  puts PLAIN
+  puts
+  puts "replain:"
+  puts replain
+  puts
+  success = false
 else
-  puts "SUCCESS!"
+  puts "PAIN == REPLAIN"
 end
+
+signed = ELGAMAL_SIG.sign(PLAIN)
+ELGAMAL_VER.verify(signed)
+
+puts "SUCCESS!" if success

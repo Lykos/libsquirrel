@@ -15,22 +15,24 @@ namespace Crypto {
     class MAC
     {
     public:
-      inline MAC(BlockCipher&& block_cipher, std::string&& initial_state);
+      inline MAC(BlockCipher&& block_cipher, std::string&& initial_state) throw(PreconditionViolation);
 
-      inline MAC(const BlockCipher& block_cipher, std::string&& initial_state);
+      inline MAC(const BlockCipher& block_cipher, std::string&& initial_state) throw(PreconditionViolation);
 
-      inline MAC(BlockCipher&& block_cipher, const std::string& initial_state);
+      inline MAC(BlockCipher&& block_cipher, const std::string& initial_state) throw(PreconditionViolation);
 
-      inline MAC(const BlockCipher& block_cipher, const std::string& initial_state);
+      inline MAC(const BlockCipher& block_cipher, const std::string& initial_state) throw(PreconditionViolation);
 
-      inline number_size_t signature_length() const { return m_encrypter.plain_block_size(); }
+      inline number_size_t signature_length() const throw() { return m_encrypter.plain_block_size(); }
 
       // Appends the MAC directly after the end of the message. Note that this changes the state.
-      inline void sign(std::string& message);
+      inline void sign(std::string& message) throw();
 
       // Assumes that the MAC is directly before the end of the message. Note that this changes the state.
-      // In case of failure, the state is invalid. Removes the MAC, also if invalid.
-      inline bool verify(std::string& message);
+      // In case of failure, the state is invalid.
+      inline bool verify(const std::string& message) throw(PreconditionViolation);
+
+      inline void remove_signature(std::string& message) const throw(PreconditionViolation);
 
       inline void set_state(const std::string& state) throw(PreconditionViolation);
 
@@ -46,34 +48,34 @@ namespace Crypto {
     };
 
     template <typename BlockCipher>
-    inline MAC<BlockCipher>::MAC(BlockCipher&& block_cipher, std::string&& initial_state):
+    inline MAC<BlockCipher>::MAC(BlockCipher&& block_cipher, std::string&& initial_state) throw(PreconditionViolation):
       m_encrypter (block_cipher, initial_state)
     {}
 
     template <typename BlockCipher>
-    inline MAC<BlockCipher>::MAC(const BlockCipher& block_cipher, std::string&& initial_state):
+    inline MAC<BlockCipher>::MAC(const BlockCipher& block_cipher, std::string&& initial_state) throw(PreconditionViolation):
       m_encrypter (block_cipher, initial_state)
     {}
 
     template <typename BlockCipher>
-    inline MAC<BlockCipher>::MAC(BlockCipher&& block_cipher, const std::string& initial_state):
+    inline MAC<BlockCipher>::MAC(BlockCipher&& block_cipher, const std::string& initial_state) throw(PreconditionViolation):
       m_encrypter (block_cipher, initial_state)
     {}
 
     template <typename BlockCipher>
-    inline MAC<BlockCipher>::MAC(const BlockCipher& block_cipher, const std::string& initial_state):
+    inline MAC<BlockCipher>::MAC(const BlockCipher& block_cipher, const std::string& initial_state) throw(PreconditionViolation):
       m_encrypter (block_cipher, initial_state)
     {}
 
     template <typename BlockCipher>
-    inline void MAC<BlockCipher>::sign(std::string& message)
+    inline void MAC<BlockCipher>::sign(std::string& message) throw()
     {
       m_encrypter.encrypt(message);
       message.append(m_encrypter.get_state());
     }
 
     template <typename BlockCipher>
-    inline bool MAC<BlockCipher>::verify(const std::string& message)
+    inline bool MAC<BlockCipher>::verify(const std::string& message) throw(PreconditionViolation)
     {
       PREC(InvalidState, m_valid);
       m_valid = false;
@@ -86,10 +88,16 @@ namespace Crypto {
       const std::string& mac = message.substr(length - sig_len, sig_len);
       const std::string& state = m_encrypter.get_state();
 
-      // Remove signature
-      message.erase(length - sig_len, sig_len);
-
       return m_valid = mac == state;
+    }
+
+    template <typename BlockCipher>
+    inline void MAC<BlockCipher>::remove_signature(std::string& message) const throw(PreconditionViolation)
+    {
+      number_size_t sig_len = signature_length();
+      number_size_t length = message.length();
+      PREC(SignatureLength, length >= sig_len)
+      message.erase(length - sig_len, sig_len);
     }
 
     template <typename BlockCipher>

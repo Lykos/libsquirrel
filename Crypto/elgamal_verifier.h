@@ -4,6 +4,7 @@
 #include "elgamal_types.h"
 #include "longintconverter.h"
 #include "sha2hasher.h"
+#include "preconditionviolation.h"
 #include <string>
 
 namespace Crypto {
@@ -13,16 +14,18 @@ namespace Crypto {
     class Verifier
     {
     public:
-      explicit Verifier(const public_key_t& public_key);
+      explicit Verifier(const public_key_t& public_key) throw(PreconditionViolation);
 
-      Verifier(const std::string& raw_public_key);
+      Verifier(const std::string& raw_public_key) throw(PreconditionViolation);
 
-      bool verify(const number_t& message, const number_t& r, const number_t& s) const;
+      bool verify(const number_t& message, const number_t& r, const number_t& s) const throw();
 
       // Assumes that the signature is directly before the end of the message and removes it.
-      bool verify(std::string& message) const;
+      bool verify(std::string& message) const throw();
 
-      number_size_t signature_length() const { return m_signature_length; }
+      number_size_t signature_length() const throw() { return m_signature_length; }
+
+      void remove_signature(std::string& message) const throw(PreconditionViolation);
 
     private:
       number_t m_modulus, m_generator, m_gen_power;
