@@ -1,5 +1,6 @@
 Makefile
 extconf.h
+extconf.hpp
 *.o
 *.so
 
