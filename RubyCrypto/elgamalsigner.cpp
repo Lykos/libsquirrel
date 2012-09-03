@@ -25,9 +25,10 @@ ElgamalSigner::~ElgamalSigner()
   delete m_signer;
 }
 
-void ElgamalSigner::sign(string& message)
+string& ElgamalSigner::sign(string& message)
 {
   m_signer->sign(message);
+  return message;
 }
 
 Rice::Data_Type<ElgamalSigner> rb_cElgamalSigner;

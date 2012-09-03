@@ -13,7 +13,7 @@ public:
 
   ~ElgamalSigner();
 
-  void sign(std::string& message);
+  std::string& sign(std::string& message);
 
 private:
   Crypto::Elgamal::Signer* m_signer;

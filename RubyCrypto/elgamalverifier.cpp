@@ -30,6 +30,12 @@ bool ElgamalVerifier::verify(const string& message)
   return m_verifier->verify(message);
 }
 
+string& ElgamalVerifier::remove_signature(string& message)
+{
+  m_verifier->remove_signature(message);
+  return message;
+}
+
 Rice::Data_Type<ElgamalVerifier> rb_cElgamalVerifier;
 
 extern "C" void Init_ElgamalVerifier()
@@ -39,5 +45,7 @@ extern "C" void Init_ElgamalVerifier()
       .define_constructor(Constructor<ElgamalVerifier, const string&>(),
                      Arg("public_key"))
       .define_method("verify", &ElgamalVerifier::verify,
+                     Arg("message"))
+      .define_method("remove_signature", &ElgamalVerifier::remove_signature,
                      Arg("message"));
 }

@@ -18,6 +18,12 @@ public:
 
   std::string decrypt(const std::string& cipher);
 
+  const std::string& state();
+
+  void set_state(const std::string& new_state);
+
+  bool state_valid();
+
 private:
   Crypto::CBC::Decrypter<BlockCipher>* m_decrypter;
 };

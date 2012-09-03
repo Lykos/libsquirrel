@@ -56,7 +56,7 @@ namespace Crypto {
 
       inline std::string encrypt(const std::string& plain) throw();
 
-      inline const std::string& get_state() const { return m_state; }
+      inline const std::string& state() const { return m_state; }
 
       inline void set_state(const std::string& new_state);
 

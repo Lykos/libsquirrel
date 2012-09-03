@@ -45,7 +45,7 @@ namespace Crypto {
 
       inline std::string decrypt(const std::string& plain);
 
-      inline const std::string& get_state() const throw() { return m_state; }
+      inline const std::string& state() const throw() { return m_state; }
 
       inline bool state_valid() const throw() { return m_valid; }
 

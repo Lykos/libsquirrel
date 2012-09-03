@@ -13,8 +13,8 @@ using namespace std;
 using namespace Rice;
 using namespace Crypto;
 
-template <typename BlockCipher>
-CBCMAC<BlockCipher>::CBCMAC(const std::string& public_key, const std::string& initial_state)
+template <typename BlockCipher, int Tag>
+CBCMAC<BlockCipher, Tag>::CBCMAC(const std::string& public_key, const std::string& initial_state)
 {
   string binary_public_key = from_hex(public_key);
   if (binary_public_key.empty()) {
@@ -29,22 +29,48 @@ CBCMAC<BlockCipher>::CBCMAC(const std::string& public_key, const std::string& in
         binary_initial_state);
 }
 
-template <typename BlockCipher>
-CBCMAC<BlockCipher>::~CBCMAC()
+template <typename BlockCipher, int Tag>
+CBCMAC<BlockCipher, Tag>::~CBCMAC()
 {
   delete m_mac;
 }
 
-template <typename BlockCipher>
-void CBCMAC<BlockCipher>::sign(string& message)
+template <typename BlockCipher, int Tag>
+string& CBCMAC<BlockCipher, Tag>::sign(string& message)
 {
   m_mac->sign(message);
+  return message;
 }
 
-template <typename BlockCipher>
-bool CBCMAC<BlockCipher>::verify(const string& message)
+template <typename BlockCipher, int Tag>
+bool CBCMAC<BlockCipher, Tag>::verify(const string& message)
 {
   return m_mac->verify(message);
+}
+
+template <typename BlockCipher, int Tag>
+string& CBCMAC<BlockCipher, Tag>::remove_signature(string& message)
+{
+  m_mac->remove_signature(message);
+  return message;
+}
+
+template <typename BlockCipher, int Tag>
+const string& CBCMAC<BlockCipher, Tag>::state()
+{
+  return m_mac->state();
+}
+
+template <typename BlockCipher, int Tag>
+void CBCMAC<BlockCipher, Tag>::set_state(const string& new_state)
+{
+  m_mac->set_state(new_state);
+}
+
+template <typename BlockCipher, int Tag>
+bool CBCMAC<BlockCipher, Tag>::state_valid()
+{
+  return m_mac->state_valid();
 }
 
 Rice::Data_Type<AESSigner> rb_cAESSigner;
@@ -58,13 +84,23 @@ extern "C" void Init_CBCMAC()
       .define_constructor(Constructor<AESSigner, const string&, const string&>(),
                           (Arg("key"), Arg("initial_state")))
       .define_method("sign", &AESSigner::sign,
-                     (Arg("message")));
+                     (Arg("message")))
+      .define_method("state", &AESSigner::state)
+      .define_method("state=", &AESSigner::set_state,
+                     (Arg("new_state")))
+      .define_method("state_valid?", &AESSigner::state_valid);
 
 
-  rb_cAESVerifier = define_class_under<AESVerifier>(rb_mCrypto, "AESMAC")
+  rb_cAESVerifier = define_class_under<AESVerifier>(rb_mCrypto, "AESVerifier")
       .add_handler<Crypto::PreconditionViolation>(handle)
       .define_constructor(Constructor<AESVerifier, const string&, const string&>(),
                           (Arg("key"), Arg("initial_state")))
       .define_method("verify", &AESVerifier::verify,
-                     (Arg("message")));
+                     (Arg("message")))
+      .define_method("remove_signature", &AESVerifier::remove_signature,
+                     (Arg("message")))
+      .define_method("state", &AESVerifier::state)
+      .define_method("state=", &AESVerifier::set_state,
+                     (Arg("new_state")))
+      .define_method("state_valid?", &AESVerifier::state_valid);
 }

@@ -11,8 +11,8 @@ include Crypto
 ELGAMAL_ENC = ElgamalEncrypter.new(KEY[:public_key], KEY[:initial_state])
 ELGAMAL_DEC = ElgamalDecrypter.new(KEY[:private_key], KEY[:initial_state])
 
-ELGAMAL_SIG = ElgamalEncrypter.new(KEY[:private_key], KEY[:initial_state])
-ELGAMAL_VER = ElgamalDecrypter.new(KEY[:public_key], KEY[:initial_state])
+ELGAMAL_SIG = ElgamalSigner.new(KEY[:private_key])
+ELGAMAL_VER = ElgamalVerifier.new(KEY[:public_key])
 
 PLAIN = <<EOS
 Arbeitsschule nannte zu Beginn des 20. Jahrhunderts eine Richtung der deutschen 
@@ -29,9 +29,9 @@ EOS
 
 success = true
 
-cipher = ELGAMAL_ENC.encrypt(plain)
+cipher = ELGAMAL_ENC.encrypt(PLAIN)
 replain = ELGAMAL_DEC.decrypt(cipher)
-if PLAIN != replain
+if replain != PLAIN
   puts "PLAIN:"
   puts PLAIN
   puts
@@ -40,10 +40,28 @@ if PLAIN != replain
   puts
   success = false
 else
-  puts "PAIN == REPLAIN"
+  puts "replain == PLAIN"
 end
 
 signed = ELGAMAL_SIG.sign(PLAIN)
-ELGAMAL_VER.verify(signed)
+if !ELGAMAL_VER.verify(signed)
+  puts "Invalid signature."
+  success = false
+else
+  puts "Signature correct"
+end
+
+unsigned = ELGAMAL_VER.remove_signature(signed)
+if unsigned != PLAIN
+  puts "PLAIN:"
+  puts PLAIN
+  puts
+  puts "unsigned:"
+  puts unsigned
+  puts
+  success = false
+else
+  puts "unsigned == PLAIN"
+end
 
 puts "SUCCESS!" if success

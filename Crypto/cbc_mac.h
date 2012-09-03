@@ -71,7 +71,7 @@ namespace Crypto {
     inline void MAC<BlockCipher>::sign(std::string& message) throw()
     {
       m_encrypter.encrypt(message);
-      message.append(m_encrypter.get_state());
+      message.append(m_encrypter.state());
     }
 
     template <typename BlockCipher>
@@ -86,7 +86,7 @@ namespace Crypto {
       }
       m_encrypter.encrypt(message);
       const std::string& mac = message.substr(length - sig_len, sig_len);
-      const std::string& state = m_encrypter.get_state();
+      const std::string& state = m_encrypter.state();
 
       return m_valid = mac == state;
     }

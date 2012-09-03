@@ -41,6 +41,24 @@ string CBCDecrypter<BlockCipher>::decrypt(const string& cipher)
   return m_decrypter->decrypt(cipher);
 }
 
+template <typename BlockCipher>
+const string& CBCDecrypter<BlockCipher>::state()
+{
+  return m_decrypter->state();
+}
+
+template <typename BlockCipher>
+void CBCDecrypter<BlockCipher>::set_state(const string& new_state)
+{
+  m_decrypter->set_state(new_state);
+}
+
+template <typename BlockCipher>
+bool CBCDecrypter<BlockCipher>::state_valid()
+{
+  return m_decrypter->state_valid();
+}
+
 Rice::Data_Type<ElgamalDecrypter> rb_cElgamalDecrypter;
 
 Rice::Data_Type<AESDecrypter> rb_cAESDecrypter;
@@ -52,12 +70,20 @@ extern "C" void Init_CBCDecrypter()
       .define_constructor(Constructor<ElgamalDecrypter, const string&, const string&>(),
                      (Arg("private_key"), Arg("initial_state")))
       .define_method("decrypt", &ElgamalDecrypter::decrypt,
-                     (Arg("plain")));
+                     (Arg("plain")))
+      .define_method("state", &ElgamalDecrypter::state)
+      .define_method("state=", &ElgamalDecrypter::set_state,
+                     (Arg("new_state")))
+      .define_method("state_valid?", &ElgamalDecrypter::state_valid);
 
   rb_cAESDecrypter = define_class_under<AESDecrypter>(rb_mCrypto, "AESDecrypter")
       .add_handler<Crypto::PreconditionViolation>(handle)
       .define_constructor(Constructor<AESDecrypter, const string&, const string&>(),
                      (Arg("private_key"), Arg("initial_state")))
       .define_method("decrypt", &AESDecrypter::decrypt,
-                     (Arg("plain")));
+                     (Arg("plain")))
+      .define_method("state", &AESDecrypter::state)
+      .define_method("state=", &AESDecrypter::set_state,
+                     (Arg("new_state")))
+      .define_method("state_valid?", &AESDecrypter::state_valid);
 }

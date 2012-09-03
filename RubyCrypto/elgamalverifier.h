@@ -15,6 +15,8 @@ public:
 
   bool verify(const std::string& message);
 
+  std::string& remove_signature(std::string& message);
+
 private:
   Crypto::Elgamal::Verifier* m_verifier;
 };

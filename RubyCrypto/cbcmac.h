@@ -7,7 +7,7 @@
 #include "Crypto/aes_encrypter.h"
 #include <rice/Data_Type.hpp>
 
-template <typename BlockCipher>
+template <typename BlockCipher, int Tag>
 class CBCMAC {
 public:
 
@@ -15,18 +15,26 @@ public:
 
   ~CBCMAC();
 
-  void sign(std::string& message);
+  std::string& sign(std::string& message);
 
   bool verify(const std::string& message);
+
+  std::string& remove_signature(std::string& message);
+
+  const std::string& state();
+
+  void set_state(const std::string& new_state);
+
+  bool state_valid();
 
 private:
   Crypto::CBC::MAC<BlockCipher>* m_mac;
 };
 
 
-typedef CBCMAC<Crypto::AES::Encrypter> AESSigner;
+typedef CBCMAC<Crypto::AES::Encrypter, 1> AESSigner;
 
-typedef CBCMAC<Crypto::AES::Encrypter> AESVerifier;
+typedef CBCMAC<Crypto::AES::Encrypter, 2> AESVerifier;
 
 extern Rice::Data_Type<AESSigner> rb_cAESSigner;
 
