@@ -4,7 +4,8 @@
 namespace Crypto {
 
   enum ConditionType {
-    KeyLength,
+    ElgamalKeyLength,
+    AESKeyLength,
     GroupModulusLengthLength,
     GroupModulusLength,
     GroupGeneratorLengthLength,

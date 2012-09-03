@@ -1,4 +1,4 @@
-#include "elgamaldecrypter.h"
+#include "cbcdecrypter.h"
 #include "Crypto/cbc_decrypter.h"
 #include "Crypto/elgamal_decrypter.h"
 #include "Crypto/preconditionviolation.h"
@@ -12,7 +12,8 @@ using namespace std;
 using namespace Rice;
 using namespace Crypto;
 
-ElgamalDecrypter::ElgamalDecrypter(const string& private_key, const string& initial_state)
+template <typename BlockCipher>
+CBCDecrypter<BlockCipher>::CBCDecrypter(const string& private_key, const string& initial_state)
 {
   string binary_private_key = from_hex(private_key);
   if (binary_private_key.empty()) {
@@ -22,29 +23,40 @@ ElgamalDecrypter::ElgamalDecrypter(const string& private_key, const string& init
   if (binary_initial_state.empty()) {
     throw Exception(rb_eCryptoException, "Argument 2 has to be a hexadecimal string.");
   }
-  m_decrypter = new CBC::Decrypter<Elgamal::Decrypter>(
-        Elgamal::Decrypter(binary_private_key),
+  m_decrypter = new CBC::Decrypter<BlockCipher>(
+        BlockCipher(binary_private_key),
         binary_initial_state);
 }
 
-ElgamalDecrypter::~ElgamalDecrypter()
+template <typename BlockCipher>
+CBCDecrypter<BlockCipher>::~CBCDecrypter()
 {
   delete m_decrypter;
 }
 
-string ElgamalDecrypter::decrypt(const string& cipher)
+template <typename BlockCipher>
+string CBCDecrypter<BlockCipher>::decrypt(const string& cipher)
 {
   return m_decrypter->decrypt(cipher);
 }
 
 Rice::Data_Type<ElgamalDecrypter> rb_cElgamalDecrypter;
 
-extern "C" void Init_ElgamalDecrypter()
+Rice::Data_Type<AESDecrypter> rb_cAESDecrypter;
+
+extern "C" void Init_CBCDecrypter()
 {
   rb_cElgamalDecrypter = define_class_under<ElgamalDecrypter>(rb_mCrypto, "ElgamalDecrypter")
       .add_handler<Crypto::PreconditionViolation>(handle)
       .define_constructor(Constructor<ElgamalDecrypter, const string&, const string&>(),
-                     (Arg("public_key"), Arg("initial_state")))
+                     (Arg("private_key"), Arg("initial_state")))
       .define_method("decrypt", &ElgamalDecrypter::decrypt,
+                     (Arg("plain")));
+
+  rb_cAESDecrypter = define_class_under<AESDecrypter>(rb_mCrypto, "AESDecrypter")
+      .add_handler<Crypto::PreconditionViolation>(handle)
+      .define_constructor(Constructor<AESDecrypter, const string&, const string&>(),
+                     (Arg("private_key"), Arg("initial_state")))
+      .define_method("decrypt", &AESDecrypter::decrypt,
                      (Arg("plain")));
 }

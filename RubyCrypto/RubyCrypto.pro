@@ -14,23 +14,27 @@ DEFINES += RUBYCRYPTO_LIBRARY
 
 SOURCES += \
     RubyCrypto.c \
-    elgamalencrypter.cpp \
     cryptoexception.cpp \
     crypto.cpp \
-    elgamaldecrypter.cpp \
     hexconverters.cpp \
     longint.cpp \
-    sha2hasher.cpp
+    sha2hasher.cpp \
+    elgamalsigner.cpp \
+    elgamalverifier.cpp \
+    cbcencrypter.cpp \
+    cbcdecrypter.cpp
 
 HEADERS +=\
     RubyCrypto.h \
-    elgamalencrypter.h \
     cryptoexception.h \
     crypto.h \
-    elgamaldecrypter.h \
     hexconverters.h \
     longint.h \
-    sha2hasher.h
+    sha2hasher.h \
+    elgamalsigner.h \
+    elgamalverifier.h \
+    cbcencrypter.h \
+    cbcdecrypter.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

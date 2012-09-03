@@ -20,7 +20,7 @@ namespace Crypto {
 
     group_t KeyGenerator::choose_group(uint number_bits)
     {
-      PREC(KeyLength, valid_key_bits(number_bits));
+      PREC(ElgamalKeyLength, valid_key_bits(number_bits));
       number_t modulus, generator;
       // TODO Do this automatically.
       if (number_bits == 512) {

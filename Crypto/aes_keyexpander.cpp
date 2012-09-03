@@ -20,7 +20,7 @@ namespace Crypto {
 
     inline number_size_t KeyExpander::rounds(number_size_t key_length)
     {
-      PREC(KeyLength, key_length == AES_128_BYTES || key_length == AES_192_BYTES || key_length == AES_256_BYTES);
+      PREC(AESKeyLength, key_length == AES_128_BYTES || key_length == AES_192_BYTES || key_length == AES_256_BYTES);
       if (key_length == AES_128_BYTES) {
         return AES_128_ROUNDS;
       } else if (key_length == AES_192_BYTES) {

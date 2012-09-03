@@ -1,7 +1,7 @@
 #include "crypto.h"
 #include "cryptoexception.h"
-#include "elgamalencrypter.h"
-#include "elgamaldecrypter.h"
+#include "cbcencrypter.h"
+#include "cbcdecrypter.h"
 #include "sha2hasher.h"
 
 using namespace Rice;
@@ -12,7 +12,7 @@ extern "C" void Init_Crypto()
 {
   rb_mCrypto = define_module("Crypto");
   Init_CryptoException();
-  Init_ElgamalEncrypter();
-  Init_ElgamalDecrypter();
+  Init_CBCEncrypter();
+  Init_CBCDecrypter();
   Init_SHA2Hasher();
 }
