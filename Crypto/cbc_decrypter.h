@@ -35,16 +35,6 @@ namespace Crypto {
 
       inline Decrypter(const BlockCipher& block_cipher, const std::string& initial_state);
 
-      inline Decrypter(const Decrypter& other);
-
-      inline Decrypter(Decrypter&& other);
-
-      inline ~Decrypter();
-
-      inline Decrypter<BlockCipher>& operator=(const Decrypter& other);
-
-      inline Decrypter<BlockCipher>& operator=(Decrypter&& other);
-
       inline message_size_t max_plain_length(message_size_t cipher_length) const;
 
       inline message_size_t plain_block_size() const throw() { return m_plain_block_size; }
@@ -107,62 +97,6 @@ namespace Crypto {
       m_tmp_plain (new byte_t[m_plain_block_size])
     {
       DEC_PREC_STATE_LENGTH();
-    }
-
-    template <typename BlockCipher>
-    inline Decrypter<BlockCipher>::Decrypter(const Decrypter& other):
-      m_block_cipher (other.m_block_cipher),
-      m_plain_block_size (other.m_plain_block_size),
-      m_cipher_block_size (other.m_cipher_block_size),
-      m_state (other.m_state),
-      m_block (m_plain_block_size, 0)
-    {}
-
-    template <typename BlockCipher>
-    inline Decrypter<BlockCipher>::Decrypter(Decrypter&& other):
-      m_block_cipher (other.m_block_cipher),
-      m_plain_block_size (other.m_plain_block_size),
-      m_cipher_block_size (other.m_cipher_block_size),
-      m_state (std::move(other.m_state)),
-      m_block (std::move(other.m_block))
-    {}
-
-    template <typename BlockCipher>
-    inline Decrypter<BlockCipher>::~Decrypter()
-    {
-      delete[] m_tmp_plain;
-    }
-
-    template <typename BlockCipher>
-    inline Decrypter<BlockCipher>& Decrypter<BlockCipher>::operator=(const Decrypter& other)
-    {
-      if (this == &other) {
-        return *this;
-      }
-      if (m_plain_block_size != other.m_plain_block_size) {
-        m_block = std::string(other.m_plain_block_size, 0);
-      }
-      m_block_cipher = other.m_block_cipher;
-      m_plain_block_size = other.m_plain_block_size;
-      m_cipher_block_size = other.m_cipher_block_size;
-      m_state = other.m_state;
-      return *this;
-    }
-
-    template <typename BlockCipher>
-    inline Decrypter<BlockCipher>& Decrypter<BlockCipher>::operator=(Decrypter&& other)
-    {
-      if (this == &other) {
-        return *this;
-      }
-      if (m_plain_block_size != other.m_plain_block_size) {
-        m_state = std::move(other.m_state);
-        m_block = std::move(other.m_block);
-      }
-      m_block_cipher = std::move(other.m_block_cipher);
-      m_plain_block_size = other.m_plain_block_size;
-      m_cipher_block_size = other.m_cipher_block_size;
-      return *this;
     }
 
     template <typename BlockCipher>
