@@ -1,7 +1,7 @@
 #ifndef CRYPTO_SHA2HASHER_H
 #define CRYPTO_SHA2HASHER_H
 
-#include "Crypto/Crypto_global.h"
+#include "Crypto_global.h"
 #include <string>
 
 namespace Crypto {

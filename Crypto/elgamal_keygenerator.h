@@ -1,11 +1,11 @@
 #ifndef CRYPTO_ELGAMAL_KEYGENERATOR_H
 #define CRYPTO_ELGAMAL_KEYGENERATOR_H
 
-#include "Crypto/Crypto_global.h"
-#include "Crypto/primetester.h"
-#include "Crypto/elgamal_types.h"
-#include "Crypto/dh_keygenerator.h"
-#include "Crypto/elgamal_converter.h"
+#include "Crypto_global.h"
+#include "primetester.h"
+#include "elgamal_types.h"
+#include "dh_keygenerator.h"
+#include "elgamal_converter.h"
 
 namespace Crypto {
 

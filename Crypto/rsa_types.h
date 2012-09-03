@@ -2,7 +2,7 @@
 #define CRYPTO_RSA_TYPES_H
 
 #include "DataStructures/longint.h"
-#include "Crypto/keypair.h"
+#include "keypair.h"
 
 namespace Crypto {
 

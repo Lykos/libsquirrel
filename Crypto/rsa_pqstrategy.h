@@ -1,8 +1,8 @@
 #ifndef CRYPTO_RSA_PQSTRATEGY_H
 #define CRYPTO_RSA_PQSTRATEGY_H
 
-#include "Crypto/rsa_decryptstrategy.h"
-#include "Crypto/rsa_types.h"
+#include "rsa_decryptstrategy.h"
+#include "rsa_types.h"
 
 namespace Crypto {
 

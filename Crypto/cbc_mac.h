@@ -1,10 +1,10 @@
 #ifndef CRYPTO_CBC_MAC_H
 #define CRYPTO_CBC_MAC_H
 
-#include "Crypto/preconditionviolation.h"
-#include "Crypto/conditiontype.h"
-#include "Crypto/cbc_encrypter.h"
-#include "Crypto/types.h"
+#include "preconditionviolation.h"
+#include "conditiontype.h"
+#include "cbc_encrypter.h"
+#include "types.h"
 #include <string>
 
 namespace Crypto {
@@ -29,7 +29,7 @@ namespace Crypto {
       inline void sign(std::string& message);
 
       // Assumes that the MAC is directly before the end of the message. Note that this changes the state.
-      // In case of failure, the state is invalid.
+      // In case of failure, the state is invalid. Removes the MAC, also if invalid.
       inline bool verify(std::string& message);
 
       inline void set_state(const std::string& state) throw(PreconditionViolation);
@@ -84,8 +84,11 @@ namespace Crypto {
       }
       m_encrypter.encrypt(message);
       const std::string& mac = message.substr(length - sig_len, sig_len);
-      message.erase(length - sig_len, sig_len);
       const std::string& state = m_encrypter.get_state();
+
+      // Remove signature
+      message.erase(length - sig_len, sig_len);
+
       return m_valid = mac == state;
     }
 

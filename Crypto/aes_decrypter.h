@@ -1,10 +1,10 @@
 #ifndef CRYPTO_AES_DECRYPTER_H
 #define CRYPTO_AES_DECRYPTER_H
 
-#include "Crypto/Crypto_global.h"
-#include "Crypto/aes_helper.h"
-#include "Crypto/aes_constants.h"
-#include "Crypto/types.h"
+#include "Crypto_global.h"
+#include "aes_helper.h"
+#include "aes_constants.h"
+#include "types.h"
 #include <string>
 
 namespace Crypto {

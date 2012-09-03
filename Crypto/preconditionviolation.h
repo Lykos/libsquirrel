@@ -1,6 +1,6 @@
 #ifndef CRYPTO_PRECONDITIONVIOLATION_H
 #define CRYPTO_PRECONDITIONVIOLATION_H
-#include "Crypto/conditiontype.h"
+#include "conditiontype.h"
 #include <stdexcept>
 #define PREC(type, cond) \
   if (!(cond)) { \

@@ -1,10 +1,10 @@
 #ifndef CRYPTO_CBC_ENCRYPTER_H
 #define CRYPTO_CBC_ENCRYPTER_H
 
-#include "Crypto/Crypto_global.h"
-#include "Crypto/conditiontype.h"
-#include "Crypto/preconditionviolation.h"
-#include "Crypto/types.h"
+#include "Crypto_global.h"
+#include "conditiontype.h"
+#include "preconditionviolation.h"
+#include "types.h"
 #include <cassert>
 #include <string>
 #define ENC_PREC_STATE_LENGTH() PREC(StateLength, initial_state.length() >= state_length());

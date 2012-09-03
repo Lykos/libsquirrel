@@ -1,9 +1,9 @@
 #ifndef CRYPTO_ELGAMAL_VERIFIER_H
 #define CRYPTO_ELGAMAL_VERIFIER_H
 
-#include "Crypto/elgamal_types.h"
-#include "Crypto/longintconverter.h"
-#include "Crypto/sha2hasher.h"
+#include "elgamal_types.h"
+#include "longintconverter.h"
+#include "sha2hasher.h"
 #include <string>
 
 namespace Crypto {
@@ -20,7 +20,7 @@ namespace Crypto {
       bool verify(const number_t& message, const number_t& r, const number_t& s) const;
 
       // Assumes that the signature is directly before the end of the message and removes it.
-      void verify(const std::string& message) const;
+      bool verify(std::string& message) const;
 
       number_size_t signature_length() const { return m_signature_length; }
 

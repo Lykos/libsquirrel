@@ -1,7 +1,7 @@
 #ifndef CRYPTO_KEYPAIR_H
 #define CRYPTO_KEYPAIR_H
 
-#include "Crypto/Crypto_global.h"
+#include "Crypto_global.h"
 
 namespace Crypto {
   

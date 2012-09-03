@@ -1,7 +1,7 @@
 #ifndef CRYPTO_DH_CONSTANTS_H
 #define CRYPTO_DH_CONSTANTS_H
 
-#include "Crypto/dh_types.h"
+#include "dh_types.h"
 
 namespace Crypto {
 

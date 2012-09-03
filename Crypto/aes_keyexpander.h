@@ -1,9 +1,9 @@
 #ifndef CRYPTO_AES_KEYEXPANDER_H
 #define CRYPTO_AES_KEYEXPANDER_H
 
-#include "Crypto/Crypto_global.h"
-#include "Crypto/types.h"
-#include "Crypto/aes_helper.h"
+#include "Crypto_global.h"
+#include "types.h"
+#include "aes_helper.h"
 #include <string>
 
 namespace Crypto {

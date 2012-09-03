@@ -3,9 +3,9 @@
 
 #include "DataStructures/longint.h"
 #include "DataStructures/arraylist.h"
-#include "Crypto/Crypto_global.h"
+#include "Crypto_global.h"
 #include "DataStructures/uniformlongintdistribution.h"
-#include "Crypto/primes.h"
+#include "primes.h"
 #include "DataStructures/treap.h"
 #include <cstring>
 

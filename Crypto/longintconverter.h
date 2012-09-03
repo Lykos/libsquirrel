@@ -1,9 +1,9 @@
 #ifndef CRYPTO_LONGINTCONVERTER_H
 #define CRYPTO_LONGINTCONVERTER_H
 
-#include "Crypto/Crypto_global.h"
-#include "Crypto/preconditionviolation.h"
-#include "Crypto/types.h"
+#include "Crypto_global.h"
+#include "preconditionviolation.h"
+#include "types.h"
 #include "DataStructures/longint.h"
 
 namespace Crypto {

@@ -1,7 +1,7 @@
 #ifndef CRYPTO_AES_HELPER_H
 #define CRYPTO_AES_HELPER_H
 
-#include "Crypto/types.h"
+#include "types.h"
 #include <string>
 
 namespace Crypto {

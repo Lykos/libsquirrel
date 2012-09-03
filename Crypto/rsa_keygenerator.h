@@ -1,9 +1,9 @@
 #ifndef CRYPTO_RSA_KEYGENERATOR_H
 #define CRYPTO_RSA_KEYGENERATOR_H
 
-#include "Crypto/Crypto_global.h"
-#include "Crypto/rsa_types.h"
-#include "Crypto/primetester.h"
+#include "Crypto_global.h"
+#include "rsa_types.h"
+#include "primetester.h"
 #include "DataStructures/uniformlongintdistribution.h"
 #include "DataStructures/arithmetichelper.h"
 

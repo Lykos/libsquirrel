@@ -5,7 +5,7 @@ namespace Crypto {
   PreconditionViolation::PreconditionViolation(ConditionType type, const char* dummy_message) throw():
     m_type (type)
   {
-    switch (e.get_type()) {
+    switch (type) {
     case ElgamalKeyLength:
       m_message = "Invalid Elgamal key length.";
       break;
