@@ -8,7 +8,7 @@
 #include <cstring>
 #include <cassert>
 #include <string>
-#define PREC_STATE_LENGTH() PREC(StateLength, initial_state.length() >= state_length());
+#define ENC_PREC_STATE_LENGTH() PREC(StateLength, initial_state.length() >= state_length());
 
 namespace Crypto {
 
@@ -44,7 +44,7 @@ namespace Crypto {
 
       std::string m_state, m_block;
 
-      const byte_t* m_tmp_cipher;
+      byte_t* m_tmp_cipher;
 
     public:
       inline Encrypter(BlockCipher&& block_cipher, const std::string& initial_state);
@@ -86,7 +86,7 @@ namespace Crypto {
       m_block (m_plain_block_size, 0),
       m_tmp_cipher (new byte_t[m_cipher_block_size])
     {
-      PREC_STATE_LENGTH();
+      ENC_PREC_STATE_LENGTH();
     }
 
     template <typename BlockCipher>
@@ -97,7 +97,7 @@ namespace Crypto {
       m_state (initial_state),
       m_block (m_plain_block_size, 0)
     {
-      PREC_STATE_LENGTH();
+      ENC_PREC_STATE_LENGTH();
     }
 
     template <typename BlockCipher>
@@ -188,7 +188,7 @@ namespace Crypto {
         for (number_size_t j = 0; j < m_plain_block_size; ++j) {
           m_block[j] ^= m_state[j];
         }
-        m_block_cipher.encrypt(m_block.data(), m_tmp_cipher);
+        m_block_cipher.encrypt((const byte_t*)m_block.data(), m_tmp_cipher);
         cipher.replace(i * m_cipher_block_size, m_cipher_block_size, (const char*)m_tmp_cipher, m_cipher_block_size);
         // It should be clear that the cipher block size is at least the plain block size.
         for (number_size_t j = 0; j < m_plain_block_size; ++j) {
@@ -201,7 +201,7 @@ namespace Crypto {
     template <typename BlockCipher>
     inline void Encrypter<BlockCipher>::set_state(const std::string& initial_state)
     {
-      PREC_STATE_LENGTH();
+      ENC_PREC_STATE_LENGTH();
       m_state.replace(0, m_plain_block_size, initial_state);
     }
 

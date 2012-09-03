@@ -24,7 +24,7 @@ ElgamalEncrypter::ElgamalEncrypter(const std::string& public_key, const std::str
   }
   m_encrypter = new CBC::Encrypter<Elgamal::Encrypter>(
         Elgamal::Encrypter((const uchar*)binary_public_key.data(), binary_public_key.size()),
-        (const uchar*)binary_initial_state.data(), binary_initial_state.size());
+        binary_initial_state);
 }
 
 ElgamalEncrypter::~ElgamalEncrypter()
@@ -34,11 +34,7 @@ ElgamalEncrypter::~ElgamalEncrypter()
 
 string ElgamalEncrypter::encrypt(const string& plain)
 {
-  uchar* cipher = new uchar[m_encrypter->cipher_length(plain.size())];
-  ulong cipher_length = m_encrypter->encrypt((const uchar*)plain.data(), plain.size(), (uchar*)cipher);
-  string result ((const char*)cipher, cipher_length);
-  delete[] cipher;
-  return result;
+  return m_encrypter->encrypt(plain);
 }
 
 Rice::Data_Type<ElgamalEncrypter> rb_cElgamalEncrypter;

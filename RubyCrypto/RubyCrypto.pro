@@ -14,7 +14,6 @@ DEFINES += RUBYCRYPTO_LIBRARY
 
 SOURCES += \
     RubyCrypto.c \
-    crypto_interface.cpp \
     elgamalencrypter.cpp \
     cryptoexception.cpp \
     crypto.cpp \
@@ -24,7 +23,6 @@ SOURCES += \
 
 HEADERS +=\
     RubyCrypto.h \
-    crypto_interface.h \
     elgamalencrypter.h \
     cryptoexception.h \
     crypto.h \
