@@ -14,7 +14,7 @@ namespace Crypto {
       m_signature_length (m_r_length + m_s_length)
     {}
 
-    Verifier::Verifier(const elgamal_byte_t* raw_public_key, number_size_t length)
+    Verifier::Verifier(const byte_t* raw_public_key, number_size_t length)
     {
       Converter conv;
       public_key_t public_key = conv.read_public_key(raw_public_key, length);
@@ -37,7 +37,7 @@ namespace Crypto {
       return g_h == (g_a_r * r_s).mod(m_modulus);
     }
 
-    bool Verifier::verify(const elgamal_byte_t* message, ulong length) const
+    bool Verifier::verify(const byte_t* message, ulong length) const
     {
       // If message is too short for a signature, reject immediately.
       if (length < m_signature_length) {
@@ -45,9 +45,9 @@ namespace Crypto {
       }
 
       // Read numbers
-      elgamal_byte_t hash[32];
+      byte_t hash[32];
       hasher.hash(message, length - m_signature_length, hash);
-      const elgamal_byte_t* signature = message + length - m_signature_length;
+      const byte_t* signature = message + length - m_signature_length;
       number_t hash_number = m_converter.read_number(hash, 32);
       number_t r = m_converter.read_number(signature, m_r_length);
       number_t s = m_converter.read_number(signature + m_r_length, m_s_length);

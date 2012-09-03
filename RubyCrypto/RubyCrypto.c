@@ -1,6 +1,7 @@
 #include <limits.h>
 #include <assert.h>
 #include <string.h>
+#include "crypto.h"
 #include "RubyDataStructures.h"
 #include "RubyCrypto.h"
 
@@ -19,7 +20,7 @@ void Init_RubyDataStructures(void)
 {
   DataStructures = rb_define_class("DataStructures", rb_cObject);
   rb_define_method(DataStructures, "multiply", method_multiply, 2);
-  Init_RubyCrypto();
+  Init_Crypto();
 }
 
 inline packed_bignum_t pack_bignum(VALUE bignum)

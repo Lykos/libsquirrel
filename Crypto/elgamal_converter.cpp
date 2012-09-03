@@ -8,7 +8,7 @@ namespace Crypto {
 
   namespace Elgamal {
 
-    public_key_t Converter::read_public_key(const elgamal_byte_t* raw_key, number_size_t length)
+    public_key_t Converter::read_public_key(const byte_t* raw_key, number_size_t length)
     {
       READ_NUMBER(PublicKeyModulusLengthLength, PublicKeyModulusLength, modulus, raw_key);
       READ_NUMBER(PublicKeyGeneratorLengthLength, PublicKeyGeneratorLength, generator, raw_key);
@@ -16,7 +16,7 @@ namespace Crypto {
       return {modulus, generator, gen_power};
     }
 
-    Converter::number_size_t Converter::write_public_key(const public_key_t& public_key, elgamal_byte_t* raw_key)
+    number_size_t Converter::write_public_key(const public_key_t& public_key, byte_t* raw_key)
     {
       number_size_t modulus_length = DH::Converter::write_number(public_key.modulus, raw_key);
       raw_key += modulus_length;
@@ -26,12 +26,12 @@ namespace Crypto {
       return modulus_length + generator_length + gen_power_length;
     }
 
-    Converter::number_size_t Converter::public_key_length(const public_key_t& public_key) const
+    number_size_t Converter::public_key_length(const public_key_t& public_key) const
     {
       return number_length(public_key.modulus) + number_length(public_key.generator) + number_length(public_key.gen_power);
     }
 
-    private_key_t Converter::read_private_key(const elgamal_byte_t* raw_key, number_size_t length)
+    private_key_t Converter::read_private_key(const byte_t* raw_key, number_size_t length)
     {
       READ_NUMBER(PrivateKeyModulusLengthLength, PrivateKeyModulusLength, modulus, raw_key);
       READ_NUMBER(PrivateKeyGeneratorLengthLength, PrivateKeyGeneratorLength, generator, raw_key);
@@ -39,7 +39,7 @@ namespace Crypto {
       return {modulus, generator, exponent};
     }
 
-    Converter::number_size_t Converter::write_private_key(const private_key_t& private_key, elgamal_byte_t* raw_key)
+    number_size_t Converter::write_private_key(const private_key_t& private_key, byte_t* raw_key)
     {
       number_size_t modulus_length = DH::Converter::write_number(private_key.modulus, raw_key);
       raw_key += modulus_length;
@@ -49,7 +49,7 @@ namespace Crypto {
       return modulus_length + generator_length + exponent_length;
     }
 
-    Converter::number_size_t Converter::private_key_length(const private_key_t& private_key) const
+    number_size_t Converter::private_key_length(const private_key_t& private_key) const
     {
       return number_length(private_key.modulus) + number_length(private_key.generator) + number_length(private_key.exponent);
     }

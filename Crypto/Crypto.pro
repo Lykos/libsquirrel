@@ -63,9 +63,7 @@ HEADERS +=\
     longintconverter.h \
     primes.h \
     cbc_encrypter.h \
-    cbc_types.h \
     cbc_mac.h \
-    aes_types.h \
     dh_converter.h \
     dh_keygenerator.h \
     dh_types.h \
@@ -77,7 +75,8 @@ HEADERS +=\
     preconditionviolation.h \
     readnumber_macro.h \
     conditiontype.h \
-    cbc_decrypter.h
+    cbc_decrypter.h \
+    types.h
 
 header_files.files = $$HEADERS
 header_files.path = /usr/local/include/Crypto

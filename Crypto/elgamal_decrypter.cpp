@@ -18,7 +18,7 @@ namespace Crypto {
       m_cipher_length (m_key_part_length + m_cipher_part_length)
     {}
 
-    Decrypter::Decrypter(const elgamal_byte_t* raw_private_key, number_size_t length)
+    Decrypter::Decrypter(const byte_t* raw_private_key, number_size_t length)
     {
       Converter conv;
       private_key_t private_key = conv.read_private_key(raw_private_key, length);
@@ -36,7 +36,7 @@ namespace Crypto {
       return (key * cipher) % m_modulus;
     }
 
-    bool Decrypter::decrypt(const elgamal_byte_t* cipher, elgamal_byte_t* plain) const
+    bool Decrypter::decrypt(const byte_t* cipher, byte_t* plain) const
     {
       // Convert to numbers
       number_t cipher_number = m_converter.read_number(cipher, m_cipher_part_length);

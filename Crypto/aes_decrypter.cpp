@@ -7,11 +7,11 @@ namespace Crypto {
 
   namespace AES {
 
-    Decrypter::Decrypter(const aes_byte_t* key, uint key_length)
+    Decrypter::Decrypter(const byte_t* key, uint key_length)
     {
       KeyExpander expander (key_length);
       m_expanded_key_length = expander.expanded_length();
-      m_expanded_key = new aes_byte_t[m_expanded_key_length];
+      m_expanded_key = new byte_t[m_expanded_key_length];
       m_rounds = expander.rounds();
       for (uint i = 0; i < key_length; ++i) {
         m_expanded_key[i] = key[i];
@@ -21,7 +21,7 @@ namespace Crypto {
 
     Decrypter::Decrypter(const Decrypter& other):
       m_expanded_key_length (other.m_expanded_key_length),
-      m_expanded_key (new aes_byte_t[m_expanded_key_length]),
+      m_expanded_key (new byte_t[m_expanded_key_length]),
       m_rounds (other.m_rounds),
       m_helper (other.m_helper)
     {
@@ -43,7 +43,7 @@ namespace Crypto {
         return *this;
       }
       m_expanded_key_length = other.m_expanded_key_length;
-      m_expanded_key = new aes_byte_t[m_expanded_key_length];
+      m_expanded_key = new byte_t[m_expanded_key_length];
       memcpy(m_expanded_key, other.m_expanded_key, m_expanded_key_length);
       m_rounds = other.m_rounds;
       m_helper = other.m_helper;
@@ -68,7 +68,7 @@ namespace Crypto {
       delete[] m_expanded_key;
     }
 
-    bool Decrypter::decrypt(const aes_byte_t* cipher, aes_byte_t* plain)
+    bool Decrypter::decrypt(const byte_t* cipher, byte_t* plain)
     {
       for (uint i = 0; i < BLOCK_BYTE_SIZE; ++i) {
         plain[i] = cipher[i];

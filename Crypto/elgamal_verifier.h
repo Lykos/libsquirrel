@@ -12,16 +12,14 @@ namespace Crypto {
     class Verifier
     {
     public:
-      typedef LongIntConverter::number_size_t number_size_t;
-
       explicit Verifier(const public_key_t& public_key);
 
-      Verifier(const elgamal_byte_t* raw_public_key, number_size_t length);
+      Verifier(const byte_t* raw_public_key, number_size_t length);
 
       bool verify(const number_t& message, const number_t& r, const number_t& s) const;
 
       // Assumes that the signature is directly before the end of the message.
-      bool verify(const elgamal_byte_t* message, ulong length) const;
+      bool verify(const byte_t* message, ulong length) const;
 
       number_size_t signature_length() const { return m_signature_length; }
 

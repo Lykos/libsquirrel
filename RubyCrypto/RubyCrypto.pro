@@ -6,23 +6,31 @@
 
 QT       -= gui
 
-TARGET = RubyDataStructures
+TARGET = RubyCrypto
 TEMPLATE = lib
 QMAKE_CXXFLAGS += -std=c++11
 
-DEFINES += RUBYDATASTRUCTURES_LIBRARY
+DEFINES += RUBYCRYPTO_LIBRARY
 
 SOURCES += \
-    RubyDataStructures.c \
+    RubyCrypto.c \
     longint_interface.cpp \
     crypto_interface.cpp \
-    RubyCrypto.c
+    elgamalencrypter.cpp \
+    cryptoexception.cpp \
+    crypto.cpp \
+    elgamaldecrypter.cpp \
+    hexconverters.cpp
 
 HEADERS +=\
-    RubyDataStructures.h \
+    RubyCrypto.h \
     longint_interface.h \
     crypto_interface.h \
-    RubyCrypto.h
+    elgamalencrypter.h \
+    cryptoexception.h \
+    crypto.h \
+    elgamaldecrypter.h \
+    hexconverters.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

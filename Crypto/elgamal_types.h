@@ -1,16 +1,13 @@
 #ifndef CRYPTO_ELGAMAL_TYPES_H
 #define CRYPTO_ELGAMAL_TYPES_H
 
+#include "Crypto/types.h"
 #include "Crypto/dh_types.h"
 #include "Crypto/keypair.h"
 
 namespace Crypto {
 
   namespace Elgamal {
-
-    typedef DH::number_t number_t;
-
-    typedef DH::exponent_t exponent_t;
 
     typedef struct {
       number_t modulus;
@@ -25,8 +22,6 @@ namespace Crypto {
     } private_key_t;
 
     typedef DH::group_t group_t;
-
-    typedef DH::dh_byte_t elgamal_byte_t;
 
     typedef KeyPair<public_key_t, private_key_t> key_pair_t;
 

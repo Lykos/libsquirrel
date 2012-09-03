@@ -16,11 +16,11 @@ namespace Crypto {
 
       explicit Decrypter(const private_key_t& private_key);
 
-      Decrypter(const elgamal_byte_t* raw_private_key, number_size_t length);
+      Decrypter(const byte_t* raw_private_key, number_size_t length);
 
       number_t decrypt(const number_t& cipher, const number_t& other_gen_power) const;
 
-      bool decrypt(const elgamal_byte_t* cipher_text, elgamal_byte_t* plain_text) const;
+      bool decrypt(const byte_t* cipher_text, byte_t* plain_text) const;
 
       number_size_t plain_block_size() const { return m_plain_length; }
 

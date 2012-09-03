@@ -2,6 +2,7 @@
 #define CRYPTO_ELGAMAL_ENCRYPTER_H
 
 #include "Crypto/Crypto_global.h"
+#include "Crypto/types.h"
 #include "Crypto/elgamal_types.h"
 #include "DataStructures/uniformlongintdistribution.h"
 #include "Crypto/longintconverter.h"
@@ -34,11 +35,11 @@ namespace Crypto {
 
       ~Encrypter();
 
-      Encrypter(const elgamal_byte_t* raw_public_key, number_size_t length);
+      Encrypter(const byte_t* raw_public_key, number_size_t length);
 
       cipher_t encrypt(const number_t& plain);
 
-      void encrypt(const elgamal_byte_t* plain, elgamal_byte_t* cipher);
+      void encrypt(const byte_t* plain, byte_t* cipher);
 
       number_size_t plain_block_size() const { return m_plain_length; }
 

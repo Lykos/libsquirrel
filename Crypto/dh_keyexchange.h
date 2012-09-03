@@ -13,8 +13,6 @@ namespace Crypto {
     class CRYPTOSHARED_EXPORT KeyExchange
     {
     public:
-      typedef Converter::number_size_t number_size_t;
-
       bool valid_key_bits(uint number_bits) const;
 
       // Is the group already set?
@@ -46,9 +44,9 @@ namespace Crypto {
 
       void set_other_part(const number_t& other_gen_power);
 
-      void read_group(const dh_byte_t* raw_group, number_size_t length);
+      void read_group(const byte_t* raw_group, number_size_t length);
 
-      void read_other_part(const dh_byte_t* raw_gen_power, number_size_t length);
+      void read_other_part(const byte_t* raw_gen_power, number_size_t length);
 
       number_size_t group_length() const;
 
@@ -56,11 +54,11 @@ namespace Crypto {
 
       number_size_t key_length() const;
 
-      number_size_t write_group(dh_byte_t* raw_group) const;
+      number_size_t write_group(byte_t* raw_group) const;
 
-      number_size_t write_own_part(dh_byte_t* raw_gen_power) const;
+      number_size_t write_own_part(byte_t* raw_gen_power) const;
 
-      number_size_t write_key(dh_byte_t* raw_key) const;
+      number_size_t write_key(byte_t* raw_key) const;
 
     private:
       Converter m_converter;

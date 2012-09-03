@@ -25,7 +25,7 @@ namespace Crypto {
       m_cipher_length (m_key_part_length + m_cipher_part_length)
     {}
 
-    Encrypter::Encrypter(const elgamal_byte_t* raw_public_key, number_size_t length)
+    Encrypter::Encrypter(const byte_t* raw_public_key, number_size_t length)
     {
       Converter conv;
       public_key_t public_key = conv.read_public_key(raw_public_key, length);
@@ -110,7 +110,7 @@ namespace Crypto {
       return {cipher, own_gen_power};
     }
 
-    void Encrypter::encrypt(const elgamal_byte_t* plain, elgamal_byte_t* cipher)
+    void Encrypter::encrypt(const byte_t* plain, byte_t* cipher)
     {
       // Convert to numbers
       number_t plain_number = m_converter.read_number(plain, m_plain_length);

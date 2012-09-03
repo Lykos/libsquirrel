@@ -28,7 +28,7 @@ namespace Crypto {
       m_signature_length (m_r_length + m_s_length)
     {}
 
-    Signer::Signer(const elgamal_byte_t* raw_private_key, number_size_t length)
+    Signer::Signer(const byte_t* raw_private_key, number_size_t length)
     {
       Converter conv;
       private_key_t private_key = conv.read_private_key(raw_private_key, length);
@@ -60,11 +60,10 @@ namespace Crypto {
       m_phi_modulus (std::move(other.m_phi_modulus)),
       m_exponent (std::move(other.m_exponent)),
       m_k_distribution (std::move(other.m_k_distribution)),
-      m_r_length (std::move(other.m_r_length)),
-      m_s_length (std::move(other.m_s_length)),
-      m_signature_length (std::move(other.m_signature_length))
-    {
-    }
+      m_r_length (other.m_r_length),
+      m_s_length (other.m_s_length),
+      m_signature_length (other.m_signature_length)
+    {}
 
     Signer& Signer::operator=(const Signer& other)
     {
@@ -115,10 +114,10 @@ namespace Crypto {
       return {r, s};
     }
 
-    ulong Signer::sign(elgamal_byte_t* message, ulong length)
+    ulong Signer::sign(byte_t* message, ulong length)
     {
       // Generate hash of message
-      elgamal_byte_t hash[32];
+      byte_t hash[32];
       hasher.hash(message, length, hash + 0);
       number_t hash_number = m_converter.read_number(hash, 32);
 

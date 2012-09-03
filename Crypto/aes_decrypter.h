@@ -4,7 +4,7 @@
 #include "Crypto/Crypto_global.h"
 #include "Crypto/aes_helper.h"
 #include "Crypto/aes_constants.h"
-#include "Crypto/aes_types.h"
+#include "Crypto/types.h"
 
 namespace Crypto {
 
@@ -15,14 +15,14 @@ namespace Crypto {
     private:
       uint m_expanded_key_length;
 
-      aes_byte_t* m_expanded_key;
+      byte_t* m_expanded_key;
 
       uint m_rounds;
 
       Helper m_helper;
 
     public:
-      Decrypter(const aes_byte_t* key, uint key_length);
+      Decrypter(const byte_t* key, uint key_length);
 
       Decrypter(const Decrypter& other);
 
@@ -34,7 +34,7 @@ namespace Crypto {
 
       ~Decrypter();
 
-      bool decrypt(const aes_byte_t* cipher, aes_byte_t* plain);
+      bool decrypt(const byte_t* cipher, byte_t* plain);
 
       uint cipher_block_size() const { return BLOCK_BYTE_SIZE; }
 

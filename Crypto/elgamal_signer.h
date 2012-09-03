@@ -1,6 +1,7 @@
 #ifndef CRYPTO_ELGAMAL_SIGNER_H
 #define CRYPTO_ELGAMAL_SIGNER_H
 
+#include "Crypto/types.h"
 #include "Crypto/elgamal_types.h"
 #include "DataStructures/uniformlongintdistribution.h"
 #include "Crypto/longintconverter.h"
@@ -14,8 +15,6 @@ namespace Crypto {
     class Signer
     {
     public:
-      typedef LongIntConverter::number_size_t number_size_t;
-
       typedef struct {
         number_t r;
         number_t s;
@@ -23,7 +22,7 @@ namespace Crypto {
 
       explicit Signer(const private_key_t& private_key);
 
-      Signer(const elgamal_byte_t* raw_private_key, number_size_t length);
+      Signer(const byte_t* raw_private_key, number_size_t length);
 
 
       // We have to reimplement them all because random_device is not copyable
@@ -40,7 +39,7 @@ namespace Crypto {
       signature_t sign(const number_t& message);
 
       // Appends the signature directly after the end of the message
-      ulong sign(elgamal_byte_t* message, ulong length);
+      ulong sign(byte_t* message, ulong length);
 
       number_size_t signature_length() const { return m_signature_length; }
 
