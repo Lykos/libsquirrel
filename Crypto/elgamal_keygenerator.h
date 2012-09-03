@@ -17,7 +17,7 @@ namespace Crypto {
       typedef KeyPair<std::string, std::string> raw_key_pair_t;
 
       template <typename Engine>
-      inline raw_key_pair_t generate_strings(Engine& engine, uint number_bits);
+      inline raw_key_pair_t generate_raw(Engine& engine, uint number_bits);
 
       template <typename Engine>
       inline key_pair_t generate(Engine& engine, uint number_bits);
@@ -37,7 +37,7 @@ namespace Crypto {
     };
 
     template <typename Engine>
-    inline KeyGenerator::raw_key_pair_t KeyGenerator::generate_strings(Engine& engine, uint number_bits)
+    inline KeyGenerator::raw_key_pair_t KeyGenerator::generate_raw(Engine& engine, uint number_bits)
     {
       key_pair_t key_pair = generate(engine, number_bits);
       return {m_converter.write_public_key(key_pair.public_key), m_converter.write_private_key(key_pair.private_key)};

@@ -1,6 +1,6 @@
-#include "Crypto/elgamal_converter.h"
-#include "Crypto/readnumber_macro.h"
-#include "Crypto/preconditionviolation.h"
+#include "elgamal_converter.h"
+#include "readnumber_macro.h"
+#include "preconditionviolation.h"
 
 using namespace std;
 

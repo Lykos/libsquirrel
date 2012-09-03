@@ -1,5 +1,5 @@
-#include "Crypto/elgamal_verifier.h"
-#include "Crypto/elgamal_converter.h"
+#include "elgamal_verifier.h"
+#include "elgamal_converter.h"
 #include <string>
 
 using namespace std;
@@ -50,9 +50,8 @@ namespace Crypto {
       }
 
       // Read numbers
-      byte_t hash[32];
-      hasher.hash((const byte_t*)message.substr(0, length - m_signature_length).data(), length - m_signature_length, hash);
-      number_t hash_number = m_converter.read_number(string((const char*)hash));
+      string hash = hasher.hash(message.substr(0, length - m_signature_length));
+      number_t hash_number = m_converter.read_number(hash);
       number_t r = m_converter.read_number(message.substr(length, m_r_length));
       number_t s = m_converter.read_number(message.substr(length + m_r_length, m_s_length));
 

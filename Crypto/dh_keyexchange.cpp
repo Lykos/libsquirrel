@@ -1,6 +1,6 @@
-#include "Crypto/dh_keyexchange.h"
-#include "Crypto/preconditionviolation.h"
-#include "Crypto/types.h"
+#include "dh_keyexchange.h"
+#include "preconditionviolation.h"
+#include "types.h"
 #include <string>
 
 using namespace std;

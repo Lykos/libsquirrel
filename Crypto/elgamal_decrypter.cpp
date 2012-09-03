@@ -1,9 +1,9 @@
-#include "Crypto/elgamal_decrypter.h"
+#include "elgamal_decrypter.h"
 #include "DataStructures/arithmetichelper.h"
-#include "Crypto/elgamal_converter.h"
-#include "Crypto/longintconverter.h"
-#include "Crypto/preconditionviolation.h"
-#include "Crypto/conditiontype.h"
+#include "elgamal_converter.h"
+#include "longintconverter.h"
+#include "preconditionviolation.h"
+#include "conditiontype.h"
 
 namespace Crypto {
 

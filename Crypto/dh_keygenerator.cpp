@@ -1,6 +1,6 @@
-#include "Crypto/dh_keygenerator.h"
-#include "Crypto/dh_constants.h"
-#include "Crypto/preconditionviolation.h"
+#include "dh_keygenerator.h"
+#include "dh_constants.h"
+#include "preconditionviolation.h"
 
 namespace Crypto {
 

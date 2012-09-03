@@ -1,7 +1,7 @@
-#include "Crypto/aes_keyexpander.h"
-#include "Crypto/aes_constants.h"
-#include "Crypto/types.h"
-#include "Crypto/preconditionviolation.h"
+#include "aes_keyexpander.h"
+#include "aes_constants.h"
+#include "types.h"
+#include "preconditionviolation.h"
 #include <climits>
 #include <stdexcept>
 #include <string>

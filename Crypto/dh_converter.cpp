@@ -1,7 +1,7 @@
-#include "Crypto/types.h"
-#include "Crypto/dh_converter.h"
-#include "Crypto/preconditionviolation.h"
-#include "Crypto/readnumber_macro.h"
+#include "types.h"
+#include "dh_converter.h"
+#include "preconditionviolation.h"
+#include "readnumber_macro.h"
 #include <climits>
 
 namespace Crypto {

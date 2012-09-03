@@ -11,7 +11,9 @@
 #include <QtTest/QtTest>
 #include <iostream>
 #include <iomanip>
+#include <string>
 
+using namespace std;
 using namespace Crypto;
 using namespace Elgamal;
 using namespace DataStructures;
@@ -83,20 +85,13 @@ void ElgamalTest::test_enc_dec_char()
   Encrypter encrypter (m_public_key);
   Decrypter decrypter (m_private_key);
   boost::random::uniform_int_distribution<unsigned char> dist;
-  unsigned char *plain = new unsigned char[encrypter.plain_block_size()];
-  unsigned char *cipher = new unsigned char[decrypter.cipher_block_size()];
-  unsigned char *replain = new unsigned char[encrypter.plain_block_size()];
+  string plain (encrypter.plain_block_size(), 0);
   for (uint i = 0; i < encrypter.plain_block_size(); ++i) {
     plain[i] = dist(m_random_generator);
   }
-  encrypter.encrypt(plain, cipher);
-  decrypter.decrypt(cipher, replain);
-  for (uint i = 0; i < encrypter.plain_block_size(); ++i) {
-    QCOMPARE(plain[i], replain[i]);
-  }
-  delete[] plain;
-  delete[] cipher;
-  delete[] replain;
+  string cipher = encrypter.encrypt(plain);
+  string replain = decrypter.decrypt(cipher);
+  QCOMPARE(replain, plain);
 }
 
 void ElgamalTest::test_sign()
@@ -117,13 +112,12 @@ void ElgamalTest::test_sign_char()
   Verifier verifier (m_public_key);
   boost::random::uniform_int_distribution<unsigned char> dist;
   ulong signature_length = signer.signature_length();
-  unsigned char *message = new unsigned char[5000 + signature_length];
+  string message (5000 + signature_length, 0);
   for (uint i = 0; i < 5000; ++i) {
     message[i] = dist(m_random_generator);
   }
-  signer.sign(message, 5000);
-  QVERIFY(verifier.verify(message, 5000 + signature_length));
+  signer.sign(message);
+  QVERIFY(verifier.verify(message));
   message[233] = ~message[233];
-  QVERIFY(!verifier.verify(message, 5000 + signature_length));
-  delete[] message;
+  QVERIFY(!verifier.verify(message));
 }

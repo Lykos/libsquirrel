@@ -1,6 +1,6 @@
-#include "Crypto/Crypto_global.h"
-#include "Crypto/aes_constants.h"
-#include "Crypto/aes_helper.h"
+#include "Crypto_global.h"
+#include "aes_constants.h"
+#include "aes_helper.h"
 #include <string>
 #include <climits>
 

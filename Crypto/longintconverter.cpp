@@ -1,5 +1,5 @@
-#include "Crypto/longintconverter.h"
-#include "Crypto/preconditionviolation.h"
+#include "longintconverter.h"
+#include "preconditionviolation.h"
 #include <cstring>
 
 using namespace std;
