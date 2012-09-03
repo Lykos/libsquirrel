@@ -35,7 +35,7 @@ namespace Crypto {
 
       ~Encrypter();
 
-      Encrypter(const byte_t* raw_public_key, number_size_t length);
+      Encrypter(const std::string& raw_public_key);
 
       cipher_t encrypt(const number_t& plain);
 

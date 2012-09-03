@@ -5,6 +5,7 @@
 #include "Crypto/dh_converter.h"
 #include "Crypto/dh_types.h"
 #include "Crypto/dh_keygenerator.h"
+#include <string>
 
 namespace Crypto {
 
@@ -44,21 +45,15 @@ namespace Crypto {
 
       void set_other_part(const number_t& other_gen_power);
 
-      void read_group(const byte_t* raw_group, number_size_t length);
+      void read_group(const std::string& raw_group);
 
-      void read_other_part(const byte_t* raw_gen_power, number_size_t length);
+      void read_other_part(const std::string& raw_gen_power);
 
-      number_size_t group_length() const;
+      std::string write_group() const;
 
-      number_size_t own_part_length() const;
+      std::string write_own_part() const;
 
-      number_size_t key_length() const;
-
-      number_size_t write_group(byte_t* raw_group) const;
-
-      number_size_t write_own_part(byte_t* raw_gen_power) const;
-
-      number_size_t write_key(byte_t* raw_key) const;
+      std::string write_key() const;
 
     private:
       Converter m_converter;

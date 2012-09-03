@@ -4,6 +4,7 @@
 #include "DataStructures/arithmetichelper.h"
 #include "DataStructures/longint.h"
 #include "sha2hasher.h"
+#include <string>
 
 namespace Crypto {
 
@@ -28,10 +29,10 @@ namespace Crypto {
       m_signature_length (m_r_length + m_s_length)
     {}
 
-    Signer::Signer(const byte_t* raw_private_key, number_size_t length)
+    Signer::Signer(const std::string& raw_private_key)
     {
       Converter conv;
-      private_key_t private_key = conv.read_private_key(raw_private_key, length);
+      private_key_t private_key = conv.read_private_key(raw_private_key);
       m_modulus = private_key.modulus;
       m_generator = private_key.generator;
       m_phi_modulus = m_modulus - ONE;

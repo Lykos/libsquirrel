@@ -23,7 +23,7 @@ ElgamalDecrypter::ElgamalDecrypter(const string& private_key, const string& init
     throw Exception(rb_eCryptoException, "Argument 2 has to be a hexadecimal string.");
   }
   m_decrypter = new CBC::Decrypter<Elgamal::Decrypter>(
-        Elgamal::Decrypter((const uchar*)binary_private_key.data(), binary_private_key.size()),
+        Elgamal::Decrypter(binary_private_key),
         binary_initial_state);
 }
 

@@ -25,10 +25,10 @@ namespace Crypto {
       m_cipher_length (m_key_part_length + m_cipher_part_length)
     {}
 
-    Encrypter::Encrypter(const byte_t* raw_public_key, number_size_t length)
+    Encrypter::Encrypter(const std::string& raw_public_key)
     {
       Converter conv;
-      public_key_t public_key = conv.read_public_key(raw_public_key, length);
+      public_key_t public_key = conv.read_public_key(raw_public_key);
       m_modulus = public_key.modulus;
       m_generator = public_key.generator;
       m_gen_power = public_key.gen_power;

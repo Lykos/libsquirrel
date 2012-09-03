@@ -14,10 +14,10 @@ namespace Crypto {
       m_signature_length (m_r_length + m_s_length)
     {}
 
-    Verifier::Verifier(const byte_t* raw_public_key, number_size_t length)
+    Verifier::Verifier(const std::string& raw_public_key)
     {
       Converter conv;
-      public_key_t public_key = conv.read_public_key(raw_public_key, length);
+      public_key_t public_key = conv.read_public_key(raw_public_key);
       m_modulus = public_key.modulus;
       m_generator = public_key.generator;
       m_gen_power = public_key.gen_power;

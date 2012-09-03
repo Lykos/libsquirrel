@@ -22,7 +22,7 @@ namespace Crypto {
 
       explicit Signer(const private_key_t& private_key);
 
-      Signer(const byte_t* raw_private_key, number_size_t length);
+      Signer(const std::string& raw_private_key);
 
 
       // We have to reimplement them all because random_device is not copyable

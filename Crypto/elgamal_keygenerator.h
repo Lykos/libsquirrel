@@ -14,9 +14,10 @@ namespace Crypto {
     class CRYPTOSHARED_EXPORT KeyGenerator : private DH::KeyGenerator
     {
     public:
+      typedef KeyPair<std::string, std::string> raw_key_pair_t;
+
       template <typename Engine>
-      inline std::pair<number_size_t, number_size_t>
-      generate(Engine& engine, uint number_bits, byte_t* public_key, byte_t* private_key);
+      inline raw_key_pair_t generate(Engine& engine, uint number_bits);
 
       template <typename Engine>
       inline key_pair_t generate(Engine& engine, uint number_bits);
@@ -36,13 +37,10 @@ namespace Crypto {
     };
 
     template <typename Engine>
-    inline std::pair<number_size_t, number_size_t>
-    KeyGenerator::generate(Engine& engine, uint number_bits, byte_t* raw_public_key, byte_t* raw_private_key)
+    inline KeyGenerator::raw_key_pair_t KeyGenerator::generate(Engine& engine, uint number_bits)
     {
       key_pair_t key_pair = generate(engine, number_bits);
-      number_size_t public_length = m_converter.write_public_key(key_pair.public_key, raw_public_key);
-      number_size_t private_length = m_converter.write_private_key(key_pair.private_key, raw_private_key);
-      return std::make_pair(public_length, private_length);
+      return {m_converter.write_public_key(key_pair.public_key), m_converter.write_private_key(key_pair.private_key)};
     }
 
     template <typename Engine>

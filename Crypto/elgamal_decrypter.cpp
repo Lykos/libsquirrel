@@ -18,10 +18,10 @@ namespace Crypto {
       m_cipher_length (m_key_part_length + m_cipher_part_length)
     {}
 
-    Decrypter::Decrypter(const byte_t* raw_private_key, number_size_t length)
+    Decrypter::Decrypter(const std::string& raw_private_key)
     {
       Converter conv;
-      private_key_t private_key = conv.read_private_key(raw_private_key, length);
+      private_key_t private_key = conv.read_private_key(raw_private_key);
       m_modulus = private_key.modulus;
       m_exponent = private_key.exponent;
       m_plain_length = LongIntConverter::fitting_length(m_modulus);

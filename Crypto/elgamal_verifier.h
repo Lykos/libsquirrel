@@ -14,7 +14,7 @@ namespace Crypto {
     public:
       explicit Verifier(const public_key_t& public_key);
 
-      Verifier(const byte_t* raw_public_key, number_size_t length);
+      Verifier(const std::string& raw_public_key);
 
       bool verify(const number_t& message, const number_t& r, const number_t& s) const;
 

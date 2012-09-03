@@ -1,6 +1,9 @@
 #include "Crypto/dh_keyexchange.h"
 #include "Crypto/preconditionviolation.h"
 #include "Crypto/types.h"
+#include <string>
+
+using namespace std;
 
 namespace Crypto {
 
@@ -58,44 +61,29 @@ namespace Crypto {
       }
     }
 
-    void KeyExchange::read_group(const byte_t* raw_group, number_size_t length)
+    void KeyExchange::read_group(const string& raw_group)
     {
-      set_group(m_converter.read_group(raw_group, length));
+      set_group(m_converter.read_group(raw_group));
     }
 
-    void KeyExchange::read_other_part(const byte_t* raw_gen_power, number_size_t length)
+    void KeyExchange::read_other_part(const string& raw_gen_power)
     {
-      set_other_part(m_converter.read_number(raw_gen_power, length));
+      set_other_part(m_converter.read_number(raw_gen_power));
     }
 
-    number_size_t KeyExchange::group_length() const
+    string KeyExchange::write_group() const
     {
-      return m_converter.group_length(get_group());
+      return m_converter.write_group(get_group());
     }
 
-    number_size_t KeyExchange::own_part_length() const
+    string KeyExchange::write_own_part() const
     {
-      return m_converter.number_length(get_own_part());
+      return m_converter.write_number(get_own_part());
     }
 
-    number_size_t KeyExchange::key_length() const
+    string KeyExchange::write_key() const
     {
-      return m_converter.number_length(get_key());
-    }
-
-    number_size_t KeyExchange::write_group(byte_t* raw_group) const
-    {
-      return m_converter.write_group(get_group(), raw_group);
-    }
-
-    number_size_t KeyExchange::write_own_part(byte_t* raw_gen_power) const
-    {
-      return m_converter.write_number(get_own_part(), raw_gen_power);
-    }
-
-    number_size_t KeyExchange::write_key(byte_t* raw_key) const
-    {
-      return m_converter.write_number(get_key(), raw_key);
+      return m_converter.write_number(get_key());
     }
 
     void KeyExchange::complete_key()

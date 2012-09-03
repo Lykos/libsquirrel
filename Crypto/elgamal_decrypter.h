@@ -16,7 +16,7 @@ namespace Crypto {
 
       explicit Decrypter(const private_key_t& private_key);
 
-      Decrypter(const byte_t* raw_private_key, number_size_t length);
+      Decrypter(const std::string& raw_private_key);
 
       number_t decrypt(const number_t& cipher, const number_t& other_gen_power) const;
 

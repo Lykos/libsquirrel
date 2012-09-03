@@ -24,7 +24,7 @@ ElgamalEncrypter::ElgamalEncrypter(const std::string& public_key, const std::str
     throw Exception(rb_eCryptoException, "Argument 2 has to be a hexadecimal string.");
   }
   m_encrypter = new CBC::Encrypter<Elgamal::Encrypter>(
-        Elgamal::Encrypter((const uchar*)binary_public_key.data(), binary_public_key.size()),
+        Elgamal::Encrypter(binary_public_key),
         binary_initial_state);
 }
 
