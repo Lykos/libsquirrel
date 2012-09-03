@@ -40,7 +40,7 @@ namespace Crypto {
       return g_h == (g_a_r * r_s).mod(m_modulus);
     }
 
-    bool Verifier::verify(const string& message) const
+    bool Verifier::verify(string& message) const
     {
       number_size_t length = message.length();
 
@@ -52,8 +52,11 @@ namespace Crypto {
       // Read numbers
       string hash = hasher.hash(message.substr(0, length - m_signature_length));
       number_t hash_number = m_converter.read_number(hash);
-      number_t r = m_converter.read_number(message.substr(length, m_r_length));
-      number_t s = m_converter.read_number(message.substr(length + m_r_length, m_s_length));
+      number_t r = m_converter.read_number(message.substr(length - m_signature_length, m_r_length));
+      number_t s = m_converter.read_number(message.substr(length - m_signature_length, m_s_length));
+
+      // Remove signature
+      message.erase(length - m_signature_length, m_signature_length);
 
       // Verify
       return verify(hash_number, r, s);

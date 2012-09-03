@@ -1,6 +1,8 @@
 #ifndef CRYPTO_CBC_MAC_H
 #define CRYPTO_CBC_MAC_H
 
+#include "Crypto/preconditionviolation.h"
+#include "Crypto/conditiontype.h"
 #include "Crypto/cbc_encrypter.h"
 #include "Crypto/types.h"
 #include <string>
@@ -27,11 +29,19 @@ namespace Crypto {
       inline void sign(std::string& message);
 
       // Assumes that the MAC is directly before the end of the message. Note that this changes the state.
-      // In case of failure, the state is undefined.
-      inline bool verify(const std::string& message);
+      // In case of failure, the state is invalid.
+      inline bool verify(std::string& message);
+
+      inline void set_state(const std::string& state) throw(PreconditionViolation);
+
+      inline const std::string& state() const throw();
+
+      inline bool state_valid() const throw() { return m_valid; }
 
     private:
       CBC::Encrypter<BlockCipher> m_encrypter;
+
+      bool m_valid;
 
     };
 
@@ -65,6 +75,8 @@ namespace Crypto {
     template <typename BlockCipher>
     inline bool MAC<BlockCipher>::verify(const std::string& message)
     {
+      PREC(InvalidState, m_valid);
+      m_valid = false;
       number_size_t sig_len = signature_length();
       number_size_t length = message.length();
       if (length < sig_len) {
@@ -72,10 +84,24 @@ namespace Crypto {
       }
       m_encrypter.encrypt(message);
       const std::string& mac = message.substr(length - sig_len, sig_len);
+      message.erase(length - sig_len, sig_len);
       const std::string& state = m_encrypter.get_state();
-      return mac == state;
+      return m_valid = mac == state;
     }
-    
+
+    template <typename BlockCipher>
+    inline void MAC<BlockCipher>::set_state(const std::string& state) throw(PreconditionViolation)
+    {
+      m_encrypter.set_state(state);
+      m_valid = true;
+    }
+
+    template <typename BlockCipher>
+    inline const std::string& MAC<BlockCipher>::state() const throw()
+    {
+      return m_encrypter.state();
+    }
+
   } // namespace CBC
 
 } // namespace Crypto

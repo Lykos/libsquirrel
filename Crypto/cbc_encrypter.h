@@ -54,7 +54,7 @@ namespace Crypto {
 
       inline message_size_t state_length() const { return m_plain_block_size; }
 
-      inline std::string encrypt(const std::string& plain);
+      inline std::string encrypt(const std::string& plain) throw();
 
       inline const std::string& get_state() const { return m_state; }
 
@@ -192,7 +192,7 @@ namespace Crypto {
     }
 
     template <typename BlockCipher>
-    inline std::string Encrypter<BlockCipher>::encrypt(const std::string& plain)
+    inline std::string Encrypter<BlockCipher>::encrypt(const std::string& plain) throw()
     {
       message_size_t plain_length = plain.length();
       message_size_t cipher_len = cipher_length(plain_length);

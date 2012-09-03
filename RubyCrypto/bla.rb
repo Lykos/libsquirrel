@@ -8,8 +8,8 @@ KEY = YAML::load(File::read(KEY_FILE))
 
 include Crypto
 
-ENC = ElgamalEncrypter.new(KEY[:public_key], KEY[:initial_state])
-DEC = ElgamalDecrypter.new(KEY[:private_key], KEY[:initial_state])
+ELGAMAL_ENC = ElgamalEncrypter.new(KEY[:public_key], KEY[:initial_state])
+ELGAMAL_DEC = ElgamalDecrypter.new(KEY[:private_key], KEY[:initial_state])
 
 P = <<EOS
 Arbeitsschule nannte zu Beginn des 20. Jahrhunderts eine Richtung der deutschen 
