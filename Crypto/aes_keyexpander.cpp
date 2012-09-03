@@ -1,55 +1,63 @@
-#include "aes_keyexpander.h"
-#include "aes_constants.h"
-#include "types.h"
+#include "Crypto/aes_keyexpander.h"
+#include "Crypto/aes_constants.h"
+#include "Crypto/types.h"
+#include "Crypto/preconditionviolation.h"
 #include <climits>
-#include <cstring>
 #include <stdexcept>
-#include "preconditionviolation.h"
+#include <string>
+
+using namespace std;
 
 namespace Crypto {
 
   namespace AES {
 
-    KeyExpander::KeyExpander(uint key_length):
-      m_key_length (key_length)
+
+    inline number_size_t KeyExpander::expanded_length(number_size_t key_length)
+    {
+      return (rounds(key_length) + 1) * BLOCK_BYTE_SIZE;
+    }
+
+    inline number_size_t KeyExpander::rounds(number_size_t key_length)
     {
       PREC(KeyLength, key_length == AES_128_BYTES || key_length == AES_192_BYTES || key_length == AES_256_BYTES);
       if (key_length == AES_128_BYTES) {
-        m_rounds = AES_128_ROUNDS;
+        return AES_128_ROUNDS;
       } else if (key_length == AES_192_BYTES) {
-        m_rounds = AES_192_ROUNDS;
-      } else if (key_length == AES_256_BYTES) {
-        m_rounds = AES_256_ROUNDS;
+        return AES_192_ROUNDS;
+      } else {
+        return AES_256_ROUNDS;
       }
-      m_expanded_length = (m_rounds + 1) * BLOCK_BYTE_SIZE;
     }
 
-    inline void KeyExpander::schedule_core(byte_t* in, uint i)
+    inline void KeyExpander::schedule_core(string& in, uint i)
     {
       m_helper.rotate_word(in);
       m_helper.sub_word(in);
       in[0] ^= Rcon[i];
     }
 
-    void KeyExpander::expand(byte_t* key)
+    string KeyExpander::expand(const string& key)
     {
+      number_size_t key_length = key.length();
+      number_size_t expanded_key_length = expanded_length(key_length);
+      string expanded_key (key);
+      expanded_key.resize(expanded_key_length);
       uint i = 1;
-      for (uint j = m_key_length; j < m_expanded_length; j += BLOCK_ROWS)
+      for (uint j = key_length; j < expanded_key_length; j += BLOCK_ROWS)
       {
-        byte_t t[BLOCK_ROWS];
-        for (uint k = 0; k < BLOCK_ROWS; ++k) {
-          t[k] = key[j - BLOCK_ROWS + k];
-        }
-        if (j % m_key_length == 0) {
+        string t = expanded_key.substr(j - BLOCK_ROWS, BLOCK_ROWS);
+        if (j % key_length == 0) {
           schedule_core(t, i);
           ++i;
-        } else if (m_key_length > AES_192_BYTES && j % m_key_length == 4) {
+        } else if (key_length > AES_192_BYTES && j % key_length == 4) {
           m_helper.sub_word(t);
         }
         for (uint k = 0; k < BLOCK_ROWS; ++k) {
-          key[j + k] = t[k] ^ key[j - m_key_length + k];
+          expanded_key[j + k] = t[k] ^ expanded_key[j - key_length + k];
         }
       }
+      return expanded_key;
     }
 
   } // namespace AES

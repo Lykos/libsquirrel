@@ -19,7 +19,8 @@ SOURCES += \
     crypto.cpp \
     elgamaldecrypter.cpp \
     hexconverters.cpp \
-    longint.cpp
+    longint.cpp \
+    sha2hasher.cpp
 
 HEADERS +=\
     RubyCrypto.h \
@@ -28,7 +29,8 @@ HEADERS +=\
     crypto.h \
     elgamaldecrypter.h \
     hexconverters.h \
-    longint.h
+    longint.h \
+    sha2hasher.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

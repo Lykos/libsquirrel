@@ -1,34 +1,37 @@
-#include "Crypto_global.h"
-#include "aes_constants.h"
-#include "aes_helper.h"
+#include "Crypto/Crypto_global.h"
+#include "Crypto/aes_constants.h"
+#include "Crypto/aes_helper.h"
+#include <string>
 #include <climits>
+
+using namespace std;
 
 namespace Crypto {
 
   namespace AES {
     
-    void Helper::apply_round_key(byte_t* cipher, byte_t* key, uint round)
+    void Helper::apply_round_key(string& cipher, string& key, uint round)
     {
       for (uint i = 0; i < BLOCK_BYTE_SIZE; ++i) {
         cipher[i] ^= key[i + round * BLOCK_BYTE_SIZE];
       }
     }
 
-    void Helper::sub_bytes(byte_t* cipher)
+    void Helper::sub_bytes(string& cipher)
     {
       for (uint i = 0; i < BLOCK_BYTE_SIZE; ++i) {
-        cipher[i] = SBox[(unsigned byte_t)(cipher[i])];
+        cipher[i] = SBox[byte_t(cipher[i])];
       }
     }
 
-    void Helper::inv_sub_bytes(byte_t* cipher)
+    void Helper::inv_sub_bytes(string& cipher)
     {
       for (uint i = 0; i < BLOCK_BYTE_SIZE; ++i) {
-        cipher[i] = InvSBox[cipher[i]];
+        cipher[i] = InvSBox[byte_t(cipher[i])];
       }
     }
 
-    inline void Helper::shift_row_1(byte_t* cipher, uint row)
+    inline void Helper::shift_row_1(string& cipher, uint row)
     {
       byte_t a;
       a = cipher[row];
@@ -38,7 +41,7 @@ namespace Crypto {
       cipher[row + 3 * BLOCK_ROWS] = a;
     }
 
-    inline void Helper::shift_row_2(byte_t* cipher, uint row)
+    inline void Helper::shift_row_2(string& cipher, uint row)
     {
       byte_t a = cipher[row];
       cipher[row] = cipher[row + 2 * BLOCK_ROWS];
@@ -48,7 +51,7 @@ namespace Crypto {
       cipher[row + 3 * BLOCK_ROWS] = a;
     }
 
-    inline void Helper::shift_row_3(byte_t* cipher, uint row)
+    inline void Helper::shift_row_3(string& cipher, uint row)
     {
       byte_t a = cipher[row];
       cipher[row] = cipher[row + 3 * BLOCK_ROWS];
@@ -57,14 +60,14 @@ namespace Crypto {
       cipher[row + BLOCK_ROWS] = a;
     }
 
-    void Helper::inv_shift_rows(byte_t* cipher)
+    void Helper::inv_shift_rows(string& cipher)
     {
       shift_row_1(cipher, 3);
       shift_row_2(cipher, 2);
       shift_row_3(cipher, 1);
     }
 
-    void Helper::shift_rows(byte_t* cipher)
+    void Helper::shift_rows(string& cipher)
     {
       shift_row_1(cipher, 1);
       shift_row_2(cipher, 2);
@@ -77,7 +80,7 @@ namespace Crypto {
       return Exp[(Log[a] + Log[b]) % 255] * Invertible[a] * Invertible[b];
     }
 
-    void Helper::mult_columns(byte_t* cipher, byte_t* factor)
+    void Helper::mult_columns(string& cipher, const string& factor)
     {
       for (uint c = 0; c < BLOCK_COLS; ++c) {
         byte_t temp[4];
@@ -93,19 +96,19 @@ namespace Crypto {
       }
     }
 
-    void Helper::mix_columns(byte_t* cipher)
+    void Helper::mix_columns(string& cipher)
     {
-      byte_t a[] = {2, 3, 1, 1};
-      mult_columns(cipher, a + 0);
+      static const string a ({2, 3, 1, 1});
+      mult_columns(cipher, a);
     }
 
-    void Helper::inv_mix_columns(byte_t* cipher)
+    void Helper::inv_mix_columns(string& cipher)
     {
-      byte_t a[] = {0xe, 0xb, 0xd, 0x9};
-      mult_columns(cipher, a + 0);
+      static const string a ({0xe, 0xb, 0xd, 0x9});
+      mult_columns(cipher, a);
     }
 
-    void Helper::rotate_word(byte_t* word)
+    void Helper::rotate_word(string& word)
     {
       byte_t a = word[0];
       word[0] = word[1];
@@ -114,10 +117,10 @@ namespace Crypto {
       word[3] = a;
     }
 
-    void Helper::sub_word(byte_t* word)
+    void Helper::sub_word(string& word)
     {
       for (uint i = 0; i < BLOCK_ROWS; ++i) {
-        word[i] = SBox[(unsigned byte_t)(word[i])];
+        word[i] = SBox[byte_t(word[i])];
       }
     }
     

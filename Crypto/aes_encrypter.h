@@ -5,6 +5,7 @@
 #include "Crypto/aes_helper.h"
 #include "Crypto/aes_constants.h"
 #include "Crypto/types.h"
+#include <string>
 
 namespace Crypto {
 
@@ -13,28 +14,16 @@ namespace Crypto {
     class CRYPTOSHARED_EXPORT Encrypter
     {
     private:
-      uint m_expanded_key_length;
+      std::string m_expanded_key;
 
-      byte_t* m_expanded_key;
-
-      uint m_rounds;
+      number_size_t m_rounds;
 
       Helper m_helper;
 
     public:
-      Encrypter(const byte_t* key, uint key_length);
+      Encrypter(const std::string& key);
 
-      Encrypter(const Encrypter& other);
-
-      Encrypter(Encrypter&& other);
-
-      Encrypter& operator=(const Encrypter& other);
-
-      Encrypter& operator=(Encrypter&& other);
-
-      ~Encrypter();
-
-      void encrypt(const byte_t* plain, byte_t* cipher);
+      std::string encrypt(const std::string& plain);
 
       uint plain_block_size() const { return BLOCK_BYTE_SIZE; }
 

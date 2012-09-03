@@ -22,9 +22,9 @@ static void printit(const uchar* bla, ulong length)
 
 void CBCTest::test_enc_dec()
 {
-  uchar key[16];
-  uchar initial1[16];
-  uchar initial2[16];
+  string key (16, 0);
+  string initial1 (16, 0);
+  string initial2 (16, 0);
   mt19937_64 rng;
   uniform_int_distribution<uchar> dist;
   for (uint i = 0; i < 16; ++i) {
@@ -32,7 +32,7 @@ void CBCTest::test_enc_dec()
     initial1[i] = initial2[i] = dist(rng);
   }
   ulong plain_length = 1024;
-  uchar *plain = new uchar[plain_length];
+  string plain (plain_length, 0);
   for (uint i = 0; i < plain_length; ++i) {
     plain[i] = dist(rng);
   }
@@ -41,9 +41,9 @@ void CBCTest::test_enc_dec()
   CBC::Encrypter<AES::Encrypter> enc (aes_enc, initial1, 16);
   CBC::Decrypter<AES::Decrypter> dec (aes_dec, initial2, 16);
   ulong cipher_length = enc.cipher_length(plain_length);
-  uchar *cipher = new uchar[cipher_length];
+  string cipher (cipher_length, 0);
   enc.encrypt(plain, plain_length, cipher);
-  uchar *replain = new uchar[dec.max_plain_length(cipher_length)];
+  string replain (dec.max_plain_length(cipher_length), 0);
   ulong replain_length = dec.decrypt(cipher, cipher_length, replain);
   QCOMPARE(replain_length, plain_length);
   for (uint i = 0; i < plain_length; ++i) {

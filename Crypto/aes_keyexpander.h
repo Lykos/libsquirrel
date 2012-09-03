@@ -4,6 +4,7 @@
 #include "Crypto/Crypto_global.h"
 #include "Crypto/types.h"
 #include "Crypto/aes_helper.h"
+#include <string>
 
 namespace Crypto {
 
@@ -14,22 +15,16 @@ namespace Crypto {
     private:
       Helper m_helper;
 
-      uint m_key_length;
-
-      uint m_rounds;
-
-      uint m_expanded_length;
-
-      inline void schedule_core(byte_t* cipher, uint i);
+      inline void schedule_core(std::string& cipher, uint i);
 
     public:
-      KeyExpander(uint key_length);
+      KeyExpander();
 
-      inline uint expanded_length() const { return m_expanded_length; }
+      inline number_size_t expanded_length(number_size_t key_length);
 
-      inline uint rounds() const { return m_rounds; }
+      inline number_size_t rounds(number_size_t key_length);
 
-      void expand(byte_t* key);
+      std::string expand(const std::string& key);
 
     };
     
