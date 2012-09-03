@@ -81,8 +81,7 @@ namespace Crypto {
       m_plain_block_size (block_cipher.plain_block_size()),
       m_cipher_block_size (block_cipher.cipher_block_size()),
       m_state (initial_state),
-      m_block (m_plain_block_size, 0),
-      m_tmp_plain (new byte_t[m_plain_block_size])
+      m_block (m_plain_block_size, 0)
     {
       DEC_PREC_STATE_LENGTH();
     }
@@ -93,8 +92,7 @@ namespace Crypto {
       m_plain_block_size (block_cipher.plain_block_size()),
       m_cipher_block_size (block_cipher.cipher_block_size()),
       m_state (initial_state),
-      m_block (m_plain_block_size, 0),
-      m_tmp_plain (new byte_t[m_plain_block_size])
+      m_block (m_plain_block_size, 0)
     {
       DEC_PREC_STATE_LENGTH();
     }
