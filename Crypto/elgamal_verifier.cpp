@@ -40,7 +40,7 @@ namespace Crypto {
       return g_h == (g_a_r * r_s).mod(m_modulus);
     }
 
-    bool Verifier::verify(string& message) const throw()
+    bool Verifier::verify(const string& message) const throw()
     {
       number_size_t length = message.length();
 
