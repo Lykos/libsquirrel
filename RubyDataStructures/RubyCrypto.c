@@ -48,7 +48,7 @@ static VALUE ElgamalEncrypter = Qnil;
 
 static VALUE ElgamalDecrypter = Qnil;
 
-void check_error(error_code_t err)
+void check_error(returned_message_size_t err)
 {
   if (err == NO_INITIALIZE_EXCEPTION) {
     rb_raise(CryptoException, "Somehow an object has been used without being initialized, probably a dynamic hack in Ruby messing with C initialization.");
@@ -57,20 +57,22 @@ void check_error(error_code_t err)
   } else if (err == TYPE_EXCEPTION) {
     rb_raise(CryptoException, "An internal type conversion has not worked.");
   } else if (err < 0) {
-    rb_raise(CryptoException, "Something in the extension went wrong. Internal error code is %d.", err);
+    rb_raise(CryptoException, "Something in the extension went wrong. Internal error code is %ld.", err);
   }
 }
 
-char* to_hex(const byte_t* binary_string, number_size_t length) {
+void print_hex(const byte_t* binary_string, number_size_t length) {
   static const char hex_chars[] = "0123456789ABCDEF";
-  char* hex = (char*) malloc(length * 2 * sizeof(char));
+  char* hex = (char*) malloc((length * 2 + 2) * sizeof(char));
   uint i;
   for (i = 0; i < length; ++i) {
     byte_t byte = binary_string[i];
     hex[2 * i] = hex_chars[(byte >> 4) & 0xF];
     hex[2 * i + 1] = hex_chars[byte & 0xF];
   }
-  return hex;
+  hex[length] = '\n';
+  hex[length + 1] = 0;
+  printf(hex);
 }
 
 byte_t* from_hex(const char* hex_string, number_size_t length) {
@@ -101,12 +103,13 @@ byte_t* from_hex(const char* hex_string, number_size_t length) {
 void ElgamalEncrypter_destroy(Crypto_object_t *encrypter)
 {
   check_error(Crypto_deinit_cbc_elgamal_encrypter(encrypter));
+  free(encrypter);
 }
 
 VALUE ElgamalEncrypter_alloc(VALUE klass)
 {
-  CRYPTO_ALLOC(obj, CryptoCBCElgamalEncrypter);
-  return Data_Wrap_Struct(klass, NULL, ElgamalEncrypter_destroy, obj);
+  CRYPTO_ALLOC(enc, CryptoCBCElgamalEncrypter);
+  return Data_Wrap_Struct(klass, NULL, ElgamalEncrypter_destroy, enc);
 }
 
 VALUE ElgamalEncrypter_init(VALUE self, VALUE key, VALUE state)
@@ -150,23 +153,23 @@ VALUE ElgamalEncrypter_encrypt(VALUE self, VALUE str)
 {
   READ_BINARY(str, 1, plain, length);
   GET_SELF(encrypter);
-  message_size_t cipher_length = Crypto_cbc_elgamal_cipher_length(encrypter, length);
-  check_error(cipher_length);
-  byte_t *cipher = (byte_t*)malloc(cipher_length * sizeof(byte_t));
-  error_code_t err = Crypto_cbc_elgamal_encrypt(encrypter, plain, length, cipher);
-  check_error(err);
+  message_size_t max_length = Crypto_cbc_elgamal_cipher_length(encrypter, length);
+  check_error(max_length);
+  byte_t *cipher = (byte_t*)malloc(max_length * sizeof(byte_t));
+  returned_message_size_t cipher_length = Crypto_cbc_elgamal_encrypt(encrypter, plain, length, cipher);
   return rb_str_new((char*)cipher, cipher_length);
 }
 
 void ElgamalDecrypter_destroy(Crypto_object_t* decrypter)
 {
   check_error(Crypto_deinit_cbc_elgamal_decrypter(decrypter));
+  free(decrypter);
 }
 
 VALUE ElgamalDecrypter_alloc(VALUE klass)
 {
-  CRYPTO_ALLOC(decrypter, CryptoCBCElgamalDecrypter);
-  return Data_Wrap_Struct(klass, NULL, ElgamalDecrypter_destroy, decrypter);
+  CRYPTO_ALLOC(dec, CryptoCBCElgamalDecrypter);
+  return Data_Wrap_Struct(klass, NULL, ElgamalDecrypter_destroy, dec);
 }
 
 VALUE ElgamalDecrypter_init(VALUE self, VALUE key, VALUE state)
@@ -197,7 +200,8 @@ VALUE ElgamalDecrypter_init(VALUE self, VALUE key, VALUE state)
   case PublicKeyGenPowerLength:
     rb_raise(rb_eArgError, "Argument 1 is too short to store the generator power of the key or the generator power length is wrong.");
     break;
-  case StateLength:
+  case StateLength:  printf("dec alloc end\n");
+
     rb_raise(rb_eArgError, "Argument 2 is too short to store a valid initial state.");
     break;
   default: break;
@@ -210,11 +214,11 @@ VALUE ElgamalDecrypter_decrypt(VALUE self, VALUE str)
 {
   READ_BINARY(str, 1, cipher, length);
   GET_SELF(decrypter);
-  message_size_t plain_length = Crypto_cbc_elgamal_max_plain_length(decrypter, length);
+  message_size_t max_length = Crypto_cbc_elgamal_max_plain_length(decrypter, length);
+  check_error(max_length);
+  byte_t *plain = (byte_t*)malloc(max_length * sizeof(byte_t));
+  returned_message_size_t plain_length = Crypto_cbc_elgamal_decrypt(decrypter, cipher, length, plain);
   check_error(plain_length);
-  byte_t *plain = (byte_t*)malloc(plain_length * sizeof(byte_t));
-  error_code_t err = Crypto_cbc_elgamal_decrypt(decrypter, cipher, length, plain);
-  check_error(err);
   return rb_str_new((char*)plain, plain_length);
 }
 

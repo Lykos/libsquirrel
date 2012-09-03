@@ -2,6 +2,8 @@
 #include "Crypto/readnumber_macro.h"
 #include "Crypto/preconditionviolation.h"
 
+using namespace std;
+
 namespace Crypto {
 
   namespace Elgamal {

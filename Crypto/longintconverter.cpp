@@ -1,5 +1,6 @@
 #include "Crypto/longintconverter.h"
 #include "Crypto/preconditionviolation.h"
+#include <cstring>
 
 namespace Crypto {
 
@@ -24,10 +25,9 @@ namespace Crypto {
   {
     number_size_t len = required_length(number);
     PREC(NumberFits, len <= length);
-    number.write(text);
-    for (number_size_t i = len; i < length; ++i) {
-      text[i] = 0;
-    }
+    number_size_t padding = length - len;
+    memset(text, 0, padding * sizeof(u_int8_t));
+    number.write(text + padding);
   }
   
 } // namespace Crypto

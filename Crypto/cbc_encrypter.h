@@ -158,10 +158,12 @@ namespace Crypto {
     inline ulong Encrypter<BlockCipher>::cipher_length(ulong plain_length) const
     {
       // Add at least one bit for padding and then adjust to multiple of block_size
-      uint padding = m_plain_block_size - (plain_length + 1) % m_plain_block_size;
-      ulong cipher_length = plain_length + 1 + padding % m_plain_block_size;
-      assert(cipher_length > plain_length && cipher_length <= plain_length + m_plain_block_size);
-      assert(cipher_length % m_plain_block_size == 0);
+      uint padding = (m_plain_block_size - (plain_length + 1) % m_plain_block_size) % m_plain_block_size;
+      ulong padded_length = plain_length + 1 + padding;
+      assert(plain_length <= padded_length && padded_length <= plain_length + m_plain_block_size);
+      assert(padded_length % m_plain_block_size == 0);
+      ulong cipher_length = padded_length / m_plain_block_size * m_cipher_block_size;
+      assert(cipher_length % m_cipher_block_size == 0);
       return cipher_length;
     }
 
@@ -169,7 +171,7 @@ namespace Crypto {
     inline ulong Encrypter<BlockCipher>::encrypt(const cbc_byte_t* plain, ulong plain_length, cbc_byte_t* cipher)
     {
       ulong cipher_len = cipher_length(plain_length);
-      ulong blocks = cipher_len / m_plain_block_size;
+      ulong blocks = cipher_len / m_cipher_block_size;
       for (ulong i = 0; i < blocks; ++i) {
         if (i == blocks - 1) {
           ulong remaining_length = plain_length % m_plain_block_size;

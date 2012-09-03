@@ -225,7 +225,7 @@ returned_message_size_t Crypto_cbc_elgamal_cipher_length(Crypto_object_t* encryp
 {
   BEGIN_EXCEPTIONS();
   CAST(encrypter, enc, CBCElgamalEncrypter, CryptoCBCElgamalEncrypter);
-  enc->cipher_length(plain_length);
+  return enc->cipher_length(plain_length);
   END_EXCEPTIONS();
 }
 
@@ -233,7 +233,7 @@ returned_message_size_t Crypto_cbc_elgamal_max_plain_length(Crypto_object_t* dec
 {
   BEGIN_EXCEPTIONS();
   CAST(decrypter, dec, CBCElgamalDecrypter, CryptoCBCElgamalDecrypter);
-  dec->max_plain_length(cipher_length);
+  return dec->max_plain_length(cipher_length);
   END_EXCEPTIONS();
 }
 
@@ -241,7 +241,7 @@ returned_message_size_t Crypto_cbc_aes_cipher_length(Crypto_object_t* encrypter,
 {
   BEGIN_EXCEPTIONS();
   CAST(encrypter, enc, CBCAESEncrypter, CryptoCBCAESEncrypter);
-  enc->cipher_length(plain_length);
+  return enc->cipher_length(plain_length);
   END_EXCEPTIONS();
 }
 
@@ -249,7 +249,7 @@ returned_message_size_t Crypto_cbc_aes_max_plain_length(Crypto_object_t* decrypt
 {
   BEGIN_EXCEPTIONS();
   CAST(decrypter, dec, CBCAESDecrypter, CryptoCBCAESDecrypter);
-  dec->max_plain_length(cipher_length);
+  return dec->max_plain_length(cipher_length);
   END_EXCEPTIONS();
 }
 
@@ -257,7 +257,7 @@ returned_message_size_t Crypto_elgamal_signature_length_signer(Crypto_object_t* 
 {
   BEGIN_EXCEPTIONS();
   CAST(signer, sig, Elgamal::Signer, CryptoElgamalSigner);
-  sig->signature_length();
+  return sig->signature_length();
   END_EXCEPTIONS();
 }
 
@@ -265,7 +265,7 @@ returned_message_size_t Crypto_elgamal_signature_length_verifier(Crypto_object_t
 {
   BEGIN_EXCEPTIONS();
   CAST(verifier, ver, Elgamal::Verifier, CryptoElgamalVerifier);
-  ver->signature_length();
+  return ver->signature_length();
   END_EXCEPTIONS();
 }
 
@@ -273,7 +273,7 @@ returned_message_size_t Crypto_cbc_aes_signature_length_signer(Crypto_object_t* 
 {
   BEGIN_EXCEPTIONS();
   CAST(signer, sig, CBCAESSigner, CryptoCBCAESSigner);
-  sig->signature_length();
+  return sig->signature_length();
   END_EXCEPTIONS();
 }
 
@@ -281,7 +281,7 @@ returned_message_size_t Crypto_cbc_aes_signature_length_verifier(Crypto_object_t
 {
   BEGIN_EXCEPTIONS();
   CAST(verifier, ver, CBCAESVerifier, CryptoCBCAESVerifier);
-  ver->signature_length();
+  return ver->signature_length();
   END_EXCEPTIONS();
 }
 
@@ -331,7 +331,7 @@ returned_bool_t Crypto_dh_key_exchange_group_chosen(Crypto_object_t* key_exchang
 {
   BEGIN_EXCEPTIONS();
   CAST(key_exchange, ke, DH::KeyExchange, CryptoDHKeyExchange);
-  ke->group_chosen();
+  return ke->group_chosen();
   END_EXCEPTIONS();
 }
 
@@ -339,7 +339,7 @@ returned_bool_t Crypto_dh_key_exchange_own_part_chosen(Crypto_object_t* key_exch
 {
   BEGIN_EXCEPTIONS();
   CAST(key_exchange, ke, DH::KeyExchange, CryptoDHKeyExchange);
-  ke->own_part_chosen();
+  return ke->own_part_chosen();
   END_EXCEPTIONS();
 }
 
@@ -347,7 +347,7 @@ returned_bool_t Crypto_dh_key_exchange_other_part_set(Crypto_object_t* key_excha
 {
   BEGIN_EXCEPTIONS();
   CAST(key_exchange, ke, DH::KeyExchange, CryptoDHKeyExchange);
-  ke->other_part_set();
+  return ke->other_part_set();
   END_EXCEPTIONS();
 }
 
@@ -355,7 +355,7 @@ returned_bool_t Crypto_dh_key_exchange_key_ready(Crypto_object_t* key_exchange)
 {
   BEGIN_EXCEPTIONS();
   CAST(key_exchange, ke, DH::KeyExchange, CryptoDHKeyExchange);
-  ke->key_ready();
+  return ke->key_ready();
   END_EXCEPTIONS();
 }
 
@@ -376,7 +376,7 @@ returned_message_size_t Crypto_cbc_elgamal_encrypt(Crypto_object_t* encrypter, c
 {
   BEGIN_EXCEPTIONS();
   CAST(encrypter, enc, CBCElgamalEncrypter, CryptoCBCElgamalEncrypter);
-  enc->encrypt(plain, length, cipher);
+  return enc->encrypt(plain, length, cipher);
   END_EXCEPTIONS();
 }
 
@@ -384,7 +384,7 @@ returned_message_size_t Crypto_cbc_elgamal_decrypt(Crypto_object_t* decrypter, c
 {
   BEGIN_EXCEPTIONS();
   CAST(decrypter, dec, CBCElgamalDecrypter, CryptoCBCElgamalDecrypter);
-  dec->decrypt(cipher, length, plain);
+  return dec->decrypt(cipher, length, plain);
   END_EXCEPTIONS();
 }
 
@@ -392,7 +392,7 @@ returned_message_size_t Crypto_cbc_aes_encrypt(Crypto_object_t* encrypter, const
 {
   BEGIN_EXCEPTIONS();
   CAST(encrypter, enc, CBCAESEncrypter, CryptoCBCAESEncrypter);
-  enc->encrypt(plain, length, cipher);
+  return enc->encrypt(plain, length, cipher);
   END_EXCEPTIONS();
 }
 
@@ -400,7 +400,7 @@ returned_message_size_t Crypto_cbc_aes_decrypt(Crypto_object_t* decrypter, const
 {
   BEGIN_EXCEPTIONS();
   CAST(decrypter, dec, CBCAESDecrypter, CryptoCBCAESDecrypter);
-  dec->decrypt(cipher, length, plain);
+  return dec->decrypt(cipher, length, plain);
   END_EXCEPTIONS();
 }
 
@@ -408,7 +408,7 @@ returned_message_size_t Crypto_elgamal_sign(Crypto_object_t* signer, byte_t* mes
 {
   BEGIN_EXCEPTIONS();
   CAST(signer, sig, Elgamal::Signer, CryptoElgamalSigner);
-  sig->sign(message, length);
+  return sig->sign(message, length);
   END_EXCEPTIONS();
 }
 
@@ -416,7 +416,7 @@ returned_bool_t Crypto_elgamal_verify(Crypto_object_t* verifier, const byte_t* m
 {
   BEGIN_EXCEPTIONS();
   CAST(verifier, ver, Elgamal::Verifier, CryptoElgamalVerifier);
-  ver->verify(message, length);
+  return ver->verify(message, length);
   END_EXCEPTIONS();
 }
 
@@ -424,7 +424,7 @@ returned_message_size_t Crypto_cbc_aes_sign(Crypto_object_t* signer, byte_t* mes
 {
   BEGIN_EXCEPTIONS();
   CAST(signer, sig, CBCAESSigner, CryptoCBCAESSigner);
-  sig->sign(message, length);
+  return sig->sign(message, length);
   END_EXCEPTIONS();
 }
 
@@ -432,7 +432,7 @@ returned_bool_t Crypto_cbc_aes_verify(Crypto_object_t* verifier, const byte_t* m
 {
   BEGIN_EXCEPTIONS();
   CAST(verifier, ver, CBCAESVerifier, CryptoCBCAESVerifier);
-  ver->verify(message, length);
+  return ver->verify(message, length);
   END_EXCEPTIONS();
 }
 
@@ -448,7 +448,7 @@ returned_message_size_t Crypto_dh_key_exchange_group(Crypto_object_t* key_exchan
 {
   BEGIN_EXCEPTIONS();
   CAST(key_exchange, ke, DH::KeyExchange, CryptoDHKeyExchange);
-  ke->write_group(raw_group);
+  return ke->write_group(raw_group);
   END_EXCEPTIONS();
 }
 
@@ -456,7 +456,7 @@ returned_message_size_t Crypto_dh_key_exchange_gen_power(Crypto_object_t* key_ex
 {
   BEGIN_EXCEPTIONS();
   CAST(key_exchange, ke, DH::KeyExchange, CryptoDHKeyExchange);
-  ke->write_own_part(raw_gen_power);
+  return ke->write_own_part(raw_gen_power);
   END_EXCEPTIONS();
 }
 
@@ -464,11 +464,11 @@ returned_message_size_t Crypto_dh_key_exchange_key(Crypto_object_t* key_exchange
 {
   BEGIN_EXCEPTIONS();
   CAST(key_exchange, ke, DH::KeyExchange, CryptoDHKeyExchange);
-  ke->write_key(raw_key);
+  return ke->write_key(raw_key);
   END_EXCEPTIONS();
 }
 
-returned_message_size_t Crypto_dh_key_exchange_set_other_gen_power(Crypto_object_t* key_exchange, byte_t* raw_gen_power, message_size_t length)
+error_code_t Crypto_dh_key_exchange_set_other_gen_power(Crypto_object_t* key_exchange, byte_t* raw_gen_power, message_size_t length)
 {
   BEGIN_EXCEPTIONS();
   CAST(key_exchange, ke, DH::KeyExchange, CryptoDHKeyExchange);
@@ -476,7 +476,7 @@ returned_message_size_t Crypto_dh_key_exchange_set_other_gen_power(Crypto_object
   END_EXCEPTIONS();
 }
 
-returned_message_size_t Crypto_dh_key_exchange_set_group(Crypto_object_t* key_exchange, byte_t* raw_group, message_size_t length)
+error_code_t Crypto_dh_key_exchange_set_group(Crypto_object_t* key_exchange, byte_t* raw_group, message_size_t length)
 {
   BEGIN_EXCEPTIONS();
   CAST(key_exchange, ke, DH::KeyExchange, CryptoDHKeyExchange);

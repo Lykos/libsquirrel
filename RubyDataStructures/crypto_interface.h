@@ -2,6 +2,7 @@
 #define CRYPTO_INTERFACE_H
 
 #include "Crypto/conditiontype.h"
+#include <ruby.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -145,9 +146,9 @@ returned_message_size_t Crypto_dh_key_exchange_gen_power(Crypto_object_t* key_ex
 
 returned_message_size_t Crypto_dh_key_exchange_key(Crypto_object_t* key_exchange, byte_t* raw_key);
 
-returned_message_size_t Crypto_dh_key_exchange_set_other_gen_power(Crypto_object_t* key_exchange, byte_t* raw_gen_power, message_size_t length);
+error_code_t Crypto_dh_key_exchange_set_other_gen_power(Crypto_object_t* key_exchange, byte_t* raw_gen_power, message_size_t length);
 
-returned_message_size_t Crypto_dh_key_exchange_set_group(Crypto_object_t* key_exchange, byte_t* raw_group, message_size_t length);
+error_code_t Crypto_dh_key_exchange_set_group(Crypto_object_t* key_exchange, byte_t* raw_group, message_size_t length);
 
 #ifdef __cplusplus
 }

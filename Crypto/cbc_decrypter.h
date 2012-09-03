@@ -156,7 +156,7 @@ namespace Crypto {
         // Invalid ciphertext, treat message as empty message
         return 0;
       }
-      return cipher_length / m_cipher_block_size * m_plain_block_size - 1;
+      return cipher_length / m_cipher_block_size * m_plain_block_size;
     }
 
     template <typename BlockCipher>
@@ -167,7 +167,6 @@ namespace Crypto {
         return 0;
       }
       ulong blocks = cipher_length / m_cipher_block_size;
-      ulong plain_length;
       for (ulong i = 0; i < blocks; ++i) {
         if (!m_block_cipher.decrypt(cipher + i * m_cipher_block_size, m_block)) {
           // Invalid ciphertext, treat message as empty message

@@ -48,8 +48,7 @@ namespace Crypto {
       m_key_part_length (other.m_key_part_length),
       m_cipher_part_length (other.m_cipher_part_length),
       m_cipher_length (other.m_cipher_length)
-    {
-    }
+    {}
 
     Encrypter::Encrypter(Encrypter&& other):
       m_modulus (std::move(other.m_modulus)),
@@ -60,8 +59,7 @@ namespace Crypto {
       m_key_part_length (other.m_key_part_length),
       m_cipher_part_length (other.m_cipher_part_length),
       m_cipher_length (other.m_cipher_length)
-    {
-    }
+    {}
 
     Encrypter& Encrypter::operator=(const Encrypter& other)
     {

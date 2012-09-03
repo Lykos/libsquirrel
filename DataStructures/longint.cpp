@@ -1,7 +1,6 @@
 #include "longint.h"
 #include <cmath>
 #include <cassert>
-#include <iostream>
 #include <sstream>
 #include <cstdio>
 #include <string>
@@ -138,7 +137,7 @@ namespace DataStructures {
     m_content (length / sizeof(part_type) + 1, 0)
   {
     for (index_type i = 0; i < length; ++i) {
-      part_type c = parts[i];
+      part_type c = parts[length - 1 - i];
       m_content[i / sizeof(part_type)] |= c << CHAR_BIT * (i % sizeof(part_type));
     }
     remove_zeros();
@@ -279,21 +278,6 @@ namespace DataStructures {
     }
   }
 
-  index_type LongInt::write(u_int8_t* dest) const throw()
-  {
-    for (index_type i = 0; i < size() - 1; ++i) {
-      for (uint j = 0; j < sizeof(part_type); ++j) {
-        dest[sizeof(part_type) * i + j] = (m_content[i] >> j * sizeof(part_type)) & 0xFF;
-      }
-    }
-    index_type length = sizeof(part_type) * (size() - 1);
-    part_type first_digit = m_content[size() - 1];
-    for (; first_digit != 0; first_digit >>= sizeof(part_type), ++length) {
-      dest[length] = first_digit & 0xFF;
-    }
-    return length;
-  }
-
   inline void LongInt::write_octal(std::ostream& out) const
   {
     throw std::logic_error("Octal is not implemented yet.");
@@ -303,8 +287,32 @@ namespace DataStructures {
   {
     for (index_type i = m_content.size(); i > 0;) {
       --i;
-      out << std::hex << m_content[i];
+      std::ostringstream oss;
+      oss.flags(std::ios_base::hex);
+      oss << m_content[i];
+      for (uint j = oss.str().size(); j < sizeof(part_type) * 2; ++j) {
+        out << '0';
+      }
+      out << oss.str();
+      oss.flush();
     }
+  }
+
+  index_type LongInt::write(u_int8_t* dest) const throw()
+  {
+    index_type length = byte_size();
+    part_type first_digit = m_content[size() - 1];
+    index_type first_length = log2(first_digit) / CHAR_BIT + 1;
+    assert(first_length + sizeof(part_type) * (size() - 1) == length);
+    for (uint i = 0; i < first_length; ++i) {
+      dest[i] = (first_digit >> (first_length - i - 1) * CHAR_BIT) & 0xFF;
+    }
+    for (index_type i = 0; i < size() - 1; ++i) {
+      for (uint j = 0; j < sizeof(part_type); ++j) {
+        dest[first_length + sizeof(part_type) * i + j] = (m_content[size() - i - 2] >> (sizeof(part_type) - j - 1) * CHAR_BIT) & 0xFF;
+      }
+    }
+    return length;
   }
 
   LongInt LongInt::operator~() const

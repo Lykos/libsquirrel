@@ -50,7 +50,7 @@ namespace DataStructures {
 
     explicit LongInt(const packed_longint_t& packed);
 
-    // Assumes that the number is always positive. NOT 2-complement. Little endian format.
+    // Assumes that the number is always positive. NOT 2-complement. Big endian format.
     LongInt(const u_int8_t* parts, index_type length);
 
     explicit LongInt(const std::string& numerical_string);
@@ -157,8 +157,9 @@ namespace DataStructures {
 
     packed_longint_t pack() const;
 
-    inline index_type byte_size() const throw() { return log2(*this) / sizeof(part_type) + 1; }
+    inline index_type byte_size() const throw() { return log2(*this) / CHAR_BIT + 1; }
 
+    // Writes in big endian format without sign
     index_type write(u_int8_t* dest) const throw();
 
     static const index_type PART_SIZE = CHAR_BIT * sizeof(part_type);
