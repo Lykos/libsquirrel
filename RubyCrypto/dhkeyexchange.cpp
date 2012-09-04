@@ -22,42 +22,42 @@ DHKeyExchange::~DHKeyExchange()
   delete m_key_exchange;
 }
 
-std::string DHKeyExchange::choose_group(number_size_t number_bits)
+string DHKeyExchange::choose_group(number_size_t number_bits)
 {
   m_key_exchange->choose_group(number_bits);
   m_key_exchange->choose_own_part(m_random_generator);
   return m_key_exchange->write_group();
 }
 
-std::string DHKeyExchange::group()
+string DHKeyExchange::group()
 {
   return m_key_exchange->write_group();
 }
 
-std::string DHKeyExchange::own_part()
+string DHKeyExchange::own_part()
 {
   return m_key_exchange->write_own_part();
 }
 
-std::string DHKeyExchange::other_part()
+string DHKeyExchange::other_part()
 {
   return m_key_exchange->write_other_part();
 }
 
-const std::string& DHKeyExchange::set_group(const std::string& raw_group)
+const string& DHKeyExchange::set_group(const string& raw_group)
 {
   m_key_exchange->read_group(raw_group);
   m_key_exchange->choose_own_part(m_random_generator);
   return raw_group;
 }
 
-const std::string& DHKeyExchange::set_other(const std::string& raw_gen_power)
+const string& DHKeyExchange::set_other(const string& raw_gen_power)
 {
   m_key_exchange->read_other_part(raw_gen_power);
   return raw_gen_power;
 }
 
-std::string DHKeyExchange::key()
+string DHKeyExchange::key()
 {
   return m_key_exchange->write_key();
 }
