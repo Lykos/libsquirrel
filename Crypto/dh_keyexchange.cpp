@@ -9,12 +9,12 @@ namespace Crypto {
 
   namespace DH {
 
-    bool KeyExchange::valid_key_bits(uint number_bits) const
+    bool KeyExchange::valid_key_bits(number_size_t number_bits) const
     {
       return m_key_generator.valid_key_bits(number_bits);
     }
 
-    void KeyExchange::choose_group(uint number_bits)
+    void KeyExchange::choose_group(number_size_t number_bits)
     {
       PREC(DHKeyLength, m_key_generator.valid_key_bits(number_bits));
       m_own_part_chosen = false;
@@ -34,6 +34,12 @@ namespace Crypto {
     {
       PREC(NoOwnPartChosen, m_own_part_chosen);
       return m_own_gen_power;
+    }
+
+    number_t KeyExchange::other_part() const
+    {
+      PREC(NoOtherPartSet, m_other_part_set);
+      return m_other_gen_power;
     }
 
     number_t KeyExchange::key() const
@@ -79,6 +85,11 @@ namespace Crypto {
     string KeyExchange::write_own_part() const
     {
       return m_converter.write_number(own_part());
+    }
+
+    string KeyExchange::write_other_part() const
+    {
+      return m_converter.write_number(other_part());
     }
 
     string KeyExchange::write_key() const

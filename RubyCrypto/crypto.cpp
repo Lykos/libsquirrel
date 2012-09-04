@@ -6,6 +6,8 @@
 #include "elgamalsigner.h"
 #include "elgamalverifier.h"
 #include "cbcmac.h"
+#include "elgamalkeygenerator.h"
+#include "dhkeyexchange.h"
 
 using namespace Rice;
 
@@ -21,4 +23,6 @@ extern "C" void Init_Crypto()
   Init_ElgamalSigner();
   Init_ElgamalVerifier();
   Init_CBCMAC();
+  Init_ElgamalKeyGenerator();
+  Init_DHKeyExchange();
 }

@@ -115,6 +115,8 @@ namespace Crypto {
 
     string Encrypter::encrypt(const string& plain)
     {
+      PREC(PlainBlockLength, plain.length() == m_plain_length);
+
       // Convert to numbers
       number_t plain_number = m_converter.read_number(plain);
 

@@ -43,6 +43,8 @@ namespace Crypto {
 
     string Decrypter::decrypt(const string& cipher) const
     {
+      PREC(CipherBlockLength, cipher.length() == m_cipher_length);
+
       // Convert to numbers
       number_t cipher_number = m_converter.read_number(cipher.substr(0, m_cipher_part_length));
       number_t cipher_power = m_converter.read_number(cipher.substr(m_cipher_part_length, m_key_part_length));
@@ -51,7 +53,7 @@ namespace Crypto {
       number_t plain_number = decrypt(cipher_number, cipher_power);
 
       // Convert back
-      PREC(PlainBlockLength, m_converter.required_length(plain_number) <= m_plain_length);
+      PREC(DecryptedPlainBlockLength, m_converter.required_length(plain_number) <= m_plain_length);
       string plain = m_converter.write_number(plain_number, m_plain_length);
       assert(plain.length() == m_plain_length);
       return plain;

@@ -34,7 +34,9 @@ namespace Crypto {
     StateLength,
     MessagePadding,
     MessageLength,
+    DecryptedPlainBlockLength,
     PlainBlockLength,
+    CipherBlockLength,
     InvalidState,
     SignatureLength
   };

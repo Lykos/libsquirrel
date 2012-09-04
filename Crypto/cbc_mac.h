@@ -43,7 +43,7 @@ namespace Crypto {
     private:
       CBC::Encrypter<BlockCipher> m_encrypter;
 
-      bool m_valid;
+      bool m_valid = true;
 
     };
 
@@ -84,7 +84,7 @@ namespace Crypto {
       if (length < sig_len) {
         return false;
       }
-      m_encrypter.encrypt(message);
+      m_encrypter.encrypt(message.substr(0, length - sig_len));
       const std::string& mac = message.substr(length - sig_len, sig_len);
       const std::string& state = m_encrypter.state();
 

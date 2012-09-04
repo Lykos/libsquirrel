@@ -1,6 +1,8 @@
 #include "aes_decrypter.h"
 #include "aes_keyexpander.h"
 #include "aes_constants.h"
+#include "preconditionviolation.h"
+#include "conditiontype.h"
 #include <string>
 
 using namespace std;
@@ -12,11 +14,13 @@ namespace Crypto {
     Decrypter::Decrypter(const string& key)
     {
       KeyExpander expander;
+      m_rounds = expander.rounds(key.length());
       m_expanded_key = expander.expand(key);
     }
 
     string Decrypter::decrypt(const string& cipher)
     {
+      PREC(CipherBlockLength, cipher.length() == BLOCK_BYTE_SIZE);
       string plain (cipher);
       m_helper.apply_round_key(plain, m_expanded_key, m_rounds - 1);
       m_helper.inv_shift_rows(plain);

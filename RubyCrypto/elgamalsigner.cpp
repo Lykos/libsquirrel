@@ -10,10 +10,11 @@
 using namespace std;
 using namespace Rice;
 using namespace Crypto;
+using namespace Elgamal;
 
 ElgamalSigner::ElgamalSigner(const string& private_key)
 {
-  m_signer = new Elgamal::Signer(from_hex(private_key));
+  m_signer = new Signer(from_hex(private_key));
 }
 
 ElgamalSigner::~ElgamalSigner()

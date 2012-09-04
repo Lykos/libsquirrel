@@ -1,8 +1,10 @@
 #include "hexconverters.h"
+#include "cryptoexception.h"
 #include <string>
 #include <rice/Exception.hpp>
 
 using namespace std;
+using namespace Rice;
 
 string from_hex(const string& hex_string) {
   string binary (hex_string.size() / 2, 0);

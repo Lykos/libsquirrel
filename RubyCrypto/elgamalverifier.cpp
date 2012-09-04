@@ -10,10 +10,11 @@
 using namespace std;
 using namespace Rice;
 using namespace Crypto;
+using namespace Elgamal;
 
 ElgamalVerifier::ElgamalVerifier(const string& public_key)
 {
-  m_verifier = new Elgamal::Verifier(from_hex(public_key));
+  m_verifier = new Verifier(from_hex(public_key));
 }
 
 ElgamalVerifier::~ElgamalVerifier()

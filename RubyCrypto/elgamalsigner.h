@@ -4,6 +4,7 @@
 #ifdef __cplusplus
 
 #include "Crypto/elgamal_signer.h"
+#include <string>
 #include <rice/Data_Type.hpp>
 
 class ElgamalSigner {

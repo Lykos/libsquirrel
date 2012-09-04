@@ -96,7 +96,7 @@ namespace Crypto {
     case MessageLength:
       m_message = "The cipher has a length which is not divisible by the block size.";
       break;
-    case PlainBlockLength:
+    case DecryptedPlainBlockLength:
       m_message = "The decrypted plain text is too big for a block.";
       break;
     case InvalidState:

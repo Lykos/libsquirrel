@@ -18,11 +18,9 @@ namespace Crypto {
       inline void schedule_core(std::string& cipher, uint i);
 
     public:
-      KeyExpander();
+      number_size_t expanded_length(number_size_t key_length);
 
-      inline number_size_t expanded_length(number_size_t key_length);
-
-      inline number_size_t rounds(number_size_t key_length);
+      number_size_t rounds(number_size_t key_length);
 
       std::string expand(const std::string& key);
 

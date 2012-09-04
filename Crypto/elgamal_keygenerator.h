@@ -27,10 +27,6 @@ namespace Crypto {
 
       group_t choose_group(uint number_bits);
 
-      number_size_t max_public_length(uint number_bits) const throw() { return 3 * number_bits; }
-
-      number_size_t max_private_length(uint number_bits) const throw() { return 3 * number_bits; }
-
     private:
       Converter m_converter;
 

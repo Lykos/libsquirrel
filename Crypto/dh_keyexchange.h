@@ -14,7 +14,7 @@ namespace Crypto {
     class CRYPTOSHARED_EXPORT KeyExchange
     {
     public:
-      bool valid_key_bits(uint number_bits) const;
+      bool valid_key_bits(number_size_t number_bits) const;
 
       // Is the group already set?
       bool group_chosen() const { return m_group_chosen; }
@@ -33,11 +33,13 @@ namespace Crypto {
       void choose_own_part(Engine& engine);
 
       // Chooses an appropriate group.
-      void choose_group(uint number_bits);
+      void choose_group(number_size_t number_bits);
 
       group_t group() const;
 
       number_t own_part() const;
+
+      number_t other_part() const;
 
       number_t key() const;
 
@@ -52,6 +54,8 @@ namespace Crypto {
       std::string write_group() const;
 
       std::string write_own_part() const;
+
+      std::string write_other_part() const;
 
       std::string write_key() const;
 

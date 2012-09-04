@@ -12,13 +12,12 @@ namespace Crypto {
 
   namespace AES {
 
-
-    inline number_size_t KeyExpander::expanded_length(number_size_t key_length)
+    number_size_t KeyExpander::expanded_length(number_size_t key_length)
     {
       return (rounds(key_length) + 1) * BLOCK_BYTE_SIZE;
     }
 
-    inline number_size_t KeyExpander::rounds(number_size_t key_length)
+    number_size_t KeyExpander::rounds(number_size_t key_length)
     {
       PREC(AESKeyLength, key_length == AES_128_BYTES || key_length == AES_192_BYTES || key_length == AES_256_BYTES);
       if (key_length == AES_128_BYTES) {
