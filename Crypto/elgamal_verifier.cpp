@@ -31,7 +31,7 @@ namespace Crypto {
 
     bool Verifier::verify(const number_t& message, const number_t& r, const number_t& s) const throw()
     {
-      if (r < 0 || s < 0 || r >= m_modulus || s >= m_modulus - 1) {
+      if (r <= 0 || s <= 0 || r >= m_modulus || s >= m_modulus - 1) {
         return false;
       }
       number_t g_h = m_generator.pow_mod(message, m_modulus);
@@ -50,10 +50,10 @@ namespace Crypto {
       }
 
       // Read numbers
-      string hash = hasher.hash(message.substr(0, length - m_signature_length));
+      string hash = m_hasher.hash(message.substr(0, length - m_signature_length));
       number_t hash_number = m_converter.read_number(hash);
       number_t r = m_converter.read_number(message.substr(length - m_signature_length, m_r_length));
-      number_t s = m_converter.read_number(message.substr(length - m_signature_length, m_s_length));
+      number_t s = m_converter.read_number(message.substr(length - m_s_length, m_s_length));
 
       // Verify
       return verify(hash_number, r, s);

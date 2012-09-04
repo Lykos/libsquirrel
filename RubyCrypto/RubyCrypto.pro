@@ -23,7 +23,8 @@ SOURCES += \
     elgamalverifier.cpp \
     cbcencrypter.cpp \
     cbcdecrypter.cpp \
-    cbcmac.cpp
+    cbcmac.cpp \
+    dhkeyexchange.cpp
 
 HEADERS +=\
     RubyCrypto.h \
@@ -36,7 +37,8 @@ HEADERS +=\
     elgamalverifier.h \
     cbcencrypter.h \
     cbcdecrypter.h \
-    cbcmac.h
+    cbcmac.h \
+    dhkeyexchange.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

@@ -28,6 +28,7 @@ namespace Crypto {
         m_helper.inv_sub_bytes(plain);
       }
       m_helper.apply_round_key(plain, m_expanded_key, 0);
+      assert(plain.length() == BLOCK_BYTE_SIZE);
       return plain;
     }
     

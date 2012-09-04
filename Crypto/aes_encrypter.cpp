@@ -29,6 +29,7 @@ namespace Crypto {
       m_helper.sub_bytes(cipher);
       m_helper.shift_rows(cipher);
       m_helper.apply_round_key(cipher, m_expanded_key, m_rounds - 1);
+      assert(cipher.length() == BLOCK_BYTE_SIZE);
       return cipher;
     }
 

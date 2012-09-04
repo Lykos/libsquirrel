@@ -49,7 +49,7 @@ namespace Crypto {
 
       inline bool state_valid() const throw() { return m_valid; }
 
-      inline void set_state(const std::string& initial_state);
+      inline void state(const std::string& initial_state);
 
     };
 
@@ -103,7 +103,7 @@ namespace Crypto {
       PREC(InvalidState, m_valid);
       m_valid = false;
       message_size_t cipher_length = cipher.length();
-      PREC(MessageLength, cipher_length % m_cipher_block_size != 0);
+      PREC(MessageLength, cipher_length % m_cipher_block_size == 0);
       message_size_t blocks = cipher_length / m_cipher_block_size;
       std::string plain (blocks * m_plain_block_size, 0);
       for (message_size_t i = 0; i < blocks; ++i) {
@@ -128,7 +128,7 @@ namespace Crypto {
     }
 
     template <typename BlockCipher>
-    inline void Decrypter<BlockCipher>::set_state(const std::string& initial_state)
+    inline void Decrypter<BlockCipher>::state(const std::string& initial_state)
     {
       DEC_PREC_STATE_LENGTH();
       m_state.replace(0, m_plain_block_size, initial_state);

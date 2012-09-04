@@ -57,12 +57,12 @@ namespace Crypto {
     message_size_t chunks = whole_length / chunk_length;
     string padded_message = message;
     padded_message.push_back(0x80); // A 1 with 7 zeroes
-    padded_message.resize(zeroes, 0);
+    padded_message.append(zeroes, 0);
     // Store the length in the last bits in big endian.
-    message_size_t length_position = message_length + 1 + zeroes;
     for (number_size_t i = 0; i < length_length; ++i) {
-      padded_message[length_position + i] = ((message_length * CHAR_BIT) >> CHAR_BIT * (length_length - 1 - i)) & 0xFF;
+      padded_message.push_back(((message_length * CHAR_BIT) >> CHAR_BIT * (length_length - 1 - i)) & 0xFF);
     }
+    assert(padded_message.length() == whole_length);
     sha256_word_t hash[n_hash_values];
     for (number_size_t i = 0; i < n_hash_values; ++i) {
       hash[i] = initial_hash_values[i];
@@ -70,10 +70,11 @@ namespace Crypto {
     for (message_size_t j = 0; j < chunks; ++j) {
       sha256_word_t words[n_rounds];
       for (message_size_t i = 0; i < chunk_words; ++i) {
-        words[i] = (padded_message[j * chunk_length + word_length * i] << 3 * CHAR_BIT)
-            + (padded_message[j * chunk_length + word_length * i + 1] << 2 * CHAR_BIT)
-            + (padded_message[j * chunk_length + word_length * i + 2] << CHAR_BIT)
-            + (padded_message[j * chunk_length + word_length * i + 3]);
+        string word_string = padded_message.substr(j * chunk_length + word_length * i, 4);
+        words[i] = (sha256_word_t(word_string[0]) << 3 * CHAR_BIT)
+            + (sha256_word_t(word_string[1]) << 2 * CHAR_BIT)
+            + (sha256_word_t(word_string[2]) << CHAR_BIT)
+            + (sha256_word_t(word_string[3]));
       }
       for (message_size_t i = chunk_words; i < n_rounds; ++i) {
         words[i] = words[i - 16] + s0(words[i - 15]) + words[i - 7] + s1(words[i - 2]);

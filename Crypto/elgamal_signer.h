@@ -56,7 +56,7 @@ namespace Crypto {
 
       LongIntConverter m_converter;
 
-      SHA2Hasher hasher;
+      SHA2Hasher m_hasher;
 
     };
     

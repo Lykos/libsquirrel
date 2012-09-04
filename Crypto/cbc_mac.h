@@ -34,7 +34,7 @@ namespace Crypto {
 
       inline void remove_signature(std::string& message) const throw(PreconditionViolation);
 
-      inline void set_state(const std::string& state) throw(PreconditionViolation);
+      inline void state(const std::string& state) throw(PreconditionViolation);
 
       inline const std::string& state() const throw();
 
@@ -101,9 +101,9 @@ namespace Crypto {
     }
 
     template <typename BlockCipher>
-    inline void MAC<BlockCipher>::set_state(const std::string& state) throw(PreconditionViolation)
+    inline void MAC<BlockCipher>::state(const std::string& state) throw(PreconditionViolation)
     {
-      m_encrypter.set_state(state);
+      m_encrypter.state(state);
       m_valid = true;
     }
 

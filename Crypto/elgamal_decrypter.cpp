@@ -4,6 +4,9 @@
 #include "longintconverter.h"
 #include "preconditionviolation.h"
 #include "conditiontype.h"
+#include <string>
+
+using namespace std;
 
 namespace Crypto {
 
@@ -38,7 +41,7 @@ namespace Crypto {
       return (key * cipher) % m_modulus;
     }
 
-    std::string Decrypter::decrypt(const std::string& cipher) const
+    string Decrypter::decrypt(const string& cipher) const
     {
       // Convert to numbers
       number_t cipher_number = m_converter.read_number(cipher.substr(0, m_cipher_part_length));
@@ -49,7 +52,9 @@ namespace Crypto {
 
       // Convert back
       PREC(PlainBlockLength, m_converter.required_length(plain_number) <= m_plain_length);
-      return m_converter.write_number(plain_number, m_plain_length);
+      string plain = m_converter.write_number(plain_number, m_plain_length);
+      assert(plain.length() == m_plain_length);
+      return plain;
     }
     
   } // namespace Elgamal

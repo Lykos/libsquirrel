@@ -1,4 +1,4 @@
-#include "elgamalsigner.h"
+#include "dhkeyexchange.h"
 #include "Crypto/elgamal_signer.h"
 #include "Crypto/preconditionviolation.h"
 #include "cryptoexception.h"
@@ -13,7 +13,11 @@ using namespace Crypto;
 
 ElgamalSigner::ElgamalSigner(const string& private_key)
 {
-  m_signer = new Elgamal::Signer(from_hex(private_key));
+  string binary_private_key = from_hex(private_key);
+  if (binary_private_key.empty()) {
+    throw Exception(rb_eCryptoException, "Argument has to be a hexadecimal string.");
+  }
+  m_signer = new Elgamal::Signer(binary_private_key);
 }
 
 ElgamalSigner::~ElgamalSigner()

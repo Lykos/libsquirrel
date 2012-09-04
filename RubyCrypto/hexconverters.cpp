@@ -1,5 +1,6 @@
 #include "hexconverters.h"
 #include <string>
+#include <rice/Exception.hpp>
 
 using namespace std;
 
@@ -15,7 +16,7 @@ string from_hex(const string& hex_string) {
     } else if (c >= 'a' && c <= 'f') {
       out = 10 + c - 'a';
     } else {
-      return string();
+      throw Exception(rb_eCryptoException, "Argument has to be a hexadecimal string.");
     }
     if (i % 2 == 0) {
       binary[i / 2] = out << 4;
@@ -24,4 +25,14 @@ string from_hex(const string& hex_string) {
     }
   }
   return binary;
+}
+
+string to_hex(const string& binary_string) {
+  static const string hex_chars = "0123456789ABCDEF";
+  string hex (binary_string.size() * 2, 0);
+  for (uint i = 0; i < binary_string.size(); ++i) {
+    hex[2 * i] = hex_chars[(binary_string[i] >> 4) & 0xF];
+    hex[2 * i + 1] = hex_chars[binary_string[i] & 0xF];
+  }
+  return hex;
 }

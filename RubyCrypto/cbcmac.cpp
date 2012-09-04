@@ -16,17 +16,7 @@ using namespace Crypto;
 template <typename BlockCipher, int Tag>
 CBCMAC<BlockCipher, Tag>::CBCMAC(const std::string& public_key, const std::string& initial_state)
 {
-  string binary_public_key = from_hex(public_key);
-  if (binary_public_key.empty()) {
-    throw Exception(rb_eCryptoException, "Argument 1 has to be a hexadecimal string.");
-  }
-  string binary_initial_state = from_hex(initial_state);
-  if (binary_initial_state.empty()) {
-    throw Exception(rb_eCryptoException, "Argument 2 has to be a hexadecimal string.");
-  }
-  m_mac = new CBC::MAC<BlockCipher>(
-        BlockCipher(binary_public_key),
-        binary_initial_state);
+  m_mac = new CBC::MAC<BlockCipher>(BlockCipher(from_hex(public_key)), from_hex(initial_state));
 }
 
 template <typename BlockCipher, int Tag>
@@ -56,15 +46,16 @@ string& CBCMAC<BlockCipher, Tag>::remove_signature(string& message)
 }
 
 template <typename BlockCipher, int Tag>
-const string& CBCMAC<BlockCipher, Tag>::state()
+string CBCMAC<BlockCipher, Tag>::state()
 {
-  return m_mac->state();
+  return to_hex(m_mac->state());
 }
 
 template <typename BlockCipher, int Tag>
-void CBCMAC<BlockCipher, Tag>::set_state(const string& new_state)
+const string& CBCMAC<BlockCipher, Tag>::set_state(const string& new_state)
 {
-  m_mac->set_state(new_state);
+  m_mac->state(from_hex(new_state));
+  return new_state;
 }
 
 template <typename BlockCipher, int Tag>

@@ -18,9 +18,9 @@ public:
 
   std::string encrypt(const std::string& plain);
 
-  const std::string& state();
+  std::string state();
 
-  void set_state(const std::string& new_state);
+  const std::string& set_state(const std::string& new_state);
 
 private:
   Crypto::CBC::Encrypter<BlockCipher>* m_encrypter;

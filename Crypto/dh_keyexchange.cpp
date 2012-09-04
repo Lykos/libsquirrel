@@ -24,25 +24,25 @@ namespace Crypto {
       m_group_chosen = true;
     }
 
-    group_t KeyExchange::get_group() const
+    group_t KeyExchange::group() const
     {
       PREC(NoGroupChosen, m_group_chosen);
       return m_group;
     }
 
-    number_t KeyExchange::get_own_part() const
+    number_t KeyExchange::own_part() const
     {
       PREC(NoOwnPartChosen, m_own_part_chosen);
       return m_own_gen_power;
     }
 
-    number_t KeyExchange::get_key() const
+    number_t KeyExchange::key() const
     {
       PREC(KeyNotReady, m_key_ready);
       return m_key;
     }
 
-    void KeyExchange::set_group(const group_t& group)
+    void KeyExchange::group(const group_t& group)
     {
       m_own_part_chosen = false;
       m_other_part_set = false;
@@ -51,7 +51,7 @@ namespace Crypto {
       m_group_chosen = true;
     }
 
-    void KeyExchange::set_other_part(const number_t& other_gen_power)
+    void KeyExchange::other_part(const number_t& other_gen_power)
     {
       m_key_ready = false;
       m_other_gen_power = other_gen_power;
@@ -63,27 +63,27 @@ namespace Crypto {
 
     void KeyExchange::read_group(const string& raw_group)
     {
-      set_group(m_converter.read_group(raw_group));
+      group(m_converter.read_group(raw_group));
     }
 
     void KeyExchange::read_other_part(const string& raw_gen_power)
     {
-      set_other_part(m_converter.read_number(raw_gen_power));
+      other_part(m_converter.read_number(raw_gen_power));
     }
 
     string KeyExchange::write_group() const
     {
-      return m_converter.write_group(get_group());
+      return m_converter.write_group(group());
     }
 
     string KeyExchange::write_own_part() const
     {
-      return m_converter.write_number(get_own_part());
+      return m_converter.write_number(own_part());
     }
 
     string KeyExchange::write_key() const
     {
-      return m_converter.write_number(get_key());
+      return m_converter.write_number(key());
     }
 
     void KeyExchange::complete_key()

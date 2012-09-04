@@ -122,8 +122,10 @@ namespace Crypto {
       cipher_t cipher_pair = encrypt(plain_number);
 
       // Convert back back
-      return m_converter.write_number(cipher_pair.cipher, m_cipher_part_length)
+      string cipher = m_converter.write_number(cipher_pair.cipher, m_cipher_part_length)
           + m_converter.write_number(cipher_pair.gen_power, m_key_part_length);
+      assert(cipher.length() == m_cipher_length);
+      return cipher;
     }
     
   } // namespace Elgamal

@@ -120,7 +120,7 @@ namespace Crypto {
     void Signer::sign(string& message)
     {
       // Generate hash of message
-      string hash = hasher.hash(message);
+      string hash = m_hasher.hash(message);
       number_t hash_number = m_converter.read_number(hash);
 
       // Sign hash

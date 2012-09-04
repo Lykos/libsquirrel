@@ -17,17 +17,7 @@ using namespace Crypto;
 template <typename BlockCipher>
 CBCEncrypter<BlockCipher>::CBCEncrypter(const std::string& public_key, const std::string& initial_state)
 {
-  string binary_public_key = from_hex(public_key);
-  if (binary_public_key.empty()) {
-    throw Exception(rb_eCryptoException, "Argument 1 has to be a hexadecimal string.");
-  }
-  string binary_initial_state = from_hex(initial_state);
-  if (binary_initial_state.empty()) {
-    throw Exception(rb_eCryptoException, "Argument 2 has to be a hexadecimal string.");
-  }
-  m_encrypter = new CBC::Encrypter<BlockCipher>(
-        BlockCipher(binary_public_key),
-        binary_initial_state);
+  m_encrypter = new CBC::Encrypter<BlockCipher>(BlockCipher(from_hex(public_key)), from_hex(initial_state));
 }
 
 template <typename BlockCipher>
@@ -43,15 +33,16 @@ string CBCEncrypter<BlockCipher>::encrypt(const string& plain)
 }
 
 template <typename BlockCipher>
-const string& CBCEncrypter<BlockCipher>::state()
+string CBCEncrypter<BlockCipher>::state()
 {
-  return m_encrypter->state();
+  return to_hex(m_encrypter->state());
 }
 
 template <typename BlockCipher>
-void CBCEncrypter<BlockCipher>::set_state(const string& new_state)
+const string& CBCEncrypter<BlockCipher>::set_state(const string& new_state)
 {
-  m_encrypter->set_state(new_state);
+  m_encrypter->state(from_hex(new_state));
+  return new_state;
 }
 
 Rice::Data_Type<ElgamalEncrypter> rb_cElgamalEncrypter;

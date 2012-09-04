@@ -14,7 +14,7 @@ ELGAMAL_DEC = ElgamalDecrypter.new(KEY[:private_key], KEY[:initial_state])
 ELGAMAL_SIG = ElgamalSigner.new(KEY[:private_key])
 ELGAMAL_VER = ElgamalVerifier.new(KEY[:public_key])
 
-PLAIN = <<EOS
+LONG_PLAIN = <<EOS
 Arbeitsschule nannte zu Beginn des 20. Jahrhunderts eine Richtung der deutschen 
 Reformp?dagogik ihr Reformprojekt einer neuen Schule. Dabei wurde der Begriff 
 sehr heterogen verstanden.
@@ -27,23 +27,26 @@ der obrigkeitsorientierten Schule des 19. Jahrhunderts. Allerdings wurde
 Arbeitsp?dagogik schon auf der Reichsschulkonferenz sehr unterschiedlich gefasst.
 EOS
 
+SHORT_PLAIN = "Affe"
+
+plain = SHORT_PLAIN
 success = true
 
-cipher = ELGAMAL_ENC.encrypt(PLAIN)
+cipher = ELGAMAL_ENC.encrypt(plain)
 replain = ELGAMAL_DEC.decrypt(cipher)
-if replain != PLAIN
-  puts "PLAIN:"
-  puts PLAIN
+if replain != plain
+  puts "plain:"
+  puts plain
   puts
   puts "replain:"
   puts replain
   puts
   success = false
 else
-  puts "replain == PLAIN"
+  puts "replain == plain"
 end
 
-signed = ELGAMAL_SIG.sign(PLAIN)
+signed = ELGAMAL_SIG.sign(plain)
 if !ELGAMAL_VER.verify(signed)
   puts "Invalid signature."
   success = false
@@ -52,16 +55,16 @@ else
 end
 
 unsigned = ELGAMAL_VER.remove_signature(signed)
-if unsigned != PLAIN
-  puts "PLAIN:"
-  puts PLAIN
+if unsigned != plain
+  puts "plain:"
+  puts plain
   puts
   puts "unsigned:"
   puts unsigned
   puts
   success = false
 else
-  puts "unsigned == PLAIN"
+  puts "unsigned == plain"
 end
 
 puts "SUCCESS!" if success

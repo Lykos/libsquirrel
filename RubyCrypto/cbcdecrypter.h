@@ -18,9 +18,9 @@ public:
 
   std::string decrypt(const std::string& cipher);
 
-  const std::string& state();
+  std::string state();
 
-  void set_state(const std::string& new_state);
+  const std::string& set_state(const std::string& new_state);
 
   bool state_valid();
 

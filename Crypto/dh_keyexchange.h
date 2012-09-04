@@ -35,15 +35,15 @@ namespace Crypto {
       // Chooses an appropriate group.
       void choose_group(uint number_bits);
 
-      group_t get_group() const;
+      group_t group() const;
 
-      number_t get_own_part() const;
+      number_t own_part() const;
 
-      number_t get_key() const;
+      number_t key() const;
 
-      void set_group(const group_t& group);
+      void group(const group_t& group);
 
-      void set_other_part(const number_t& other_gen_power);
+      void other_part(const number_t& other_gen_power);
 
       void read_group(const std::string& raw_group);
 

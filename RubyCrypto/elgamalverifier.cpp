@@ -13,11 +13,7 @@ using namespace Crypto;
 
 ElgamalVerifier::ElgamalVerifier(const string& public_key)
 {
-  string binary_public_key = from_hex(public_key);
-  if (binary_public_key.empty()) {
-    throw Exception(rb_eCryptoException, "Argument has to be a hexadecimal string.");
-  }
-  m_verifier = new Elgamal::Verifier(binary_public_key);
+  m_verifier = new Elgamal::Verifier(from_hex(public_key));
 }
 
 ElgamalVerifier::~ElgamalVerifier()
