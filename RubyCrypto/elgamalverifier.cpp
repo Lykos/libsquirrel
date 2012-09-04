@@ -33,7 +33,12 @@ string& ElgamalVerifier::remove_signature(string& message)
   return message;
 }
 
-Rice::Data_Type<ElgamalVerifier> rb_cElgamalVerifier;
+number_size_t ElgamalVerifier::signature_length()
+{
+  return m_verifier->signature_length();
+}
+
+Data_Type<ElgamalVerifier> rb_cElgamalVerifier;
 
 extern "C" void Init_ElgamalVerifier()
 {
@@ -44,5 +49,6 @@ extern "C" void Init_ElgamalVerifier()
       .define_method("verify", &ElgamalVerifier::verify,
                      Arg("message"))
       .define_method("remove_signature", &ElgamalVerifier::remove_signature,
-                     Arg("message"));
+                     Arg("message"))
+      .define_method("signature_length", &ElgamalVerifier::signature_length);
 }

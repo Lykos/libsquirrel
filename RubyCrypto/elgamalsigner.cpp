@@ -28,7 +28,12 @@ string& ElgamalSigner::sign(string& message)
   return message;
 }
 
-Rice::Data_Type<ElgamalSigner> rb_cElgamalSigner;
+number_size_t ElgamalSigner::signature_length()
+{
+  return m_signer->signature_length();
+}
+
+Data_Type<ElgamalSigner> rb_cElgamalSigner;
 
 extern "C" void Init_ElgamalSigner()
 {
@@ -37,5 +42,6 @@ extern "C" void Init_ElgamalSigner()
       .define_constructor(Constructor<ElgamalSigner, const string&>(),
                      Arg("private_key"))
       .define_method("sign", &ElgamalSigner::sign,
-                     (Arg("message")));
+                     Arg("message"))
+      .define_method("signature_length", &ElgamalSigner::signature_length);
 }

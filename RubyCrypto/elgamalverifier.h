@@ -17,6 +17,8 @@ public:
 
   std::string& remove_signature(std::string& message);
 
+  Crypto::number_size_t signature_length();
+
 private:
   Crypto::Elgamal::Verifier* m_verifier;
 };

@@ -64,9 +64,15 @@ bool CBCMAC<BlockCipher, Tag>::state_valid()
   return m_mac->state_valid();
 }
 
-Rice::Data_Type<AESSigner> rb_cAESSigner;
+template <typename BlockCipher, int Tag>
+number_size_t CBCMAC<BlockCipher, Tag>::signature_length()
+{
+  return m_mac->signature_length();
+}
 
-Rice::Data_Type<AESVerifier> rb_cAESVerifier;
+Data_Type<AESSigner> rb_cAESSigner;
+
+Data_Type<AESVerifier> rb_cAESVerifier;
 
 extern "C" void Init_CBCMAC()
 {
@@ -79,7 +85,8 @@ extern "C" void Init_CBCMAC()
       .define_method("state", &AESSigner::state)
       .define_method("state=", &AESSigner::set_state,
                      (Arg("new_state")))
-      .define_method("state_valid?", &AESSigner::state_valid);
+      .define_method("state_valid?", &AESSigner::state_valid)
+      .define_method("signature_length", &AESSigner::signature_length);
 
 
   rb_cAESVerifier = define_class_under<AESVerifier>(rb_mCrypto, "AESVerifier")
@@ -93,5 +100,6 @@ extern "C" void Init_CBCMAC()
       .define_method("state", &AESVerifier::state)
       .define_method("state=", &AESVerifier::set_state,
                      (Arg("new_state")))
-      .define_method("state_valid?", &AESVerifier::state_valid);
+      .define_method("state_valid?", &AESVerifier::state_valid)
+      .define_method("signature_length", &AESVerifier::signature_length);;
 }

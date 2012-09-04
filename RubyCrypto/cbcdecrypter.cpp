@@ -51,9 +51,9 @@ bool CBCDecrypter<BlockCipher>::state_valid()
   return m_decrypter->state_valid();
 }
 
-Rice::Data_Type<ElgamalDecrypter> rb_cElgamalDecrypter;
+Data_Type<ElgamalDecrypter> rb_cElgamalDecrypter;
 
-Rice::Data_Type<AESDecrypter> rb_cAESDecrypter;
+Data_Type<AESDecrypter> rb_cAESDecrypter;
 
 extern "C" void Init_CBCDecrypter()
 {

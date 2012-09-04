@@ -27,6 +27,8 @@ public:
 
   bool state_valid();
 
+  Crypto::number_size_t signature_length();
+
 private:
   Crypto::CBC::MAC<BlockCipher>* m_mac;
 };

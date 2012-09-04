@@ -45,9 +45,9 @@ const string& CBCEncrypter<BlockCipher>::set_state(const string& new_state)
   return new_state;
 }
 
-Rice::Data_Type<ElgamalEncrypter> rb_cElgamalEncrypter;
+Data_Type<ElgamalEncrypter> rb_cElgamalEncrypter;
 
-Rice::Data_Type<AESEncrypter> rb_cAESEncrypter;
+Data_Type<AESEncrypter> rb_cAESEncrypter;
 
 extern "C" void Init_CBCEncrypter()
 {

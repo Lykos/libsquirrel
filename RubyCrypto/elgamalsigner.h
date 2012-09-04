@@ -16,6 +16,8 @@ public:
 
   std::string& sign(std::string& message);
 
+  Crypto::number_size_t signature_length();
+
 private:
   Crypto::Elgamal::Signer* m_signer;
 };
