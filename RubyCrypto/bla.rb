@@ -3,9 +3,6 @@
 require 'RubyCrypto'
 require 'yaml'
 
-KEY_FILE = File.join(File.dirname(__FILE__), 'key.yml')
-CONFIG = YAML::load(File::read(KEY_FILE))
-
 LONG_PLAIN = <<EOS
 Arbeitsschule nannte zu Beginn des 20. Jahrhunderts eine Richtung der deutschen 
 Reformp?dagogik ihr Reformprojekt einer neuen Schule. Dabei wurde der Begriff 
@@ -26,7 +23,7 @@ include Crypto
 ELGAMAL_KG = ElgamalKeyGenerator.new
 PUBLIC_KEY, PRIVATE_KEY = ELGAMAL_KG.generate(512)
 
-ELGAMAL_STATE = CONFIG[:initial_state]
+ELGAMAL_STATE = sprintf("%x", rand(1 << 512))
 
 ELGAMAL_ENC = ElgamalEncrypter.new(PUBLIC_KEY, ELGAMAL_STATE)
 ELGAMAL_DEC = ElgamalDecrypter.new(PRIVATE_KEY, ELGAMAL_STATE)
