@@ -11,36 +11,16 @@ using namespace Rice;
 using namespace Crypto;
 using namespace Elgamal;
 
-ElgamalSigner::ElgamalSigner(const string& private_key)
-{
-  m_signer = new Signer(private_key);
-}
-
-ElgamalSigner::~ElgamalSigner()
-{
-  delete m_signer;
-}
-
-string& ElgamalSigner::sign(string& message)
-{
-  m_signer->sign(message);
-  return message;
-}
-
-number_size_t ElgamalSigner::signature_length()
-{
-  return m_signer->signature_length();
-}
-
-Data_Type<ElgamalSigner> rb_cElgamalSigner;
+Data_Type<Signer> rb_cElgamalSigner;
 
 extern "C" void Init_ElgamalSigner()
 {
-  rb_cElgamalSigner = define_class_under<ElgamalSigner>(rb_mCrypto, "ElgamalSigner")
+  typedef string& (Signer::*sign_t)(string&);
+  rb_cElgamalSigner = define_class_under<Signer>(rb_mCrypto, "ElgamalSigner")
       .add_handler<Crypto::PreconditionViolation>(handle)
-      .define_constructor(Constructor<ElgamalSigner, const string&>(),
+      .define_constructor(Constructor<Signer, const string&>(),
                      Arg("private_key"))
-      .define_method("sign", &ElgamalSigner::sign,
+      .define_method("sign", sign_t(&Signer::sign),
                      Arg("message"))
-      .define_method("signature_length", &ElgamalSigner::signature_length);
+      .define_method("signature_length", &Signer::signature_length);
 }

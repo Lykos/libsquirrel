@@ -7,22 +7,7 @@
 #include <string>
 #include <rice/Data_Type.hpp>
 
-class ElgamalSigner {
-public:
-
-  ElgamalSigner(const std::string& private_key);
-
-  ~ElgamalSigner();
-
-  std::string& sign(std::string& message);
-
-  Crypto::number_size_t signature_length();
-
-private:
-  Crypto::Elgamal::Signer* m_signer;
-};
-
-extern Rice::Data_Type<ElgamalSigner> rb_cElgamalSigner;
+extern Rice::Data_Type<Crypto::Elgamal::Signer> rb_cElgamalSigner;
 
 extern "C" {
 #endif

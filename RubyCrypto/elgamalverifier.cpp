@@ -11,43 +11,18 @@ using namespace Rice;
 using namespace Crypto;
 using namespace Elgamal;
 
-ElgamalVerifier::ElgamalVerifier(const string& public_key)
-{
-  m_verifier = new Verifier(public_key);
-}
-
-ElgamalVerifier::~ElgamalVerifier()
-{
-  delete m_verifier;
-}
-
-bool ElgamalVerifier::verify(const string& message)
-{
-  return m_verifier->verify(message);
-}
-
-string& ElgamalVerifier::remove_signature(string& message)
-{
-  m_verifier->remove_signature(message);
-  return message;
-}
-
-number_size_t ElgamalVerifier::signature_length()
-{
-  return m_verifier->signature_length();
-}
-
-Data_Type<ElgamalVerifier> rb_cElgamalVerifier;
+Data_Type<Verifier> rb_cElgamalVerifier;
 
 extern "C" void Init_ElgamalVerifier()
 {
-  rb_cElgamalVerifier = define_class_under<ElgamalVerifier>(rb_mCrypto, "ElgamalVerifier")
-      .add_handler<Crypto::PreconditionViolation>(handle)
-      .define_constructor(Constructor<ElgamalVerifier, const string&>(),
+  typedef bool (Verifier::*verify_t)(const string&) const;
+  rb_cElgamalVerifier = define_class_under<Verifier>(rb_mCrypto, "ElgamalVerifier")
+      .add_handler<PreconditionViolation>(handle)
+      .define_constructor(Constructor<Verifier, const string&>(),
                      Arg("public_key"))
-      .define_method("verify", &ElgamalVerifier::verify,
+      .define_method("verify", verify_t(&Verifier::verify),
                      Arg("message"))
-      .define_method("remove_signature", &ElgamalVerifier::remove_signature,
+      .define_method("remove_signature", &Verifier::remove_signature,
                      Arg("message"))
-      .define_method("signature_length", &ElgamalVerifier::signature_length);
+      .define_method("signature_length", &Verifier::signature_length);
 }

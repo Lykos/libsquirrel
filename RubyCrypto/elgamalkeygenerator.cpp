@@ -24,10 +24,7 @@ ElgamalKeyGenerator::~ElgamalKeyGenerator()
 
 ElgamalKeyGenerator::raw_key_pair_t ElgamalKeyGenerator::generate(number_size_t number_bits)
 {
-  raw_key_pair_t raw_key_pair = m_generator->generate_raw(m_random_generator, number_bits);
-  raw_key_pair.public_key = raw_key_pair.public_key;
-  raw_key_pair.private_key = raw_key_pair.private_key;
-  return raw_key_pair;
+  return m_generator->generate_raw(m_random_generator, number_bits);
 }
 
 template<>
