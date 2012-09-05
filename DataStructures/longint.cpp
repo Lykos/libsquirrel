@@ -1,10 +1,11 @@
 #include "longint.h"
+#include "algebrahelper.h"
 #include <cmath>
 #include <cassert>
 #include <sstream>
 #include <cstdio>
 #include <string>
-#include "arithmetichelper.h"
+#include <climits>
 
 namespace DataStructures {
 
@@ -25,7 +26,7 @@ namespace DataStructures {
 
   static const LongInt TEN_BUFFER_FACTOR (TEN.pow(DECIMAL_BUFFER_SIZE));
 
-  static const index_type base (10);
+  static const uint8_t base (10);
 
   std::ostream& operator<<(std::ostream& out, const LongInt& longInt)
   {
@@ -58,8 +59,8 @@ namespace DataStructures {
     std::ios_base::fmtflags ff = in.flags();
     std::string s;
     in >> s;
-    index_type length = s.length();
-    index_type start_index = longInt.read_sign(s);
+    LongInt::size_type length = s.length();
+    LongInt::size_type start_index = longInt.read_sign(s);
     assert(start_index <= length);
     if (start_index == length) {
       throw std::logic_error("Numerical string without digits is not allowed.");
@@ -116,40 +117,13 @@ namespace DataStructures {
     m_content.push(initial);
   }
 
-  LongInt::LongInt(const packed_longint_t& packed):
-    m_positive (packed.sign),
-    m_content (packed.num_parts / 2 + packed.num_parts % 2, 0)
-  {
-    index_type i = 0;
-    for (; i < packed.num_parts / 2; ++i) {
-      assert(i < size());
-      m_content[i] = packed.parts[2 * i] + (part_type(packed.parts[2 * i + 1]) << (PART_SIZE / 2));
-    }
-    if (2 * i < packed.num_parts) {
-      assert(i < size());
-      m_content[i] = packed.parts[2 * i];
-    }
-    remove_zeros();
-  }
-
-  LongInt::LongInt(const u_int8_t* parts, index_type length):
-    m_positive (true),
-    m_content (length / sizeof(part_type) + 1, 0)
-  {
-    for (index_type i = 0; i < length; ++i) {
-      part_type c = parts[length - 1 - i];
-      m_content[i / sizeof(part_type)] |= c << CHAR_BIT * (i % sizeof(part_type));
-    }
-    remove_zeros();
-  }
-
   LongInt::LongInt(const std::string& numerical_string)
   {
     if (numerical_string.empty()) {
       throw std::logic_error("Empty numerical string is not allowed.");
     }
-    index_type length = numerical_string.length();
-    index_type start_index = read_sign(numerical_string);
+    size_type length = numerical_string.length();
+    size_type start_index = read_sign(numerical_string);
     assert(start_index <= length);
     if (start_index == length) {
       throw std::logic_error("Numerical string without digits is not allowed.");
@@ -165,7 +139,7 @@ namespace DataStructures {
     }
   }
 
-  inline index_type LongInt::read_sign(const std::string& numerical_string)
+  inline LongInt::size_type LongInt::read_sign(const std::string& numerical_string)
   {
     assert(numerical_string.size() >= 1);
     if (numerical_string[0] == '-') {
@@ -180,7 +154,7 @@ namespace DataStructures {
     }
   }
 
-  inline void LongInt::read_decimal(const std::string& numerical_string, index_type start_index)
+  inline void LongInt::read_decimal(const std::string& numerical_string, size_type start_index)
   {
     bool positive = m_positive;
     m_positive = true;
@@ -213,7 +187,7 @@ namespace DataStructures {
     m_positive = positive;
   }
 
-  inline void LongInt::read_hexadecimal(const std::string& numerical_string, index_type start_index)
+  inline void LongInt::read_hexadecimal(const std::string& numerical_string, size_type start_index)
   {
     if (start_index == numerical_string.length()) {
       throw std::logic_error("Numerical string without digits is not allowed.");
@@ -223,14 +197,14 @@ namespace DataStructures {
         throw std::logic_error("Non digit in numerical string.");
       }
     }
-    index_type length = numerical_string.length() - start_index;
-    index_type size = length / HEXADECIMAL_BUFFER_SIZE;
+    size_type length = numerical_string.length() - start_index;
+    size_type size = length / HEXADECIMAL_BUFFER_SIZE;
     if (size * HEXADECIMAL_BUFFER_SIZE < length) {
       ++size;
     }
-    m_content = ArrayList<part_type>(size, 0);
-    index_type i = start_index + length;
-    index_type j = 0;
+    m_content = part_list(size, 0);
+    size_type i = start_index + length;
+    size_type j = 0;
     while (i > start_index + HEXADECIMAL_BUFFER_SIZE) {
       i -= HEXADECIMAL_BUFFER_SIZE;
       std::istringstream iss (numerical_string.substr(i, HEXADECIMAL_BUFFER_SIZE));
@@ -241,7 +215,7 @@ namespace DataStructures {
     iss >> std::hex >> m_content[j];
   }
 
-  inline void LongInt::read_octal(const std::string& numerical_string, index_type start_index)
+  inline void LongInt::read_octal(const std::string& numerical_string, size_type start_index)
   {
     assert(numerical_string.length() > start_index);
     for (std::string::const_iterator it = numerical_string.begin() + start_index; it < numerical_string.end(); ++it) {
@@ -285,7 +259,7 @@ namespace DataStructures {
 
   inline void LongInt::write_hexadecimal(std::ostream& out) const
   {
-    for (index_type i = m_content.size(); i > 0;) {
+    for (size_type i = m_content.size(); i > 0;) {
       --i;
       std::ostringstream oss;
       oss.flags(std::ios_base::hex);
@@ -296,23 +270,6 @@ namespace DataStructures {
       out << oss.str();
       oss.flush();
     }
-  }
-
-  index_type LongInt::write(u_int8_t* dest) const throw()
-  {
-    index_type length = byte_size();
-    part_type first_digit = m_content[size() - 1];
-    index_type first_length = log2(first_digit) / CHAR_BIT + 1;
-    assert(first_length + sizeof(part_type) * (size() - 1) == length);
-    for (uint i = 0; i < first_length; ++i) {
-      dest[i] = (first_digit >> (first_length - i - 1) * CHAR_BIT) & 0xFF;
-    }
-    for (index_type i = 0; i < size() - 1; ++i) {
-      for (uint j = 0; j < sizeof(part_type); ++j) {
-        dest[first_length + sizeof(part_type) * i + j] = (m_content[size() - i - 2] >> (sizeof(part_type) - j - 1) * CHAR_BIT) & 0xFF;
-      }
-    }
-    return length;
   }
 
   LongInt LongInt::operator~() const
@@ -366,19 +323,19 @@ namespace DataStructures {
     return result %= other;
   }
 
-  LongInt LongInt::operator<<(index_type shift_offset) const
+  LongInt LongInt::operator<<(size_type shift_offset) const
   {
     LongInt result(*this);
     return result <<= shift_offset;
   }
 
-  LongInt LongInt::operator>>(index_type shift_offset) const
+  LongInt LongInt::operator>>(size_type shift_offset) const
   {
     LongInt result(*this);
     return result >>= shift_offset;
   }
 
-  LongInt LongInt::pow(index_type exponent) const
+  LongInt LongInt::pow(size_type exponent) const
   {
     LongInt result(*this);
     return result.pow_eq(exponent);
@@ -467,9 +424,9 @@ namespace DataStructures {
     remove_zeros();
   }
 
-  inline void LongInt::pad_zeros(index_type new_size)
+  inline void LongInt::pad_zeros(size_type new_size)
   {
-    for (index_type i = size(); i < new_size; ++i) {
+    for (size_type i = size(); i < new_size; ++i) {
       m_content.push(0ul);
     }
     assert(size() >= new_size);
@@ -503,9 +460,9 @@ namespace DataStructures {
 
   LongInt& LongInt::operator*=(const LongInt& other)
   {
-    ArrayList<part_type> c (space_usage(size(), other.size()));
-    ArrayList<part_type>::const_iterator c_end = multiply(m_content.begin(), m_content.end(), other.m_content.begin(), other.m_content.end(), c.begin(), c.end());
-    ArrayList<part_type>::const_iterator c_begin = c.begin();
+    part_list c (space_usage(size(), other.size()));
+    part_list::const_iterator c_end = multiply(m_content.begin(), m_content.end(), other.m_content.begin(), other.m_content.end(), c.begin(), c.end());
+    part_list::const_iterator c_begin = c.begin();
     m_content.clear();
     m_content.push_all(c_begin, c_end);
     m_positive = m_positive == other.m_positive;
@@ -570,14 +527,14 @@ namespace DataStructures {
     }
     part_type divisor_first_digit = divisor.m_content.end()[-1];
     assert(divisor_first_digit >= (1ul << 63));
-    index_type divisor_size = divisor.size();
+    size_type divisor_size = divisor.size();
     assert(divisor_size == other.size());
-    index_type i = dividend.size();
+    size_type i = dividend.size();
     // Initialize the results
     quotient = ZERO;
     remainder = ZERO;
     // Strange for loop necessary because of unsigned types.
-    for (index_type i2 = 0; i2 < dividend.size(); ++i2) {
+    for (size_type i2 = 0; i2 < dividend.size(); ++i2) {
       --i;
       remainder <<= PART_SIZE;
       remainder += dividend.m_content[i];
@@ -590,7 +547,7 @@ namespace DataStructures {
         : "=a" (guess) : "d" (remainder.part_at(divisor_size)), "a" (remainder.m_content[divisor_size - 1]), "q" (divisor_first_digit));
         LongInt back_calculated (divisor * LongInt(guess));
 #ifndef NDEBUG
-        index_type old_guess = guess;
+        size_type old_guess = guess;
 #endif
         while (back_calculated > remainder) {
           back_calculated -= divisor;
@@ -610,8 +567,8 @@ namespace DataStructures {
         part_type upper = 0, lower = 0;
         LongInt old_remainder (remainder);
         remainder = ZERO;
-        index_type i = old_remainder.size();
-        for (index_type i2 = 0; i2 < old_remainder.size(); ++i2) {
+        size_type i = old_remainder.size();
+        for (size_type i2 = 0; i2 < old_remainder.size(); ++i2) {
           --i;
           lower = old_remainder.m_content[i];
           remainder.pad_zeros(i + 1);
@@ -633,13 +590,13 @@ namespace DataStructures {
     }
   }
 
-  LongInt& LongInt::operator<<=(index_type shift_offset)
+  LongInt& LongInt::operator<<=(size_type shift_offset)
   {
-    index_type per_part_shift = shift_offset % PART_SIZE;
-    index_type part_shift = shift_offset / PART_SIZE;
+    size_type per_part_shift = shift_offset % PART_SIZE;
+    size_type part_shift = shift_offset / PART_SIZE;
     if (per_part_shift != 0) {
       part_type keep = 0;
-      for (index_type i = 0; keep != 0 || i < size(); ++i) {
+      for (size_type i = 0; keep != 0 || i < size(); ++i) {
         if (i >= size()) {
           m_content.push(0);
         }
@@ -650,19 +607,19 @@ namespace DataStructures {
       }
     }
     if (part_shift > 0) {
-      m_content = ArrayList<part_type> (part_shift, 0) + m_content;
+      m_content = part_list (part_shift, 0) + m_content;
     }
     return *this;
   }
 
-  LongInt& LongInt::operator>>=(index_type shift_offset)
+  LongInt& LongInt::operator>>=(size_type shift_offset)
   {
     // Necessary because this could lead to an invalid index while calculating the correction bit in our implementation.
     if (shift_offset == 0) {
       return *this;
     }
-    index_type per_part_shift = shift_offset % PART_SIZE;
-    index_type part_shift = shift_offset / PART_SIZE;
+    size_type per_part_shift = shift_offset % PART_SIZE;
+    size_type part_shift = shift_offset / PART_SIZE;
     // Handle the case that the number completely disappears, this resolves nasty two complements handling for negative numbers.
     if (part_shift >= size() || (part_shift + 1 == size() && (m_content[part_shift] >> per_part_shift) == 0)) {
       return operator=(m_positive ? ZERO : MINUS_ONE);
@@ -671,7 +628,7 @@ namespace DataStructures {
     bool extra_bit = false;
     if (!m_positive) {
       // Check if a bit whose whole part gets shifted away is 1
-      for (index_type i = 0; i < part_shift && !extra_bit; ++i) {
+      for (size_type i = 0; i < part_shift && !extra_bit; ++i) {
         extra_bit = m_content[i] != 0;
       }
       // Check if a bit in the part that gets shifted away partially is 1
@@ -679,9 +636,9 @@ namespace DataStructures {
     }
     if (per_part_shift > 0) {
       part_type keep = 0;
-      index_type j = size();
+      size_type j = size();
       // The strange for loop is necessary because of the unsigned types.
-      for (index_type i = 0; i < size(); ++i) {
+      for (size_type i = 0; i < size(); ++i) {
         --j;
         // Or works because exactly the space needed for keep gets shifted away.
         part_type shifted = (m_content[j] >> per_part_shift) | keep;
@@ -690,10 +647,10 @@ namespace DataStructures {
       }
     }
     if (part_shift > 0) {
-      for (ArrayList<part_type>::iterator it = m_content.begin(); it < m_content.end() - part_shift; ++it) {
+      for (part_list::iterator it = m_content.begin(); it < m_content.end() - part_shift; ++it) {
         *it = it[part_shift];
       }
-      for (index_type i = 0; i < part_shift; ++i) {
+      for (size_type i = 0; i < part_shift; ++i) {
         m_content.pop();
       }
     }
@@ -704,15 +661,15 @@ namespace DataStructures {
     return *this;
   }
 
-  LongInt& LongInt::pow_eq(index_type exponent)
+  LongInt& LongInt::pow_eq(size_type exponent)
   {
-    ArithmeticHelper::pow_eq(*this, exponent);
+    AlgebraHelper::pow_eq(*this, exponent);
     return *this;
   }
 
   LongInt& LongInt::pow_mod_eq(const LongInt& exponent, const LongInt& modulus)
   {
-    ArithmeticHelper::pow_mod_eq(*this, exponent, modulus);
+    AlgebraHelper::pow_mod_eq(*this, exponent, modulus);
     return *this;
   }
 
@@ -722,7 +679,7 @@ namespace DataStructures {
     bool keep = !m_positive;
     bool other_keep = !other.m_positive;
     bool new_keep = !new_positive;
-    for (index_type i = 0; i < std::max(size(), other.size()); ++i) {
+    for (size_type i = 0; i < std::max(size(), other.size()); ++i) {
       part_type part, other_part, new_part;
       part = complement_keep(m_positive, part_at(i), keep);
       other_part = complement_keep(other.m_positive, other.part_at(i), other_keep);
@@ -748,7 +705,7 @@ namespace DataStructures {
     bool keep = !m_positive;
     bool other_keep = !other.m_positive;
     bool new_keep = !new_positive;
-    for (index_type i = 0; i < std::max(size(), other.size()); ++i) {
+    for (size_type i = 0; i < std::max(size(), other.size()); ++i) {
       part_type part, other_part, new_part;
       part = complement_keep(m_positive, part_at(i), keep);
       other_part = complement_keep(other.m_positive, other.part_at(i), other_keep);
@@ -774,7 +731,7 @@ namespace DataStructures {
     bool keep = !m_positive;
     bool other_keep = !other.m_positive;
     bool new_keep = !new_positive;
-    for (index_type i = 0; i < std::max(size(), other.size()); ++i) {
+    for (size_type i = 0; i < std::max(size(), other.size()); ++i) {
       part_type part, other_part, new_part;
       part = complement_keep(m_positive, part_at(i), keep);
       other_part = complement_keep(other.m_positive, other.part_at(i), other_keep);
@@ -806,8 +763,8 @@ namespace DataStructures {
 
   int inline LongInt::uCompareTo(const LongInt& other) const
   {
-    index_type max_index = std::max(size(), other.size());
-    for (index_type i = max_index + 1; i > 0;) {
+    size_type max_index = std::max(size(), other.size());
+    for (size_type i = max_index + 1; i > 0;) {
       --i;
       part_type my = part_at(i);
       part_type his = other.part_at(i);
@@ -825,16 +782,6 @@ namespace DataStructures {
     while (size() > 1 && m_content[size() - 1] == 0) {
       m_content.pop();
     }
-  }
-
-  LongInt::packed_longint_t LongInt::pack() const
-  {
-    unsigned int* result = new unsigned int[size() * 2];
-    for (index_type i = 0; i < size(); ++i) {
-      result[2 * i] = (unsigned int)(m_content[i]);
-      result[2 * i + 1] = (unsigned int)(m_content[i] >> (PART_SIZE / 2));
-    }
-    return {result, size() * 2, m_positive};
   }
 
   LongInt LongInt::mod(const LongInt &modulus) const
@@ -856,7 +803,7 @@ namespace DataStructures {
       assert(false);
       throw std::logic_error("Modulus has to be at least 2.");
     }
-    return ArithmeticHelper::inv_mod(mod(modulus), modulus);
+    return AlgebraHelper::inv_mod(mod(modulus), modulus);
   }
 
   LongInt LongInt::add_inv_mod(const LongInt &modulus) const
@@ -868,7 +815,7 @@ namespace DataStructures {
     return operator-().mod(modulus);
   }
 
-  index_type log2(const LongInt& number)
+  LongInt::exponent_type log2(const LongInt& number)
   {
     return (number.size() - 1) * LongInt::PART_SIZE + log2(number.m_content[number.size() - 1]);
   }
@@ -888,17 +835,17 @@ namespace DataStructures {
     }
   }
 
-  ArrayList<LongInt::part_type>::iterator multiply(const ArrayList<LongInt::part_type>::const_iterator& a_begin,
-                                                   const ArrayList<LongInt::part_type>::const_iterator& a_end,
-                                                   const ArrayList<LongInt::part_type>::const_iterator& b_begin,
-                                                   const ArrayList<LongInt::part_type>::const_iterator& b_end,
-                                                   const ArrayList<LongInt::part_type>::iterator& c_begin,
-                                                   const ArrayList<LongInt::part_type>::iterator& c_end)
+  LongInt::part_list::iterator multiply(const LongInt::part_list::const_iterator& a_begin,
+                                                   const LongInt::part_list::const_iterator& a_end,
+                                                   const LongInt::part_list::const_iterator& b_begin,
+                                                   const LongInt::part_list::const_iterator& b_end,
+                                                   const LongInt::part_list::iterator& c_begin,
+                                                   const LongInt::part_list::iterator& c_end)
   {
-    typedef ArrayList<LongInt::part_type>::const_iterator c_it;
-    typedef ArrayList<LongInt::part_type>::iterator it;
-    index_type a_size = a_end - a_begin;
-    index_type b_size = b_end - b_begin;
+    typedef LongInt::part_list::const_iterator c_it;
+    typedef LongInt::part_list::iterator it;
+    LongInt::part_list::difference_type a_size = a_end - a_begin;
+    LongInt::part_list::difference_type b_size = b_end - b_begin;
     if (a_size <= 0 || b_size <= 0) {
       return c_begin;
     } else if (a_size == 1 && b_size == 1) {
@@ -917,8 +864,8 @@ namespace DataStructures {
       }
       return res_end;
     }
-    index_type max_size = std::max(a_size, b_size);
-    index_type part_size = max_size - max_size / 2;
+    LongInt::part_list::size_type max_size = std::max(a_size, b_size);
+    LongInt::part_list::size_type part_size = max_size - max_size / 2;
     const c_it& x0_begin (a_begin);
     c_it x0_end (std::min(a_begin + part_size, a_end));
     c_it& x1_begin (x0_end);
@@ -976,18 +923,18 @@ namespace DataStructures {
     return res_end;
   }
 
-  std::pair<ArrayList<LongInt::part_type>::const_iterator, ArrayList<LongInt::part_type>::const_iterator> inline calc_xy2(const ArrayList<LongInt::part_type>::const_iterator& xy0_begin,
-                                                                                                                          const ArrayList<LongInt::part_type>::const_iterator& xy0_end,
-                                                                                                                          const ArrayList<LongInt::part_type>::const_iterator& xy1_begin,
-                                                                                                                          const ArrayList<LongInt::part_type>::const_iterator& xy1_end,
-                                                                                                                          ArrayList<LongInt::part_type>::iterator& c_begin,
-                                                                                                                          const ArrayList<LongInt::part_type>::iterator& c_end)
+  std::pair<LongInt::part_list::const_iterator, LongInt::part_list::const_iterator> inline calc_xy2(const LongInt::part_list::const_iterator& xy0_begin,
+                                                                                                                          const LongInt::part_list::const_iterator& xy0_end,
+                                                                                                                          const LongInt::part_list::const_iterator& xy1_begin,
+                                                                                                                          const LongInt::part_list::const_iterator& xy1_end,
+                                                                                                                          LongInt::part_list::iterator& c_begin,
+                                                                                                                          const LongInt::part_list::iterator& c_end)
   {
     if (xy1_begin < xy1_end) {
-      index_type part_size = xy0_end - xy0_begin;
+      LongInt::part_list::difference_type part_size = xy0_end - xy0_begin;
       assert(c_begin + part_size + 1 < c_end); // We need enough space for xy2
-      ArrayList<LongInt::part_type>::iterator xy2_begin (c_begin);
-      ArrayList<LongInt::part_type>::iterator xy2_end (c_begin + part_size);
+      LongInt::part_list::iterator xy2_begin (c_begin);
+      LongInt::part_list::iterator xy2_end (c_begin + part_size);
       copy(xy2_begin, xy2_end, xy0_begin, xy0_end);
       *(xy2_end++) = 0l;
       add(xy2_begin, xy2_end, xy1_begin, xy1_end);
@@ -1002,14 +949,14 @@ namespace DataStructures {
     }
   }
 
-  void inline add(const ArrayList<LongInt::part_type>::iterator& a_begin,
-                  const ArrayList<LongInt::part_type>::iterator& a_end,
-                  const ArrayList<LongInt::part_type>::const_iterator& b_begin,
-                  const ArrayList<LongInt::part_type>::const_iterator& b_end)
+  void inline add(const LongInt::part_list::iterator& a_begin,
+                  const LongInt::part_list::iterator& a_end,
+                  const LongInt::part_list::const_iterator& b_begin,
+                  const LongInt::part_list::const_iterator& b_end)
   {
     bool keep = 0;
-    ArrayList<LongInt::part_type>::iterator a_it (a_begin);
-    ArrayList<LongInt::part_type>::const_iterator b_it (b_begin);
+    LongInt::part_list::iterator a_it (a_begin);
+    LongInt::part_list::const_iterator b_it (b_begin);
     for (; keep == 1 || b_it < b_end; ++a_it, ++b_it) {
       if (a_it >= a_end)
       assert(a_it < a_end);
@@ -1027,15 +974,15 @@ namespace DataStructures {
     }
   }
 
-  void inline subtract(const ArrayList<LongInt::part_type>::iterator& a_begin,
-                       const ArrayList<LongInt::part_type>::iterator& a_end,
-                       const ArrayList<LongInt::part_type>::const_iterator& b_begin,
-                       const ArrayList<LongInt::part_type>::const_iterator& b_end,
+  void inline subtract(const LongInt::part_list::iterator& a_begin,
+                       const LongInt::part_list::iterator& a_end,
+                       const LongInt::part_list::const_iterator& b_begin,
+                       const LongInt::part_list::const_iterator& b_end,
                        bool exchange)
   {
     bool keep = false;
-    ArrayList<LongInt::part_type>::iterator a_it (a_begin);
-    for (ArrayList<LongInt::part_type>::const_iterator b_it (b_begin); keep == 1 || b_it < b_end; ++a_it, ++b_it) {
+    LongInt::part_list::iterator a_it (a_begin);
+    for (LongInt::part_list::const_iterator b_it (b_begin); keep == 1 || b_it < b_end; ++a_it, ++b_it) {
       assert(a_it < a_end); // Should never happen because a < b
       LongInt::part_type left = *a_it;
       LongInt::part_type right = b_it < b_end ? *b_it : 0l;
@@ -1055,9 +1002,9 @@ namespace DataStructures {
     }
   }
 
-  static const index_type INITIAL_SPACE_USAGE[][4] = {{0, 0, 0, 0}, {0, 2, 11, 28}, {0, 11, 16, 33}, {0, 28, 33, 42}};
+  static const LongInt::part_list::size_type INITIAL_SPACE_USAGE[][4] = {{0, 0, 0, 0}, {0, 2, 11, 28}, {0, 11, 16, 33}, {0, 28, 33, 42}};
 
-  index_type space_usage(index_type size_a, index_type size_b)
+  LongInt::part_list::size_type space_usage(LongInt::part_list::size_type size_a, LongInt::part_list::size_type size_b)
   {
     if (size_a < size_b) {
       return space_usage(size_b, size_a);
@@ -1065,7 +1012,7 @@ namespace DataStructures {
     if (size_a < 4) {
       return INITIAL_SPACE_USAGE[size_a][size_b];
     }
-    index_type part_size = size_a - size_a / 2;
+    LongInt::part_list::size_type part_size = size_a - size_a / 2;
     if (size_b <= part_size) {
       return space_usage(part_size + 1, size_b) + 4 * part_size + 1;
     } else {

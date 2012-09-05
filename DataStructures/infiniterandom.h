@@ -18,7 +18,11 @@ namespace DataStructures {
 
     typedef u_int64_t part_type;
 
-    part_type part_at(index_type index) const;
+    typedef ArrayList<part_type> part_list;
+
+    typedef part_list::size_type size_type;
+
+    part_type part_at(size_type index) const;
 
     int compareTo(const InfiniteRandom& other) const;
 

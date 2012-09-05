@@ -1,6 +1,8 @@
 #ifndef DATASTRUCTURES_BASELIST_H
 #define DATASTRUCTURES_BASELIST_H
 
+#include "arithmetichelper.h"
+#include <cstddef>
 #include <climits>
 #include <algorithm>
 #include <iterator>
@@ -9,8 +11,6 @@
 #include <stdexcept>
 #include <cassert>
 #include <cstring>
-#include "DataStructures_global.h"
-#include "basetypes.h"
 
 #ifndef NDEBUG
 #define list_check_index(index) if (index >= BaseList<T>::size()) { std::ostringstream oss; oss << __FILE__ << "(" << __LINE__ << "): Invalid index " << index << " for list of size " << BaseList<T>::size() << "."; throw typename BaseList<T>::range_error(oss.str()); }
@@ -29,17 +29,25 @@ namespace DataStructures {
   class BaseList
   {
   public:
-    static const index_type DEFAULT_MIN_CAPACITY;
+    typedef size_t size_type;
+
+    typedef ptrdiff_t difference_type;
+
+    static const size_type DEFAULT_MIN_CAPACITY;
 
     typedef std::logic_error empty_list_error;
 
     typedef std::out_of_range range_error;
 
-    typedef T value_t;
+    typedef T value_type;
+
+    typedef T& reference_type;
+
+    typedef T* pointer_type;
 
     inline BaseList();
 
-    explicit inline BaseList(index_type initial_size, const T& element = T());
+    explicit inline BaseList(size_type initial_size, const T& element = T());
 
     inline BaseList(const BaseList<T>& other);
 
@@ -56,75 +64,69 @@ namespace DataStructures {
 
     inline virtual ~BaseList();
 
-    inline index_type size() const { return m_size; }
+    inline size_type size() const { return m_size; }
 
     inline bool is_empty() const { return m_size == 0; }
 
     inline virtual void clear() { destroy_part(0, m_size); prepare_size(0); }
 
-    inline index_type min_capacity() const { return m_min_capacity; }
+    inline size_type min_capacity() const { return m_min_capacity; }
 
-    inline void set_min_capacity(index_type min_capacity);
+    inline void set_min_capacity(size_type min_capacity);
 
-    inline index_type capacity() const { return m_capacity; }
+    inline size_type capacity() const { return m_capacity; }
 
     inline void set_shrinkable(bool is_shrinkable) { m_is_shrinkable = is_shrinkable; }
 
     inline bool is_shrinkable() const { return m_is_shrinkable; }
 
   private:
-    static const index_type CAPACITY_DECREASE_FACTOR;
+    static const size_type CAPACITY_DECREASE_FACTOR;
 
     T* m_content;
 
-    index_type m_size;
+    size_type m_size;
 
-    index_type m_capacity;
+    size_type m_capacity;
 
-    index_type m_min_capacity;
+    size_type m_min_capacity;
 
     bool m_is_shrinkable;
 
   protected:
-    inline void prepare_size(index_type new_size);
+    inline void prepare_size(size_type new_size);
 
     inline T* content() { return m_content; }
 
     inline const T* content() const { return m_content; }
 
-    inline const T& at(index_type index) const { return m_content[index]; }
+    inline const T& at(size_type index) const { return m_content[index]; }
 
-    inline T& at(index_type index) { return m_content[index]; }
+    inline T& at(size_type index) { return m_content[index]; }
 
-    inline void create(index_type index, const T& element) { new(m_content + index) T(element); }
+    inline void create(size_type index, const T& element) { new(m_content + index) T(element); }
 
-    inline void replace(index_type index, const T& element) { m_content[index] = element; }
+    inline void replace(size_type index, const T& element) { m_content[index] = element; }
 
-    inline void destroy(index_type index) { m_content[index].~T(); }
+    inline void destroy(size_type index) { m_content[index].~T(); }
 
-    inline void destroy_part(index_type begin, index_type length) { for (index_type i = begin; i < begin + length; ++i) destroy(i); }
+    inline void destroy_part(size_type begin, size_type length) { for (size_type i = begin; i < begin + length; ++i) destroy(i); }
 
-    inline void add_content(const T * content, index_type insert_position, index_type length);
+    inline void add_content(const T * content, size_type insert_position, size_type length);
 
-    inline void move(index_type target, index_type source);
+    inline void move(size_type target, size_type source);
 
-    inline void move_part(index_type insert_position, index_type start, index_type length);
+    inline void move_part(size_type insert_position, size_type start, size_type length);
 
-    inline void swap(index_type index1, index_type index2);
+    inline void swap(size_type index1, size_type index2);
 
-    inline void swap_parts(index_type start1, index_type start2, index_type length);
+    inline void swap_parts(size_type start1, size_type start2, size_type length);
 
-    inline void init_capacity(index_type initial_capacity);
+    inline void init_capacity(size_type initial_capacity);
 
-    inline void adjust_capacity(index_type new_capacity);
+    inline void adjust_capacity(size_type new_capacity);
 
   };
-
-  index_type next_higher(index_type k);
-
-  index_type next_lower(index_type k);
-
-  index_type log2(index_type k);
 
   template <typename TargetIterator, typename SourceIterator>
   void copy(const TargetIterator& target_begin,
@@ -133,10 +135,10 @@ namespace DataStructures {
             const SourceIterator& source_end);
 
   template <typename T>
-  const index_type BaseList<T>::DEFAULT_MIN_CAPACITY(16);
+  const typename BaseList<T>::size_type BaseList<T>::DEFAULT_MIN_CAPACITY(16);
 
   template <typename T>
-  const index_type BaseList<T>::CAPACITY_DECREASE_FACTOR(4);
+  const typename BaseList<T>::size_type BaseList<T>::CAPACITY_DECREASE_FACTOR(4);
 
   template <typename T>
   BaseList<T>::BaseList():
@@ -149,14 +151,14 @@ namespace DataStructures {
   }
 
   template <typename T>
-  BaseList<T>::BaseList(index_type initial_size, const T& element):
+  BaseList<T>::BaseList(size_type initial_size, const T& element):
     m_content (NULL),
     m_size (initial_size),
     m_min_capacity (DEFAULT_MIN_CAPACITY),
     m_is_shrinkable (false)
   {
     adjust_capacity(initial_size);
-    for (index_type i = 0; i < size(); ++i) {
+    for (size_type i = 0; i < size(); ++i) {
       create(i, element);
     }
   }
@@ -170,7 +172,7 @@ namespace DataStructures {
     m_is_shrinkable (false)
   {
     adjust_capacity (end - begin);
-    index_type i = 0;
+    size_type i = 0;
     for (Iterator it = begin; it < end; ++it, ++i) {
       create(i, *it);
     }
@@ -242,7 +244,7 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline void BaseList<T>::set_min_capacity(index_type min_capacity)
+  inline void BaseList<T>::set_min_capacity(size_type min_capacity)
   {
     m_min_capacity = min_capacity;
     if (m_capacity < m_min_capacity) {
@@ -251,21 +253,21 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline void BaseList<T>::add_content(const T * content, index_type insert_position, index_type length)
+  inline void BaseList<T>::add_content(const T * content, size_type insert_position, size_type length)
   {
-    for (index_type i = 0; i < length; ++i) {
+    for (size_type i = 0; i < length; ++i) {
       create(insert_position + i, content[i]);
     }
   }
 
   template <typename T>
-  inline void BaseList<T>::move(index_type target, index_type source)
+  inline void BaseList<T>::move(size_type target, size_type source)
   {
     memmove(m_content + target, m_content + source, sizeof(T));
   }
 
   template <typename T>
-  inline void BaseList<T>::move_part(index_type insert_position, index_type start, index_type length)
+  inline void BaseList<T>::move_part(size_type insert_position, size_type start, size_type length)
   {
     if (length == 0) {
       return;
@@ -278,7 +280,7 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline void BaseList<T>::swap(index_type index1, index_type index2)
+  inline void BaseList<T>::swap(size_type index1, size_type index2)
   {
     if (index1 == index2) {
       return;
@@ -287,7 +289,7 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline void BaseList<T>::swap_parts(index_type start1, index_type start2, index_type length)
+  inline void BaseList<T>::swap_parts(size_type start1, size_type start2, size_type length)
   {
     if (length == 0) {
       return;
@@ -297,7 +299,7 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline void BaseList<T>::prepare_size(index_type new_size)
+  inline void BaseList<T>::prepare_size(size_type new_size)
   {
     // TODO overflow is not dealt with!
     if (new_size > m_capacity) {
@@ -315,10 +317,10 @@ namespace DataStructures {
   }
 
   template <typename T>
-  void BaseList<T>::adjust_capacity(index_type new_capacity)
+  void BaseList<T>::adjust_capacity(size_type new_capacity)
   {
     assert(new_capacity >= m_size);
-    m_capacity = std::max(next_higher(new_capacity), m_min_capacity);
+    m_capacity = std::max(size_type(ArithmeticHelper::next_pow2(new_capacity)), m_min_capacity);
     m_content = static_cast<T*>(realloc(m_content, m_capacity * sizeof(T)));
   }
 

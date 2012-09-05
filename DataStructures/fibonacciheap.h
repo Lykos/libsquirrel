@@ -36,7 +36,7 @@ namespace DataStructures {
 
     ArrayList<NodePointer> m_children;
 
-    index_type m_size;
+    size_type m_size;
 
     Treap<NodePointer> m_elements;
 

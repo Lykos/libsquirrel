@@ -17,7 +17,7 @@ namespace DataStructures {
 
     inline direction min_size_direction() const { return dir_size(TREE_LEFT) < dir_size(TREE_RIGHT) ? TREE_LEFT : TREE_RIGHT; }
 
-    inline index_type dir_size(direction dir) const { return children[dir] == NULL ? 0 : children[dir]->size; }
+    inline size_type dir_size(direction dir) const { return children[dir] == NULL ? 0 : children[dir]->size; }
 
     inline bool is_inner() const { return children[TREE_LEFT] != NULL && children[TREE_RIGHT] != NULL; }
 
@@ -27,11 +27,11 @@ namespace DataStructures {
 
     inline virtual ~TreeNode() {}
 
-    inline index_type calculated_size() const { return dir_size(TREE_LEFT) + 1 + dir_size(TREE_RIGHT); }
+    inline size_type calculated_size() const { return dir_size(TREE_LEFT) + 1 + dir_size(TREE_RIGHT); }
 
     T element;
 
-    index_type size;
+    size_type size;
 
     Node* parent;
 

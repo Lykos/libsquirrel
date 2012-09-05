@@ -33,11 +33,11 @@ namespace DataStructures {
     template <typename Iterator>
     inline void push_all(const Iterator& begin, const Iterator& end);
 
-    inline index_type index_of(index_type index) const { return (index + m_begin) % BaseList<T>::capacity(); }
+    inline size_type index_of(size_type index) const { return (index + m_begin) % BaseList<T>::capacity(); }
 
-    inline const T& operator[](index_type i) const { list_check_index(i); return BaseList<T>::at(index_of(i)); }
+    inline const T& operator[](size_type i) const { list_check_index(i); return BaseList<T>::at(index_of(i)); }
 
-    inline T& operator[](index_type i) { list_check_index(i); return BaseList<T>::at(index_of(i)); }
+    inline T& operator[](size_type i) { list_check_index(i); return BaseList<T>::at(index_of(i)); }
 
     inline void clear();
 
@@ -65,7 +65,7 @@ namespace DataStructures {
 
   private:
 
-    index_type m_begin;
+    size_type m_begin;
 
   };
 
@@ -111,7 +111,7 @@ namespace DataStructures {
     if (end <= begin) {
       return;
     }
-    index_type i = BaseList<T>::size();
+    size_type i = BaseList<T>::size();
     BaseList<T>::prepare_size(BaseList<T>::size() + (end - begin));
     for (Iterator it = begin; it != end; ++it, ++i) {
       BaseList<T>::create(index_of(i), *it);
@@ -124,7 +124,7 @@ namespace DataStructures {
     if (BaseList<T>::size() != other.size()) {
       return false;
     }
-    for (index_type i = 0; i < BaseList<T>::size(); ++i) {
+    for (size_type i = 0; i < BaseList<T>::size(); ++i) {
       if (operator[](i) != other.operator[](i)) {
         return false;
       }
@@ -135,7 +135,7 @@ namespace DataStructures {
   template <typename T>
   inline void Queue<T>::clear()
   {
-    index_type part_length = std::min(BaseList<T>::size(), BaseList<T>::capacity() - m_begin);
+    size_type part_length = std::min(BaseList<T>::size(), BaseList<T>::capacity() - m_begin);
     BaseList<T>::destroy_part(m_begin, part_length);
     BaseList<T>::destroy_part(0, BaseList<T>::size() - part_length);
     BaseList<T>::prepare_size(0);
@@ -144,7 +144,7 @@ namespace DataStructures {
   template <typename T>
   inline void Queue<T>::push(const T& element)
   {
-    index_type old_size = BaseList<T>::size();
+    size_type old_size = BaseList<T>::size();
     BaseList<T>::prepare_size(BaseList<T>::size() + 1);
     BaseList<T>::create(old_size, element);
   }
@@ -163,11 +163,11 @@ namespace DataStructures {
   template <typename T>
   inline void Queue<T>::reorganize()
   {
-    const index_type capacity = BaseList<T>::capacity();
-    index_type part_start = 0;
-    index_type begin = m_begin;
-    index_type size = BaseList<T>::size();
-    index_type end = (begin + size) % capacity;
+    const size_type capacity = BaseList<T>::capacity();
+    size_type part_start = 0;
+    size_type begin = m_begin;
+    size_type size = BaseList<T>::size();
+    size_type end = (begin + size) % capacity;
     while (part_start != capacity) {
       // invariants
       assert(part_start < capacity);
@@ -198,8 +198,8 @@ namespace DataStructures {
         end = capacity;
         size = 0;*/
       } else {
-        index_type end_size = end - part_start;
-        index_type begin_size = capacity - begin;
+        size_type end_size = end - part_start;
+        size_type begin_size = capacity - begin;
         assert(begin_size + end_size == size);
         if (end_size >= begin_size) {
           // 345|#|12 -> 12 5|#|34
@@ -209,7 +209,7 @@ namespace DataStructures {
           size = end_size;
           // begin, end remain unchanged
         } else if (begin - part_start <= begin_size) {
-          index_type size_moved = begin - part_start;
+          size_type size_moved = begin - part_start;
           assert(size_moved >= end_size); // else the next step would be more efficient
           // 56|#|1234 -> 123 56|#|4
           BaseList<T>::swap_parts(part_start, begin, end_size);

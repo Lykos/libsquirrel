@@ -8,10 +8,13 @@
 namespace DataStructures {
 
   template <typename T>
+  class ArrayList;
+
+  template <typename T>
   inline std::ostream& operator<<(std::ostream& out, const ArrayList<T>& it);
 
   template <typename T>
-  class DATASTRUCTURESSHARED_EXPORT ArrayList : public BaseList<T>
+  class ArrayList : public BaseList<T>
   {
     friend std::ostream& operator<< <> (std::ostream& out, const ArrayList<T>& it);
   public:
@@ -21,9 +24,11 @@ namespace DataStructures {
 
     typedef typename BaseList<T>::empty_list_error empty_list_error;
 
+    typedef typename BaseList<T>::size_type size_type;
+
     inline ArrayList();
 
-    inline explicit ArrayList(index_type initial_size, const T& element = T());
+    inline explicit ArrayList(size_type initial_size, const T& element = T());
 
     /*template <typename Iterator>
     ArrayList(const Iterator& begin, const Iterator& end);*/
@@ -35,17 +40,17 @@ namespace DataStructures {
 
     inline ArrayList<T>& operator+=(const ArrayList<T>& other);
 
-    inline ArrayList<T> operator*(index_type factor) const;
+    inline ArrayList<T> operator*(size_type factor) const;
 
-    inline ArrayList<T>& operator*=(index_type factor);
+    inline ArrayList<T>& operator*=(size_type factor);
 
     inline bool operator==(const ArrayList<T>& other) const;
 
     inline bool operator!=(const ArrayList<T>& other) const { return !operator==(other); }
 
-    inline const T& operator[](index_type i) const { list_check_index(i); return BaseList<T>::at(i); }
+    inline const T& operator[](size_type i) const { list_check_index(i); return BaseList<T>::at(i); }
 
-    inline T& operator[](index_type i) { list_check_index(i); return BaseList<T>::at(i); }
+    inline T& operator[](size_type i) { list_check_index(i); return BaseList<T>::at(i); }
 
     inline void push(const T& element);
 
@@ -53,11 +58,11 @@ namespace DataStructures {
 
     inline bool remove(const T& element);
 
-    inline index_type remove_all(const T& element);
+    inline size_type remove_all(const T& element);
 
-    inline void remove_position(index_type position);
+    inline void remove_position(size_type position);
 
-    inline void remove_range(index_type start, index_type end);
+    inline void remove_range(size_type start, size_type end);
 
     inline const T& front() const { check_empty(); return BaseList<T>::at(0); }
 
@@ -98,7 +103,7 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline ArrayList<T>::ArrayList(index_type initial_size, const T& element):
+  inline ArrayList<T>::ArrayList(size_type initial_size, const T& element):
     BaseList<T>(initial_size, element)
   {
   }
@@ -117,7 +122,7 @@ namespace DataStructures {
     if (end <= begin) {
       return;
     }
-    index_type i = BaseList<T>::size();
+    size_type i = BaseList<T>::size();
     BaseList<T>::prepare_size(BaseList<T>::size() + (end - begin));
     for (Iterator it = begin; it != end; ++it, ++i) {
       BaseList<T>::create(i, *it);
@@ -136,28 +141,28 @@ namespace DataStructures {
   template <typename T>
   inline ArrayList<T>& ArrayList<T>::operator+=(const ArrayList<T>& other)
   {
-    index_type old_size = BaseList<T>::size();
+    size_type old_size = BaseList<T>::size();
     BaseList<T>::prepare_size(BaseList<T>::size() + other.size());
     BaseList<T>::add_content(other.content(), old_size, other.size());
     return *this;
   }
 
   template <typename T>
-  inline ArrayList<T> ArrayList<T>::operator*(index_type factor) const
+  inline ArrayList<T> ArrayList<T>::operator*(size_type factor) const
   {
     ArrayList<T> result (BaseList<T>::size() * factor);
-    for (index_type i = 0; i < factor; ++i) {
+    for (size_type i = 0; i < factor; ++i) {
       result.add_content(BaseList<T>::content(), i * BaseList<T>::size(), BaseList<T>::size());
     }
     return result;
   }
 
   template <typename T>
-  inline ArrayList<T>& ArrayList<T>::operator*=(index_type factor)
+  inline ArrayList<T>& ArrayList<T>::operator*=(size_type factor)
   {
-    index_type old_size = BaseList<T>::size();
+    size_type old_size = BaseList<T>::size();
     BaseList<T>::prepare_size(BaseList<T>::size() * factor);
-    for (index_type i = 1; i < factor; ++i) {
+    for (size_type i = 1; i < factor; ++i) {
       BaseList<T>::add_content(BaseList<T>::content(), i * old_size, old_size);
     }
     return *this;
@@ -172,7 +177,7 @@ namespace DataStructures {
     if (BaseList<T>::size() != other.size()) {
       return false;
     }
-    for (index_type i = 0; i < BaseList<T>::size(); ++i) {
+    for (size_type i = 0; i < BaseList<T>::size(); ++i) {
       if (BaseList<T>::at(i) != other.at(i)) {
         return false;
       }
@@ -200,7 +205,7 @@ namespace DataStructures {
   template <typename T>
   inline bool ArrayList<T>::remove(const T& element)
   {
-    for (index_type i = 0; i < BaseList<T>::size(); ++i) {
+    for (size_type i = 0; i < BaseList<T>::size(); ++i) {
       if (BaseList<T>::at(i) == element) {
         BaseList<T>::move_part(i, i + 1, BaseList<T>::size() - (i + 1));
         BaseList<T>::destroy(BaseList<T>::size() - 1);
@@ -212,15 +217,15 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline index_type ArrayList<T>::remove_all(const T& element)
+  inline typename ArrayList<T>::size_type ArrayList<T>::remove_all(const T& element)
   {
-    index_type removed = 0;
-    for (index_type i = 0; i < BaseList<T>::size(); ++i) {
+    size_type removed = 0;
+    for (size_type i = 0; i < BaseList<T>::size(); ++i) {
       while (i < BaseList<T>::size() && BaseList<T>::at(i) == element) {
         ++removed;
         ++i;
       }
-      index_type good_length = 0;
+      size_type good_length = 0;
       while (i + good_length < BaseList<T>::size() && BaseList<T>::at(i + good_length) != element) {
         ++good_length;
       }
@@ -233,7 +238,7 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline void ArrayList<T>::remove_position(index_type position)
+  inline void ArrayList<T>::remove_position(size_type position)
   {
     list_check_index(position);
     BaseList<T>::move_part(position, position + 1, BaseList<T>::size() - (position + 1));
@@ -242,15 +247,15 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline void ArrayList<T>::remove_range(index_type start, index_type end)
+  inline void ArrayList<T>::remove_range(size_type start, size_type end)
   {
     if (start >= end) {
       return;
     }
     list_check_index(start);
     end = std::min(end, BaseList<T>::size());
-    index_type length = end - start;
-    index_type tail_length = std::min(length, BaseList<T>::size() - end);
+    size_type length = end - start;
+    size_type tail_length = std::min(length, BaseList<T>::size() - end);
     BaseList<T>::move_part(start, end, tail_length);
     BaseList<T>::destroy_part(BaseList<T>::size() - length, length);
     BaseList<T>::prepare_size(BaseList<T>::size() - length);

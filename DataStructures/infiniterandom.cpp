@@ -17,7 +17,7 @@ namespace DataStructures {
   {
   }
 
-  InfiniteRandom::part_type InfiniteRandom::part_at(index_type index) const
+  InfiniteRandom::part_type InfiniteRandom::part_at(size_type index) const
   {
     assert(index <= m_randomness.size());
     if (index == m_randomness.size()) {
@@ -31,7 +31,7 @@ namespace DataStructures {
     if (this == &other) {
       return 0;
     }
-    index_type index;
+    size_type index;
     for (index = 0; part_at(index) == other.part_at(index); ++index);
     if (m_randomness[index] < other.m_randomness[index]) {
       return -1;

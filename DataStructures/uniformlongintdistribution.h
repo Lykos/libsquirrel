@@ -1,8 +1,6 @@
 #ifndef DATASTRUCTURES_UNIFORMLONGINTDISTRIBUTION_H
 #define DATASTRUCTURES_UNIFORMLONGINTDISTRIBUTION_H
 
-#include "basetypes.h"
-#include "DataStructures_global.h"
 #include "longint.h"
 #include <boost/random/uniform_int_distribution.hpp>
 #include <stdexcept>
@@ -11,11 +9,13 @@
 
 namespace DataStructures {
 
+  class UniformLongIntDistribution;
+
   std::ostream& operator<<(std::ostream& out, const UniformLongIntDistribution& dist);
 
   std::istream& operator>>(std::istream& in, UniformLongIntDistribution& dist);
 
-  class DATASTRUCTURESSHARED_EXPORT UniformLongIntDistribution
+  class UniformLongIntDistribution
   {
   public:
     typedef LongInt result_type;
@@ -34,7 +34,7 @@ namespace DataStructures {
   private:
     result_type m_min, m_max, m_difference;
 
-    index_type m_size;
+    LongInt::size_type m_size;
 
     boost::random::uniform_int_distribution<LongInt::part_type> m_first_distribution;
 

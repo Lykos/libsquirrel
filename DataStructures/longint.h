@@ -1,38 +1,43 @@
 #ifndef DATASTRUCTURES_LONGINT_H
 #define DATASTRUCTURES_LONGINT_H
 
-#include "DataStructures_global.h"
-#include "basetypes.h"
 #include "arraylist.h"
+#include <cstdint>
 #include <istream>
 #include <ostream>
 
 namespace DataStructures {
 
+  class LongInt;
+
+  class LongIntConverter;
+
+  class UniformLongIntDistribution;
+
   std::ostream& operator<<(std::ostream& out, const LongInt& longInt);
 
   std::istream& operator>>(std::istream& in, LongInt& longInt);
 
-  index_type log2(const LongInt& number);
-
-  class DATASTRUCTURESSHARED_EXPORT LongInt
+  class LongInt
   {
     friend std::ostream& operator<<(std::ostream& out, const LongInt& longInt);
 
     friend std::istream& operator>>(std::istream& in, LongInt& longInt);
 
-    friend index_type log2(const LongInt& number);
+    friend ArrayList<uint64_t>::size_type log2(const LongInt& number);
 
     friend class UniformLongIntDistribution;
 
-  public:
-    typedef u_int64_t part_type;
+    friend class LongIntConverter;
 
-    typedef struct {
-      unsigned int* parts;
-      unsigned long int num_parts;
-      bool sign;
-    } packed_longint_t;
+  public:
+    typedef uint64_t part_type;
+
+    typedef ArrayList<part_type> part_list;
+
+    typedef part_list::size_type size_type;
+
+    typedef size_type exponent_type;
 
     LongInt();
 
@@ -48,10 +53,11 @@ namespace DataStructures {
 
     LongInt(unsigned int initial);
 
-    explicit LongInt(const packed_longint_t& packed);
+    LongInt(float initial);
 
-    // Assumes that the number is always positive. NOT 2-complement. Big endian format.
-    LongInt(const u_int8_t* parts, index_type length);
+    LongInt(double initial);
+
+    LongInt(long double initial);
 
     explicit LongInt(const std::string& numerical_string);
 
@@ -69,6 +75,12 @@ namespace DataStructures {
 
     inline explicit operator unsigned long long int() const { return m_content[0]; }
 
+    inline explicit operator float() const;
+
+    inline explicit operator double() const;
+
+    inline explicit operator long double() const;
+
     LongInt operator~() const;
 
     LongInt operator-() const;
@@ -85,11 +97,11 @@ namespace DataStructures {
 
     LongInt operator%(const LongInt& other) const;
 
-    LongInt operator<<(index_type shift_offset) const;
+    LongInt operator<<(exponent_type shift_offset) const;
 
-    LongInt operator>>(index_type shift_offset) const;
+    LongInt operator>>(exponent_type shift_offset) const;
 
-    LongInt pow(index_type exponent) const;
+    LongInt pow(exponent_type exponent) const;
 
     LongInt pow_mod(const LongInt& exponent, const LongInt& modulus) const;
 
@@ -131,11 +143,11 @@ namespace DataStructures {
 
     LongInt& operator%=(const LongInt& other);
 
-    LongInt& operator<<=(index_type shift_offset);
+    LongInt& operator<<=(exponent_type shift_offset);
 
-    LongInt& operator>>=(index_type shift_offset);
+    LongInt& operator>>=(exponent_type shift_offset);
 
-    LongInt& pow_eq(index_type exponent);
+    LongInt& pow_eq(exponent_type exponent);
 
     LongInt& pow_mod_eq(const LongInt& exponent, const LongInt& modulus);
 
@@ -155,27 +167,20 @@ namespace DataStructures {
 
     LongInt add_inv_mod(const LongInt& modulus) const;
 
-    packed_longint_t pack() const;
-
-    inline index_type byte_size() const throw() { return log2(*this) / CHAR_BIT + 1; }
-
-    // Writes in big endian format without sign
-    index_type write(u_int8_t* dest) const throw();
-
-    static const index_type PART_SIZE = CHAR_BIT * sizeof(part_type);
-
     void divide(const LongInt& other, LongInt& quotient, LongInt& remainder, bool remainder_needed = true);
 
     inline LongInt zero() const { return 0; }
 
     inline LongInt one() const { return 1; }
 
-    inline index_type size() const { return m_content.size(); }
+    inline size_type size() const { return m_content.size(); }
 
-    inline part_type part_at(index_type i) const { return i < size() ? m_content[i] : 0l; }
+    inline part_type part_at(size_type i) const { return i < size() ? m_content[i] : 0l; }
+
+    static const uint8_t PART_SIZE = sizeof(LongInt::part_type) * CHAR_BIT;
 
   private:
-    inline index_type read_sign(const std::string& numerical_string);
+    inline size_type read_sign(const std::string& numerical_string);
 
     inline void write_decimal(std::ostream& out) const;
 
@@ -183,17 +188,17 @@ namespace DataStructures {
 
     inline void write_hexadecimal(std::ostream& out) const;
 
-    inline void read_decimal(const std::string& numerical_string, index_type start_index);
+    inline void read_decimal(const std::string& numerical_string, size_type start_index);
 
-    inline void read_octal(const std::string& numerical_string, index_type start_index);
+    inline void read_octal(const std::string& numerical_string, size_type start_index);
 
-    inline void read_hexadecimal(const std::string& numerical_string, index_type start_index);
+    inline void read_hexadecimal(const std::string& numerical_string, size_type start_index);
 
     inline int uCompareTo(const LongInt& other) const;
 
     void remove_zeros();
 
-    void pad_zeros(index_type new_size);
+    void pad_zeros(size_type new_size);
 
     inline void subtract(const LongInt& other);
 
@@ -201,39 +206,41 @@ namespace DataStructures {
 
     bool m_positive;
 
-    ArrayList<part_type> m_content;
+    part_list m_content;
 
   };
 
+  LongInt::exponent_type log2(const LongInt& number);
+
   LongInt::part_type inline complement_keep(bool positive, LongInt::part_type part, bool& keep);
 
-  ArrayList<LongInt::part_type>::iterator multiply(const ArrayList<LongInt::part_type>::const_iterator& a_begin,
-                                                   const ArrayList<LongInt::part_type>::const_iterator& a_end,
-                                                   const ArrayList<LongInt::part_type>::const_iterator& b_begin,
-                                                   const ArrayList<LongInt::part_type>::const_iterator& b_end,
-                                                   const ArrayList<LongInt::part_type>::iterator& c_begin,
-                                                   const ArrayList<LongInt::part_type>::iterator& c_end);
+  LongInt::part_list::iterator multiply(const LongInt::part_list::const_iterator& a_begin,
+                                                   const LongInt::part_list::const_iterator& a_end,
+                                                   const LongInt::part_list::const_iterator& b_begin,
+                                                   const LongInt::part_list::const_iterator& b_end,
+                                                   const LongInt::part_list::iterator& c_begin,
+                                                   const LongInt::part_list::iterator& c_end);
 
 
-  std::pair<ArrayList<LongInt::part_type>::const_iterator, ArrayList<LongInt::part_type>::const_iterator> inline calc_xy2(const ArrayList<LongInt::part_type>::const_iterator& xy0_begin,
-                                                                                                                          const ArrayList<LongInt::part_type>::const_iterator& xy0_end,
-                                                                                                                          const ArrayList<LongInt::part_type>::const_iterator& xy1_begin,
-                                                                                                                          const ArrayList<LongInt::part_type>::const_iterator& xy1_end,
-                                                                                                                          ArrayList<LongInt::part_type>::iterator& c_begin,
-                                                                                                                          const ArrayList<LongInt::part_type>::iterator& c_end);
+  std::pair<LongInt::part_list::const_iterator, LongInt::part_list::const_iterator> inline calc_xy2(const LongInt::part_list::const_iterator& xy0_begin,
+                                                                                                                          const LongInt::part_list::const_iterator& xy0_end,
+                                                                                                                          const LongInt::part_list::const_iterator& xy1_begin,
+                                                                                                                          const LongInt::part_list::const_iterator& xy1_end,
+                                                                                                                          LongInt::part_list::iterator& c_begin,
+                                                                                                                          const LongInt::part_list::iterator& c_end);
 
-  void inline add(const ArrayList<LongInt::part_type>::iterator& a_begin,
-                  const ArrayList<LongInt::part_type>::iterator& a_end,
-                  const ArrayList<LongInt::part_type>::const_iterator& b_begin,
-                  const ArrayList<LongInt::part_type>::const_iterator& b_end);
+  void inline add(const LongInt::part_list::iterator& a_begin,
+                  const LongInt::part_list::iterator& a_end,
+                  const LongInt::part_list::const_iterator& b_begin,
+                  const LongInt::part_list::const_iterator& b_end);
 
-  void inline subtract(const ArrayList<LongInt::part_type>::iterator& a_begin,
-                       const ArrayList<LongInt::part_type>::iterator& a_end,
-                       const ArrayList<LongInt::part_type>::const_iterator& b_begin,
-                       const ArrayList<LongInt::part_type>::const_iterator& b_end,
+  void inline subtract(const LongInt::part_list::iterator& a_begin,
+                       const LongInt::part_list::iterator& a_end,
+                       const LongInt::part_list::const_iterator& b_begin,
+                       const LongInt::part_list::const_iterator& b_end,
                        bool exchange = false);
 
-  index_type space_usage(index_type size_a, index_type size_b);
+  LongInt::size_type space_usage(LongInt::size_type size_a, LongInt::size_type size_b);
 
 }
 

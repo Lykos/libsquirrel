@@ -78,7 +78,7 @@ namespace DataStructures {
 
     inline std::pair< iterator, iterator > equal_range(const T& element);
 
-    inline T& operator[](index_type index);
+    inline T& operator[](size_type index);
 
     inline const_iterator lower_bound(const T& element) const;
 
@@ -86,13 +86,13 @@ namespace DataStructures {
 
     inline std::pair< const_iterator, const_iterator > equal_range(const T& element) const;
 
-    inline const T& operator[](index_type index) const;
+    inline const T& operator[](size_type index) const;
 
     inline bool remove(const T& element);
 
-    inline index_type remove_all(const T& element);
+    inline size_type remove_all(const T& element);
 
-    inline index_type size() const { return m_root == NULL ? 0 : m_root->size; }
+    inline size_type size() const { return m_root == NULL ? 0 : m_root->size; }
 
     inline bool is_empty() const { return m_root == NULL; }
 
@@ -146,14 +146,14 @@ namespace DataStructures {
   }
 
   template <typename T, typename Node>
-  inline const T& BaseTree<T, Node>::operator[](index_type index) const
+  inline const T& BaseTree<T, Node>::operator[](size_type index) const
   {
     tree_check_index(index);
     Node* current = m_root;
     while (true) {
       assert(current != NULL);
       assert(index < current->size);
-      index_type left = current->dir_size(TREE_LEFT);
+      size_type left = current->dir_size(TREE_LEFT);
       if (index < left) {
         current = current->children[TREE_LEFT];
       } else if (index > left) {
@@ -166,14 +166,14 @@ namespace DataStructures {
   }
 
   template <typename T, typename Node>
-  inline T& BaseTree<T, Node>::operator[](index_type index)
+  inline T& BaseTree<T, Node>::operator[](size_type index)
   {
     tree_check_index(index);
     Node* current = m_root;
     while (true) {
       assert(current != NULL);
       assert(index < current->size);
-      index_type left = current->dir_size(TREE_LEFT);
+      size_type left = current->dir_size(TREE_LEFT);
       if (index < left) {
         current = current->children[TREE_LEFT];
       } else if (index > left) {
@@ -300,8 +300,8 @@ namespace DataStructures {
   typename BaseTree<T, Node>::iterator BaseTree<T, Node>::lower_bound(const T& element)
   {
     Node* current = m_root;
-    index_type correct_index = size();
-    index_type left_size = 0;
+    size_type correct_index = size();
+    size_type left_size = 0;
     while (current != NULL) {
       if (current->element < element) {
         left_size += 1 + current->dir_size(TREE_LEFT);
@@ -318,8 +318,8 @@ namespace DataStructures {
   inline typename BaseTree<T, Node>::const_iterator BaseTree<T, Node>::lower_bound(const T& element) const
   {
     Node* current = m_root;
-    index_type correct_index = size();
-    index_type left_size = 0;
+    size_type correct_index = size();
+    size_type left_size = 0;
     while (current != NULL) {
       if (current->element < element) {
         left_size += 1 + current->dir_size(TREE_LEFT);
@@ -336,8 +336,8 @@ namespace DataStructures {
   typename BaseTree<T, Node>::iterator BaseTree<T, Node>::upper_bound(const T& element)
   {
     Node* current = m_root;
-    index_type correct_index = size();
-    index_type left_size = 0;
+    size_type correct_index = size();
+    size_type left_size = 0;
     while (current != NULL) {
       if (current->element <= element) {
         left_size += 1 + current->dir_size(TREE_LEFT);
@@ -354,8 +354,8 @@ namespace DataStructures {
   typename BaseTree<T, Node>::const_iterator BaseTree<T, Node>::upper_bound(const T& element) const
   {
     Node* current = m_root;
-    index_type correct_index = size();
-    index_type left_size = 0;
+    size_type correct_index = size();
+    size_type left_size = 0;
     while (current != NULL) {
       if (current->element <= element) {
         left_size += 1 + current->dir_size(TREE_LEFT);
@@ -381,10 +381,10 @@ namespace DataStructures {
   }
 
   template <typename T, typename Node>
-  inline index_type BaseTree<T, Node>::remove_all(const T &element)
+  inline size_type BaseTree<T, Node>::remove_all(const T &element)
   {
     // TODO efficiency
-    index_type result;
+    size_type result;
     for (result = 0; remove(element); ++result);
     return result;
   }
@@ -453,7 +453,7 @@ namespace DataStructures {
     Node* new_node = node->children[dir];
     Node* new_node_child = new_node->children[1 - dir];
     direction parent_direction = node->parent_direction;
-    index_type lost_child_size = new_node->dir_size(dir);
+    size_type lost_child_size = new_node->dir_size(dir);
 
     // Change the pointers
     if (node->is_root()) {
@@ -473,7 +473,7 @@ namespace DataStructures {
     }
 
     // Correct the sizes
-    index_type old_size = node->size;
+    size_type old_size = node->size;
     node->size -= 1 + lost_child_size;
     new_node->size = old_size;
 

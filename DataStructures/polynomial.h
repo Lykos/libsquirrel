@@ -23,7 +23,7 @@ namespace DataStructures {
   public:
     inline Polynomial() {}
 
-    explicit inline Polynomial(const T& element, index_type degree = 0): m_coefficients (element == element.zero() ? 0 : degree, element.zero()), m_zero (element.zero()), m_one (element.one()) { m_coefficients.push(element); }
+    explicit inline Polynomial(const T& element, size_type degree = 0): m_coefficients (element == element.zero() ? 0 : degree, element.zero()), m_zero (element.zero()), m_one (element.one()) { m_coefficients.push(element); }
 
     inline explicit Polynomial(const ArrayList<T>& coefficients): m_coefficients (coefficients), m_zero (coefficients.front().zero()), m_one (coefficients.front().one()) { remove_zeros(); }
 
@@ -46,7 +46,7 @@ namespace DataStructures {
 
     inline Polynomial<T> operator%(const Polynomial<T>& other) const { Polynomial<T> result (*this); return result %= other; }
 
-    inline Polynomial<T> pow(index_type exponent) const { Polynomial<T> result (*this); return result.pow_eq(exponent); }
+    inline Polynomial<T> pow(size_type exponent) const { Polynomial<T> result (*this); return result.pow_eq(exponent); }
 
     inline Polynomial<T> pow_mod(const LongInt& exponent, const Polynomial<T>& modulus) const { Polynomial<T> result (*this); return result.pow_mod_eq(exponent, modulus); }
 
@@ -68,7 +68,7 @@ namespace DataStructures {
 
     inline Polynomial<T>& operator%=(const Polynomial<T>& other);
 
-    inline Polynomial<T> pow_eq(index_type exponent);
+    inline Polynomial<T> pow_eq(size_type exponent);
 
     inline Polynomial<T> pow_mod_eq(const LongInt& exponent, const Polynomial<T>& modulus);
 
@@ -78,7 +78,7 @@ namespace DataStructures {
 
     inline Polynomial<T> add_inv_mod(const Polynomial<T>& modulus) const { return operator-().mod(modulus); }
 
-    inline index_type deg() const { return m_coefficients.size() - 1; }
+    inline size_type deg() const { return m_coefficients.size() - 1; }
 
     inline const ArrayList<T>& coefficients() { return m_coefficients; }
 
@@ -99,7 +99,7 @@ namespace DataStructures {
 
     inline void remove_zeros() { while (deg() > 0 && m_coefficients.back() == m_zero) { m_coefficients.pop(); } }
 
-    inline void pad_zeros(index_type size) { for (index_type i = deg(); i < size; ++i) { m_coefficients.push(m_zero); } }
+    inline void pad_zeros(size_type size) { for (size_type i = deg(); i < size; ++i) { m_coefficients.push(m_zero); } }
 
     ArrayList<T> m_coefficients;
 
@@ -110,10 +110,10 @@ namespace DataStructures {
   template <typename T>
   inline std::ostream& operator<<(std::ostream& out, const Polynomial<T>& polynomial)
   {
-    index_type deg = polynomial.deg();
+    size_type deg = polynomial.deg();
     if (deg> 0) {
       out << "(";
-      for (index_type i = deg + 1; i > 0;)
+      for (size_type i = deg + 1; i > 0;)
       {
         --i;
         const T& coeff = polynomial.m_coefficients[i];
@@ -145,7 +145,7 @@ namespace DataStructures {
   inline T Polynomial<T>::operator()(const T& value) const
   {
     T result = m_zero;
-    for (index_type i = deg() + 1; i > 0;) {
+    for (size_type i = deg() + 1; i > 0;) {
       --i;
       result *= value;
       result += m_coefficients[i];
@@ -190,7 +190,7 @@ namespace DataStructures {
   template <typename T>
   inline void Polynomial<T>::add(const Polynomial<T>& other)
   {
-    for (index_type i = 0; i <= other.deg(); ++i) {
+    for (size_type i = 0; i <= other.deg(); ++i) {
       m_coefficients[i] += other.m_coefficients[i];
     }
   }
@@ -198,7 +198,7 @@ namespace DataStructures {
   template <typename T>
   inline void Polynomial<T>::subtract(const Polynomial<T>& other)
   {
-    for (index_type i = 0; i <= other.deg(); ++i) {
+    for (size_type i = 0; i <= other.deg(); ++i) {
       m_coefficients[i] -= other.m_coefficients[i];
     }
   }
@@ -207,8 +207,8 @@ namespace DataStructures {
   inline Polynomial<T>& Polynomial<T>::operator*=(const Polynomial<T>& other)
   {
     ArrayList<T> new_coefficients (deg() + other.deg() + 1, 0);
-    for (index_type i = 0; i <= deg(); ++i) {
-      for (index_type j = 0; j <= other.deg(); ++j) {
+    for (size_type i = 0; i <= deg(); ++i) {
+      for (size_type j = 0; j <= other.deg(); ++j) {
         new_coefficients[i + j] += m_coefficients[i] * other.m_coefficients[j];
       }
     }
@@ -233,7 +233,7 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline Polynomial<T> Polynomial<T>::pow_eq(index_type exponent)
+  inline Polynomial<T> Polynomial<T>::pow_eq(size_type exponent)
   {
     ArithmeticHelper::pow_eq(*this, exponent);
     return *this;
@@ -255,8 +255,8 @@ namespace DataStructures {
       quotient = zero();
       return;
     }
-    index_type divisor_deg = divisor.deg();
-    index_type new_deg = deg() - divisor_deg;
+    size_type divisor_deg = divisor.deg();
+    size_type new_deg = deg() - divisor_deg;
     remainder = *this;
     if (deg() < divisor_deg) {
       quotient = one();
@@ -264,7 +264,7 @@ namespace DataStructures {
     }
     ArrayList<T> quotient_coefficients (new_deg + 1);
     const T& divisor_first = divisor.m_coefficients[divisor_deg];
-    for (index_type i = new_deg + 1; i > 0;) {
+    for (size_type i = new_deg + 1; i > 0;) {
       --i;
       quotient_coefficients[i] = remainder.m_coefficients[i + divisor_deg] / divisor_first;
       Polynomial<T> factor (quotient_coefficients[i], i);

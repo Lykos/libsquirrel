@@ -1,96 +1,47 @@
 #ifndef ARITHMETIC_H
 #define ARITHMETIC_H
 
-#include "basetypes.h"
-#include "longint.h"
-#include <sstream>
+#include <cstdint>
 
 namespace DataStructures {
 
   namespace ArithmeticHelper {
 
-    template <typename T>
-    inline T inv_mod(const T& element, const T& modulus);
+    // The functions are defined in the header so that the compiler can inline them
 
-    template <typename T>
-    inline T gcd(const T& first, const T& second);
-
-    template <typename T>
-    T inv_mod(const T& element, const T &modulus)
+    inline uint64_t next_pow2(uint64_t x)
     {
-      T a (modulus);
-      T b (element);
-      T u_old = modulus.zero();
-      T u = modulus.one();
-      while (b != modulus.zero()) {
-        T q;
-        a.divide(b, q, a);
-        u_old -= u * q;
-        std::swap(a, b);
-        std::swap(u, u_old);
-      }
-      if (a != modulus.one()) {
-        std::ostringstream oss;
-        oss << "element (" << element << ") and modulus (" << modulus << ") are not relatively prime, the gcd is " << a << ", hence no multiplicative inverse exists.";
-        throw std::logic_error(oss.str());
-      }
-      u_old += modulus;
-      u_old %= modulus;
-      return u_old;
+      x -= 1;
+      x |= (x >> 1);
+      x |= (x >> 2);
+      x |= (x >> 4);
+      x |= (x >> 8);
+      x |= (x >> 16);
+      x |= (x >> 32);
+      return ++x;
     }
 
-    template <typename T>
-    T gcd(const T &first, const T &second)
+    inline uint64_t prev_pow2(uint64_t x)
     {
-      T a = first.abs();
-      T b = second.abs();
-      if (first < second) {
-        std::swap(a, b);
-      }
-      while (b != b.zero()) {
-        a %= b;
-        std::swap(a, b);
-      }
-      return a;
+      x |= (x >> 1);
+      x |= (x >> 2);
+      x |= (x >> 4);
+      x |= (x >> 8);
+      x |= (x >> 16);
+      return ++x >> 1;
     }
 
-    template <typename T>
-    void pow_eq(T& base, index_type exponent)
+    inline uint64_t log2(uint64_t x)
     {
-      T factor (base);
-      T& result = base;
-      result = base.one();
-      for (unsigned int j = sizeof(index_type) * CHAR_BIT; j > 0;) {
-        --j;
-        if ((exponent >> j) & 1) {
-          result *= factor;
-        }
-        if (j > 0) {
-          result *= result;
-        }
+      if (x == 0) {
+        return 0;
       }
-    }
-
-    template <typename T>
-    void pow_mod_eq(T& base, const LongInt& exponent, const LongInt& modulus)
-    {
-      T factor = (exponent.is_positive() ? base : inv_mod(base, modulus));
-      T& result = base;
-      result = base.one();
-      for (ulong i = exponent.size(); i > 0;) {
-        --i;
-        LongInt::part_type exponent_part = exponent.part_at(i);
-        for (uint j = sizeof(LongInt::part_type) * CHAR_BIT; j > 0;) {
-          --j;
-          if ((exponent_part >> j) & 1) {
-            result *= factor;
-          }
-          if (j > 0 || i > 0) {
-            result *= result;
-          }
-          result %= modulus;
-        }
-      }
+      uint64_t result;
+      asm ( "\tbsrq %1, %0\n"
+            : "=r"(result)
+            : "r" (x)
+        );
+      return result;
     }
 
   }

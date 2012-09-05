@@ -1,23 +1,16 @@
 #ifndef DATASTRUCTURES_HEAP_H
 #define DATASTRUCTURES_HEAP_H
 
-#include "DataStructures_global.h"
 #include "baselist.h"
 
 namespace DataStructures {
 
-  inline index_type level_base(index_type index);
-
-  index_type parent(index_type index);
-
-  index_type right_child(index_type index);
-
-  index_type left_child(index_type index);
-
   template <typename T>
-  class DATASTRUCTURESSHARED_EXPORT Heap : public BaseList<T>
+  class Heap : public BaseList<T>
   {
   public:
+    typedef typename BaseList<T>::size_type size_type;
+
     Heap();
 
     Heap(const Heap<T>& other);
@@ -38,11 +31,19 @@ namespace DataStructures {
 
   private:
 
-    inline void bubble_up(index_type index);
+    inline void bubble_up(size_type index);
 
-    inline void bubble_down(index_type index);
+    inline void bubble_down(size_type index);
 
-    inline index_type min_child(index_type index) const;
+    inline size_type min_child(size_type index) const;
+
+    inline size_type level_base(size_type index);
+
+    inline size_type parent(size_type index);
+
+    inline size_type right_child(size_type index);
+
+    inline size_type left_child(size_type index);
 
   };
 
@@ -73,7 +74,7 @@ namespace DataStructures {
     if (begin > end) {
       return;
     }
-    index_type i = BaseList<T>::size();
+    size_type i = BaseList<T>::size();
     BaseList<T>::prepare_size(BaseList<T>::size() + (end - begin));
     for (Begin it = begin; it != end; ++it, ++i) {
       BaseList<T>::create(i, *it);
@@ -84,7 +85,7 @@ namespace DataStructures {
   template <typename T>
   void Heap<T>::push(const T& element)
   {
-    index_type old_size = BaseList<T>::size();
+    size_type old_size = BaseList<T>::size();
     BaseList<T>::prepare_size(BaseList<T>::size() + 1);
     BaseList<T>::create(old_size, element);
     bubble_up(old_size);
@@ -103,10 +104,10 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline index_type Heap<T>::min_child(index_type index) const
+  inline typename Heap<T>::size_type Heap<T>::min_child(size_type index) const
   {
-    index_type left = left_child(index);
-    index_type right = right_child(index);
+    size_type left = left_child(index);
+    size_type right = right_child(index);
     assert(left < BaseList<T>::size());
     if (right >= BaseList<T>::size()) {
       return left;
@@ -116,10 +117,10 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline void Heap<T>::bubble_up(index_type index)
+  inline void Heap<T>::bubble_up(size_type index)
   {
     while (index > 0) {
-      index_type new_index = parent(index);
+      size_type new_index = parent(index);
       if (BaseList<T>::at(new_index) < BaseList<T>::at(index)) {
         return;
       }
@@ -129,10 +130,10 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline void Heap<T>::bubble_down(index_type index)
+  inline void Heap<T>::bubble_down(size_type index)
   {
     while (left_child(index) < BaseList<T>::size()) {
-      index_type new_index = min_child(index);
+      size_type new_index = min_child(index);
       if (BaseList<T>::at(index) < BaseList<T>::at(new_index)) {
         return;
       }

@@ -16,17 +16,14 @@ DEFINES += DATASTRUCTURES_LIBRARY
 SOURCES += \
     longint.cpp \
     infiniterandom.cpp \
-    baselist.cpp \
-    heap.cpp \
-    uniformlongintdistribution.cpp
+    uniformlongintdistribution.cpp \
+    longintconverter.cpp
 
 HEADERS += \
-    DataStructures_global.h \
     longint.h \
     infiniterandom.h \
     treap.h \
     treapnode.h \
-    basetypes.h \
     baseiterator.h \
     queue.h \
     listiterator.h \
@@ -43,7 +40,10 @@ HEADERS += \
     finiteelement.h \
     polynomial.h \
     arithmetichelper.h \
-    uniformlongintdistribution.h
+    uniformlongintdistribution.h \
+    longintconverter.h \
+    algebrahelper.h \
+    heap_arithmetic.h
 
 header_files.files = $$HEADERS
 header_files.path = /usr/local/include/DataStructures
