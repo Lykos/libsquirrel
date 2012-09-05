@@ -58,7 +58,7 @@ namespace Crypto {
 
       inline const std::string& state() const { return m_state; }
 
-      inline void state(const std::string& new_state);
+      inline const std::string& state(const std::string& new_state);
 
     };
 
@@ -221,10 +221,11 @@ namespace Crypto {
     }
 
     template <typename BlockCipher>
-    inline void Encrypter<BlockCipher>::state(const std::string& initial_state)
+    inline const std::string& Encrypter<BlockCipher>::state(const std::string& initial_state)
     {
       ENC_PREC_STATE_LENGTH();
       m_state.replace(0, m_plain_block_size, initial_state);
+      return initial_state;
     }
 
   } // namespace CBC

@@ -59,12 +59,13 @@ namespace Crypto {
       return verify(hash_number, r, s);
     }
 
-    void Verifier::remove_signature(std::string& message) const throw(PreconditionViolation)
+    std::string& Verifier::remove_signature(std::string& message) const throw(PreconditionViolation)
     {
       number_size_t sig_len = signature_length();
       number_size_t length = message.length();
       PREC(SignatureLength, length >= sig_len);
       message.erase(length - sig_len, sig_len);
+      return message;
     }
 
   } // namespace Elgamal

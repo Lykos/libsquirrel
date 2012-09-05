@@ -49,7 +49,7 @@ namespace Crypto {
 
       inline bool state_valid() const throw() { return m_valid; }
 
-      inline void state(const std::string& initial_state);
+      inline const std::string& state(const std::string& initial_state);
 
     };
 
@@ -128,11 +128,12 @@ namespace Crypto {
     }
 
     template <typename BlockCipher>
-    inline void Decrypter<BlockCipher>::state(const std::string& initial_state)
+    inline const std::string& Decrypter<BlockCipher>::state(const std::string& initial_state)
     {
       DEC_PREC_STATE_LENGTH();
       m_state.replace(0, m_plain_block_size, initial_state);
       m_valid = true;
+      return initial_state;
     }
 
   } // namespace CBC

@@ -25,7 +25,7 @@ namespace Crypto {
 
       number_size_t signature_length() const throw() { return m_signature_length; }
 
-      void remove_signature(std::string& message) const throw(PreconditionViolation);
+      std::string& remove_signature(std::string& message) const throw(PreconditionViolation);
 
     private:
       number_t m_modulus, m_generator, m_gen_power;

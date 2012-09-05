@@ -32,9 +32,9 @@ namespace Crypto {
       // In case of failure, the state is invalid.
       inline bool verify(const std::string& message) throw(PreconditionViolation);
 
-      inline void remove_signature(std::string& message) const throw(PreconditionViolation);
+      inline std::string& remove_signature(std::string& message) const throw(PreconditionViolation);
 
-      inline void state(const std::string& state) throw(PreconditionViolation);
+      inline const std::string& state(const std::string& state) throw(PreconditionViolation);
 
       inline const std::string& state() const throw();
 
@@ -93,19 +93,21 @@ namespace Crypto {
     }
 
     template <typename BlockCipher>
-    inline void MAC<BlockCipher>::remove_signature(std::string& message) const throw(PreconditionViolation)
+    inline std::string& MAC<BlockCipher>::remove_signature(std::string& message) const throw(PreconditionViolation)
     {
       number_size_t sig_len = signature_length();
       number_size_t length = message.length();
       PREC(SignatureLength, length >= sig_len)
       message.erase(length - sig_len, sig_len);
+      return message;
     }
 
     template <typename BlockCipher>
-    inline void MAC<BlockCipher>::state(const std::string& state) throw(PreconditionViolation)
+    inline const std::string& MAC<BlockCipher>::state(const std::string& state) throw(PreconditionViolation)
     {
       m_encrypter.state(state);
       m_valid = true;
+      return state;
     }
 
     template <typename BlockCipher>
