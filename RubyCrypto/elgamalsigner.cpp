@@ -3,7 +3,6 @@
 #include "Crypto/preconditionviolation.h"
 #include "cryptoexception.h"
 #include "crypto.h"
-#include "hexconverters.h"
 #include <rice/Data_Type.hpp>
 #include <rice/Constructor.hpp>
 
@@ -14,7 +13,7 @@ using namespace Elgamal;
 
 ElgamalSigner::ElgamalSigner(const string& private_key)
 {
-  m_signer = new Signer(from_hex(private_key));
+  m_signer = new Signer(private_key);
 }
 
 ElgamalSigner::~ElgamalSigner()

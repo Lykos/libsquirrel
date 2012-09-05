@@ -3,7 +3,6 @@
 #include "Crypto/preconditionviolation.h"
 #include "Crypto/types.h"
 #include "cryptoexception.h"
-#include "hexconverters.h"
 #include "crypto.h"
 #include <rice/Exception.hpp>
 #include <rice/Data_Type.hpp>
@@ -15,9 +14,8 @@ using namespace std;
 
 string SHA2Hasher::hash(const string& message)
 {
-  return to_hex(m_hasher.hash(message));
+  return m_hasher.hash(message);
 }
-
 
 Data_Type<SHA2Hasher> rb_cSHA2Hasher;
 

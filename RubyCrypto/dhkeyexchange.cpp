@@ -3,7 +3,6 @@
 #include "Crypto/preconditionviolation.h"
 #include "cryptoexception.h"
 #include "crypto.h"
-#include "hexconverters.h"
 #include <rice/Data_Type.hpp>
 #include <rice/Constructor.hpp>
 

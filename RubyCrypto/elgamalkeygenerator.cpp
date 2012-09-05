@@ -3,7 +3,6 @@
 #include "Crypto/preconditionviolation.h"
 #include "cryptoexception.h"
 #include "crypto.h"
-#include "hexconverters.h"
 #include <rice/Data_Type.hpp>
 #include <rice/Constructor.hpp>
 #include <rice/Array.hpp>
@@ -26,8 +25,8 @@ ElgamalKeyGenerator::~ElgamalKeyGenerator()
 ElgamalKeyGenerator::raw_key_pair_t ElgamalKeyGenerator::generate(number_size_t number_bits)
 {
   raw_key_pair_t raw_key_pair = m_generator->generate_raw(m_random_generator, number_bits);
-  raw_key_pair.public_key = to_hex(raw_key_pair.public_key);
-  raw_key_pair.private_key = to_hex(raw_key_pair.private_key);
+  raw_key_pair.public_key = raw_key_pair.public_key;
+  raw_key_pair.private_key = raw_key_pair.private_key;
   return raw_key_pair;
 }
 

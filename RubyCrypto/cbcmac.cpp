@@ -4,7 +4,6 @@
 #include "Crypto/preconditionviolation.h"
 #include "cryptoexception.h"
 #include "crypto.h"
-#include "hexconverters.h"
 #include <rice/Data_Type.hpp>
 #include <rice/Constructor.hpp>
 #include <iostream>
@@ -16,7 +15,7 @@ using namespace Crypto;
 template <typename BlockCipher, int Tag>
 CBCMAC<BlockCipher, Tag>::CBCMAC(const std::string& public_key, const std::string& initial_state)
 {
-  m_mac = new CBC::MAC<BlockCipher>(BlockCipher(from_hex(public_key)), from_hex(initial_state));
+  m_mac = new CBC::MAC<BlockCipher>(BlockCipher(public_key), initial_state);
 }
 
 template <typename BlockCipher, int Tag>
@@ -48,13 +47,13 @@ string& CBCMAC<BlockCipher, Tag>::remove_signature(string& message)
 template <typename BlockCipher, int Tag>
 string CBCMAC<BlockCipher, Tag>::state()
 {
-  return to_hex(m_mac->state());
+  return m_mac->state();
 }
 
 template <typename BlockCipher, int Tag>
 const string& CBCMAC<BlockCipher, Tag>::set_state(const string& new_state)
 {
-  m_mac->state(from_hex(new_state));
+  m_mac->state(new_state);
   return new_state;
 }
 

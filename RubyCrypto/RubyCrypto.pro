@@ -16,7 +16,6 @@ SOURCES += \
     RubyCrypto.c \
     cryptoexception.cpp \
     crypto.cpp \
-    hexconverters.cpp \
     longint.cpp \
     sha2hasher.cpp \
     elgamalsigner.cpp \
@@ -31,7 +30,6 @@ HEADERS +=\
     RubyCrypto.h \
     cryptoexception.h \
     crypto.h \
-    hexconverters.h \
     longint.h \
     sha2hasher.h \
     elgamalsigner.h \

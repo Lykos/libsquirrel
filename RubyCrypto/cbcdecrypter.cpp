@@ -5,7 +5,6 @@
 #include "Crypto/preconditionviolation.h"
 #include "cryptoexception.h"
 #include "crypto.h"
-#include "hexconverters.h"
 #include <rice/Data_Type.hpp>
 #include <rice/Constructor.hpp>
 #include <iostream>
@@ -17,7 +16,7 @@ using namespace Crypto;
 template <typename BlockCipher>
 CBCDecrypter<BlockCipher>::CBCDecrypter(const string& private_key, const string& initial_state)
 {
-  m_decrypter = new CBC::Decrypter<BlockCipher>(BlockCipher(from_hex(private_key)), from_hex(initial_state));
+  m_decrypter = new CBC::Decrypter<BlockCipher>(BlockCipher(private_key), initial_state);
 }
 
 template <typename BlockCipher>
@@ -35,13 +34,13 @@ string CBCDecrypter<BlockCipher>::decrypt(const string& cipher)
 template <typename BlockCipher>
 string CBCDecrypter<BlockCipher>::state()
 {
-  return to_hex(m_decrypter->state());
+  return m_decrypter->state();
 }
 
 template <typename BlockCipher>
 const string& CBCDecrypter<BlockCipher>::set_state(const string& new_state)
 {
-  m_decrypter->state(from_hex(new_state));
+  m_decrypter->state(new_state);
   return new_state;
 }
 

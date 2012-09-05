@@ -39,7 +39,7 @@ namespace Crypto {
       signature_t sign(const number_t& message);
 
       // Appends the signature directly after the end of the message
-      void sign(std::string& message);
+      std::string& sign(std::string& message);
 
       number_size_t signature_length() const { return m_signature_length; }
 

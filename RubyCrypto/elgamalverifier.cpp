@@ -3,7 +3,6 @@
 #include "Crypto/preconditionviolation.h"
 #include "cryptoexception.h"
 #include "crypto.h"
-#include "hexconverters.h"
 #include <rice/Data_Type.hpp>
 #include <rice/Constructor.hpp>
 
@@ -14,7 +13,7 @@ using namespace Elgamal;
 
 ElgamalVerifier::ElgamalVerifier(const string& public_key)
 {
-  m_verifier = new Verifier(from_hex(public_key));
+  m_verifier = new Verifier(public_key);
 }
 
 ElgamalVerifier::~ElgamalVerifier()

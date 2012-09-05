@@ -26,7 +26,7 @@ namespace Crypto {
       inline number_size_t signature_length() const throw() { return m_encrypter.plain_block_size(); }
 
       // Appends the MAC directly after the end of the message. Note that this changes the state.
-      inline void sign(std::string& message) throw();
+      inline std::string& sign(std::string& message) throw();
 
       // Assumes that the MAC is directly before the end of the message. Note that this changes the state.
       // In case of failure, the state is invalid.
@@ -68,10 +68,11 @@ namespace Crypto {
     {}
 
     template <typename BlockCipher>
-    inline void MAC<BlockCipher>::sign(std::string& message) throw()
+    inline std::string& MAC<BlockCipher>::sign(std::string& message) throw()
     {
       m_encrypter.encrypt(message);
       message.append(m_encrypter.state());
+      return message;
     }
 
     template <typename BlockCipher>

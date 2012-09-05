@@ -117,7 +117,7 @@ namespace Crypto {
       return {r, s};
     }
 
-    void Signer::sign(string& message)
+    string& Signer::sign(string& message)
     {
       // Generate hash of message
       string hash = m_hasher.hash(message);
@@ -129,6 +129,8 @@ namespace Crypto {
       // Append signature
       message.append(m_converter.write_number(sig.r, m_r_length));
       message.append(m_converter.write_number(sig.s, m_s_length));
+
+      return message;
     }
     
   } // namespace Elgamal
