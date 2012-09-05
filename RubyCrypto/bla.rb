@@ -31,17 +31,8 @@ ELGAMAL_DEC = ElgamalDecrypter.new(PRIVATE_KEY, ELGAMAL_STATE)
 ELGAMAL_SIG = ElgamalSigner.new(PRIVATE_KEY)
 ELGAMAL_VER = ElgamalVerifier.new(PUBLIC_KEY)
 
-aes_key = ""
-while aes_key.length < 32
-  aes_key = sprintf("%x", rand(1 << 128))
-end
-AES_KEY = aes_key
-
-aes_state = ""
-while aes_state.length < 32
-  aes_state = sprintf("%x", rand(1 << 128))
-end
-AES_STATE = aes_state
+AES_KEY = (0...16).map { rand(1 << 8) }.pack("C16")
+AES_STATE = (0...16).map { rand(1 << 8) }.pack("C16")
 
 AES_ENC = AESEncrypter.new(AES_KEY, AES_STATE)
 AES_DEC = AESDecrypter.new(AES_KEY, AES_STATE)
