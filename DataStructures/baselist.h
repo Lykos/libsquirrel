@@ -96,9 +96,9 @@ namespace DataStructures {
   protected:
     inline void prepare_size(size_type new_size);
 
-    inline T* content() { return m_content; }
+    inline T* data() { return m_content; }
 
-    inline const T* content() const { return m_content; }
+    inline const T* data() const { return m_content; }
 
     inline const T& at(size_type index) const { return m_content[index]; }
 
@@ -112,7 +112,7 @@ namespace DataStructures {
 
     inline void destroy_part(size_type begin, size_type length) { for (size_type i = begin; i < begin + length; ++i) destroy(i); }
 
-    inline void add_content(const T * content, size_type insert_position, size_type length);
+    inline void add_content(const T * data, size_type insert_position, size_type length);
 
     inline void move(size_type target, size_type source);
 

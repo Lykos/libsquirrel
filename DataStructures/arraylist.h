@@ -80,7 +80,9 @@ namespace DataStructures {
 
     inline const_iterator end() const { return const_iterator(this, BaseList<T>::size()); }
 
-    inline const T* data() { return BaseList<T>::m_content; }
+    inline T* data() { return BaseList<T>::data(); }
+
+    inline const T* data() const { return BaseList<T>::data(); }
 
   };
 
@@ -135,8 +137,8 @@ namespace DataStructures {
   inline ArrayList<T> ArrayList<T>::operator+(const ArrayList<T>& other) const
   {
     ArrayList<T> result(BaseList<T>::size() + other.size());
-    result.add_content(BaseList<T>::content(), 0, BaseList<T>::size());
-    result.add_content(other.content(), BaseList<T>::size(), other.size());
+    result.add_content(BaseList<T>::data(), 0, BaseList<T>::size());
+    result.add_content(other.data(), BaseList<T>::size(), other.size());
     return result;
   }
 
@@ -145,7 +147,7 @@ namespace DataStructures {
   {
     size_type old_size = BaseList<T>::size();
     BaseList<T>::prepare_size(BaseList<T>::size() + other.size());
-    BaseList<T>::add_content(other.content(), old_size, other.size());
+    BaseList<T>::add_content(other.data(), old_size, other.size());
     return *this;
   }
 
@@ -154,7 +156,7 @@ namespace DataStructures {
   {
     ArrayList<T> result (BaseList<T>::size() * factor);
     for (size_type i = 0; i < factor; ++i) {
-      result.add_content(BaseList<T>::content(), i * BaseList<T>::size(), BaseList<T>::size());
+      result.add_content(BaseList<T>::data(), i * BaseList<T>::size(), BaseList<T>::size());
     }
     return result;
   }
@@ -165,7 +167,7 @@ namespace DataStructures {
     size_type old_size = BaseList<T>::size();
     BaseList<T>::prepare_size(BaseList<T>::size() * factor);
     for (size_type i = 1; i < factor; ++i) {
-      BaseList<T>::add_content(BaseList<T>::content(), i * old_size, old_size);
+      BaseList<T>::add_content(BaseList<T>::data(), i * old_size, old_size);
     }
     return *this;
   }

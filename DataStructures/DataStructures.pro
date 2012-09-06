@@ -50,7 +50,7 @@ HEADERS += \
     multiply.h \
     add.h \
     subtract.h \
-    platform.h
+    assembly.h
 
 header_files.files = $$HEADERS
 header_files.path = /usr/local/include/DataStructures

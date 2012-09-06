@@ -425,7 +425,10 @@ namespace DataStructures {
   void inline LongInt::add(const LongInt &other)
   {
     pad_zeros(std::max(size(), other.size()) + 1);
-    DataStructures::add(m_content.begin(), m_content.end(), other.m_content.begin(), other.m_content.end());
+    DataStructures::add(m_content.begin(),
+                        m_content.end(),
+                        other.m_content.begin(),
+                        other.m_content.end());
     remove_zeros();
   }
 
