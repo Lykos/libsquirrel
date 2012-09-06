@@ -30,7 +30,7 @@ namespace DataStructures {
         asm("movq $0x1, %%rdx;\n"
         "\txorq %%rax, %%rax;\n"
         "\tdiv %1;"
-        : "=a" (scale_factor) : "c" (divisor_first_digit + 1) : "rdx");
+        : "=a" (scale_factor) : "c" (divisor_first_digit + 1) : "%rdx", "cc");
       }
       // This scaling does not change the result because it crosses out,
       // but it ensures that the first digit of the divisor is at least 1 << 63.
@@ -55,7 +55,7 @@ namespace DataStructures {
           // of our scaling factor, it can be at most 2 to low (according to a proof of Knuth)
           part_type guess;
           asm("div %3;"
-          : "=a" (guess) : "d" (remainder.part_at(divisor_size)), "a" (remainder.m_content[divisor_size - 1]), "q" (divisor_first_digit));
+          : "=a" (guess) : "d" (remainder.part_at(divisor_size)), "a" (remainder.m_content[divisor_size - 1]), "q" (divisor_first_digit) : "cc");
           LongInt back_calculated (divisor * LongInt(guess));
   #ifndef NDEBUG
           LongInt::size_type old_guess = guess;
@@ -84,7 +84,7 @@ namespace DataStructures {
             remainder.pad_zeros(i + 1);
             // upper:lower / scale_factor, store remainder into upper
             asm("div %2;"
-            : "=a" (remainder.m_content[i]), "=d" (upper) : "q" (scale_factor), "a" (lower), "d" (upper));
+            : "=a" (remainder.m_content[i]), "=d" (upper) : "q" (scale_factor), "a" (lower), "d" (upper) : "cc");
           }
           // The division has to work without remainder
           assert(upper == 0);

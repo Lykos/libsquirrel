@@ -13,19 +13,19 @@ namespace DataStructures {
                     const LongInt::part_type* b_begin,
                     const LongInt::part_type* b_end)
     {
-      bool keep = 0;
-      for (; keep == 1 || b_begin < b_end; ++a_begin, ++b_begin) {
+      assert(a_end - a_begin >= b_end - b_begin);
+      for (bool keep = 0; keep == 1 || b_begin < b_end; ++a_begin, ++b_begin) {
         assert(a_begin < a_end);
         LongInt::part_type b_part = (b_begin < b_end ? *b_begin : 0);
         if (keep) {
-          asm("stc;\n"
+          asm("\tstc;\n"
           "\tadcq %2, %0;\n"
           "\tsetc %1;"
-          : "=q" (*a_begin), "=q" (keep) : "q" (b_part), "0" (*a_begin));
+          : "=q" (*a_begin), "=q" (keep) : "q" (b_part), "0" (*a_begin) : "cc");
         } else {
-          asm("addq %2, %0;\n"
+          asm("\taddq %2, %0;\n"
           "\tsetc %1;\n"
-          : "=q" (*a_begin), "=q" (keep) : "q" (b_part), "0" (*a_begin));
+          : "=q" (*a_begin), "=q" (keep) : "q" (b_part), "0" (*a_begin) : "cc");
         }
       }
     }
@@ -35,6 +35,7 @@ namespace DataStructures {
                     LongInt::part_list::const_iterator b_begin,
                     LongInt::part_list::const_iterator b_end)
     {
+      assert(a_end - a_begin >= b_end - b_begin);
       add(&a_begin[0], &a_begin[0] + (a_end - a_begin), &b_begin[0], &b_begin[0] + (b_end - b_begin));
     }
 

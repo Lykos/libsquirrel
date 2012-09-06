@@ -161,14 +161,14 @@ namespace DataStructures {
   }
 
   template <typename T, typename Node, typename Tree>
-  inline T& TreeIterator<T, Node, Tree>::operator*()
+  inline T& TreeIterator<T, Node, Tree>::operator*() const
   {
     assert(m_current != NULL);
     return m_current->element;
   }
 
   template <typename T, typename Node, typename Tree>
-  inline T& TreeIterator<T, Node, Tree>::operator[](difference_type index)
+  inline T& TreeIterator<T, Node, Tree>::operator[](difference_type index) const
   {
     return *(operator+(index));
   }

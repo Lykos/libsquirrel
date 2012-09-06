@@ -14,8 +14,9 @@ namespace DataStructures {
                          const LongInt::part_type*  b_end,
                          bool exchange)
     {
+      assert(a_end - a_begin >= b_end - b_begin);
       for (bool keep = false; keep == 1 || b_begin < b_end; ++a_begin, ++b_begin) {
-        assert(a_begin < a_end); // Should never happen because a < b
+        assert(a_begin < a_end); // Should never happen because a =< b
         LongInt::part_type left = *a_begin;
         LongInt::part_type right = b_begin < b_end ? *b_begin : 0l;
         if (exchange) {
@@ -25,11 +26,11 @@ namespace DataStructures {
           asm("stc;\n"
           "\tsbbq %2, %0;\n"
           "\tsetc %1;"
-          : "=q" (*a_begin), "=q" (keep) : "q" (right), "0" (left));
+          : "=q" (*a_begin), "=q" (keep) : "q" (right), "0" (left) : "cc");
         } else {
           asm("subq %2, %0;\n"
           "\tsetc %1;\n"
-          : "=q" (*a_begin), "=q" (keep) : "q" (right), "0" (left));
+          : "=q" (*a_begin), "=q" (keep) : "q" (right), "0" (left) : "cc");
         }
       }
     }

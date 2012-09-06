@@ -468,11 +468,18 @@ namespace DataStructures {
 
   LongInt& LongInt::operator*=(const LongInt& other)
   {
-    part_list c (space_usage(size(), other.size()));
-    part_list::const_iterator c_end = multiply(m_content.begin(), m_content.end(), other.m_content.begin(), other.m_content.end(), c.begin(), c.end());
-    part_list::const_iterator c_begin = c.begin();
+    size_type space = space_usage(size(), other.size());
+    part_type *c = new part_type[space];
+    assert(&m_content[0] != c);
+    assert(&other.m_content[0] != c);
+    part_type *c_end = multiply(&m_content[0],
+                                &m_content[0] + m_content.size(),
+                                &other.m_content[0],
+                                &other.m_content[0] + other.m_content.size(),
+                                c,
+                                c + space);
     m_content.clear();
-    m_content.push_all(c_begin, c_end);
+    m_content.push_all(c, c_end);
     m_positive = m_positive == other.m_positive;
     if (size() == 0) {
       m_content.push(0);
