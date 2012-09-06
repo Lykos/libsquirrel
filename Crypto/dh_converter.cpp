@@ -3,7 +3,6 @@
 #include "preconditionviolation.h"
 #include "readnumber_macro.h"
 #include <climits>
-#include <iostream>
 
 using namespace std;
 
@@ -11,7 +10,7 @@ namespace Crypto {
 
   namespace DH {
 
-    const number_size_t Converter::length_length = sizeof(number_size_t);
+    const number_size_t Converter::length_length = 4; // Not sizeof(number_size_t) since that type might be longer
 
     group_t Converter::read_group(const std::string& raw_group) const
     {
@@ -42,9 +41,7 @@ namespace Crypto {
     // We use big endian format
     number_size_t Converter::read_length(const std::string& raw_length) const
     {
-      number_size_t len = (raw_length[0] << 3 * CHAR_BIT) + (raw_length[1] << 2 * CHAR_BIT) + (raw_length[2] << CHAR_BIT) + raw_length[3];
-      cout << len << endl;
-      return len;
+      return (raw_length[0] << 3 * CHAR_BIT) + (raw_length[1] << 2 * CHAR_BIT) + (raw_length[2] << CHAR_BIT) + raw_length[3];
     }
 
     std::string Converter::write_length(number_size_t length) const
