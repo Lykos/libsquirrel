@@ -33,6 +33,9 @@ namespace Crypto {
     case NumberLength:
       m_message = "The string is too short to store the number.";
       break;
+    case NumberLengthValue:
+      m_message = "Invalid length.";
+      break;
     case PublicKeyModulusLengthLength:
       m_message = "The public key string is too short to store the length of the modulus.";
       break;

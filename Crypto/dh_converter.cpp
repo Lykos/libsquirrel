@@ -4,15 +4,15 @@
 #include "readnumber_macro.h"
 #include <climits>
 
-using namespace std;
-
 namespace Crypto {
 
   namespace DH {
 
-    const number_size_t Converter::length_length = 4; // Not sizeof(number_size_t) since that type might be longer
+    using namespace std;
 
-    group_t Converter::read_group(const std::string& raw_group) const
+    const uint_fast16_t Converter::length_length = 4; // Not sizeof(number_size_t) since that type might be longer
+
+    group_t Converter::read_group(const string& raw_group) const
     {
       INIT_READ(raw_group);
       READ_NUMBER(GroupModulusLengthLength, GroupModulusLength, modulus, raw_group);
@@ -20,37 +20,44 @@ namespace Crypto {
       return {modulus, generator};
     }
 
-    std::string Converter::write_group(const group_t& group) const
+    string Converter::write_group(const group_t& group) const
     {
       return write_number(group.modulus) + write_number(group.generator);
     }
 
-    number_t Converter::read_number(const std::string& raw_number) const
+    number_t Converter::read_number(const string& raw_number) const
     {
       INIT_READ(raw_number);
       READ_NUMBER(NumberLengthLength, NumberLength, number, raw_number);
       return number;
     }
 
-    std::string Converter::write_number(const number_t& number) const
+    string Converter::write_number(const number_t& number) const
     {
       number_size_t number_length = m_converter.byte_size(number);
       return write_length(number_length) + m_converter.binwrite(number, number_length);
     }
 
     // We use big endian format
-    number_size_t Converter::read_length(const std::string& raw_length) const
+    number_size_t Converter::read_length(const string& raw_length) const
     {
-      return (raw_length[0] << 3 * CHAR_BIT) + (raw_length[1] << 2 * CHAR_BIT) + (raw_length[2] << CHAR_BIT) + raw_length[3];
+      PREC(NumberLengthLength, raw_length >= length_length);
+      number_size_t length = 0;
+      for (uint_fast16_t i = 0; i < length_length; ++i) {
+        raw_length[i] << (length_length - 1 - i) * CHAR_BIT;
+      }
+      return length
     }
 
-    std::string Converter::write_length(number_size_t length) const
+    string Converter::write_length(number_size_t length) const
     {
-      assert(length <= UINT32_MAX);
-      return std::string({(char)((length >> 3 * CHAR_BIT) & 0xFF),
-                         (char)((length >> 2 * CHAR_BIT) & 0xFF),
-                         (char)((length >> CHAR_BIT) & 0xFF),
-                         (char)(length & 0xFF)});
+      PREC(NumberLengthValue, length <= UINT32_MAX);
+      string str (length_length, 0);
+      for (uint_fast16_t i = 0; i < length_length; ++i) {
+        char c = (char)((length >> (length_length - 1 - i) * CHAR_BIT) & 0xFF);
+        string[i] = c;
+      }
+      return str;
     }
 
   } // namespace Elgamal

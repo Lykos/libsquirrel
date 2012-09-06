@@ -13,6 +13,7 @@ namespace Crypto {
     GroupGeneratorLength,
     NumberLengthLength,
     NumberLength,
+    NumberLengthValue,
     PublicKeyModulusLengthLength,
     PublicKeyModulusLength,
     PublicKeyGeneratorLengthLength,
