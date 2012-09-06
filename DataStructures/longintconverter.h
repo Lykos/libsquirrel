@@ -15,16 +15,16 @@ namespace DataStructures {
 
     static LongIntConverter::size_type part_size(size_type bytes);
 
-    // Uses big endian format
+    // Uses big endian format and no sign
     LongInt binread(const std::string& text) const;
 
-    // Uses big endian format
+    // Uses big endian format and no sign
     std::string binwrite(const LongInt& number) const;
 
-    // Uses big endian format, pad zeroes at beginning to achieve size.
+    // Uses big endian format and no sign, pad zeroes at beginning to achieve size.
     std::string binwrite(const LongInt& number, size_type size) const;
 
-    // Is used to represent the number in big endian format, T should be a primitive integral type.
+    // Is used to represent the number in 1 complement big endian format, T should be a primitive integral type.
     template <typename T>
     struct packed_longint {
       bool positive;

@@ -27,7 +27,7 @@ namespace DataStructures {
     LongInt number;
     number.pad_zeros(part_size(bytes));
     for (size_type i = 0; i < bytes; ++i) {
-      part_type byte = text[bytes - 1 - i];
+      part_type byte = (unsigned char)(text[bytes - 1 - i]);
       number.m_content[i / sizeof(part_type)] |= byte << (i % sizeof(part_type)) * CHAR_BIT;
     }
     number.remove_zeros();
