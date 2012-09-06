@@ -41,12 +41,12 @@ namespace Crypto {
     // We use big endian format
     number_size_t Converter::read_length(const string& raw_length) const
     {
-      PREC(NumberLengthLength, raw_length >= length_length);
+      PREC(NumberLengthLength, raw_length.length() >= length_length);
       number_size_t length = 0;
       for (uint_fast16_t i = 0; i < length_length; ++i) {
-        raw_length[i] << (length_length - 1 - i) * CHAR_BIT;
+        length |= raw_length[i] << (length_length - 1 - i) * CHAR_BIT;
       }
-      return length
+      return length;
     }
 
     string Converter::write_length(number_size_t length) const
@@ -55,7 +55,7 @@ namespace Crypto {
       string str (length_length, 0);
       for (uint_fast16_t i = 0; i < length_length; ++i) {
         char c = (char)((length >> (length_length - 1 - i) * CHAR_BIT) & 0xFF);
-        string[i] = c;
+        str[i] = c;
       }
       return str;
     }
