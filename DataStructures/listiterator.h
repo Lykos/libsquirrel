@@ -46,7 +46,9 @@ namespace DataStructures {
 
     T& operator*() const;
 
-    T& operator[](size_type i) const;
+    T& operator[](difference_type index) const;
+
+    T* operator->() const;
 
     inline operator ListIterator<T const, List const>() const;
   };
@@ -141,9 +143,15 @@ namespace DataStructures {
   }
 
   template <typename T, typename List>
-  T& ListIterator<T, List>::operator[](size_type index) const
+  T& ListIterator<T, List>::operator[](difference_type index) const
   {
     return (*BaseIt::m_container)[BaseIt::m_index + index];
+  }
+
+  template <typename T, typename List>
+  T* ListIterator<T, List>::operator->() const
+  {
+    return &operator*();
   }
 
 }

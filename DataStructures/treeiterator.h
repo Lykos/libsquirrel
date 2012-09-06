@@ -49,9 +49,11 @@ namespace DataStructures {
 
     inline TreeIterator<T, Node, Tree>& operator-=(difference_type i);
 
-    inline T& operator*();
+    inline T& operator*() const;
 
-    inline T& operator[](difference_type i);
+    inline T& operator[](difference_type i) const;
+
+    inline T* operator->() const;
 
     inline operator TreeIterator<T const, Node const, Tree const>() const;
 
@@ -169,6 +171,12 @@ namespace DataStructures {
   inline T& TreeIterator<T, Node, Tree>::operator[](difference_type index)
   {
     return *(operator+(index));
+  }
+
+  template <typename T, typename Node, typename Tree>
+  inline T* TreeIterator<T, Node, Tree>::operator->() const
+  {
+    return &operator*();
   }
 
   template <typename T, typename Node, typename Tree>
