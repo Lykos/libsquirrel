@@ -1,27 +1,30 @@
 #ifndef DATASTRUCTURES_POLYNOMIAL_H
 #define DATASTRUCTURES_POLYNOMIAL_H
 
-#include "DataStructures_global.h"
 #include <ostream>
 #include "arraylist.h"
 #include "longint.h"
-#include "arithmetichelper.h"
+#include "algebrahelper.h"
 
 namespace DataStructures {
 
   template <typename T>
-  class DATASTRUCTURESSHARED_EXPORT Polynomial;
+  class Polynomial;
 
   template <typename T>
   inline std::ostream& operator<<(std::ostream& out, const Polynomial<T>& element);
 
   template <typename T>
-  class DATASTRUCTURESSHARED_EXPORT Polynomial
+  class Polynomial
   {
     friend std::ostream& operator<< <> (std::ostream& out, const Polynomial<T>& element);
 
   public:
     inline Polynomial() {}
+
+    typedef ArrayList<T> part_list;
+
+    typedef typename part_list::size_type size_type;
 
     explicit inline Polynomial(const T& element, size_type degree = 0): m_coefficients (element == element.zero() ? 0 : degree, element.zero()), m_zero (element.zero()), m_one (element.one()) { m_coefficients.push(element); }
 
@@ -74,9 +77,11 @@ namespace DataStructures {
 
     inline Polynomial<T> mod(const Polynomial& modulus) const { return operator%(modulus); }
 
-    inline Polynomial<T> mult_inv_mod(const Polynomial<T>& modulus) const { return ArithmeticHelper::inv_mod(mod(modulus), modulus); }
+    inline Polynomial<T> mult_inv_mod(const Polynomial<T>& modulus) const { return AlgebraHelper::inv_mod(mod(modulus), modulus); }
 
     inline Polynomial<T> add_inv_mod(const Polynomial<T>& modulus) const { return operator-().mod(modulus); }
+
+    inline size_type size() const { return m_coefficients.size(); }
 
     inline size_type deg() const { return m_coefficients.size() - 1; }
 
@@ -110,10 +115,10 @@ namespace DataStructures {
   template <typename T>
   inline std::ostream& operator<<(std::ostream& out, const Polynomial<T>& polynomial)
   {
-    size_type deg = polynomial.deg();
-    if (deg> 0) {
+    typename Polynomial<T>::degree_type deg = polynomial.deg();
+    if (deg > 0) {
       out << "(";
-      for (size_type i = deg + 1; i > 0;)
+      for (typename Polynomial<T>::size_type i = deg + 1; i > 0;)
       {
         --i;
         const T& coeff = polynomial.m_coefficients[i];
@@ -235,14 +240,14 @@ namespace DataStructures {
   template <typename T>
   inline Polynomial<T> Polynomial<T>::pow_eq(size_type exponent)
   {
-    ArithmeticHelper::pow_eq(*this, exponent);
+    AlgebraHelper::pow_eq(*this, exponent);
     return *this;
   }
 
   template <typename T>
   inline Polynomial<T> Polynomial<T>::pow_mod_eq(const LongInt& exponent, const Polynomial<T>& modulus)
   {
-    ArithmeticHelper::pow_mod_eq(*this, exponent, modulus);
+    AlgebraHelper::pow_mod_eq(*this, exponent, modulus);
     remove_zeros();
     return *this;
   }

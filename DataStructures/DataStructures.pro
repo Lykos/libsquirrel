@@ -41,9 +41,9 @@ HEADERS += \
     polynomial.h \
     arithmetichelper.h \
     uniformlongintdistribution.h \
-    longintconverter.h \
     algebrahelper.h \
-    heap_arithmetic.h
+    heaparithmetic.h \
+    longintconverter.h
 
 header_files.files = $$HEADERS
 header_files.path = /usr/local/include/DataStructures

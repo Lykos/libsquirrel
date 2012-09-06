@@ -1,12 +1,10 @@
 #ifndef DATASTRUCTURES_FINITEFIELD_H
 #define DATASTRUCTURES_FINITEFIELD_H
 
-#include "DataStructures_global.h"
-
 namespace DataStructures {
 
   template <typename T>
-  class DATASTRUCTURESSHARED_EXPORT FiniteField
+  class FiniteField
   {
   public:
     inline explicit FiniteField(const T& modulus): m_modulus (modulus) {}

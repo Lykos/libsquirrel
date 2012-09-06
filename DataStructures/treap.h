@@ -2,18 +2,19 @@
 #define DATASTRUCTURES_TREAP_H
 
 #include <ostream>
-#include "basetypes.h"
-#include "DataStructures_global.h"
 #include "basetree.h"
 #include "treapnode.h"
 
 namespace DataStructures {
 
   template <typename T>
+  class Treap;
+
+  template <typename T>
   inline std::ostream& operator<<(std::ostream& out, const Treap<T>& it);
 
   template <typename T>
-  class DATASTRUCTURESSHARED_EXPORT Treap : public BaseTree<T, TreapNode<T> >
+  class Treap : public BaseTree<T, TreapNode<T> >
   {
     friend std::ostream& operator<< <> (std::ostream& out, const Treap<T>& it);
 

@@ -4,7 +4,7 @@
 #include "types.h"
 #include "elgamal_types.h"
 #include "DataStructures/uniformlongintdistribution.h"
-#include "longintconverter.h"
+#include "DataStructures/longintconverter.h"
 #include "sha2hasher.h"
 #include <boost/random/random_device.hpp>
 
@@ -54,7 +54,7 @@ namespace Crypto {
 
       number_size_t m_r_length, m_s_length, m_signature_length;
 
-      LongIntConverter m_converter;
+      DataStructures::LongIntConverter m_converter;
 
       SHA2Hasher m_hasher;
 

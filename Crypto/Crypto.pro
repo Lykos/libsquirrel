@@ -28,7 +28,6 @@ SOURCES += \
     aes_constants.cpp \
     elgamal_signer.cpp \
     elgamal_verifier.cpp \
-    longintconverter.cpp \
     primes.cpp \
     elgamal_keygenerator.cpp \
     dh_keygenerator.cpp \
@@ -60,7 +59,6 @@ HEADERS +=\
     aes_decrypter.h \
     elgamal_signer.h \
     elgamal_verifier.h \
-    longintconverter.h \
     primes.h \
     cbc_encrypter.h \
     cbc_mac.h \

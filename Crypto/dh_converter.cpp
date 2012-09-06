@@ -32,8 +32,8 @@ namespace Crypto {
 
     std::string Converter::write_number(const number_t& number) const
     {
-      number_size_t number_length = m_converter.required_length(number);
-      return write_length(number_length) + m_converter.write_number(number, number_length);
+      number_size_t number_length = m_converter.byte_size(number);
+      return write_length(number_length) + m_converter.binwrite(number, number_length);
     }
 
     // We use big endian format

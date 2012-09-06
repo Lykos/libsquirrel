@@ -1,23 +1,29 @@
 #ifndef DATASTRUCTURES_QUEUE_H
 #define DATASTRUCTURES_QUEUE_H
 
-#include "DataStructures_global.h"
 #include "baselist.h"
 #include "listiterator.h"
 
 namespace DataStructures {
 
   template <typename T>
-  inline std::ostream& operator<<(std::ostream& out, const ArrayList<T>& it);
+  class Queue;
 
   template <typename T>
-  class DATASTRUCTURESSHARED_EXPORT Queue : public BaseList<T>
+  inline std::ostream& operator<<(std::ostream& out, const Queue<T>& it);
+
+  template <typename T>
+  class Queue : public BaseList<T>
   {
-    friend std::ostream& operator<< <> (std::ostream& out, const ArrayList<T>& it);
+    friend std::ostream& operator<< <> (std::ostream& out, const Queue<T>& it);
   public:
     typedef ListIterator<T, Queue<T> > iterator;
 
     typedef ListIterator<T const, Queue<T> const > const_iterator;
+
+    typedef typename BaseList<T>::size_type size_type;
+
+    typedef typename BaseList<T>::difference_type difference_type;
 
     inline Queue();
 

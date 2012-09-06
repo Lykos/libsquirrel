@@ -3,7 +3,7 @@
 
 #include "types.h"
 #include "dh_types.h"
-#include "longintconverter.h"
+#include "DataStructures/longintconverter.h"
 
 namespace Crypto {
 
@@ -23,7 +23,7 @@ namespace Crypto {
       std::string write_number(const number_t& number) const;
 
     protected:
-      LongIntConverter m_converter;
+      DataStructures::LongIntConverter m_converter;
 
       number_size_t read_length(const std::string& raw_length) const;
 

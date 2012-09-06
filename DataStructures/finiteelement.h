@@ -1,7 +1,6 @@
 #ifndef FINITEELEMENT_H
 #define FINITEELEMENT_H
 
-#include "DataStructures_global.h"
 #include "finitefield.h"
 #include <stdexcept>
 #include <ostream>
@@ -15,13 +14,13 @@
 namespace DataStructures {
 
   template <typename T>
-  class DATASTRUCTURESSHARED_EXPORT FiniteElement;
+  class FiniteElement;
 
   template <typename T>
   inline std::ostream& operator<<(std::ostream& out, const FiniteElement<T>& element);
 
   template <typename T>
-  class DATASTRUCTURESSHARED_EXPORT FiniteElement
+  class FiniteElement
   {
     friend std::ostream& operator<< <> (std::ostream& out, const FiniteElement<T>& element);
 

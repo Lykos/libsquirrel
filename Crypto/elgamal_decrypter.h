@@ -3,7 +3,7 @@
 
 #include "Crypto_global.h"
 #include "elgamal_types.h"
-#include "longintconverter.h"
+#include "DataStructures/longintconverter.h"
 #include <string>
 
 namespace Crypto {
@@ -34,7 +34,7 @@ namespace Crypto {
       // the key part, which also has to be sent
       number_size_t m_plain_length, m_key_part_length, m_cipher_part_length, m_cipher_length;
 
-      LongIntConverter m_converter;
+      DataStructures::LongIntConverter m_converter;
 
     };
     

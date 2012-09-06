@@ -1,7 +1,7 @@
 #include "elgamal_signer.h"
 #include "elgamal_types.h"
 #include "elgamal_converter.h"
-#include "DataStructures/arithmetichelper.h"
+#include "DataStructures/algebrahelper.h"
 #include "DataStructures/longint.h"
 #include "sha2hasher.h"
 #include <string>
@@ -14,7 +14,7 @@ namespace Crypto {
 
     using namespace DataStructures;
 
-    using namespace ArithmeticHelper;
+    using namespace AlgebraHelper;
 
     static const number_t ZERO = 0;
 
@@ -121,14 +121,14 @@ namespace Crypto {
     {
       // Generate hash of message
       string hash = m_hasher.hash(message);
-      number_t hash_number = m_converter.read_number(hash);
+      number_t hash_number = m_converter.binread(hash);
 
       // Sign hash
       signature_t sig = sign(hash_number);
 
       // Append signature
-      message.append(m_converter.write_number(sig.r, m_r_length));
-      message.append(m_converter.write_number(sig.s, m_s_length));
+      message.append(m_converter.binwrite(sig.r, m_r_length));
+      message.append(m_converter.binwrite(sig.s, m_s_length));
 
       return message;
     }

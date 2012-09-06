@@ -2,7 +2,7 @@
 #define CRYPTO_ELGAMAL_VERIFIER_H
 
 #include "elgamal_types.h"
-#include "longintconverter.h"
+#include "DataStructures/longintconverter.h"
 #include "sha2hasher.h"
 #include "preconditionviolation.h"
 #include <string>
@@ -32,7 +32,7 @@ namespace Crypto {
 
       number_size_t m_r_length, m_s_length, m_signature_length;
 
-      LongIntConverter m_converter;
+      DataStructures::LongIntConverter m_converter;
 
       SHA2Hasher m_hasher;
 

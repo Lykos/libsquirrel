@@ -1,7 +1,6 @@
 #ifndef DATASTRUCTURES_AVLNODE_H
 #define DATASTRUCTURES_AVLNODE_H
 
-#include "basetypes.h"
 #include "treenode.h"
 #include "stdexcept"
 

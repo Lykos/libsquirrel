@@ -2,6 +2,7 @@
 #define DATASTRUCTURES_HEAP_H
 
 #include "baselist.h"
+#include "heaparithmetic.h"
 
 namespace DataStructures {
 
@@ -36,14 +37,6 @@ namespace DataStructures {
     inline void bubble_down(size_type index);
 
     inline size_type min_child(size_type index) const;
-
-    inline size_type level_base(size_type index);
-
-    inline size_type parent(size_type index);
-
-    inline size_type right_child(size_type index);
-
-    inline size_type left_child(size_type index);
 
   };
 
@@ -106,8 +99,8 @@ namespace DataStructures {
   template <typename T>
   inline typename Heap<T>::size_type Heap<T>::min_child(size_type index) const
   {
-    size_type left = left_child(index);
-    size_type right = right_child(index);
+    size_type left = HeapArithmetic::left_child(index);
+    size_type right = HeapArithmetic::right_child(index);
     assert(left < BaseList<T>::size());
     if (right >= BaseList<T>::size()) {
       return left;
@@ -120,7 +113,7 @@ namespace DataStructures {
   inline void Heap<T>::bubble_up(size_type index)
   {
     while (index > 0) {
-      size_type new_index = parent(index);
+      size_type new_index = HeapArithmetic::parent(index);
       if (BaseList<T>::at(new_index) < BaseList<T>::at(index)) {
         return;
       }
@@ -132,7 +125,7 @@ namespace DataStructures {
   template <typename T>
   inline void Heap<T>::bubble_down(size_type index)
   {
-    while (left_child(index) < BaseList<T>::size()) {
+    while (HeapArithmetic::left_child(index) < BaseList<T>::size()) {
       size_type new_index = min_child(index);
       if (BaseList<T>::at(index) < BaseList<T>::at(new_index)) {
         return;

@@ -51,9 +51,9 @@ namespace Crypto {
 
       // Read numbers
       string hash = m_hasher.hash(message.substr(0, length - m_signature_length));
-      number_t hash_number = m_converter.read_number(hash);
-      number_t r = m_converter.read_number(message.substr(length - m_signature_length, m_r_length));
-      number_t s = m_converter.read_number(message.substr(length - m_s_length, m_s_length));
+      number_t hash_number = m_converter.binread(hash);
+      number_t r = m_converter.binread(message.substr(length - m_signature_length, m_r_length));
+      number_t s = m_converter.binread(message.substr(length - m_s_length, m_s_length));
 
       // Verify
       return verify(hash_number, r, s);

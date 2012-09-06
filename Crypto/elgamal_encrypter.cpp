@@ -1,6 +1,8 @@
 #include "elgamal_encrypter.h"
 #include "elgamal_converter.h"
-#include "longintconverter.h"
+#include "preconditionviolation.h"
+#include "conditiontype.h"
+#include "DataStructures/longintconverter.h"
 #include <string>
 
 using namespace std;
@@ -22,9 +24,9 @@ namespace Crypto {
       m_generator (public_key.generator),
       m_gen_power (public_key.gen_power),
       m_exponent_distribution (ZERO, (m_modulus >> 1) - TWO),
-      m_plain_length (LongIntConverter::fitting_length(m_modulus)),
-      m_key_part_length (LongIntConverter::required_length(m_modulus)),
-      m_cipher_part_length (LongIntConverter::required_length(m_modulus)),
+      m_plain_length (LongIntConverter::byte_size(m_modulus) - 1),
+      m_key_part_length (LongIntConverter::byte_size(m_modulus)),
+      m_cipher_part_length (LongIntConverter::byte_size(m_modulus)),
       m_cipher_length (m_key_part_length + m_cipher_part_length)
     {}
 
@@ -36,9 +38,9 @@ namespace Crypto {
       m_generator = public_key.generator;
       m_gen_power = public_key.gen_power;
       m_exponent_distribution = UniformLongIntDistribution(ZERO, (m_modulus >> 1) - TWO);
-      m_plain_length = LongIntConverter::fitting_length(m_modulus);
-      m_key_part_length = LongIntConverter::required_length(m_modulus);
-      m_cipher_part_length = LongIntConverter::required_length(m_modulus);
+      m_plain_length = LongIntConverter::byte_size(m_modulus) - 1;
+      m_key_part_length = LongIntConverter::byte_size(m_modulus);
+      m_cipher_part_length = LongIntConverter::byte_size(m_modulus);
       m_cipher_length = m_key_part_length + m_cipher_part_length;
     }
 
@@ -118,14 +120,14 @@ namespace Crypto {
       PREC(PlainBlockLength, plain.length() == m_plain_length);
 
       // Convert to numbers
-      number_t plain_number = m_converter.read_number(plain);
+      number_t plain_number = m_converter.binread(plain);
 
       // Encrypt and generate additional key part
       cipher_t cipher_pair = encrypt(plain_number);
 
       // Convert back back
-      string cipher = m_converter.write_number(cipher_pair.cipher, m_cipher_part_length)
-          + m_converter.write_number(cipher_pair.gen_power, m_key_part_length);
+      string cipher = m_converter.binwrite(cipher_pair.cipher, m_cipher_part_length)
+          + m_converter.binwrite(cipher_pair.gen_power, m_key_part_length);
       assert(cipher.length() == m_cipher_length);
       return cipher;
     }

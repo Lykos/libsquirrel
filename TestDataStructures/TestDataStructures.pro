@@ -23,7 +23,8 @@ SOURCES += \
     heaptest.cpp \
     datastructurestests.cpp \
     polynomialtest.cpp \
-    finiteelementtest.cpp
+    finiteelementtest.cpp \
+    arithmetichelpertest.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
@@ -41,4 +42,6 @@ HEADERS += \
     treaptest.h \
     avltreetest.h \
     polynomialtest.h \
-    finiteelementtest.h
+    finiteelementtest.h \
+    arithmetichelpertest.h \
+    comparemacros.h

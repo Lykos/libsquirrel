@@ -38,7 +38,7 @@ private Q_SLOTS:
   void test_iterate();
   void test_clear();
   void test_next_higher();
-  void test_next_lower();
+  void test_next_pow2();
   void test_min_capacity();
   void test_capacity();
   void test_equals();

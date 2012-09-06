@@ -1,12 +1,12 @@
 #include "primetester.h"
-#include "DataStructures/arithmetichelper.h"
+#include "DataStructures/algebrahelper.h"
 #include <boost/random/mersenne_twister.hpp>
 
 namespace Crypto {
 
   using namespace DataStructures;
 
-  using namespace ArithmeticHelper;
+  using namespace AlgebraHelper;
 
   static const LongInt MINUS_ONE = -1;
 

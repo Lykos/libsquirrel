@@ -4,9 +4,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <cassert>
-#include "basetypes.h"
 #include "treeiterator.h"
-#include "DataStructures_global.h"
 
 #ifndef NDEBUG
 #define tree_check_index(index) if (index >= BaseTree<T, Node>::size()) { std::ostringstream oss; oss << "Invalid index " << index << " for BaseTree of size " << BaseTree<T, Node>::size() << "."; throw typename BaseTree<T, Node>::range_error(oss.str()); }
@@ -20,6 +18,9 @@
 #define assert_pointers(node) assert_parent(node); assert_children(node)
 
 namespace DataStructures {
+
+  template <typename T, typename Node>
+  class BaseTree;
 
   template <typename T, typename Node>
   std::ostream& operator<<(std::ostream& out, const BaseTree<T, Node>& it);
@@ -45,6 +46,10 @@ namespace DataStructures {
 
   public:
     typedef std::out_of_range range_error;
+
+    typedef typename Node::size_type size_type;
+
+    typedef typename Node::difference_type difference_type;
 
     inline BaseTree();
 
@@ -381,7 +386,7 @@ namespace DataStructures {
   }
 
   template <typename T, typename Node>
-  inline size_type BaseTree<T, Node>::remove_all(const T &element)
+  inline typename BaseTree<T, Node>::size_type BaseTree<T, Node>::remove_all(const T &element)
   {
     // TODO efficiency
     size_type result;

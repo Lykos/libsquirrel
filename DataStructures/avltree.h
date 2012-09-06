@@ -1,7 +1,6 @@
 #ifndef DATASTRUCTURES_AVLTREE_H
 #define DATASTRUCTURES_AVLTREE_H
 
-#include "basetypes.h"
 #include "avlnode.h"
 #include "basetree.h"
 #include <ostream>
@@ -13,10 +12,13 @@ namespace DataStructures {
   static const balance_t BALANCE_SIGN[] = {-1, 1};
 
   template <typename T>
+  class AVLTree;
+
+  template <typename T>
   inline std::ostream& operator<<(std::ostream& out, const AVLTree<T>& it);
 
   template <typename T>
-  class DATASTRUCTURESSHARED_EXPORT AVLTree : public BaseTree<T, AVLNode<T> >
+  class AVLTree : public BaseTree<T, AVLNode<T> >
   {
     friend std::ostream& operator<< <> (std::ostream& out, const AVLTree<T>& it);
 

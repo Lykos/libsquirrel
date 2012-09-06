@@ -258,27 +258,6 @@ void ArrayListTest::test_clear() {
   list.push(22);
 }
 
-void ArrayListTest::test_next_lower()
-{
-  COMPARE_INTS(next_lower(0), 0);
-  for (int k = 0; k < 10; ++k) {
-    for (int i = 1 << k; i < 1 << (k + 1); ++i) {
-      COMPARE_INTS(next_lower(i), 1 << k);
-    }
-  }
-}
-
-void ArrayListTest::test_next_higher()
-{
-  COMPARE_INTS(next_higher(0), 0);
-  COMPARE_INTS(next_higher(1), 1);
-  for (int k = 0; k < 10; ++k) {
-    for (int i = (1 << k) + 1; i <= 1 << (k + 1); ++i) {
-      COMPARE_INTS(next_higher(i), 1 << (k + 1));
-    }
-  }
-}
-
 void ArrayListTest::test_min_capacity()
 {
   list.set_min_capacity(55);
@@ -304,12 +283,12 @@ void ArrayListTest::test_equals()
 {
   ArrayList<int> t1, t2;
   QVERIFY(t1 == t2);
-  for (index_type i = 0; i < 30; ++i) {
+  for (int i = 0; i < 30; ++i) {
     t1.push(i);
   }
   QVERIFY(t1 == t1);
   QVERIFY(!(t1 == t2));
-  for (index_type i = 0; i < 30; ++i) {
+  for (int i = 0; i < 30; ++i) {
     t2.push(i);
   }
   QVERIFY(t2 == t2);
@@ -319,12 +298,12 @@ void ArrayListTest::test_unequals()
 {
   ArrayList<int> t1, t2;
   QVERIFY(!(t1 != t2));
-  for (index_type i = 0; i < 30; ++i) {
+  for (int i = 0; i < 30; ++i) {
     t1.push(i);
   }
   QVERIFY(!(t1 != t1));
   QVERIFY(t1 != t2);
-  for (index_type i = 0; i < 30; ++i) {
+  for (int i = 0; i < 30; ++i) {
     t2.push(i);
   }
   QVERIFY(!(t1 != t2));
