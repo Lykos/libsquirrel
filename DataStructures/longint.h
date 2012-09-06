@@ -2,6 +2,7 @@
 #define DATASTRUCTURES_LONGINT_H
 
 #include "arraylist.h"
+#include "divide.h"
 #include <cstdint>
 #include <istream>
 #include <ostream>
@@ -25,6 +26,8 @@ namespace DataStructures {
     friend std::istream& operator>>(std::istream& in, LongInt& longInt);
 
     friend ArrayList<uint64_t>::size_type log2(const LongInt& number);
+
+    friend void LongArithmetic::divide(LongInt &dividend, LongInt &divisor, LongInt &quotient, LongInt &remainder, bool remainder_needed);
 
     friend class UniformLongIntDistribution;
 
@@ -213,34 +216,6 @@ namespace DataStructures {
   LongInt::exponent_type log2(const LongInt& number);
 
   LongInt::part_type inline complement_keep(bool positive, LongInt::part_type part, bool& keep);
-
-  LongInt::part_list::iterator multiply(const LongInt::part_list::const_iterator& a_begin,
-                                                   const LongInt::part_list::const_iterator& a_end,
-                                                   const LongInt::part_list::const_iterator& b_begin,
-                                                   const LongInt::part_list::const_iterator& b_end,
-                                                   const LongInt::part_list::iterator& c_begin,
-                                                   const LongInt::part_list::iterator& c_end);
-
-
-  std::pair<LongInt::part_list::const_iterator, LongInt::part_list::const_iterator> inline calc_xy2(const LongInt::part_list::const_iterator& xy0_begin,
-                                                                                                                          const LongInt::part_list::const_iterator& xy0_end,
-                                                                                                                          const LongInt::part_list::const_iterator& xy1_begin,
-                                                                                                                          const LongInt::part_list::const_iterator& xy1_end,
-                                                                                                                          LongInt::part_list::iterator& c_begin,
-                                                                                                                          const LongInt::part_list::iterator& c_end);
-
-  void inline add(const LongInt::part_list::iterator& a_begin,
-                  const LongInt::part_list::iterator& a_end,
-                  const LongInt::part_list::const_iterator& b_begin,
-                  const LongInt::part_list::const_iterator& b_end);
-
-  void inline subtract(const LongInt::part_list::iterator& a_begin,
-                       const LongInt::part_list::iterator& a_end,
-                       const LongInt::part_list::const_iterator& b_begin,
-                       const LongInt::part_list::const_iterator& b_end,
-                       bool exchange = false);
-
-  LongInt::size_type space_usage(LongInt::size_type size_a, LongInt::size_type size_b);
 
 }
 

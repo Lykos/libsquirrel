@@ -17,7 +17,9 @@ SOURCES += \
     longint.cpp \
     infiniterandom.cpp \
     uniformlongintdistribution.cpp \
-    longintconverter.cpp
+    longintconverter.cpp \
+    divide.cpp \
+    multiply.cpp
 
 HEADERS += \
     longint.h \
@@ -43,7 +45,12 @@ HEADERS += \
     uniformlongintdistribution.h \
     algebrahelper.h \
     heaparithmetic.h \
-    longintconverter.h
+    longintconverter.h \
+    divide.h \
+    multiply.h \
+    add.h \
+    subtract.h \
+    platform.h
 
 header_files.files = $$HEADERS
 header_files.path = /usr/local/include/DataStructures

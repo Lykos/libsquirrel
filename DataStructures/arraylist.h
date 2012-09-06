@@ -80,6 +80,8 @@ namespace DataStructures {
 
     inline const_iterator end() const { return const_iterator(this, BaseList<T>::size()); }
 
+    inline const T* data() { return BaseList<T>::m_content; }
+
   };
 
   template <typename T>
