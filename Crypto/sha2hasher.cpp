@@ -4,6 +4,7 @@
 #include <string>
 #include <climits>
 #include <cassert>
+#include <cstdint>
 
 #define shr(x, n) ((x) >> (n))
 #define rotr(x, n) (((x) >> (n)) | ((x) << (word_length * CHAR_BIT - (n))))
@@ -20,7 +21,7 @@ namespace Crypto {
 
   const static number_size_t n_hash_values = 8;
 
-  typedef u_int32_t sha256_word_t;
+  typedef uint32_t sha256_word_t;
   
   const static sha256_word_t initial_hash_values[n_hash_values] = {
     0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19

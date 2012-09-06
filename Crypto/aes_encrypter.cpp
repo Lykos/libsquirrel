@@ -24,7 +24,7 @@ namespace Crypto {
       PREC(PlainBlockLength, plain.length() == BLOCK_BYTE_SIZE);
       string cipher (plain);
       m_helper.apply_round_key(cipher, m_expanded_key, 0);
-      for (uint i = 1; i < m_rounds - 1; ++i) {
+      for (number_size_t i = 1; i < m_rounds - 1; ++i) {
         m_helper.sub_bytes(cipher);
         m_helper.shift_rows(cipher);
         m_helper.mix_columns(cipher);

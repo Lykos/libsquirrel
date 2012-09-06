@@ -39,7 +39,6 @@ SOURCES += \
     preconditionviolation.cpp
 
 HEADERS +=\
-        Crypto_global.h \
     rsa_decrypter.h \
     rsa_decryptstrategy.h \
     rsa_directstrategy.h \

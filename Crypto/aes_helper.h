@@ -11,18 +11,18 @@ namespace Crypto {
     class Helper
     {
     private:
-      inline void shift_row_1(std::string& cipher, uint row);
+      inline void shift_row_1(std::string& cipher, number_size_t row);
 
-      inline void shift_row_2(std::string& cipher, uint row);
+      inline void shift_row_2(std::string& cipher, number_size_t row);
 
-      inline void shift_row_3(std::string& cipher, uint row);
+      inline void shift_row_3(std::string& cipher, number_size_t row);
 
       inline byte_t rijndael_mult(byte_t a, byte_t b);
 
       inline void mult_columns(std::string& cipher, const std::string& factor);
 
     public:
-      void apply_round_key(std::string& cipher, std::string& key, uint round);
+      void apply_round_key(std::string& cipher, std::string& key, number_size_t round);
 
       void sub_bytes(std::string& cipher);
 

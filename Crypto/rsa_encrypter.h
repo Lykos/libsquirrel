@@ -1,14 +1,13 @@
 #ifndef CRYPTO_RSA_ENCRYPTER_H
 #define CRYPTO_RSA_ENCRYPTER_H
 
-#include "Crypto_global.h"
 #include "rsa_types.h"
 
 namespace Crypto {
 
   namespace RSA {
 
-    class CRYPTOSHARED_EXPORT Encrypter
+    class Encrypter
     {
     private:
       public_key_t m_public_key;

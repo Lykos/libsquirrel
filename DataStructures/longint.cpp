@@ -26,7 +26,7 @@ namespace DataStructures {
 
   static const LongInt TEN_BUFFER_FACTOR (TEN.pow(DECIMAL_BUFFER_SIZE));
 
-  static const uint8_t base (10);
+  static const uint_fast8_t base (10);
 
   std::ostream& operator<<(std::ostream& out, const LongInt& longInt)
   {
@@ -264,7 +264,7 @@ namespace DataStructures {
       std::ostringstream oss;
       oss.flags(std::ios_base::hex);
       oss << m_content[i];
-      for (uint j = oss.str().size(); j < sizeof(part_type) * 2; ++j) {
+      for (uint_fast16_t j = oss.str().size(); j < sizeof(part_type) * 2; ++j) {
         out << '0';
       }
       out << oss.str();

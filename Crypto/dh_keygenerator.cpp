@@ -6,7 +6,7 @@ namespace Crypto {
 
   namespace DH {
 
-    bool KeyGenerator::valid_key_bits(uint number_bits) const
+    bool KeyGenerator::valid_key_bits(number_size_t number_bits) const
     {
       return number_bits == 512
           || number_bits == 1024
@@ -18,7 +18,7 @@ namespace Crypto {
           || number_bits == 8192;
     }
 
-    group_t KeyGenerator::choose_group(uint number_bits)
+    group_t KeyGenerator::choose_group(number_size_t number_bits)
     {
       PREC(ElgamalKeyLength, valid_key_bits(number_bits));
       number_t modulus, generator;

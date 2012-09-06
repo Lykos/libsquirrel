@@ -1,7 +1,6 @@
 #ifndef CRYPTO_ELGAMAL_DECRYPTER_H
 #define CRYPTO_ELGAMAL_DECRYPTER_H
 
-#include "Crypto_global.h"
 #include "elgamal_types.h"
 #include "DataStructures/longintconverter.h"
 #include <string>
@@ -10,7 +9,7 @@ namespace Crypto {
 
   namespace Elgamal {
     
-    class CRYPTOSHARED_EXPORT Decrypter
+    class Decrypter
     {
     public:
       explicit Decrypter(const private_key_t& private_key);

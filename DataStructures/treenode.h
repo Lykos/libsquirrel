@@ -12,7 +12,7 @@ namespace DataStructures {
   template <typename T, typename Node>
   struct TreeNode
   {
-    typedef uint8_t direction;
+    typedef uint_fast8_t direction;
 
     typedef size_t size_type;
 

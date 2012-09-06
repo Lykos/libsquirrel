@@ -1,7 +1,6 @@
 #ifndef CRYPTO_RSA_KEYGENERATOR_H
 #define CRYPTO_RSA_KEYGENERATOR_H
 
-#include "Crypto_global.h"
 #include "rsa_types.h"
 #include "primetester.h"
 #include "DataStructures/uniformlongintdistribution.h"
@@ -11,14 +10,14 @@ namespace Crypto {
 
   namespace RSA {
 
-    class CRYPTOSHARED_EXPORT KeyGenerator
+    class KeyGenerator
     {
     public:
       inline explicit KeyGenerator(PrimeTester prime_tester = PrimeTester()): m_prime_tester (prime_tester) {}
 
       // Totally insecure, uses all types of insecure p,q pairs.
       template <typename Engine>
-      key_pair_t generate(Engine& engine, uint number_bits);
+      key_pair_t generate(Engine& engine, number_size_t number_bits);
 
     private:
       PrimeTester m_prime_tester;
@@ -26,7 +25,7 @@ namespace Crypto {
     };
 
     template <typename Engine>
-    key_pair_t KeyGenerator::generate(Engine& engine, uint number_bits)
+    key_pair_t KeyGenerator::generate(Engine& engine, number_size_t number_bits)
     {
       static const number_t ONE = 1;
       DataStructures::LongInt min = ++(ONE << (number_bits - 1));

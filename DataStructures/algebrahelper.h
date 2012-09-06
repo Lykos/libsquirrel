@@ -82,7 +82,7 @@ namespace DataStructures {
       for (ulong i = exponent.size(); i > 0;) {
         --i;
         LongInt::part_type exponent_part = exponent.part_at(i);
-        for (uint j = sizeof(LongInt::part_type) * CHAR_BIT; j > 0;) {
+        for (uint_fast16_t j = sizeof(LongInt::part_type) * CHAR_BIT; j > 0;) {
           --j;
           if ((exponent_part >> j) & 1) {
             result *= factor;

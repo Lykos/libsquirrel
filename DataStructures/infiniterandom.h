@@ -2,6 +2,7 @@
 #define DATASTRUCTURES_INFINITERANDOM_H
 
 #include "arraylist.h"
+#include <cstdint>
 
 namespace DataStructures {
 
@@ -16,7 +17,7 @@ namespace DataStructures {
 
     ~InfiniteRandom() {}
 
-    typedef u_int64_t part_type;
+    typedef uint64_t part_type;
 
     typedef ArrayList<part_type> part_list;
 

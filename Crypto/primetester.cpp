@@ -16,10 +16,10 @@ namespace Crypto {
 
   static const LongInt TWO = 2;
 
-  bool PrimeTester::is_prime(const LongInt& number, uint security)
+  bool PrimeTester::is_prime(const LongInt& number, number_size_t security)
   {
     // We have 1/4 fail probability in each step
-    uint repetitions = (security >> 1) + 1;
+    number_size_t repetitions = (security >> 1) + 1;
     LongInt n = number.abs();
     if (n < TWO) {
       return false;
@@ -29,12 +29,12 @@ namespace Crypto {
       return false;
     }
     UniformLongIntDistribution a_dist (2, n - ONE);
-    for (uint i = 0; i < repetitions; ++i) {
+    for (number_size_t i = 0; i < repetitions; ++i) {
       LongInt a = a_dist(m_random_generator);
       if (gcd(a, number) != ONE) {
         return false;
       }
-      uint j = 1;
+      number_size_t j = 1;
       LongInt minus_one = n - ONE;
       LongInt d = minus_one >> 1;
       while ((d & ONE) == ZERO) {
@@ -44,7 +44,7 @@ namespace Crypto {
       a.pow_mod_eq(d, n);
       if (a != ONE) {
         bool was_minus_one = false;
-        for (uint r = 0; r < j; ++r, a = (a * a) % n) {
+        for (number_size_t r = 0; r < j; ++r, a = (a * a) % n) {
           if (a == minus_one) {
             was_minus_one = true;
             break;

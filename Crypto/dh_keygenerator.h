@@ -1,19 +1,18 @@
 #ifndef CRYPTO_DH_KEYGENERATOR_H
 #define CRYPTO_DH_KEYGENERATOR_H
 
-#include "Crypto_global.h"
 #include "dh_types.h"
 
 namespace Crypto {
 
   namespace DH {
 
-    class CRYPTOSHARED_EXPORT KeyGenerator
+    class KeyGenerator
     {
     public:
-      bool valid_key_bits(uint number_bits) const;
+      bool valid_key_bits(number_size_t number_bits) const;
 
-      group_t choose_group(uint number_bits);
+      group_t choose_group(number_size_t number_bits);
 
       template <typename Engine>
       partial_key_pair_t generate(Engine& engine, const group_t& group);

@@ -29,7 +29,7 @@ namespace Crypto {
       }
     }
 
-    inline void KeyExpander::schedule_core(string& in, uint i)
+    inline void KeyExpander::schedule_core(string& in, number_size_t i)
     {
       m_helper.rotate_word(in);
       m_helper.sub_word(in);
@@ -42,8 +42,8 @@ namespace Crypto {
       number_size_t expanded_key_length = expanded_length(key_length);
       string expanded_key (key);
       expanded_key.resize(expanded_key_length);
-      uint i = 1;
-      for (uint j = key_length; j < expanded_key_length; j += BLOCK_ROWS)
+      number_size_t i = 1;
+      for (number_size_t j = key_length; j < expanded_key_length; j += BLOCK_ROWS)
       {
         string t = expanded_key.substr(j - BLOCK_ROWS, BLOCK_ROWS);
         if (j % key_length == 0) {
@@ -52,7 +52,7 @@ namespace Crypto {
         } else if (key_length > AES_192_BYTES && j % key_length == 4) {
           m_helper.sub_word(t);
         }
-        for (uint k = 0; k < BLOCK_ROWS; ++k) {
+        for (number_size_t k = 0; k < BLOCK_ROWS; ++k) {
           expanded_key[j + k] = t[k] ^ expanded_key[j - key_length + k];
         }
       }

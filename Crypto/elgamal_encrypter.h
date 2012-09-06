@@ -1,7 +1,6 @@
 #ifndef CRYPTO_ELGAMAL_ENCRYPTER_H
 #define CRYPTO_ELGAMAL_ENCRYPTER_H
 
-#include "Crypto_global.h"
 #include "types.h"
 #include "elgamal_types.h"
 #include "DataStructures/uniformlongintdistribution.h"
@@ -12,7 +11,7 @@ namespace Crypto {
 
   namespace Elgamal {
     
-    class CRYPTOSHARED_EXPORT Encrypter
+    class Encrypter
     {
     public:
       typedef struct {

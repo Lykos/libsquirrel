@@ -1,13 +1,13 @@
 #ifndef CRYPTO_PRIMES_H
 #define CRYPTO_PRIMES_H
 
-#include "Crypto_global.h"
+#include "types.h"
 
 namespace Crypto {
 
-  const uint N_PRIMES = 6542;
+  const number_size_t N_PRIMES = 6542;
 
-  extern const uint FIRST_PRIMES[N_PRIMES];
+  extern const number_size_t FIRST_PRIMES[N_PRIMES];
 
 }
 

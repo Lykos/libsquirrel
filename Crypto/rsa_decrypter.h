@@ -8,7 +8,7 @@ namespace Crypto {
 
   namespace RSA {
 
-    class CRYPTOSHARED_EXPORT Decrypter
+    class Decrypter
     {
     public:
       explicit Decrypter(const private_key_t& private_key);

@@ -1,4 +1,3 @@
-#include "Crypto_global.h"
 #include "aes_constants.h"
 #include "aes_helper.h"
 #include <string>
@@ -10,28 +9,28 @@ namespace Crypto {
 
   namespace AES {
     
-    void Helper::apply_round_key(string& cipher, string& key, uint round)
+    void Helper::apply_round_key(string& cipher, string& key, number_size_t round)
     {
-      for (uint i = 0; i < BLOCK_BYTE_SIZE; ++i) {
+      for (number_size_t i = 0; i < BLOCK_BYTE_SIZE; ++i) {
         cipher[i] ^= key[i + round * BLOCK_BYTE_SIZE];
       }
     }
 
     void Helper::sub_bytes(string& cipher)
     {
-      for (uint i = 0; i < BLOCK_BYTE_SIZE; ++i) {
+      for (number_size_t i = 0; i < BLOCK_BYTE_SIZE; ++i) {
         cipher[i] = SBox[byte_t(cipher[i])];
       }
     }
 
     void Helper::inv_sub_bytes(string& cipher)
     {
-      for (uint i = 0; i < BLOCK_BYTE_SIZE; ++i) {
+      for (number_size_t i = 0; i < BLOCK_BYTE_SIZE; ++i) {
         cipher[i] = InvSBox[byte_t(cipher[i])];
       }
     }
 
-    inline void Helper::shift_row_1(string& cipher, uint row)
+    inline void Helper::shift_row_1(string& cipher, number_size_t row)
     {
       byte_t a;
       a = cipher[row];
@@ -41,7 +40,7 @@ namespace Crypto {
       cipher[row + 3 * BLOCK_ROWS] = a;
     }
 
-    inline void Helper::shift_row_2(string& cipher, uint row)
+    inline void Helper::shift_row_2(string& cipher, number_size_t row)
     {
       byte_t a = cipher[row];
       cipher[row] = cipher[row + 2 * BLOCK_ROWS];
@@ -51,7 +50,7 @@ namespace Crypto {
       cipher[row + 3 * BLOCK_ROWS] = a;
     }
 
-    inline void Helper::shift_row_3(string& cipher, uint row)
+    inline void Helper::shift_row_3(string& cipher, number_size_t row)
     {
       byte_t a = cipher[row];
       cipher[row] = cipher[row + 3 * BLOCK_ROWS];
@@ -82,15 +81,15 @@ namespace Crypto {
 
     void Helper::mult_columns(string& cipher, const string& factor)
     {
-      for (uint c = 0; c < BLOCK_COLS; ++c) {
+      for (number_size_t c = 0; c < BLOCK_COLS; ++c) {
         byte_t temp[4];
-        for (uint r = 0; r < 4; ++r) {
+        for (number_size_t r = 0; r < 4; ++r) {
           temp[r] = rijndael_mult(cipher[r + c * BLOCK_COLS], factor[0])
               ^ rijndael_mult(cipher[(r + 1) % 4 + c * BLOCK_COLS], factor[1])
               ^ rijndael_mult(cipher[(r + 2) % 4 + c * BLOCK_COLS], factor[2])
               ^ rijndael_mult(cipher[(r + 3) % 4 + c * BLOCK_COLS], factor[3]);
         }
-        for (uint r = 0; r < 4; ++r) {
+        for (number_size_t r = 0; r < 4; ++r) {
           cipher[r + c * BLOCK_COLS] = temp[r];
         }
       }
@@ -119,7 +118,7 @@ namespace Crypto {
 
     void Helper::sub_word(string& word)
     {
-      for (uint i = 0; i < BLOCK_ROWS; ++i) {
+      for (number_size_t i = 0; i < BLOCK_ROWS; ++i) {
         word[i] = SBox[byte_t(word[i])];
       }
     }

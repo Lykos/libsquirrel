@@ -49,11 +49,11 @@ namespace DataStructures {
     size_type first_length = log2(first_digit) / CHAR_BIT + 1;
     assert(first_length + sizeof(part_type) * (size - 1) == bytes);
     string str (length, 0);
-    for (uint_fast8_t i = 0; i < first_length; ++i) {
+    for (uint_fast16_t i = 0; i < first_length; ++i) {
       str[start + i] = (first_digit >> (first_length - i - 1) * CHAR_BIT) & 0xFF;
     }
     for (size_type i = 0; i < size - 1; ++i) {
-      for (uint_fast8_t j = 0; j < sizeof(part_type); ++j) {
+      for (uint_fast16_t j = 0; j < sizeof(part_type); ++j) {
         char byte = (number.m_content[size - i - 2] >> (sizeof(part_type) - j - 1) * CHAR_BIT) & 0xFF;
         str[start + first_length + sizeof(part_type) * i + j] = byte;
       }

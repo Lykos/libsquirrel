@@ -1,7 +1,6 @@
 #ifndef CRYPTO_DH_KEYEXCHANGE_H
 #define CRYPTO_DH_KEYEXCHANGE_H
 
-#include "Crypto_global.h"
 #include "dh_converter.h"
 #include "dh_types.h"
 #include "dh_keygenerator.h"
@@ -11,7 +10,7 @@ namespace Crypto {
 
   namespace DH {
     
-    class CRYPTOSHARED_EXPORT KeyExchange
+    class KeyExchange
     {
     public:
       bool valid_key_bits(number_size_t number_bits) const;

@@ -1,13 +1,12 @@
 #ifndef CRYPTO_SHA2HASHER_H
 #define CRYPTO_SHA2HASHER_H
 
-#include "Crypto_global.h"
 #include "types.h"
 #include <string>
 
 namespace Crypto {
   
-  class CRYPTOSHARED_EXPORT SHA2Hasher
+  class SHA2Hasher
   {
   public:
     inline explicit SHA2Hasher(number_size_t digest_length = 256): m_digest_length (digest_length) {}

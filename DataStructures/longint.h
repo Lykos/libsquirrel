@@ -177,7 +177,7 @@ namespace DataStructures {
 
     inline part_type part_at(size_type i) const { return i < size() ? m_content[i] : 0l; }
 
-    static const uint8_t PART_SIZE = sizeof(LongInt::part_type) * CHAR_BIT;
+    static const uint_fast16_t PART_SIZE = sizeof(LongInt::part_type) * CHAR_BIT;
 
   private:
     inline size_type read_sign(const std::string& numerical_string);

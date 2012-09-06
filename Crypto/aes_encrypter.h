@@ -1,7 +1,6 @@
 #ifndef CRYPTO_AES_ENCRYPTER_H
 #define CRYPTO_AES_ENCRYPTER_H
 
-#include "Crypto_global.h"
 #include "aes_helper.h"
 #include "aes_constants.h"
 #include "types.h"
@@ -11,7 +10,7 @@ namespace Crypto {
 
   namespace AES {
 
-    class CRYPTOSHARED_EXPORT Encrypter
+    class Encrypter
     {
     private:
       std::string m_expanded_key;
@@ -25,9 +24,9 @@ namespace Crypto {
 
       std::string encrypt(const std::string& plain);
 
-      uint plain_block_size() const { return BLOCK_BYTE_SIZE; }
+      number_size_t plain_block_size() const { return BLOCK_BYTE_SIZE; }
 
-      uint cipher_block_size() const { return BLOCK_BYTE_SIZE; }
+      number_size_t cipher_block_size() const { return BLOCK_BYTE_SIZE; }
 
     };
 

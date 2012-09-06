@@ -3,6 +3,9 @@
 #include "preconditionviolation.h"
 #include "readnumber_macro.h"
 #include <climits>
+#include <iostream>
+
+using namespace std;
 
 namespace Crypto {
 
@@ -39,11 +42,14 @@ namespace Crypto {
     // We use big endian format
     number_size_t Converter::read_length(const std::string& raw_length) const
     {
-      return (raw_length[0] << 3 * CHAR_BIT) + (raw_length[1] << 2 * CHAR_BIT) + (raw_length[2] << CHAR_BIT) + raw_length[3];
+      number_size_t len = (raw_length[0] << 3 * CHAR_BIT) + (raw_length[1] << 2 * CHAR_BIT) + (raw_length[2] << CHAR_BIT) + raw_length[3];
+      cout << len << endl;
+      return len;
     }
 
     std::string Converter::write_length(number_size_t length) const
     {
+      assert(length <= UINT32_MAX);
       return std::string({(char)((length >> 3 * CHAR_BIT) & 0xFF),
                          (char)((length >> 2 * CHAR_BIT) & 0xFF),
                          (char)((length >> CHAR_BIT) & 0xFF),
