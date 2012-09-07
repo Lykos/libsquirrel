@@ -24,7 +24,6 @@ namespace DataStructures {
       for (bool keep = 0; keep == 1 || b_begin < b_end; ++a_begin, ++b_begin) {
         assert(a_begin < a_end);
         LongInt::part_type b_part = (b_begin < b_end ? *b_begin : 0);
-        LongInt::part_type a_part = *a_begin, old_keep = keep;
         if (keep) {
           asm("\tstc;\n"
               "\tadcq %2, %0;\n"
@@ -35,23 +34,12 @@ namespace DataStructures {
               "\tsetc %1;\n"
           : "=g" (*a_begin), "=g" (keep) : "r" (b_part), "0" (*a_begin) : "cc");
         }
-        assert(b_part + a_part + old_keep == *a_begin);
-        assert((keep == 1) == (*a_begin < a_part));
       }
       mpz_class r = to_mpz(old_a_begin, a_end);
       if (r != a + b) {
         std::cout << "Should be a + b = " << a << " + " << b << " == " << a + b << " instead of " << r << std::endl;
         assert(false);
       }
-    }
-
-    void inline add(LongInt::part_list::iterator a_begin,
-                    LongInt::part_list::iterator a_end,
-                    LongInt::part_list::const_iterator b_begin,
-                    LongInt::part_list::const_iterator b_end)
-    {
-      assert(a_end - a_begin >= b_end - b_begin);
-      add(&a_begin[0], &a_begin[0] + (a_end - a_begin), &b_begin[0], &b_begin[0] + (b_end - b_begin));
     }
 
   } // namespace LongArithmetic

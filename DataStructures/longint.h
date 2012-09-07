@@ -7,6 +7,7 @@
 #include <climits>
 #include <istream>
 #include <ostream>
+#include <gmpxx.h>
 
 namespace DataStructures {
 
@@ -207,6 +208,8 @@ namespace DataStructures {
     inline void subtract(const LongInt& other);
 
     inline void add(const LongInt& other);
+
+    mpz_class to_mpz() const;
 
     bool m_positive;
 
