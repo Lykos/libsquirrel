@@ -14,10 +14,16 @@ private Q_SLOTS:
   void test_copy_constructor();
   void test_assign_data();
   void test_assign();
-  void test_string_constructor_data();
-  void test_string_constructor();/*
-  void test_string_constructor2_data();
-  void test_string_constructor2();*/
+  void test_decimal_constructor_data();
+  void test_decimal_constructor();
+  void test_hex_constructor_data();
+  void test_hex_constructor();
+  void test_decimal_istream_data();
+  void test_decimal_istream();
+  void test_hex_ostream_data();
+  void test_hex_ostream();
+  void test_hex_istream_data();
+  void test_hex_istream();
   void test_compare_to_data();
   void test_compare_to();
   void test_inc_data();

@@ -16,7 +16,6 @@ QMAKE_CXXFLAGS += -std=c++11
 TEMPLATE = app
 
 SOURCES += \
-    longinttest.cpp \
     arraylisttest.cpp \
     infiniterandomtest.cpp \
     queuetest.cpp \

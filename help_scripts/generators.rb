@@ -11,10 +11,11 @@ module Generators
 
     def construct(element)
       case @type
-      when :LongInt then "LongInt(\"#{element}\")"
-      when :bool then element ? "true" : "false"
-      when :qlonglong then "qlonglong(#{element})"
-      when :string then "std::string(\"#{element}\")"
+      when :LongInt then sprintf("LongInt(\"0x%x\")", element)
+      when :bool then element ? "true" : "false"g
+      when :qlonglong then sprintf("qlonglong(0x%x)", element)
+      when :string then "string(\"#{element}\")"
+      when :hex_string then sprintf("string(\"0x%x\")", element)
       when :int then element.to_s
       else
         raise "Unknown type #{type}"
@@ -23,7 +24,7 @@ module Generators
 
     def typename
       if @type == :string
-        "std::string"
+        "string"
       else
         @type.to_s
       end
@@ -49,14 +50,13 @@ module Generators
     INDENTATION = "  "
     NEWLINE_SIZE = 50
 
-    def initialize(name, number=2)
+    def initialize(name)
       @name = name
-      @number = number
     end
 
-    def generate_n_random(*args)
+    def generate_n_random(n, *args)
       cases = []
-      @number.times do
+      n.times do
         cases.push(generate_random(*args))
       end
       cases
@@ -68,6 +68,14 @@ module Generators
 
     def data_method_signature
       "void LongIntTest::test_#{@name}_data()"
+    end
+
+    def data_method_header
+      "void test_#{@name}_data();"
+    end
+
+    def test_method_header
+      "void test_{@name}();"
     end
 
     def test_method_signature
@@ -88,15 +96,7 @@ module Generators
 
     def test_method_body
       bla_tests = tests.collect { |c| c.to_s}
-      join_indent(fetching) + "\n" + start_timer + join_indent(construction) + "\n" + join_indent(bla_tests) + end_timer
-    end
-
-    def start_timer
-      ""
-    end
-
-    def end_timer
-      ""
+      join_indent(fetching) + "\n" + join_indent(construction) + "\n" + join_indent(bla_tests)
     end
 
     def generate(*args)
@@ -130,8 +130,8 @@ module Generators
 
   class UnaryGenerator < CaseGenerator
 
-    def initialize(name, operator, number=2)
-      super(name, number)
+    def initialize(name, operator)
+      super(name)
       @operator = operator
     end
 
@@ -160,7 +160,7 @@ module Generators
       line(sign * (rand(limit) + 1))
     end
 
-    def generate_cases(signs, limits, special)
+    def generate_cases(n, signs, limits, special)
       cases = []
       if special.delete(0)
         cases.push(line(0))
@@ -171,7 +171,7 @@ module Generators
       end
 
       double_foreach(limits, signs) do |limit, sign|
-        cases += generate_n_random(sign, limit)
+        cases += generate_n_random(n, sign, limit)
       end
       cases
     end
@@ -197,20 +197,63 @@ module Generators
 
   end
 
+  class OstreamGenerator < UnaryGenerator
+
+    def data_columns
+      [DataColumn.new(:LongInt, "number"),
+       DataColumn.new(@type, "result")
+     end
+
+    def construction
+      ["ostringstream oss;",
+       "oss << number;"
+       "string string_result = oss.str();"];
+    end
+
+    def tests
+      [Test.new("string_result", "result")]
+    end
+
+  end
+
+  class DecimalOstreamGenerator < OstreamGenerator
+
+    def initialize(name)
+      super(name, :string)
+    end
+
+    def title(element)
+      "out << #{data_columns[0].construct(element)}"
+    end
+
+  end
+
+  class DecimalOstreamGenerator < OstreamGenerator
+
+    def initialize(name)
+      super(name, :hex_string)
+    end
+
+    def title(element)
+      "out << hex << #{data_columns[0].construct(element)}"
+    end
+
+  end
+
   class ConstructorGenerator < UnaryGenerator
 
-    def initialize(name, type, number=2)
-      super(name, "", number)
+    def initialize(name, type)
+      super(name, "")
       @type = type
     end
 
     def result(element)
-      element >= 0
+      element
     end
 
     def data_columns
       [DataColumn.new(@type, "input"),
-       DataColumn.new(:bool, "sign")]
+       DataColumn.new(:LongInt, "result")]
     end
 
     def construction
@@ -218,92 +261,64 @@ module Generators
     end
 
     def tests
-      [Test.new("constructed.is_positive()", "sign")]
+      [Test.new("constructed", "result")]
     end
 
     def title(element)
-      element.to_s
+      "LongInt(#{data_columns[0].construct(element)})"
     end
 
   end
 
-  class DefaultConstructorGenerator < ConstructorGenerator
+  class PrimitiveConstructorGenerator < ConstructorGenerator
 
-    def initialize(name, number=2)
-      super(name, :qlonglong, number)
+    def initialize(name, type)
+      super(name, :qlonglong)
+      @int_type = type
     end
 
     def construction
-      super + ["",
-               "// We need this trick because normal comparing would use exactly this constructor to transform the integer into a LongInt.",
-               "std::ostringstream oss1;",
-               "oss1 << constructed;",
-               "std::ostringstream oss2;",
-               "oss2 << input;",
-               "std::string actual_string = oss1.str();",
-               "std::string expected_string = oss2.str();"]
-    end
-
-    def tests
-      super + [Test.new("actual_string", "expected_string")]
+      ["LongInt constructed ((#{@int_type})input);"
     end
 
     def title(element)
-      "LongInt(#{element})"
+      "LongInt(element)"
     end
 
   end
 
-  class CopyConstructorGenerator < ConstructorGenerator
+  class DecimalStringConstructorGenerator < ConstructorGenerator
 
-    def initialize(name, number=2)
-      super(name, :LongInt, number)
-    end
-
-    def title(element)
-      "LongInt(LongInt(\\\"#{element}\\\"))"
-    end
-
-    def construct(element)
-      construct_long_int(element)
-    end
-
-    def tests
-      super + [Test.new("constructed", "input")]
-    end
-
-  end
-
-  class StringConstructorGenerator < ConstructorGenerator
-
-    def initialize(name, number=2)
-      super(name, :string, number)
+    def initialize
+      super("string_constructor", :string)
     end
 
     def title(element)
       "LongInt(\\\"#{element}\\\")"
     end
 
-    def construction
-      super + ["std::ostringstream oss;",
-               "oss << constructed;",
-               "std::string string_output = oss.str();"]
+  end
+
+  class HexStringConstructorGenerator < ConstructorGenerator
+
+    def initialize
+      super("hex_string_constructor", :hex_string)
     end
 
-    def tests
-      super + [Test.new("string_output", "input")]
+    def title(element)
+      sprintf("LongInt(\\\"0x%x\\\")", element)
     end
 
   end
 
-  class AssignGenerator < CopyConstructorGenerator
+  class AssignGenerator < ConstructorGenerator
 
-    def initialize(name, number=2)
-      super(name, number)
+    def initialize
+      super("assign", :LongInt)
     end
 
     def title(element)
-      "i = LongInt(\\\"#{element}\\\")"
+      "i = #{data_column[0].construct(element)}"
     end
 
     def construction
@@ -319,10 +334,44 @@ module Generators
 
   end
 
+  class IstreamGenerator < ConstructorGenerator
+
+    def construction
+      ["LongInt a;",
+       "istringstream iss (input);",
+       "iss >> a"];
+    end
+
+  end
+
+  class DecimalIstreamGenerator < IstreamGenerator
+
+    def initialize
+      super("decimal_istream", :string)
+    end
+
+    def title(element)
+      "istream(\\\"#{element}\\\") >> a"
+    end
+
+  end
+
+  class HexIstreamGenerator < IstreamGenerator
+
+    def initialize(name)
+      super("hex_istream", :hex_string)
+    end
+
+    def title(element)
+      sprintf("istream(\\\"0x%x\\\") >> a", element)
+    end
+
+  end
+
   class BinaryGenerator < CaseGenerator
 
-    def initialize(name, operator, number=2)
-      super(name, number)
+    def initialize(name, operator)
+      super(name)
       @operator = operator
     end
 
@@ -383,7 +432,7 @@ module Generators
       end
     end
 
-    def generate_cases(signs1, signs2, limits1, limits2, special1, special2)
+    def generate_cases(n, signs1, signs2, limits1, limits2, special1, special2)
       # A little complicated because we don't want to have duplicates for 0 because of signs
       spec1_0 = special1.delete(0)
       spec2_0 = special2.delete(0)
@@ -416,7 +465,7 @@ module Generators
       # random zero cases
       if spec2_0
         double_foreach(signs1, limits1) do |sign1, limit1|
-          @number.times do
+          n.times do
             cases.push(line(sign1 * (rand(limit1) + 1), 0))
           end
         end
@@ -425,7 +474,7 @@ module Generators
       # zero random cases
       if spec1_0
         double_foreach(signs2, limits2) do |sign2, limit2|
-          @number.times do
+          n.times do
             cases.push(line(0, sign2 * (rand(limit2) + 1)))
           end
         end
@@ -433,14 +482,14 @@ module Generators
 
       # random special cases
       quadruple_foreach(signs1, limits1, signs2, special2) do |sign1, limit1, sign2, b|
-        @number.times do
+        n.times do
           cases.push(line(sign1 * (rand(limit1) + 1), b))
         end
       end
 
       # special random cases
       quadruple_foreach(signs1, special1, signs2, limits2) do |sign1, a, sign2, limit2|
-        @number.times do
+        n.times do
           cases.push(line(sign1 * a, sign2 * (rand(limit2) + 1)))
         end
       end
@@ -514,7 +563,7 @@ module Generators
 
   end
 
-  HEADER = <<EOS
+  CPP_HEADER = <<EOS
 #include "longinttest.h"
 #include <sstream>
 #include <cstring>
@@ -522,26 +571,69 @@ module Generators
 #include <iostream>
 
 using namespace DataStructures;
+using namespace std;
 
 typedef LongInt::part_type part_type;
-Q_DECLARE_METATYPE(DataStructures::LongInt)
-Q_DECLARE_METATYPE(std::string)
+Q_DECLARE_METATYPE(LongInt)
+Q_DECLARE_METATYPE(string)
 
 EOS
 
-  FIXED_TESTS = <<EOS
+  FIXED_HEADERS = ["void test_empty_constructor();"]
+
+  FIXED_TESTS = [<<EOS
 void LongIntTest::test_empty_constructor()
 {
   QCOMPARE(LongInt(), LongInt(0));
 }
+EOS
+]
 
+  H_HEADER = <<EOS
+#ifndef LONGINTTEST_H
+#define LONGINTTEST_H
+#include <QtTest/QtTest>
+
+class LongIntTest : public QObject
+{
+  Q_OBJECT
+
+private Q_SLOTS:
 EOS
 
-  DEFAULT_CONSTRUCTOR = DefaultConstructorGenerator.new("default_constructor")
+  H_FOOTER = <<EOS
+};
 
-  COPY_CONSTRUCTOR = CopyConstructorGenerator.new("copy_constructor")
+#endif // LONGINTTEST_H
+EOS
 
-  STRING_CONSTRUCTOR = StringConstructorGenerator.new("string_constructor")
+  CPP_FOOTER = ""
+
+  raise if FIXED_HEADERS.length != FIXED_TESTS.length
+
+  PRIMITIVE_TYPES = ["char", "short", "int", "long int", "long long int"]
+
+  PRIMITIVE_CONSTRUCTORS = PRIMITIVE_TYPES.collect do |type|
+    PrimitiveConstructorGenerator.new("#{type.gsub(' ', '_')}_constructor", type)
+  end
+
+  UNSIGNED_PRIMITIVE_CONSTRUCTORS = PRIMITVE_TYPES.collect do |type|
+    PrimitiveConstructorGenerator.new("#{type.gsub(' ', '_')}_constructor", "unsigned #{type}")
+  end
+
+  COPY_CONSTRUCTOR = ConstructorGenerator.new("copy_constructor")
+
+  DECIMAL_STRING_CONSTRUCTOR = DecimalStringConstructorGenerator.new
+
+  HEX_STRING_CONSTRUCTOR = HexStringConstructorGenerator.new
+
+  DECIMAL_ISTREAM = DecimalIstreamGenerator.new
+
+  HEX_ISTREAM = HexIstreamGenerator.new
+
+  DECIMAL_OSTREAM = DecimalOstreamGenerator.new
+
+  HEX_OSTREAM = HexOstreamGenerator.new
 
   ASSIGN = AssignGenerator.new("assign")
 
