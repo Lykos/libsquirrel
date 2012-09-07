@@ -13,6 +13,7 @@ Crypto-build-desktop-Qt_4_8_0_in_Pfad__System__Debug
 Crypto-build-desktop-Qt_4_8_0_in_Pfad__System__Release
 RubyCrypto-build-desktop-Qt_4_8_0_in_Pfad__System__Debug
 RubyCrypto-build-desktop-Qt_4_8_0_in_Pfad__System__Release
+TestDataStructures/longinttest.h
 TestDataStructures/longinttest.cpp
 PerformanceDataStructures/longinttest.cpp
 .oldgit
