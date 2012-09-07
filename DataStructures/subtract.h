@@ -26,14 +26,9 @@ namespace DataStructures {
           std::swap(left, right);
         }
         if (keep) {
-          asm("stc;\n"
-          "\tsbbq %2, %0;\n"
-          "\tsetc %1;\n"
-          : "=g" (left), "=g" (keep) : "g" (right), "0" (left) : "cc");
+          ASM_SUBTRACT_CARRY_SETCF(left, right, keep);
         } else {
-          asm("subq %2, %0;\n"
-          "\tsetc %1;\n"
-          : "=g" (left), "=g" (keep) : "g" (right), "0" (left) : "cc");
+          ASM_SUBTRACT_SETCF(left, right, keep);
         }
         *a_begin = left;
       }

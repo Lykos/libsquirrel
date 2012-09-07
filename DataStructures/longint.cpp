@@ -4,6 +4,7 @@
 #include "divide.h"
 #include "add.h"
 #include "subtract.h"
+#include "assembly.h"
 #include <cmath>
 #include <cassert>
 #include <sstream>
@@ -767,9 +768,7 @@ namespace DataStructures {
     } else {
       part = ~part;
       if (keep) {
-        asm("\nincq %0;\n"
-        "\tsetc %1;\n"
-        : "=q" (part), "=q" (keep) : "0" (part), "1" (keep));
+        ASM_INC_SETCF(part, keep);
       }
       return part;
     }

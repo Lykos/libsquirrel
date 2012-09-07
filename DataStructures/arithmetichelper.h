@@ -2,6 +2,7 @@
 #define ARITHMETIC_H
 
 #include <cstdint>
+#include "assembly.h"
 
 namespace DataStructures {
 
@@ -37,10 +38,7 @@ namespace DataStructures {
         return 0;
       }
       uint64_t result;
-      asm ( "\tbsrq %1, %0\n"
-            : "=r"(result)
-            : "r" (x)
-        );
+      ASM_BIT_SCAN(result, x);
       return result;
     }
 
