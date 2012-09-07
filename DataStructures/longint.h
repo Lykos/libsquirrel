@@ -65,27 +65,27 @@ namespace DataStructures {
 
     explicit LongInt(const std::string& numerical_string);
 
-    inline explicit operator bool() const { return operator!=(zero()); }
+    explicit operator bool() const;
 
-    inline explicit operator char() const { return m_content[0]; }
+    explicit operator char() const;
 
-    inline explicit operator unsigned char() const { return m_content[0]; }
+    explicit operator unsigned char() const;
 
-    inline explicit operator short int() const { return m_content[0]; }
+    explicit operator short int() const;
 
-    inline explicit operator unsigned short int() const { return m_content[0]; }
+    explicit operator unsigned short int() const;
 
-    inline explicit operator int() const { return m_content[0]; }
+    explicit operator int() const;
 
-    inline explicit operator unsigned int() const { return m_content[0]; }
+    explicit operator unsigned int() const;
 
-    inline explicit operator long int() const { return m_content[0]; }
+    explicit operator long int() const;
 
-    inline explicit operator unsigned long int() const { return m_content[0]; }
+    explicit operator unsigned long int() const;
 
-    inline explicit operator long long int() const { return m_content[0]; }
+    explicit operator long long int() const;
 
-    inline explicit operator unsigned long long int() const { return m_content[0]; }
+    explicit operator unsigned long long int() const;
 
     explicit operator float() const;
 

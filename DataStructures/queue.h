@@ -41,9 +41,9 @@ namespace DataStructures {
 
     inline size_type index_of(size_type index) const { return (index + m_begin) % BaseList<T>::capacity(); }
 
-    inline const T& operator[](size_type i) const { list_check_index(i); return BaseList<T>::at(index_of(i)); }
+    inline const T& operator[](size_type i) const { PREC_INDEX_LIST(i); return BaseList<T>::at(index_of(i)); }
 
-    inline T& operator[](size_type i) { list_check_index(i); return BaseList<T>::at(index_of(i)); }
+    inline T& operator[](size_type i) { PREC_INDEX_LIST(i); return BaseList<T>::at(index_of(i)); }
 
     inline void clear();
 

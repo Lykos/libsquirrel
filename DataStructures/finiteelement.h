@@ -6,7 +6,7 @@
 #include "preconditionviolation.h"
 #include <ostream>
 
-#define PREC_FIELD(a, b) PREC(DifferentFields, *(a.m_field) == *(b.m_field));
+#define PREC_FIELD(a, b) PREC(DifferentFields, *((a).m_field) == *((b).m_field))
 
 namespace DataStructures {
 
@@ -87,7 +87,7 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline FiniteElement(const FiniteField<T>* field, const T& element):
+  inline FiniteElement<T>::FiniteElement(const FiniteField<T>* field, const T& element):
     m_field (field),
     m_element (element)
   {}
@@ -173,7 +173,7 @@ namespace DataStructures {
     PREC_FIELD(*this, other);
     m_element += other.m_element;
     normalize();
-    eturn *this;
+    return *this;
   }
 
   template <typename T>
@@ -220,12 +220,6 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline const T& FiniteElement<T>::element() const
-  {
-    return m_element;
-  }
-
-  template <typename T>
   inline bool FiniteElement<T>::operator==(const FiniteElement<T>& other) const
   {
     PREC_FIELD(*this, other);
@@ -252,7 +246,7 @@ namespace DataStructures {
 
   template <typename T>
   inline void FiniteElement<T>::normalize() {
-    m_element.mod_eq(m_modulus);
+    m_element.mod_eq(m_field->modulus());
   }
 
 }

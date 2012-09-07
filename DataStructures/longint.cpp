@@ -10,18 +10,20 @@
 #include <cstdio>
 #include <string>
 #include <climits>
+#include <iostream>
 
 namespace DataStructures {
 
   using namespace ArithmeticHelper;
   using namespace LongArithmetic;
+  using namespace std;
 
   static const unsigned int DECIMAL_BUFFER_SIZE = (LongInt::PART_SIZE * 1233) >> 12; // Calculates log_10(2^PART_SIZE)
   static const unsigned int HEXADECIMAL_BUFFER_SIZE = (LongInt::PART_SIZE / 4); // Calculates log_16(2^PART_SIZE)
   static const unsigned int OCTAL_BUFFER_SIZE = (LongInt::PART_SIZE / 3); // Calculates log_8(2^PART_SIZE)
 
-  static const std::string HEXADECIMAL_BASE = "0x";
-  static const std::string OCTAL_BASE = "0";
+  static const string HEXADECIMAL_BASE = "0x";
+  static const string OCTAL_BASE = "0";
 
   static const LongInt TEN (10);
   static const LongInt ZERO (0);
@@ -33,23 +35,23 @@ namespace DataStructures {
 
   static const uint_fast8_t base (10);
 
-  std::ostream& operator<<(std::ostream& out, const LongInt& longInt)
+  ostream& operator<<(ostream& out, const LongInt& longInt)
   {
-    std::ios_base::fmtflags ff = out.flags();
+    ios_base::fmtflags ff = out.flags();
     if (!longInt.m_positive) {
       out << "-";
-    } else if (ff & std::ios_base::showpos) {
+    } else if (ff & ios_base::showpos) {
       out << "+";
     }
     if (longInt.size() == 1) {
       out << longInt.m_content[0];
-    } else if (ff & std::ios_base::hex) {
-      if (ff & std::ios_base::showbase) {
+    } else if (ff & ios_base::hex) {
+      if (ff & ios_base::showbase) {
         out << HEXADECIMAL_BASE;
       }
       longInt.write_hexadecimal(out);
-    } else if (ff & std::ios_base::oct) {
-      if (ff & std::ios_base::showbase) {
+    } else if (ff & ios_base::oct) {
+      if (ff & ios_base::showbase) {
         out << OCTAL_BASE;
       }
       longInt.write_octal(out);
@@ -59,18 +61,18 @@ namespace DataStructures {
     return out;
   }
 
-  std::istream& operator>>(std::istream& in, LongInt& longInt)
+  istream& operator>>(istream& in, LongInt& longInt)
   {
-    std::ios_base::fmtflags ff = in.flags();
-    std::string s;
+    ios_base::fmtflags ff = in.flags();
+    string s;
     in >> s;
     LongInt::size_type length = s.length();
     LongInt::size_type start_index = longInt.read_sign(s);
     arithmetic_assert(start_index <= length);
     PREC(NoDigits, start_index < length);
-    if (ff & std::ios_base::hex) {
+    if (ff & ios_base::hex) {
       longInt.read_hexadecimal(s, start_index);
-    } else if (ff & std::ios_base::oct) {
+    } else if (ff & ios_base::oct) {
       longInt.read_octal(s, start_index);
     } else {
       longInt.read_decimal(s, start_index);
@@ -120,7 +122,7 @@ namespace DataStructures {
     m_content.push(initial);
   }
 
-  LongInt::LongInt(const std::string& numerical_string)
+  LongInt::LongInt(const string& numerical_string)
   {
     PREC(NoDigits, !numerical_string.empty());
     size_type length = numerical_string.length();
@@ -138,7 +140,7 @@ namespace DataStructures {
     }
   }
 
-  inline LongInt::size_type LongInt::read_sign(const std::string& numerical_string)
+  inline LongInt::size_type LongInt::read_sign(const string& numerical_string)
   {
     arithmetic_assert(numerical_string.size() >= 1);
     if (numerical_string[0] == '-') {
@@ -153,20 +155,20 @@ namespace DataStructures {
     }
   }
 
-  inline void LongInt::read_decimal(const std::string& numerical_string, size_type start_index)
+  inline void LongInt::read_decimal(const string& numerical_string, size_type start_index)
   {
     bool positive = m_positive;
     m_positive = true;
     m_content = part_list(1, 0);
     PREC(NoDigits, start_index < numerical_string.length());
 
-    for (std::string::const_iterator it = numerical_string.begin() + start_index; it < numerical_string.end(); ++it) {
+    for (string::const_iterator it = numerical_string.begin() + start_index; it < numerical_string.end(); ++it) {
       PREC(InvalidDigit, *it >= '0' && *it <= '9');
     }
     unsigned int i;
     for (i = start_index; i + DECIMAL_BUFFER_SIZE < numerical_string.length(); i += DECIMAL_BUFFER_SIZE) {
       operator*=(TEN_BUFFER_FACTOR);
-      std::istringstream iss (numerical_string.substr(i, DECIMAL_BUFFER_SIZE));
+      istringstream iss (numerical_string.substr(i, DECIMAL_BUFFER_SIZE));
       part_type part;
       iss >> part;
       operator+=(part);
@@ -176,7 +178,7 @@ namespace DataStructures {
       LongInt base_power (TEN);
       base_power.pow_eq(rest_length);
       operator*=(base_power);
-      std::istringstream iss (numerical_string.substr(i, DECIMAL_BUFFER_SIZE));
+      istringstream iss (numerical_string.substr(i, DECIMAL_BUFFER_SIZE));
       part_type part;
       iss >> part;
       operator+=(part);
@@ -184,10 +186,10 @@ namespace DataStructures {
     m_positive = positive;
   }
 
-  inline void LongInt::read_hexadecimal(const std::string& numerical_string, size_type start_index)
+  inline void LongInt::read_hexadecimal(const string& numerical_string, size_type start_index)
   {
     PREC(NoDigits, start_index < numerical_string.length());
-    for (std::string::const_iterator it = numerical_string.begin() + start_index; it < numerical_string.end(); ++it) {
+    for (string::const_iterator it = numerical_string.begin() + start_index; it < numerical_string.end(); ++it) {
       PREC(InvalidDigit, (*it >= '0' && *it <= '9') || (*it >= 'A' && *it <= 'F') || (*it >= 'a' && *it <= 'f'));
     }
     size_type length = numerical_string.length() - start_index;
@@ -200,30 +202,30 @@ namespace DataStructures {
     size_type j = 0;
     while (i > start_index + HEXADECIMAL_BUFFER_SIZE) {
       i -= HEXADECIMAL_BUFFER_SIZE;
-      std::istringstream iss (numerical_string.substr(i, HEXADECIMAL_BUFFER_SIZE));
-      iss >> std::hex >> m_content[j];
+      istringstream iss (numerical_string.substr(i, HEXADECIMAL_BUFFER_SIZE));
+      iss >> hex >> m_content[j];
       ++j;
     }
-    std::istringstream iss (numerical_string.substr(start_index, i - start_index));
-    iss >> std::hex >> m_content[j];
+    istringstream iss (numerical_string.substr(start_index, i - start_index));
+    iss >> hex >> m_content[j];
   }
 
-  inline void LongInt::read_octal(const std::string& numerical_string, size_type start_index)
+  inline void LongInt::read_octal(const string& numerical_string, size_type start_index)
   {
     arithmetic_assert(numerical_string.length() > start_index);
-    for (std::string::const_iterator it = numerical_string.begin() + start_index; it < numerical_string.end(); ++it) {
+    for (string::const_iterator it = numerical_string.begin() + start_index; it < numerical_string.end(); ++it) {
       PREC(InvalidDigit, *it >= '0' || *it <= '8');
     }
     PREC(NotImplemented, false);
   }
 
-  inline void LongInt::write_decimal(std::ostream& out) const
+  inline void LongInt::write_decimal(ostream& out) const
   {
     LongInt longInt (abs());
-    ArrayList<std::string> parts;
+    ArrayList<string> parts;
     longInt.m_positive = true;
     while (longInt > ZERO) {
-      std::ostringstream s;
+      ostringstream s;
       LongInt remainder;
       longInt.divide(TEN_BUFFER_FACTOR, longInt, remainder, true);
       s << remainder.m_content[0];
@@ -243,17 +245,17 @@ namespace DataStructures {
     }
   }
 
-  inline void LongInt::write_octal(std::ostream& out) const
+  inline void LongInt::write_octal(ostream& out) const
   {
     PREC(NotImplemented, false);
   }
 
-  inline void LongInt::write_hexadecimal(std::ostream& out) const
+  inline void LongInt::write_hexadecimal(ostream& out) const
   {
     for (size_type i = m_content.size(); i > 0;) {
       --i;
-      std::ostringstream oss;
-      oss.flags(std::ios_base::hex);
+      ostringstream oss;
+      oss.flags(ios_base::hex);
       oss << m_content[i];
       if (i < m_content.size() - 1) {
         for (uint_fast16_t j = oss.str().size(); j < sizeof(part_type) * 2; ++j) {
@@ -263,6 +265,51 @@ namespace DataStructures {
       out << oss.str();
       oss.flush();
     }
+  }
+
+  LongInt::operator bool() const
+  {
+    return operator!=(zero());
+  }
+
+  LongInt::operator char() const {
+    return m_positive ? m_content[0] : -m_content[0];
+  }
+
+  LongInt::operator unsigned char() const {
+    return m_content[0];
+  }
+
+  LongInt::operator short int() const {
+    return m_positive ? m_content[0] : -m_content[0];
+  }
+
+  LongInt::operator unsigned short int() const {
+    return m_content[0];
+  }
+
+  LongInt::operator int() const {
+    return m_positive ? m_content[0] : -m_content[0];
+  }
+
+  LongInt::operator unsigned int() const {
+    return m_content[0];
+  }
+
+  LongInt::operator long int() const {
+    return m_positive ? m_content[0] : -m_content[0];
+  }
+
+  LongInt::operator unsigned long int() const {
+    return m_content[0];
+  }
+
+  LongInt::operator long long int() const {
+    return m_positive ? m_content[0] : -m_content[0];
+  }
+
+  LongInt::operator unsigned long long int() const {
+    return m_content[0];
   }
 
   LongInt::operator float() const
@@ -433,7 +480,7 @@ namespace DataStructures {
   // Treat other number as same sign
   void inline LongInt::add(const LongInt &other)
   {
-    pad_zeros(std::max(size(), other.size()) + 1);
+    pad_zeros(max(size(), other.size()) + 1);
     DataStructures::add(&m_content[0],
                         &m_content[0] + size(),
                         &other.m_content[0],
@@ -637,7 +684,7 @@ namespace DataStructures {
     bool keep = !m_positive;
     bool other_keep = !other.m_positive;
     bool new_keep = !new_positive;
-    for (size_type i = 0; i < std::max(size(), other.size()); ++i) {
+    for (size_type i = 0; i < max(size(), other.size()); ++i) {
       part_type part, other_part, new_part;
       part = complement_keep(m_positive, part_at(i), keep);
       other_part = complement_keep(other.m_positive, other.part_at(i), other_keep);
@@ -663,7 +710,7 @@ namespace DataStructures {
     bool keep = !m_positive;
     bool other_keep = !other.m_positive;
     bool new_keep = !new_positive;
-    for (size_type i = 0; i < std::max(size(), other.size()); ++i) {
+    for (size_type i = 0; i < max(size(), other.size()); ++i) {
       part_type part, other_part, new_part;
       part = complement_keep(m_positive, part_at(i), keep);
       other_part = complement_keep(other.m_positive, other.part_at(i), other_keep);
@@ -689,7 +736,7 @@ namespace DataStructures {
     bool keep = !m_positive;
     bool other_keep = !other.m_positive;
     bool new_keep = !new_positive;
-    for (size_type i = 0; i < std::max(size(), other.size()); ++i) {
+    for (size_type i = 0; i < max(size(), other.size()); ++i) {
       part_type part, other_part, new_part;
       part = complement_keep(m_positive, part_at(i), keep);
       other_part = complement_keep(other.m_positive, other.part_at(i), other_keep);
@@ -716,7 +763,7 @@ namespace DataStructures {
 
   int inline LongInt::uCompareTo(const LongInt& other) const
   {
-    size_type max_index = std::max(size(), other.size());
+    size_type max_index = max(size(), other.size());
     for (size_type i = max_index + 1; i > 0;) {
       --i;
       part_type my = part_at(i);
