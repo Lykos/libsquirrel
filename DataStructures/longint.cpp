@@ -33,16 +33,6 @@ namespace DataStructures {
 
   static const uint_fast8_t base (10);
 
-  mpz_class LongInt::to_mpz() const
-  {
-    mpz_class bla = LongArithmetic::to_mpz(&m_content[0], &m_content[0] + size());
-    if (m_positive) {
-      return bla;
-    } else {
-      return -bla;
-    }
-  }
-
   std::ostream& operator<<(std::ostream& out, const LongInt& longInt)
   {
     std::ios_base::fmtflags ff = out.flags();
@@ -423,14 +413,11 @@ namespace DataStructures {
 
   LongInt& LongInt::operator+=(const LongInt& other)
   {
-    mpz_class ga = to_mpz();
-    mpz_class gb = other.to_mpz();
     if (other.m_positive != m_positive) {
       subtract(other);
     } else {
       add(other);
     }
-    assert(to_mpz() == ga + gb);
     return *this;
   }
 
@@ -455,14 +442,10 @@ namespace DataStructures {
 
   LongInt& LongInt::operator-=(const LongInt& other)
   {
-    mpz_class ga = to_mpz();
-    mpz_class gb = other.to_mpz();
     if (other.m_positive != m_positive) {
       add(other);
-      assert(to_mpz() == ga - gb);
     } else {
       subtract(other);
-      assert(to_mpz() == ga - gb);
     }
     return *this;
   }
@@ -472,17 +455,11 @@ namespace DataStructures {
   {
     if (uCompareTo(other) == -1) {
       pad_zeros(other.size());
-      mpz_class ga = LongArithmetic::to_mpz(&m_content[0],
-                                            &m_content[0] + size());
-      mpz_class gb = LongArithmetic::to_mpz(&other.m_content[0],
-                                            &other.m_content[0] + other.size());
       DataStructures::subtract(&m_content[0],
                                &m_content[0] + size(),
                                &other.m_content[0],
                                &other.m_content[0] + other.size(),
                                true);
-      assert(LongArithmetic::to_mpz(&m_content[0],
-                                    &m_content[0] + size()) == gb - ga);
       m_positive = !m_positive;
     } else {
       DataStructures::subtract(&m_content[0],
@@ -499,12 +476,8 @@ namespace DataStructures {
 
   LongInt& LongInt::operator*=(const LongInt& other)
   {
-    mpz_class ga = to_mpz();
-    mpz_class gb = other.to_mpz();
     size_type space = space_usage(size(), other.size());
-    part_type *c = new part_type[space];
-    assert(&m_content[0] != c);
-    assert(&other.m_content[0] != c);
+    part_type *c = (part_type*)malloc(space * sizeof(part_type));
     part_type *c_end = multiply(&m_content[0],
                                 &m_content[0] + size(),
                                 &other.m_content[0],
@@ -513,34 +486,28 @@ namespace DataStructures {
                                 c + space);
     m_content.clear();
     m_content.push_all(c, c_end);
+    free(c);
     m_positive = m_positive == other.m_positive;
     if (size() == 0) {
       m_content.push(0);
       m_positive = true;
     }
     remove_zeros();
-    assert(to_mpz() == ga * gb);
     return *this;
   }
 
   LongInt& LongInt::operator/=(const LongInt& other)
   {
-    mpz_class ga = to_mpz();
-    mpz_class gb = other.to_mpz();
     LongInt remainder;
     divide(other, *this, remainder, false);
-    assert(to_mpz() == ga / gb);
     return *this;
   }
 
   LongInt& LongInt::operator%=(const LongInt& other)
   {
-    mpz_class ga = to_mpz();
-    mpz_class gb = other.to_mpz();
     assert(other.part_at(other.size() - 1) != 0);
     LongInt quotient;
     divide(other, quotient, *this, true);
-    assert(to_mpz() == ga % gb);
     return *this;
   }
 
