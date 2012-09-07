@@ -12,13 +12,13 @@ module Generators
     def construct(element)
       case @type
       when :LongInt then sprintf("LongInt(\"0x%x\")", element)
-      when :bool then element ? "true" : "false"g
+      when :bool then element ? "true" : "false"
       when :qlonglong then sprintf("qlonglong(0x%x)", element)
       when :string then "string(\"#{element}\")"
       when :hex_string then sprintf("string(\"0x%x\")", element)
       when :int then element.to_s
       else
-        raise "Unknown type #{type}"
+        raise "Unknown type #{@type}"
       end
     end
 
@@ -75,7 +75,7 @@ module Generators
     end
 
     def test_method_header
-      "void test_{@name}();"
+      "void test_#{@name}();"
     end
 
     def test_method_signature
@@ -199,15 +199,24 @@ module Generators
 
   class OstreamGenerator < UnaryGenerator
 
+    def initialize(name, type)
+      super(name, "")
+      @type = type
+    end
+
     def data_columns
       [DataColumn.new(:LongInt, "number"),
-       DataColumn.new(@type, "result")
+       DataColumn.new(@type, "result")]
      end
+
+    def result(element)
+      element
+    end
 
     def construction
       ["ostringstream oss;",
-       "oss << number;"
-       "string string_result = oss.str();"];
+       "oss << number;",
+       "string string_result = oss.str();"]
     end
 
     def tests
@@ -218,8 +227,8 @@ module Generators
 
   class DecimalOstreamGenerator < OstreamGenerator
 
-    def initialize(name)
-      super(name, :string)
+    def initialize
+      super("decimal_ostream", :string)
     end
 
     def title(element)
@@ -228,10 +237,10 @@ module Generators
 
   end
 
-  class DecimalOstreamGenerator < OstreamGenerator
+  class HexOstreamGenerator < OstreamGenerator
 
-    def initialize(name)
-      super(name, :hex_string)
+    def initialize
+      super("hex_ostream", :hex_string)
     end
 
     def title(element)
@@ -278,7 +287,7 @@ module Generators
     end
 
     def construction
-      ["LongInt constructed ((#{@int_type})input);"
+      ["LongInt constructed ((#{@int_type})input);"]
     end
 
     def title(element)
@@ -318,7 +327,7 @@ module Generators
     end
 
     def title(element)
-      "i = #{data_column[0].construct(element)}"
+      "i = #{data_columns[0].construct(element)}"
     end
 
     def construction
@@ -339,7 +348,7 @@ module Generators
     def construction
       ["LongInt a;",
        "istringstream iss (input);",
-       "iss >> a"];
+       "iss >> a"]
     end
 
   end
@@ -358,7 +367,7 @@ module Generators
 
   class HexIstreamGenerator < IstreamGenerator
 
-    def initialize(name)
+    def initialize
       super("hex_istream", :hex_string)
     end
 
@@ -496,7 +505,7 @@ module Generators
 
       # random random cases
       quadruple_foreach(signs1, limits1, signs2, limits2) do |sign1, limit1, sign2, limit2|
-        cases += generate_n_random(sign1, sign2, limit1, limit2)
+        cases += generate_n_random(n, sign1, sign2, limit1, limit2)
       end
 
       cases
@@ -617,11 +626,11 @@ EOS
     PrimitiveConstructorGenerator.new("#{type.gsub(' ', '_')}_constructor", type)
   end
 
-  UNSIGNED_PRIMITIVE_CONSTRUCTORS = PRIMITVE_TYPES.collect do |type|
-    PrimitiveConstructorGenerator.new("#{type.gsub(' ', '_')}_constructor", "unsigned #{type}")
+  UNSIGNED_PRIMITIVE_CONSTRUCTORS = PRIMITIVE_TYPES.collect do |type|
+    PrimitiveConstructorGenerator.new("unsigned_#{type.gsub(' ', '_')}_constructor", "unsigned #{type}")
   end
 
-  COPY_CONSTRUCTOR = ConstructorGenerator.new("copy_constructor")
+  COPY_CONSTRUCTOR = ConstructorGenerator.new("copy_constructor", :LongInt)
 
   DECIMAL_STRING_CONSTRUCTOR = DecimalStringConstructorGenerator.new
 
@@ -635,7 +644,7 @@ EOS
 
   HEX_OSTREAM = HexOstreamGenerator.new
 
-  ASSIGN = AssignGenerator.new("assign")
+  ASSIGN = AssignGenerator.new
 
   INC = IncDecGenerator.new("inc", "+")
 
@@ -669,6 +678,6 @@ EOS
 
   DIVIDED = BinaryGenerator.new("divided", "/")
 
-  POWER = PowerGenerator.new("pow", "**", 1)
+  POWER = PowerGenerator.new("pow", "**")
 
 end

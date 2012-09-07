@@ -39,13 +39,6 @@ File.open(File.join(File.dirname(__FILE__), '..', 'TestDataStructures', 'longint
       h.puts
     end
 
-    cpp.puts DEFAULT_CONSTRUCTOR.generate(N, [-1, 1], [200, 1 << 33, 1 << 63], [0, 1, 2])
-    cpp.puts
-    h.puts DEFAULT_CONSTRUCTOR.test_method_header
-    h.puts
-    h.puts DEFAULT_CONSTRUCTOR.data_method_header
-    h.puts
-
     [
      COPY_CONSTRUCTOR,
      DECIMAL_STRING_CONSTRUCTOR,
@@ -92,7 +85,7 @@ File.open(File.join(File.dirname(__FILE__), '..', 'TestDataStructures', 'longint
       cpp.puts
     end
 
-    cpp.puts POWER.generate(N, [-1, 1], [1], [200, 1 << 100], [100], [0, 1, 2], [0, 1, 2])
+    cpp.puts POWER.generate(1, [-1, 1], [1], [200, 1 << 100], [100], [0, 1, 2], [0, 1, 2])
     cpp.puts
     h.puts POWER.test_method_header
     h.puts
