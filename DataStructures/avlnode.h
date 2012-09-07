@@ -4,7 +4,8 @@
 #include "treenode.h"
 #include "stdexcept"
 
-#define assert_balance(node_pointer) { assert(node_pointer->m_balance == -1 || node_pointer->m_balance == 0 || node_pointer->m_balance == 1); }
+#define assert_balance(node_pointer) \
+  assert(node_pointer->m_balance == -1 || node_pointer->m_balance == 0 || node_pointer->m_balance == 1);
 
 namespace DataStructures {
 

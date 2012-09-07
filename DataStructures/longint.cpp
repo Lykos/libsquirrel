@@ -6,7 +6,6 @@
 #include "subtract.h"
 #include "assembly.h"
 #include <cmath>
-#include <cassert>
 #include <sstream>
 #include <cstdio>
 #include <string>
@@ -67,10 +66,8 @@ namespace DataStructures {
     in >> s;
     LongInt::size_type length = s.length();
     LongInt::size_type start_index = longInt.read_sign(s);
-    assert(start_index <= length);
-    if (start_index == length) {
-      throw std::logic_error("Numerical string without digits is not allowed.");
-    }
+    arithmetic_assert(start_index <= length);
+    PREC(NoDigits, start_index < length);
     if (ff & std::ios_base::hex) {
       longInt.read_hexadecimal(s, start_index);
     } else if (ff & std::ios_base::oct) {
@@ -125,15 +122,11 @@ namespace DataStructures {
 
   LongInt::LongInt(const std::string& numerical_string)
   {
-    if (numerical_string.empty()) {
-      throw std::logic_error("Empty numerical string is not allowed.");
-    }
+    PREC(NoDigits, !numerical_string.empty());
     size_type length = numerical_string.length();
     size_type start_index = read_sign(numerical_string);
-    assert(start_index <= length);
-    if (start_index == length) {
-      throw std::logic_error("Numerical string without digits is not allowed.");
-    }
+    arithmetic_assert(start_index <= length);
+    PREC(NoDigits, start_index < length);
     if (numerical_string.find(HEXADECIMAL_BASE, start_index) == start_index) {
       start_index += HEXADECIMAL_BASE.length();
       read_hexadecimal(numerical_string, start_index);
@@ -147,7 +140,7 @@ namespace DataStructures {
 
   inline LongInt::size_type LongInt::read_sign(const std::string& numerical_string)
   {
-    assert(numerical_string.size() >= 1);
+    arithmetic_assert(numerical_string.size() >= 1);
     if (numerical_string[0] == '-') {
       m_positive = false;
       return 1;
@@ -165,14 +158,10 @@ namespace DataStructures {
     bool positive = m_positive;
     m_positive = true;
     m_content = part_list(1, 0);
-    if (start_index == numerical_string.length()) {
-      throw std::logic_error("Numerical string without digits is not allowed.");
-    }
+    PREC(NoDigits, start_index < numerical_string.length());
+
     for (std::string::const_iterator it = numerical_string.begin() + start_index; it < numerical_string.end(); ++it) {
-      if (*it > '9' || *it < '0') {
-        assert(false);
-        throw std::logic_error("Non digit in numerical string.");
-      }
+      PREC(InvalidDigit, *it >= '0' && *it <= '9');
     }
     unsigned int i;
     for (i = start_index; i + DECIMAL_BUFFER_SIZE < numerical_string.length(); i += DECIMAL_BUFFER_SIZE) {
@@ -197,14 +186,9 @@ namespace DataStructures {
 
   inline void LongInt::read_hexadecimal(const std::string& numerical_string, size_type start_index)
   {
-    if (start_index == numerical_string.length()) {
-      throw std::logic_error("Numerical string without digits is not allowed.");
-    }
+    PREC(NoDigits, start_index < numerical_string.length());
     for (std::string::const_iterator it = numerical_string.begin() + start_index; it < numerical_string.end(); ++it) {
-      if ((*it > '9' || *it < '0') && (*it > 'F' || *it < 'A') && (*it > 'f' || *it < 'a')) {
-        assert(false);
-        throw std::logic_error("Non digit in numerical string.");
-      }
+      PREC(InvalidDigit, (*it >= '0' && *it <= '9') || (*it >= 'A' && *it <= 'F') || (*it >= 'a' && *it <= 'f'));
     }
     size_type length = numerical_string.length() - start_index;
     size_type size = length / HEXADECIMAL_BUFFER_SIZE;
@@ -226,13 +210,11 @@ namespace DataStructures {
 
   inline void LongInt::read_octal(const std::string& numerical_string, size_type start_index)
   {
-    assert(numerical_string.length() > start_index);
+    arithmetic_assert(numerical_string.length() > start_index);
     for (std::string::const_iterator it = numerical_string.begin() + start_index; it < numerical_string.end(); ++it) {
-      if (*it > '9' || *it < '0') {
-        throw std::logic_error("Non digit in numerical string.");
-      }
+      PREC(InvalidDigit, *it >= '0' || *it <= '8');
     }
-    throw std::logic_error("Octal is not implemented yet.");
+    PREC(NotImplemented, false);
   }
 
   inline void LongInt::write_decimal(std::ostream& out) const
@@ -247,7 +229,7 @@ namespace DataStructures {
       s << remainder.m_content[0];
       parts.push(s.str());
       if (longInt > ZERO) {
-        assert(DECIMAL_BUFFER_SIZE >= s.str().length());
+        arithmetic_assert(DECIMAL_BUFFER_SIZE >= s.str().length());
         for (unsigned int j = 0; j < DECIMAL_BUFFER_SIZE - s.str().length(); ++j) {
           parts.push("0");
         }
@@ -263,7 +245,7 @@ namespace DataStructures {
 
   inline void LongInt::write_octal(std::ostream& out) const
   {
-    throw std::logic_error("Octal is not implemented yet.");
+    PREC(NotImplemented, false);
   }
 
   inline void LongInt::write_hexadecimal(std::ostream& out) const
@@ -332,6 +314,12 @@ namespace DataStructures {
   {
     LongInt result(*this);
     return result %= other;
+  }
+
+  LongInt LongInt::mod(const LongInt &modulus) const
+  {
+    LongInt result (*this);
+    return result.mod_eq(modulus);
   }
 
   LongInt LongInt::operator<<(size_type shift_offset) const
@@ -510,9 +498,19 @@ namespace DataStructures {
 
   LongInt& LongInt::operator%=(const LongInt& other)
   {
-    assert(other.part_at(other.size() - 1) != 0);
     LongInt quotient;
     divide(other, quotient, *this, true);
+    return *this;
+  }
+
+  // Difference to %= is the sign handling
+  LongInt& LongInt::mod_eq(const LongInt& other)
+  {
+    LongInt quotient;
+    divide(other, quotient, *this, true);
+    if (m_positive != other.m_positive) {
+      operator+=(other);
+    }
     return *this;
   }
 
@@ -724,31 +722,14 @@ namespace DataStructures {
     }
   }
 
-  LongInt LongInt::mod(const LongInt &modulus) const
-  {
-    if (modulus < ONE) {
-      throw std::logic_error("Modulus has to be at least 1.");
-    }
-    LongInt result (operator%(modulus));
-    if (!result.m_positive) {
-      result += modulus;
-    }
-    return result;
-  }
-
   LongInt LongInt::mult_inv_mod(const LongInt &modulus) const
   {
-    if (modulus < TWO) {
-      throw std::logic_error("Modulus has to be at least 2.");
-    }
+    PREC(InvalidModulus, modulus >= TWO);
     return AlgebraHelper::inv_mod(mod(modulus), modulus);
   }
 
   LongInt LongInt::add_inv_mod(const LongInt &modulus) const
   {
-    if (modulus < ONE) {
-      throw std::logic_error("Modulus has to be at least 2.");
-    }
     return operator-().mod(modulus);
   }
 

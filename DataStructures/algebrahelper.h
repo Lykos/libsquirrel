@@ -2,6 +2,8 @@
 #define DATASTRUCTURES_ALGEBRAHELPER_H
 
 #include "longint.h"
+#include "conditiontype.h"
+#include "preconditionviolation.h"
 #include <climits>
 #include <cstdint>
 #include <sstream>
@@ -31,11 +33,7 @@ namespace DataStructures {
         std::swap(a, b);
         std::swap(u, u_old);
       }
-      if (a != modulus.one()) {
-        std::ostringstream oss;
-        oss << "element (" << element << ") and modulus (" << modulus << ") are not relatively prime, the gcd is " << a << ", hence no multiplicative inverse exists.";
-        throw std::logic_error(oss.str());
-      }
+      PREC(NotRelativelyPrime, a == modulus.one());
       u_old += modulus;
       u_old %= modulus;
       return u_old;

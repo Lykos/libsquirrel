@@ -6,16 +6,19 @@
 #include <cassert>
 #include "treeiterator.h"
 
-#ifndef NDEBUG
-#define tree_check_index(index) if (index >= BaseTree<T, Node>::size()) { std::ostringstream oss; oss << "Invalid index " << index << " for BaseTree of size " << BaseTree<T, Node>::size() << "."; throw typename BaseTree<T, Node>::range_error(oss.str()); }
-#else
-#define tree_check_index(index)
-#endif
-#define assert_size(node) assert(node->size == node->calculated_size())
-#define assert_parent(node) assert(node == NULL || node->parent == NULL || node->parent->children[node->parent_direction] == node)
-#define assert_child(node, dir) assert(node == NULL || node->children[dir] == NULL || (node->children[dir]->parent == node && node->children[dir]->parent_direction == dir))
-#define assert_children(node) assert_child(node, TREE_LEFT); assert_child(node, TREE_RIGHT)
-#define assert_pointers(node) assert_parent(node); assert_children(node)
+#define PREC_INDEX_TREE PREC(OutOfRange, index < BaseTree<T, Node>::size())
+#define assert_size(node) \
+  assert(node->size == node->calculated_size())
+#define assert_parent(node) \
+  assert(node == NULL || node->parent == NULL || node->parent->children[node->parent_direction] == node)
+#define assert_child(node, dir) \
+  assert(node == NULL || node->children[dir] == NULL || (node->children[dir]->parent == node && node->children[dir]->parent_direction == dir))
+#define assert_children(node) \
+  assert_child(node, TREE_LEFT); \
+  assert_child(node, TREE_RIGHT)
+#define assert_pointers(node) \
+  assert_parent(node); \
+  assert_children(node)
 
 namespace DataStructures {
 

@@ -19,7 +19,8 @@ SOURCES += \
     uniformlongintdistribution.cpp \
     longintconverter.cpp \
     divide.cpp \
-    multiply.cpp
+    multiply.cpp \
+    preconditionviolation.cpp
 
 HEADERS += \
     longint.h \
@@ -51,7 +52,9 @@ HEADERS += \
     add.h \
     subtract.h \
     assembly.h \
-    platform.h
+    platform.h \
+    preconditionviolation.h \
+    conditiontype.h
 
 header_files.files = $$HEADERS
 header_files.path = /usr/local/include/DataStructures

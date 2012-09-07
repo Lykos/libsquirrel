@@ -1,20 +1,15 @@
 #ifndef DATASTRUCTURES_HEAP_ARITHMETIC_H
 #define DATASTRUCTURES_HEAP_ARITHMETIC_H
 
+#include "arithmetichelper.h"
+
 namespace DataStructures {
 
   namespace HeapArithmetic {
 
     inline uint64_t level_base(uint64_t index)
     {
-      if (index == 0) {
-        return 0;
-      }
-      uint64_t base;
-      // TODO Overflow!
-      for (base = 1; (base << 1) + 1 <= index; base = (base << 1) + 1);
-      return base;
-      assert(base <= index && index < (base << 1) + 1);
+      return next_pow2(index) - 1;
     }
 
     inline uint64_t parent(uint64_t index)

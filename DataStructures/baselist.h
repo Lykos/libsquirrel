@@ -11,17 +11,11 @@
 #include <stdexcept>
 #include <cassert>
 #include <cstring>
+#include "conditiontype.h"
+#include "preconditionviolation.h"
 
-#ifndef NDEBUG
-#define list_check_index(index) assert(index < BaseList<T>::size()); if (index >= BaseList<T>::size()) { std::ostringstream oss; oss << __FILE__ << "(" << __LINE__ << "): Invalid index " << index << " for list of size " << BaseList<T>::size() << "."; throw typename BaseList<T>::range_error(oss.str()); }
-#else
-#define list_check_index(index)
-#endif
-#ifndef NDEBUG
-#define check_empty() if (BaseList<T>::is_empty()) { std::ostringstream oss; oss << __FILE__ << "(" << __LINE__ << "): Cannot take the top of an empty list."; throw typename BaseList<T>::empty_list_error(oss.str()); }
-#else
-#define check_empty()
-#endif
+#define PREC_INDEX_LIST(index) PREC(OutOfRange, index < BaseList<T>::size())
+#define PREC_EMPTY() PREC(EmptyList, !BaseList<T>::is_empty())
 
 namespace DataStructures {
 
@@ -200,7 +194,6 @@ namespace DataStructures {
   {
     adjust_capacity(other.m_size);
     add_content(other.m_content, 0, other.m_size);
-    assert(m_min_capacity > 0);
   }
 
   template <typename T>
@@ -322,20 +315,6 @@ namespace DataStructures {
     assert(new_capacity >= m_size);
     m_capacity = std::max(size_type(ArithmeticHelper::next_pow2(new_capacity)), m_min_capacity);
     m_content = static_cast<T*>(realloc(m_content, m_capacity * sizeof(T)));
-  }
-
-  template <typename TargetIterator, typename SourceIterator>
-  void copy(const TargetIterator& target_begin,
-            const TargetIterator& target_end,
-            const SourceIterator& source_begin,
-            const SourceIterator& source_end)
-  {
-    TargetIterator target_it (target_begin);
-    SourceIterator source_it (source_begin);
-    for (; target_it < target_end && source_it < source_end; ++target_it, ++source_it)
-    {
-      *target_it = *source_it;
-    }
   }
 
 }

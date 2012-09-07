@@ -3,13 +3,10 @@
 
 #include "baseiterator.h"
 #include "treenode.h"
+#include "conditiontype.h"
+#include "preconditionviolation.h"
 
-#ifndef NDEBUG
-#include <sstream>
-#define tree_iterator_check_index(index) if (index >= BaseIt::m_container->size()) { std::ostringstream oss; oss << "Invalid index " << index << " for BaseTree of size " << BaseIt::m_container->size() << "."; throw typename Tree::range_error(oss.str()); }
-#else
-#define tree_iterator_check_index(index)
-#endif
+#define PREC_INDEX_TREE_IT(index) PREC(OutOfRange, index < BaseIt::m_container->size());
 
 namespace DataStructures {
 
@@ -163,13 +160,16 @@ namespace DataStructures {
   template <typename T, typename Node, typename Tree>
   inline T& TreeIterator<T, Node, Tree>::operator*() const
   {
-    assert(m_current != NULL);
+    PREC_INDEX_TREE_IT(m_index);
+    // Should only happen if the user does funny things while iterating
+    PREC(InvalidIterator, m_current != NULL);
     return m_current->element;
   }
 
   template <typename T, typename Node, typename Tree>
   inline T& TreeIterator<T, Node, Tree>::operator[](difference_type index) const
   {
+    PREC_INDEX_TREE_IT(m_index + index);
     return *(operator+(index));
   }
 
@@ -193,21 +193,21 @@ namespace DataStructures {
       direction parent_dir = m_current->parent_direction;
       m_current = m_current->parent;
       if (parent_dir == TREE_RIGHT) {
-        assert(m_left_size >= m_current->dir_size(TREE_LEFT) + 1);
+        PREC(InvalidIterator, m_left_size >= m_current->dir_size(TREE_LEFT) + 1);
         m_left_size -= m_current->dir_size(TREE_LEFT) + 1;
       }
     }
     size_type current_index = m_left_size + m_current->dir_size(TREE_LEFT);
     while (current_index != BaseIt::m_index) {
-      assert(m_current != NULL);
-      assert((BaseIt::m_index >= m_left_size));
-      assert((BaseIt::m_index < m_left_size + m_current->size));
+      PREC(InvalidIterator, m_current != NULL);
+      PREC(InvalidIterator, (BaseIt::m_index >= m_left_size));
+      PREC(InvalidIterator, (BaseIt::m_index < m_left_size + m_current->size));
       if (current_index > BaseIt::m_index) {
-        assert(m_current->children[TREE_LEFT] != NULL);
+        PREC(InvalidIterator, m_current->children[TREE_LEFT] != NULL);
         m_current = m_current->children[TREE_LEFT];
       } else {
-        assert((current_index < BaseIt::m_index));
-        assert(m_current->children[TREE_RIGHT] != NULL);
+        PREC(InvalidIterator, (current_index < BaseIt::m_index));
+        PREC(InvalidIterator, m_current->children[TREE_RIGHT] != NULL);
         m_left_size = current_index + 1;
         m_current = m_current->children[TREE_RIGHT];
       }

@@ -101,6 +101,8 @@ namespace DataStructures {
 
     LongInt operator%(const LongInt& other) const;
 
+    LongInt mod(const LongInt& modulus) const;
+
     LongInt operator<<(exponent_type shift_offset) const;
 
     LongInt operator>>(exponent_type shift_offset) const;
@@ -147,6 +149,8 @@ namespace DataStructures {
 
     LongInt& operator%=(const LongInt& other);
 
+    LongInt& mod_eq(const LongInt& modulus);
+
     LongInt& operator<<=(exponent_type shift_offset);
 
     LongInt& operator>>=(exponent_type shift_offset);
@@ -167,8 +171,6 @@ namespace DataStructures {
 
     LongInt abs() const;
 
-    LongInt mod(const LongInt& modulus) const;
-
     LongInt mult_inv_mod(const LongInt& modulus) const;
 
     LongInt add_inv_mod(const LongInt& modulus) const;
@@ -184,6 +186,8 @@ namespace DataStructures {
     inline part_type part_at(size_type i) const { return i < size() ? m_content[i] : 0l; }
 
     static const uint_fast16_t PART_SIZE = sizeof(part_type) * CHAR_BIT;
+
+    inline const part_list& data() const { return m_content; }
 
   private:
     inline size_type read_sign(const std::string& numerical_string);

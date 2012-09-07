@@ -1,6 +1,8 @@
 #include "longintconverter.h"
 #include "longint.h"
 #include "arithmetichelper.h"
+#include "conditiontype.h"
+#include "preconditionviolation.h"
 #include <climits>
 #include <string>
 
@@ -11,7 +13,7 @@ namespace DataStructures {
 
   LongIntConverter::size_type LongIntConverter::byte_size(const LongInt& number)
   {
-    assert(number.size() > 0);
+    arithmetic_assert(number.size() > 0);
     size_type last_index = number.size() - 1;
     return last_index * sizeof(part_type) + log2(number.m_content[last_index]) / CHAR_BIT + 1;
   }
@@ -42,7 +44,7 @@ namespace DataStructures {
   string LongIntConverter::binwrite(const LongInt& number, size_type length) const
   {
     size_type bytes = byte_size(number);
-    assert(length >= bytes);
+    PREC(NumberLength, length >= bytes);
     size_type start = length - bytes;
     size_type size = number.size();
     part_type first_digit = number.m_content[size - 1];

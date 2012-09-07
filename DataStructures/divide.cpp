@@ -2,6 +2,8 @@
 #include "longint.h"
 #include "platform.h"
 #include "assembly.h"
+#include "conditiontype.h"
+#include "preconditionviolation.h"
 
 namespace DataStructures {
 
@@ -12,15 +14,13 @@ namespace DataStructures {
     // No aliasing allowed at this stage, all numbers are assumed to be positive
     void divide(LongInt& dividend, LongInt& divisor, LongInt& quotient, LongInt& remainder, bool remainder_needed)
     {
+      PREC(DivideByZero, divisor != ZERO);
       if (dividend < divisor) {
         if (remainder_needed) {
           remainder = dividend;
         }
         quotient = ZERO;
         return;
-      }
-      if (divisor == ZERO) {
-        throw std::logic_error("Division by zero.");
       }
       // Maximal factor we can multiply the divisor with without increasing its size.
       part_type scale_factor = 1;

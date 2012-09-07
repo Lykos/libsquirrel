@@ -1,5 +1,5 @@
-#ifndef CRYPTO_PRECONDITIONVIOLATION_H
-#define CRYPTO_PRECONDITIONVIOLATION_H
+#ifndef DATASTRUCTURES_PRECONDITIONVIOLATION_H
+#define DATASTRUCTURES_PRECONDITIONVIOLATION_H
 #include "conditiontype.h"
 #include <stdexcept>
 #define PREC(type, cond) \
@@ -7,7 +7,7 @@
     throw PreconditionViolation(ConditionType::type, #type ": " #cond " is violated."); \
   }
 
-namespace Crypto {
+namespace DataStructures {
 
   class PreconditionViolation : public std::exception
   {
@@ -25,6 +25,6 @@ namespace Crypto {
 
   };
 
-} // namespace Crypto
+} // namespace DataStructures
 
-#endif // CRYPTO_PRECONDITIONVIOLATION_H
+#endif // DATASTRUCTURES_PRECONDITIONVIOLATION_H
