@@ -3,10 +3,7 @@
 #include "subtract.h"
 #include "longint.h"
 #include "assembly.h"
-#include <cstdio>
-#include <iostream>
 #include <gmpxx.h>
-using namespace std;
 
 namespace DataStructures {
 
@@ -64,25 +61,10 @@ namespace DataStructures {
       mpz_class gb = b;
       for (size_type i = 0; i < a_size; ++i) {
         part_type c0, c1;
-        mpz_class ga = a_begin[i];
         // With b, a, it is easier to figure out for the compiler how to keep b in a register
         ASM_MUL(c0, c1, b, a_begin[i]);
-        mpz_class gc = c1;
-        gc <<= 64;
-        gc |= c0;
-        if (gc != ga * gb) {
-          cout << "Should be a_begin[i] * b = " << ga << " * " << gb << " == " << ga * gb << " = c0:c1 instead of " << gc << endl;
-          assert(false);
-        }
-        mpz_class gci_old = c_begin[i];
-        assert(c_begin[i + 1] == 0);
         // Note that no overflow can happen for mathematical reasons.
         ASM_TWO_ADD(c_begin[i], c_begin[i + 1], c0, c1);
-        mpz_class gci = to_mpz(&c_begin[i], &c_begin[i + 2]);
-        if (gci != gci_old + gc) {
-          cout << "Should be c_begin[" << i << "] + c0:c1 = " << gci_old << " + " << gc << " == " << gci_old + gc << " instead of " << gci << endl;
-          assert(false);
-        }
       }
       if (c_end[-1] != 0) {
         return c_end;
@@ -205,20 +187,11 @@ namespace DataStructures {
       const part_type* const y0_end (y_begin + part_size);
       const part_type* const y1_begin (y0_end);
       const part_type* const y1_end (y_end);
-      /*const mpz_class gx0 = to_mpz(x0_begin, x0_end);
-      const mpz_class gx1 = to_mpz(x1_begin, x1_end);
-      const mpz_class gy0 = to_mpz(y0_begin, y0_end);
-      const mpz_class gy1 = to_mpz(y1_begin, y1_end);*/
-      // cout << "x0 " << gx0 << " x1 " << gx1 << " y0 " << gy0 << " y1 " << gy1 << endl;
 
       // z0 = x0 * y0
       part_type* const z0_begin (space_begin); // Is the first part of the actual result
       part_type* const z0_end = multiply(x0_begin, x0_end, y0_begin, y0_end, z0_begin, space_end); // z0 = x0 * y0
-      /*const mpz_class gz0 = to_mpz(z0_begin, z0_end);
-      if (gz0 != gx0 * gy0) {
-        cout << "Should be x0 * y0 = " << gx0 << " * " << gy0 << " == " << gx0 * gy0 << " = z0 instead of " << gz0 << endl;
-        assert(false);
-      }*/
+
 
       // z0 has to be padded with 0s because it is part of the result and the additions won't work otherwise.
       for (part_type *it = z0_end; it < z0_begin + 2 * part_size; ++it) {
@@ -228,63 +201,27 @@ namespace DataStructures {
       // z2 = x1 * y1
       part_type* const z2_begin (space_begin + 2 * part_size); // Is the second part of the actual result
       part_type* const z2_end = multiply(x1_begin, x1_end, y1_begin, y1_end, z2_begin, space_end);
-      /*mpz_class gz2 = to_mpz(z2_begin, z2_end);
-      if (gz2 != gx1 * gy1) {
-        cout << "Should be x1 * y1 = " << gx1 << " * " << gy1 << " == " << gx1 * gy1 << " = z2 instead of " << gz2 << endl;
-        assert(false);
-      }*/
 
       // x2 = x0 + x1
       part_type* const x2_begin = z2_end;
       part_type* const x2_end = x2_begin + part_size + 1;
       karatsuba_xy2(x0_begin, x0_end, x1_begin, x1_end, x2_begin, x2_end);
-      /*mpz_class gx2 = to_mpz(x2_begin, x2_end);
-      if (gx2 != gx0 + gx1) {
-        cout << "Should be x0 + x1 = " << gx0 << " + " << gx1 << " == " << gx0 + gx1 << " = x2 instead of " << gx2 << endl;
-        assert(false);
-      }*/
 
       // y2 = y0 + y1
       part_type* const y2_begin = x2_end;
       part_type* const y2_end = y2_begin + part_size + 1;
       karatsuba_xy2(y0_begin, y0_end, y1_begin, y1_end, y2_begin, y2_end);
-      /*mpz_class gy2 = to_mpz(y2_begin, y2_end);
-      if (gy2 != gy0 + gy1) {
-        cout << "Should be y0 + y1 = " << gy0 << " + " << gy1 << " == " << gy0 + gy1 << " = y2 instead of " << gy2 << endl;
-        assert(false);
-      }*/
 
       // z1 = x2 * y2 - z0 - z2
       //   z1 = x2 * y2
       part_type* const z1_begin = y2_end;
       part_type* const z1_end = multiply(x2_begin, x2_end, y2_begin, y2_end, z1_begin, space_end);
-      /*mpz_class gz1 = to_mpz(z1_begin, z1_end);
-      if (gz1 != gx2 * gy2) {
-        cout << "Should be " << gx2 << " * " << gy2 << " == " << gx2 * gy2 << " instead of " << gz1 << endl;
-        assert(false);
-      }*/
 
       //   z1 -= z0
       subtract(z1_begin, z1_end, z0_begin, z0_end, false);
-      /*mpz_class gz11 = to_mpz(z1_begin, z1_end);
-      if (gz11 != gz1 - gz0) {
-        cout << "Should be z1 - z0 = " << gz1 << " - " << gz0 << " == " << gz1 - gz0 << " instead of " << gz11 << endl;
-        assert(gz0 == to_mpz(z0_begin, z0_end));
-        assert(gz11 == to_mpz(z1_begin, z1_end));
-        assert(gz2 == to_mpz(z2_begin, z2_end));
-        assert(false);
-      }*/
 
       //   z1 -= z2
       subtract(z1_begin, z1_end, z2_begin, z2_end, false);
-      /*mpz_class gz12 = to_mpz(z1_begin, z1_end);
-      if (gz12 != gz11 - gz2) {
-        cout << "Should be z1 - z0 - z2 = " << gz11 << " - " << gz2 << " == " << gz11 - gz2 << " instead of " << gz12 << endl;
-        assert(gz0 == to_mpz(z0_begin, z0_end));
-        assert(gz12 == to_mpz(z1_begin, z1_end));
-        assert(gz2 == to_mpz(z2_begin, z2_end));
-        assert(false);
-      }*/
 
       // Put result together. Note that for mathematical reasons, there can be no carry, so the space for z2 suffices.
       add(z0_begin + part_size, z2_end + 1, z1_begin, z1_end);
@@ -348,8 +285,6 @@ namespace DataStructures {
       }
       part_type *c_begin = space_begin;
       part_type *c_end;
-      // mpz_class ga = to_mpz(a_begin, a_end);
-      // mpz_class gb = to_mpz(b_begin, b_end);
       if (a_size == 1) {
         c_end = simple_multiply(a_begin[0], b_begin[0], space_begin, space_end);
       } else if (b_size == 1) {
@@ -359,11 +294,6 @@ namespace DataStructures {
       } else {
         c_end = karatsuba_multiply(a_begin, a_end, b_begin, b_end, space_begin, space_end);
       }
-      /*mpz_class gc = to_mpz(c_begin, c_end);
-      if (gc != ga * gb) {
-        cout << "Should be a * b = " << ga << " * " << gb << " == " << ga * gb << " = c instead of " << gc << endl;
-        assert(false);
-      }*/
       size_type c_size = c_end - c_begin;
       assert(c_size <= a_size + b_size);
       assert(c_size >= a_size + b_size - 1);
