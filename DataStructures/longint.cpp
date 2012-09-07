@@ -470,19 +470,19 @@ namespace DataStructures {
   // Treat other number as same sign
   void inline LongInt::subtract(const LongInt &other)
   {
-    mpz_class ga = LongArithmetic::to_mpz(&m_content[0],
-                                          &m_content[0] + size());
-    mpz_class gb = LongArithmetic::to_mpz(&other.m_content[0],
-                                          &other.m_content[0]);
     if (uCompareTo(other) == -1) {
       pad_zeros(other.size());
+      mpz_class ga = LongArithmetic::to_mpz(&m_content[0],
+                                            &m_content[0] + size());
+      mpz_class gb = LongArithmetic::to_mpz(&other.m_content[0],
+                                            &other.m_content[0] + other.size());
       DataStructures::subtract(&m_content[0],
                                &m_content[0] + size(),
                                &other.m_content[0],
-                               &other.m_content[0],
+                               &other.m_content[0] + other.size(),
                                true);
       assert(LongArithmetic::to_mpz(&m_content[0],
-                                    &m_content[0] + size()) == ga - gb);
+                                    &m_content[0] + size()) == gb - ga);
       m_positive = !m_positive;
     } else {
       DataStructures::subtract(&m_content[0],
@@ -490,8 +490,6 @@ namespace DataStructures {
                                &other.m_content[0],
                                &other.m_content[0] + other.size(),
                                false);
-      assert(LongArithmetic::to_mpz(&m_content[0],
-                                    &m_content[0] + size()) == ga - gb);
     }
     remove_zeros();
     if (size() == 1 && m_content[0] == 0) {
