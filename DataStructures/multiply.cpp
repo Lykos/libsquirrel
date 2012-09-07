@@ -3,7 +3,6 @@
 #include "subtract.h"
 #include "longint.h"
 #include "assembly.h"
-#include <gmpxx.h>
 
 namespace DataStructures {
 
@@ -12,24 +11,14 @@ namespace DataStructures {
     typedef LongInt::part_type part_type;
     typedef LongInt::size_type size_type;
 
-    mpz_class to_mpz(const part_type* begin, const part_type* end)
-    {
-      mpz_class r = 0;
-      for (const part_type* p = end; p > begin;) {
-        --p;
-        r = (r << 64) + *p;
-      }
-      return r;
-    }
-
     inline part_type* simple_multiply(const part_type a,
                                       const part_type b,
                                       part_type* const c_begin,
                                       part_type* const c_end)
     {
-      assert(c_begin + 2 <= c_end);
+      arithmetic_assert(c_begin + 2 <= c_end);
       // Not necessary for the algorithm, but for the postcondition.
-      assert(a != 0 && b != 0);
+      arithmetic_assert(a != 0 && b != 0);
       part_type c0, c1;
       ASM_MUL(c0, c1, a, b);
       if (c1 != 0) {
@@ -49,16 +38,15 @@ namespace DataStructures {
                                part_type* const space_end)
     {
       // Valid ranges
-      assert(a_end >= a_begin);
-      assert(space_end >= space_begin);
+      arithmetic_assert(a_end >= a_begin);
+      arithmetic_assert(space_end >= space_begin);
       size_type a_size = a_end - a_begin;
-      assert(size_type(space_end - space_begin) >= a_size + 1);
+      arithmetic_assert(size_type(space_end - space_begin) >= a_size + 1);
       part_type* const c_begin = space_begin;
       part_type* const c_end = c_begin + a_size + 1;
       for (size_type i = 0; i < a_size + 1; ++i) {
         c_begin[i] = 0;
       }
-      mpz_class gb = b;
       for (size_type i = 0; i < a_size; ++i) {
         part_type c0, c1;
         // With b, a, it is easier to figure out for the compiler how to keep b in a register
@@ -81,19 +69,19 @@ namespace DataStructures {
                                          part_type* const space_end)
     {
       // Valid ranges
-      assert(a_end >= a_begin);
-      assert(b_end >= b_begin);
-      assert(space_end >= space_begin);
+      arithmetic_assert(a_end >= a_begin);
+      arithmetic_assert(b_end >= b_begin);
+      arithmetic_assert(space_end >= space_begin);
       size_type a_size = a_end - a_begin;
       size_type b_size = b_end - b_begin;
       size_type space = space_end - space_begin;
       // Used space without recursion
-      assert(space >= a_size + b_size);
+      arithmetic_assert(space >= a_size + b_size);
       // For 1, take scalar_multiply
-      assert(b_size > 1);
+      arithmetic_assert(b_size > 1);
       size_type chunks = 1 + (a_size - 1) / b_size;
       // Termination relies on this
-      assert(chunks >= 2);
+      arithmetic_assert(chunks >= 2);
       for (size_type i = 0; i < a_size + b_size; ++i) {
         space_begin[i] = 0;
       }
@@ -101,10 +89,10 @@ namespace DataStructures {
       part_type* const c_begin = space_begin;
       part_type* const c_end = c_begin + a_size + b_size;
       // This makes the indices in the loop valid
-      assert(a_begin + (chunks - 1) * b_size < a_end);
-      assert(a_begin + chunks * b_size >= a_end);
-      assert(c_begin + chunks * b_size < c_end);
-      assert(c_begin + (chunks + 1) * b_size >= c_end);
+      arithmetic_assert(a_begin + (chunks - 1) * b_size < a_end);
+      arithmetic_assert(a_begin + chunks * b_size >= a_end);
+      arithmetic_assert(c_begin + chunks * b_size < c_end);
+      arithmetic_assert(c_begin + (chunks + 1) * b_size >= c_end);
       part_type* const intermediate_begin = c_end;
       for (size_type i = 0; i < chunks; ++i) {
         part_type* const intermediate_end = multiply(a_begin + i * b_size,
@@ -134,19 +122,19 @@ namespace DataStructures {
     {
       size_type part_size = xy0_end - xy0_begin;
       // Valid ranges
-      assert(xy0_begin <= xy0_end);
-      assert(xy1_begin <= xy1_end);
-      assert(xy2_begin <= xy2_end);
+      arithmetic_assert(xy0_begin <= xy0_end);
+      arithmetic_assert(xy1_begin <= xy1_end);
+      arithmetic_assert(xy2_begin <= xy2_end);
       // len(xy1) <= len(xy0)
-      assert(size_type(xy1_end - xy1_begin) <= part_size);
+      arithmetic_assert(size_type(xy1_end - xy1_begin) <= part_size);
       size_type space = xy2_end - xy2_begin;
       // space for len(xy0) + 1
-      assert(space >= part_size + 1);
+      arithmetic_assert(space >= part_size + 1);
       for (size_type i = 0; i < part_size; ++i) {
         xy2_begin[i] = xy0_begin[i];
       }
       xy2_begin[part_size] = 0;
-      assert(xy2_end - xy2_begin >= xy1_end - xy1_begin);
+      arithmetic_assert(xy2_end - xy2_begin >= xy1_end - xy1_begin);
       add(xy2_begin, xy2_end, xy1_begin, xy1_end);
     }
 
@@ -159,24 +147,24 @@ namespace DataStructures {
 
     {
       // Assume len(x) >= len(y) >= ceil(len(x) / 2)
-      assert(x_end >= x_begin);
-      assert(y_end >= y_begin);
+      arithmetic_assert(x_end >= x_begin);
+      arithmetic_assert(y_end >= y_begin);
       size_type x_size = x_end - x_begin;
       size_type y_size = y_end - y_begin;
       size_type part_size = x_size - x_size / 2;
-      assert(x_size >= y_size);
-      assert(y_size >= part_size);
+      arithmetic_assert(x_size >= y_size);
+      arithmetic_assert(y_size >= part_size);
       // Termination relies on this
-      assert(part_size >= 1);
+      arithmetic_assert(part_size >= 1);
       // Valid ranges
-      assert(x_end >= x_begin);
-      assert(y_end >= y_begin);
-      assert(space_end >= space_begin);
+      arithmetic_assert(x_end >= x_begin);
+      arithmetic_assert(y_end >= y_begin);
+      arithmetic_assert(space_end >= space_begin);
       // Don't allow aliasing with output pointer
-      assert(x_end <= space_begin || space_end <= x_begin);
-      assert(y_end <= space_begin || space_end <= y_begin);
+      arithmetic_assert(x_end <= space_begin || space_end <= x_begin);
+      arithmetic_assert(y_end <= space_begin || space_end <= y_begin);
       // Used space without recursion
-      assert(space_begin + 6 * part_size + 2 < space_end);
+      arithmetic_assert(space_begin + 6 * part_size + 2 < space_end);
 
       // Define aliases to make later code more clear
       const part_type* const x0_begin (x_begin);
@@ -258,12 +246,12 @@ namespace DataStructures {
                         part_type* const space_end)
     {
       // Valid ranges
-      assert(a_end >= a_begin);
-      assert(b_end >= b_begin);
-      assert(space_end >= space_begin);
+      arithmetic_assert(a_end >= a_begin);
+      arithmetic_assert(b_end >= b_begin);
+      arithmetic_assert(space_end >= space_begin);
       // No aliases with output range. Note that a and b may overlap if a number is multiplied with itself.
-      assert(a_end <= space_begin || space_end <= a_begin);
-      assert(b_end <= space_begin || space_end <= b_begin);
+      arithmetic_assert(a_end <= space_begin || space_end <= a_begin);
+      arithmetic_assert(b_end <= space_begin || space_end <= b_begin);
       // This doesn't cost much and saves a lot of recursions for sparse numbers, e.g. powers of 2.
       while (a_end > a_begin && a_end[-1] == 0) {
         --a_end;
@@ -274,7 +262,7 @@ namespace DataStructures {
       size_type a_size = a_end - a_begin;
       size_type b_size = b_end - b_begin;
       // Space required for result
-      assert(size_type(space_end - space_begin) >= a_size + b_size);
+      arithmetic_assert(size_type(space_end - space_begin) >= a_size + b_size);
       if (a_size < b_size) {
         std::swap(a_size, b_size);
         std::swap(a_begin, b_begin);
@@ -295,9 +283,9 @@ namespace DataStructures {
         c_end = karatsuba_multiply(a_begin, a_end, b_begin, b_end, space_begin, space_end);
       }
       size_type c_size = c_end - c_begin;
-      assert(c_size <= a_size + b_size);
-      assert(c_size >= a_size + b_size - 1);
-      assert(c_end[-1] != 0);
+      arithmetic_assert(c_size <= a_size + b_size);
+      arithmetic_assert(c_size >= a_size + b_size - 1);
+      arithmetic_assert(c_end[-1] != 0);
       return c_end;
     }
 

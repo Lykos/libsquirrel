@@ -4,7 +4,10 @@
 #include "assembly.h"
 #include "platform.h"
 
-// Internal header, clients should not include. Appears in header for inlining.
+/*
+ * Internal header, clients should not include. The code
+ * appears in header so that inlining is possible.
+ */
 namespace DataStructures {
 
   namespace LongArithmetic {
@@ -14,9 +17,9 @@ namespace DataStructures {
                     const part_type* b_begin,
                     const part_type* b_end)
     {
-      assert(a_end - a_begin >= b_end - b_begin);
+      arithmetic_assert(a_end - a_begin >= b_end - b_begin);
       for (bool keep = 0; keep == 1 || b_begin < b_end; ++a_begin, ++b_begin) {
-        assert(a_begin < a_end);
+        arithmetic_assert(a_begin < a_end);
         LongInt::part_type b_part = (b_begin < b_end ? *b_begin : 0);
         if (keep) {
           ASM_ADD_CARRY_SETCF(*a_begin, b_part, keep);

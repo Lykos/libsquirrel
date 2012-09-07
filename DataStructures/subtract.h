@@ -14,12 +14,12 @@ namespace DataStructures {
                          const LongInt::part_type* const b_end,
                          bool exchange)
     {
-      assert(a_end >= a_begin);
-      assert(b_end >= b_begin);
-      assert(a_begin >= b_end || b_begin >= a_end);
-      assert(a_end - a_begin >= b_end - b_begin);
+      arithmetic_assert(a_end >= a_begin);
+      arithmetic_assert(b_end >= b_begin);
+      arithmetic_assert(a_begin >= b_end || b_begin >= a_end);
+      arithmetic_assert(a_end - a_begin >= b_end - b_begin);
       for (bool keep = false; keep || b_begin < b_end; ++a_begin, ++b_begin) {
-        assert(a_begin < a_end); // Should never happen because a =< b
+        arithmetic_assert(a_begin < a_end); // Should never happen because a =< b
         LongInt::part_type left = *a_begin;
         LongInt::part_type right = b_begin < b_end ? *b_begin : 0;
         if (exchange) {

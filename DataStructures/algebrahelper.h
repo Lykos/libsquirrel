@@ -76,7 +76,7 @@ namespace DataStructures {
     template <typename T>
     void pow_mod_eq(T& base, const LongInt& exponent, const T& modulus)
     {
-      T factor = (exponent.is_positive() ? base : inv_mod(base, modulus));
+      T factor = (exponent.positive() ? base : inv_mod(base, modulus));
       T& result = base;
       result = base.one();
       for (ulong i = exponent.size(); i > 0;) {

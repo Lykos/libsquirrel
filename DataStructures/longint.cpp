@@ -164,11 +164,13 @@ namespace DataStructures {
   {
     bool positive = m_positive;
     m_positive = true;
+    m_content = part_list(1, 0);
     if (start_index == numerical_string.length()) {
       throw std::logic_error("Numerical string without digits is not allowed.");
     }
     for (std::string::const_iterator it = numerical_string.begin() + start_index; it < numerical_string.end(); ++it) {
       if (*it > '9' || *it < '0') {
+        assert(false);
         throw std::logic_error("Non digit in numerical string.");
       }
     }
@@ -200,6 +202,7 @@ namespace DataStructures {
     }
     for (std::string::const_iterator it = numerical_string.begin() + start_index; it < numerical_string.end(); ++it) {
       if ((*it > '9' || *it < '0') && (*it > 'F' || *it < 'A') && (*it > 'f' || *it < 'a')) {
+        assert(false);
         throw std::logic_error("Non digit in numerical string.");
       }
     }
@@ -270,8 +273,10 @@ namespace DataStructures {
       std::ostringstream oss;
       oss.flags(std::ios_base::hex);
       oss << m_content[i];
-      for (uint_fast16_t j = oss.str().size(); j < sizeof(part_type) * 2; ++j) {
-        out << '0';
+      if (i < m_content.size() - 1) {
+        for (uint_fast16_t j = oss.str().size(); j < sizeof(part_type) * 2; ++j) {
+          out << '0';
+        }
       }
       out << oss.str();
       oss.flush();
@@ -438,7 +443,6 @@ namespace DataStructures {
     for (size_type i = size(); i < new_size; ++i) {
       m_content.push(0ul);
     }
-    assert(size() >= new_size);
   }
 
   LongInt& LongInt::operator-=(const LongInt& other)
@@ -631,7 +635,7 @@ namespace DataStructures {
         m_content[i] = new_part;
       }
     }
-    assert(keep == 0 && other_keep == 0 && new_keep == 0);
+    arithmetic_assert(keep == 0 && other_keep == 0 && new_keep == 0);
     m_positive = new_positive;
     remove_zeros();
     if (size() == 1 && m_content[0] == 0) {
@@ -657,7 +661,7 @@ namespace DataStructures {
         m_content[i] = new_part;
       }
     }
-    assert(keep == 0 && other_keep == 0 && new_keep == 0);
+    arithmetic_assert(keep == 0 && other_keep == 0 && new_keep == 0);
     m_positive = new_positive;
     remove_zeros();
     if (size() == 1 && m_content[0] == 0) {
@@ -683,18 +687,13 @@ namespace DataStructures {
         m_content[i] = new_part;
       }
     }
-    assert(keep == 0 && other_keep == 0 && new_keep == 0);
+    arithmetic_assert(keep == 0 && other_keep == 0 && new_keep == 0);
     m_positive = new_positive;
     remove_zeros();
     if (size() == 1 && m_content[0] == 0) {
       m_positive = true;
     }
     return *this;
-  }
-
-  bool LongInt::is_positive() const
-  {
-    return m_positive;
   }
 
   LongInt LongInt::abs() const
@@ -727,9 +726,8 @@ namespace DataStructures {
 
   LongInt LongInt::mod(const LongInt &modulus) const
   {
-    if (modulus < TWO) {
-      assert(false);
-      throw std::logic_error("Modulus has to be at least 2.");
+    if (modulus < ONE) {
+      throw std::logic_error("Modulus has to be at least 1.");
     }
     LongInt result (operator%(modulus));
     if (!result.m_positive) {
@@ -741,7 +739,6 @@ namespace DataStructures {
   LongInt LongInt::mult_inv_mod(const LongInt &modulus) const
   {
     if (modulus < TWO) {
-      assert(false);
       throw std::logic_error("Modulus has to be at least 2.");
     }
     return AlgebraHelper::inv_mod(mod(modulus), modulus);
@@ -749,8 +746,7 @@ namespace DataStructures {
 
   LongInt LongInt::add_inv_mod(const LongInt &modulus) const
   {
-    if (modulus < TWO) {
-      assert(false);
+    if (modulus < ONE) {
       throw std::logic_error("Modulus has to be at least 2.");
     }
     return operator-().mod(modulus);

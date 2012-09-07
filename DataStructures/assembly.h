@@ -4,8 +4,7 @@
 #include <stdint.h>
 
 // Internal header, clients should not include. Appears in header for inlining.
-// Contains all the platform dependent code needed for the long arithmetic
-// ArithmeticHelper may contain platform dependent code, too.
+// Contains all the platform dependent code.
 
 // Multiplies a, b and stores low bytes in c0, high bytes in c1
 #define ASM_MUL(c0, c1, a, b) asm("\tmulq %2;\n" : "=a" (c0), "=d" (c1) : "r" (a), "0" (b) : "cc");

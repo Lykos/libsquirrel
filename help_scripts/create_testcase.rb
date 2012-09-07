@@ -6,7 +6,7 @@ require 'generators'
 
 include Generators
 
-N = 2
+N = 1
 
 File.open(File.join(File.dirname(__FILE__), '..', 'TestDataStructures', 'longinttest.h'), 'w') do |h|
   File.open(File.join(File.dirname(__FILE__), '..', 'TestDataStructures', 'longinttest.cpp'), 'w') do |cpp|
@@ -83,6 +83,10 @@ File.open(File.join(File.dirname(__FILE__), '..', 'TestDataStructures', 'longint
     [MODULO, DIVIDED].each do |generator|
       cpp.puts generator.generate(N, [-1, 1], [-1, 1], [200, 1 << 200], [200, 1 << 200], [0, 1, 2], [1, 2])
       cpp.puts
+      h.puts generator.test_method_header
+      h.puts
+      h.puts generator.data_method_header
+      h.puts
     end
 
     cpp.puts POWER.generate(1, [-1, 1], [1], [200, 1 << 100], [100], [0, 1, 2], [0, 1, 2])

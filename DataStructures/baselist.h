@@ -13,7 +13,7 @@
 #include <cstring>
 
 #ifndef NDEBUG
-#define list_check_index(index) if (index >= BaseList<T>::size()) { std::ostringstream oss; oss << __FILE__ << "(" << __LINE__ << "): Invalid index " << index << " for list of size " << BaseList<T>::size() << "."; throw typename BaseList<T>::range_error(oss.str()); }
+#define list_check_index(index) assert(index < BaseList<T>::size()); if (index >= BaseList<T>::size()) { std::ostringstream oss; oss << __FILE__ << "(" << __LINE__ << "): Invalid index " << index << " for list of size " << BaseList<T>::size() << "."; throw typename BaseList<T>::range_error(oss.str()); }
 #else
 #define list_check_index(index)
 #endif

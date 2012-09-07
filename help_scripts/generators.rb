@@ -11,19 +11,26 @@ module Generators
 
     def construct(element)
       case @type
-      when :LongInt then sprintf("LongInt(\"0x%x\")", element)
+      when :LongInt then sprintf("LongInt(\"%s0x%x\")", element >= 0 ? "" : "-", element.abs)
       when :bool then element ? "true" : "false"
-      when :qlonglong then sprintf("qlonglong(0x%x)", element)
+      when :qlonglong then sprintf("qlonglong(%s0x%x)", element >= 0 ? "" : "-", element.abs)
       when :string then "string(\"#{element}\")"
-      when :hex_string then sprintf("string(\"0x%x\")", element)
+      when :hex_string then sprintf("string(\"%s0x%x\")", element >= 0 ? "" : "-", element.abs)
+      when :no0x_hex_string then sprintf("string(\"%s%x\")", element >= 0 ? "" : "-", element.abs)
       when :int then element.to_s
       else
         raise "Unknown type #{@type}"
       end
     end
 
+    def escaped_construct(element)
+      construct(element).gsub("\"", "\\\"")
+    end
+
     def typename
-      if @type == :string
+      if @type == :hex_string
+        "string"
+      elsif @type == :no0x_hex_string
         "string"
       else
         @type.to_s
@@ -71,11 +78,11 @@ module Generators
     end
 
     def data_method_header
-      "void test_#{@name}_data();"
+      INDENTATION + "void test_#{@name}_data();"
     end
 
     def test_method_header
-      "void test_#{@name}();"
+      INDENTATION + "void test_#{@name}();"
     end
 
     def test_method_signature
@@ -197,7 +204,7 @@ module Generators
 
   end
 
-  class OstreamGenerator < UnaryGenerator
+  class OStreamGenerator < UnaryGenerator
 
     def initialize(name, type)
       super(name, "")
@@ -225,26 +232,30 @@ module Generators
 
   end
 
-  class DecimalOstreamGenerator < OstreamGenerator
+  class DecimalOStreamGenerator < OStreamGenerator
 
     def initialize
       super("decimal_ostream", :string)
     end
 
     def title(element)
-      "out << #{data_columns[0].construct(element)}"
+      "out << #{data_columns[0].escaped_construct(element)}"
     end
 
   end
 
-  class HexOstreamGenerator < OstreamGenerator
+  class HexOStreamGenerator < OStreamGenerator
 
     def initialize
-      super("hex_ostream", :hex_string)
+      super("hex_ostream", :no0x_hex_string)
+    end
+
+    def construction
+      super.insert(1, "oss.flags(ios_base::hex);")
     end
 
     def title(element)
-      "out << hex << #{data_columns[0].construct(element)}"
+      "out << hex << #{data_columns[0].escaped_construct(element)}"
     end
 
   end
@@ -274,7 +285,7 @@ module Generators
     end
 
     def title(element)
-      "LongInt(#{data_columns[0].construct(element)})"
+      "LongInt(#{data_columns[0].escaped_construct(element)})"
     end
 
   end
@@ -315,7 +326,7 @@ module Generators
     end
 
     def title(element)
-      sprintf("LongInt(\\\"0x%x\\\")", element)
+      sprintf("LongInt(\\\"%s0x%x\\\")", element >= 0 ? "" : "-", element.abs)
     end
 
   end
@@ -327,7 +338,7 @@ module Generators
     end
 
     def title(element)
-      "i = #{data_columns[0].construct(element)}"
+      "i = #{data_columns[0].escaped_construct(element)}"
     end
 
     def construction
@@ -343,36 +354,44 @@ module Generators
 
   end
 
-  class IstreamGenerator < ConstructorGenerator
+  class IStreamGenerator < ConstructorGenerator
+
+    def initialize(name, type)
+      super(name, type)
+    end
 
     def construction
-      ["LongInt a;",
+      ["LongInt constructed;",
        "istringstream iss (input);",
-       "iss >> a"]
+       "iss >> constructed;"]
     end
 
   end
 
-  class DecimalIstreamGenerator < IstreamGenerator
+  class DecimalIStreamGenerator < IStreamGenerator
 
     def initialize
       super("decimal_istream", :string)
     end
 
     def title(element)
-      "istream(\\\"#{element}\\\") >> a"
+      "istream(\\\"#{element}\\\") >> constructed"
     end
 
   end
 
-  class HexIstreamGenerator < IstreamGenerator
+  class HexIStreamGenerator < IStreamGenerator
 
     def initialize
-      super("hex_istream", :hex_string)
+      super("hex_istream", :no0x_hex_string)
+    end
+
+    def construction
+      super.insert(2, "iss.flags(ios_base::hex);")
     end
 
     def title(element)
-      sprintf("istream(\\\"0x%x\\\") >> a", element)
+      "istream(\\\"#{element}\\\") >> hex >> constructed"
     end
 
   end
@@ -513,6 +532,34 @@ module Generators
 
   end
 
+  class DividedGenerator < BinaryGenerator
+
+    def line(a, b)
+      if b == 0
+        "// " + super
+      else
+        super
+      end
+    end
+
+    def sign(a)
+      a <=> 0
+    end
+
+    def result(a, b)
+      sign(a) * sign(b) * (a.abs / b.abs)
+    end
+
+  end
+
+  class ModuloGenerator < DividedGenerator
+
+    def result(a, b)
+      sign(a) * (a.abs % b.abs)
+    end
+
+  end
+
   class ShiftGenerator < BinaryGenerator
 
     def right_type
@@ -574,9 +621,9 @@ module Generators
 
   CPP_HEADER = <<EOS
 #include "longinttest.h"
+#include "DataStructures/longint.h"
 #include <sstream>
-#include <cstring>
-#include <QString>
+#include <string>
 #include <iostream>
 
 using namespace DataStructures;
@@ -588,7 +635,7 @@ Q_DECLARE_METATYPE(string)
 
 EOS
 
-  FIXED_HEADERS = ["void test_empty_constructor();"]
+  FIXED_HEADERS = [CaseGenerator::INDENTATION + "void test_empty_constructor();"]
 
   FIXED_TESTS = [<<EOS
 void LongIntTest::test_empty_constructor()
@@ -636,13 +683,13 @@ EOS
 
   HEX_STRING_CONSTRUCTOR = HexStringConstructorGenerator.new
 
-  DECIMAL_ISTREAM = DecimalIstreamGenerator.new
+  DECIMAL_ISTREAM = DecimalIStreamGenerator.new
 
-  HEX_ISTREAM = HexIstreamGenerator.new
+  HEX_ISTREAM = HexIStreamGenerator.new
 
-  DECIMAL_OSTREAM = DecimalOstreamGenerator.new
+  DECIMAL_OSTREAM = DecimalOStreamGenerator.new
 
-  HEX_OSTREAM = HexOstreamGenerator.new
+  HEX_OSTREAM = HexOStreamGenerator.new
 
   ASSIGN = AssignGenerator.new
 
@@ -674,9 +721,9 @@ EOS
 
   BIT_AND = BinaryGenerator.new("bit_and", "&")
 
-  MODULO = BinaryGenerator.new("modulo", "%")
+  MODULO = ModuloGenerator.new("modulo", "%")
 
-  DIVIDED = BinaryGenerator.new("divided", "/")
+  DIVIDED = DividedGenerator.new("divided", "/")
 
   POWER = PowerGenerator.new("pow", "**")
 

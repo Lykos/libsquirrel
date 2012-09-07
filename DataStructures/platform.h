@@ -3,6 +3,17 @@
 
 #include <stdint.h>
 
+/*
+ * Assertions for internal consistency checks.
+ * May be very inefficient and hence they are usually disabled, but
+ * they can be turned on to help to track down bugs faster.
+ */
+#ifdef ARITHMETIC_DEBUG
+#define arithmetic_assert(b) assert(b)
+#else
+#define arithmetic_assert(b)
+#endif
+
 // Internal header for platform dependent typedefs and constants
 namespace DataStructures {
 

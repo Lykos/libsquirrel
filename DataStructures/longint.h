@@ -161,7 +161,9 @@ namespace DataStructures {
 
     LongInt& operator&=(const LongInt& other);
 
-    bool is_positive() const;
+    bool positive() const { return m_positive; }
+
+    bool positive(bool new_positive) { return m_positive = new_positive; }
 
     LongInt abs() const;
 

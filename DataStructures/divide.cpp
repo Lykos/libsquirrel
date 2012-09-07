@@ -25,7 +25,7 @@ namespace DataStructures {
       // Maximal factor we can multiply the divisor with without increasing its size.
       part_type scale_factor = 1;
       part_type divisor_first_digit = divisor.m_content[divisor.size() - 1];
-      assert(divisor_first_digit != 0);
+      arithmetic_assert(divisor_first_digit != 0);
       if (divisor_first_digit + 1 != 0) {
         // (1 << 64) / (divisor_last_digit + 1)
         ASM_CALC_SCALE(divisor_first_digit + 1, scale_factor);
@@ -38,7 +38,7 @@ namespace DataStructures {
         divisor *= scale;
       }
       divisor_first_digit = divisor.m_content[divisor.size() - 1];
-      assert(divisor_first_digit >= (1ul << 63));
+      arithmetic_assert(divisor_first_digit >= (1ul << 63));
       LongInt::size_type divisor_size = divisor.size();
       // Initialize the results
       quotient = ZERO;
@@ -54,16 +54,16 @@ namespace DataStructures {
           part_type guess;
           ASM_DIVIDE(remainder.m_content[divisor_size - 1], remainder.part_at(divisor_size), divisor_first_digit, guess);
            LongInt back_calculated (divisor * LongInt(guess));
-  #ifndef NDEBUG
+#ifdef ARITHMETIC_DEBUG
           LongInt::size_type old_guess = guess;
-  #endif
+#endif
           while (back_calculated > remainder) {
             back_calculated -= divisor;
             --guess;
           }
-          assert(old_guess >= guess);
-          assert(back_calculated + divisor > remainder);
-          assert(old_guess - guess <= 2);
+          arithmetic_assert(old_guess >= guess);
+          arithmetic_assert(back_calculated + divisor > remainder);
+          arithmetic_assert(old_guess - guess <= 2);
           remainder -= back_calculated;
           quotient.pad_zeros(i + 1);
           quotient.m_content[i] = guess;
@@ -83,7 +83,7 @@ namespace DataStructures {
             ASM_DIVIDE_REMAINDER(lower, upper, scale_factor, remainder.m_content[i], upper)
           }
           // The division has to work without remainder
-          assert(upper == 0);
+          arithmetic_assert(upper == 0);
         }
         remainder.remove_zeros();
       }
