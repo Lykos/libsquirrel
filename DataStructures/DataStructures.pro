@@ -9,7 +9,7 @@ QT       -= core gui
 TARGET = DataStructures
 TEMPLATE = lib
 CONFIG += warn_on
-QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS += -std=c++11 -O2
 
 DEFINES += DATASTRUCTURES_LIBRARY
 
@@ -50,7 +50,8 @@ HEADERS += \
     multiply.h \
     add.h \
     subtract.h \
-    assembly.h
+    assembly.h \
+    platform.h
 
 header_files.files = $$HEADERS
 header_files.path = /usr/local/include/DataStructures
@@ -75,4 +76,4 @@ unix:!symbian {
     INSTALLS += target
 }
 
-unix|win32: LIBS += -lboost_random
+unix|win32: LIBS += -lboost_random -lgmp -lgmpxx

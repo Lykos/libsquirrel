@@ -3,7 +3,8 @@
 
 #include "arraylist.h"
 #include "divide.h"
-#include <cstdint>
+#include "platform.h"
+#include <climits>
 #include <istream>
 #include <ostream>
 
@@ -25,7 +26,7 @@ namespace DataStructures {
 
     friend std::istream& operator>>(std::istream& in, LongInt& longInt);
 
-    friend ArrayList<uint64_t>::size_type log2(const LongInt& number);
+    friend ArrayList<LongArithmetic::part_type>::size_type log2(const LongInt& number);
 
     friend void LongArithmetic::divide(LongInt &dividend, LongInt &divisor, LongInt &quotient, LongInt &remainder, bool remainder_needed);
 
@@ -34,7 +35,7 @@ namespace DataStructures {
     friend class LongIntConverter;
 
   public:
-    typedef uint64_t part_type;
+    typedef LongArithmetic::part_type part_type;
 
     typedef ArrayList<part_type> part_list;
 
@@ -180,7 +181,7 @@ namespace DataStructures {
 
     inline part_type part_at(size_type i) const { return i < size() ? m_content[i] : 0l; }
 
-    static const uint_fast16_t PART_SIZE = sizeof(LongInt::part_type) * CHAR_BIT;
+    static const uint_fast16_t PART_SIZE = sizeof(part_type) * CHAR_BIT;
 
   private:
     inline size_type read_sign(const std::string& numerical_string);

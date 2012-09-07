@@ -1,5 +1,6 @@
 #include "divide.h"
 #include "longint.h"
+#include "platform.h"
 #include "assembly.h"
 
 namespace DataStructures {
