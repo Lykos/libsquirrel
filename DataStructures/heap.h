@@ -26,9 +26,9 @@ namespace DataStructures {
 
     T pop();
 
-    const T& top() const { check_empty(); return BaseList<T>::at(0); }
+    const T& top() const { PREC_EMPTY(); return BaseList<T>::at(0); }
 
-    T& top() { check_empty(); return BaseList<T>::at(0); }
+    T& top() { PREC_EMPTY(); return BaseList<T>::at(0); }
 
   private:
 
@@ -87,7 +87,7 @@ namespace DataStructures {
   template <typename T>
   T Heap<T>::pop()
   {
-    check_empty();
+    PREC_EMPTY();
     T element = BaseList<T>::at(0);
     BaseList<T>::destroy(0);
     BaseList<T>::move(0, BaseList<T>::size() - 1);

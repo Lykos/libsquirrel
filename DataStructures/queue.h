@@ -51,13 +51,13 @@ namespace DataStructures {
 
     inline T pop();
 
-    inline const T& front() const { check_empty(); return BaseList<T>::at(m_begin); }
+    inline const T& front() const { PREC_EMPTY(); return BaseList<T>::at(m_begin); }
 
-    inline T& front() { check_empty(); return BaseList<T>::at(m_begin); }
+    inline T& front() { PREC_EMPTY(); return BaseList<T>::at(m_begin); }
 
-    inline const T& back() const { check_empty(); return operator[](BaseList<T>::size() - 1); }
+    inline const T& back() const { PREC_EMPTY(); return operator[](BaseList<T>::size() - 1); }
 
-    inline T& back() { check_empty(); return operator[](BaseList<T>::size() - 1); }
+    inline T& back() { PREC_EMPTY(); return operator[](BaseList<T>::size() - 1); }
 
     inline iterator begin() { return iterator(this, 0); }
 
@@ -158,7 +158,7 @@ namespace DataStructures {
   template <typename T>
   inline T Queue<T>::pop()
   {
-    check_empty();
+    PREC_EMPTY();
     T element = BaseList<T>::at(m_begin);
     BaseList<T>::destroy(m_begin);
     ++m_begin;

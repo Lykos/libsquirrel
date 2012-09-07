@@ -46,8 +46,22 @@ module Generators
       @expected = expected
     end
 
+    attr_reader :actual, :expected
+
     def to_s
       "QCOMPARE(#{@actual}, #{@expected});"
+    end
+
+  end
+
+  class IntTest < Test
+
+    def initialize(test)
+      super(test.actual, test.expected)
+    end
+
+    def to_s
+      "COMPARE_INTS(#{@actual}, #{@expected});"
     end
 
   end
@@ -260,6 +274,28 @@ module Generators
 
   end
 
+  class PrimitiveConversionGenerator < UnaryGenerator
+
+    def initialize(type)
+      super(type.gsub(" ", "_") + "_conversion", "(#{type})")
+      @type = type
+    end
+
+    def result(element)
+      element
+    end
+
+    def tests
+      [IntTest.new(super[0]), super[1]]
+    end
+
+    def data_columns
+      [DataColumn.new(:LongInt, "element"),
+       DataColumn.new(:qlonglong, "result")]
+    end
+
+  end
+
   class ConstructorGenerator < UnaryGenerator
 
     def initialize(name, type)
@@ -292,8 +328,8 @@ module Generators
 
   class PrimitiveConstructorGenerator < ConstructorGenerator
 
-    def initialize(name, type)
-      super(name, :qlonglong)
+    def initialize(type)
+      super(type.gsub(" ", "_") + "_constructor", :qlonglong)
       @int_type = type
     end
 
@@ -302,7 +338,7 @@ module Generators
     end
 
     def title(element)
-      "LongInt(element)"
+      "LongInt(#{element})"
     end
 
   end
@@ -622,6 +658,7 @@ module Generators
   CPP_HEADER = <<EOS
 #include "longinttest.h"
 #include "DataStructures/longint.h"
+#include "comparemacros.h"
 #include <sstream>
 #include <string>
 #include <iostream>
@@ -669,12 +706,26 @@ EOS
 
   PRIMITIVE_TYPES = ["char", "short", "int", "long int", "long long int"]
 
+  PRIMITIVE_LENGTHS = [8, 16, 32, 64, 64]
+
+  BOOL_CONSTRUCTOR = PrimitiveConstructorGenerator.new("bool")
+
+  BOOL_CONVERSION = PrimitiveConversionGenerator.new("bool")
+
   PRIMITIVE_CONSTRUCTORS = PRIMITIVE_TYPES.collect do |type|
-    PrimitiveConstructorGenerator.new("#{type.gsub(' ', '_')}_constructor", type)
+    PrimitiveConstructorGenerator.new(type)
   end
 
   UNSIGNED_PRIMITIVE_CONSTRUCTORS = PRIMITIVE_TYPES.collect do |type|
-    PrimitiveConstructorGenerator.new("unsigned_#{type.gsub(' ', '_')}_constructor", "unsigned #{type}")
+    PrimitiveConstructorGenerator.new("unsigned #{type}")
+  end
+
+  PRIMITIVE_CONVERSIONS = PRIMITIVE_TYPES.collect do |type|
+    PrimitiveConversionGenerator.new(type)
+  end
+
+  UNSIGNED_PRIMITIVE_CONVERSIONS = PRIMITIVE_TYPES.collect do |type|
+    PrimitiveConversionGenerator.new("unsigned #{type}")
   end
 
   COPY_CONSTRUCTOR = ConstructorGenerator.new("copy_constructor", :LongInt)

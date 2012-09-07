@@ -160,7 +160,7 @@ namespace DataStructures {
   template <typename T, typename Node, typename Tree>
   inline T& TreeIterator<T, Node, Tree>::operator*() const
   {
-    PREC_INDEX_TREE_IT(m_index);
+    PREC_INDEX_TREE_IT(BaseIt::m_index);
     // Should only happen if the user does funny things while iterating
     PREC(InvalidIterator, m_current != NULL);
     return m_current->element;
@@ -169,7 +169,7 @@ namespace DataStructures {
   template <typename T, typename Node, typename Tree>
   inline T& TreeIterator<T, Node, Tree>::operator[](difference_type index) const
   {
-    PREC_INDEX_TREE_IT(m_index + index);
+    PREC_INDEX_TREE_IT(BaseIt::m_index + index);
     return *(operator+(index));
   }
 

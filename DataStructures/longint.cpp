@@ -265,6 +265,21 @@ namespace DataStructures {
     }
   }
 
+  LongInt::operator float() const
+  {
+
+  }
+
+  LongInt::operator double() const
+  {
+
+  }
+
+  LongInt::operator long double() const
+  {
+
+  }
+
   LongInt LongInt::operator~() const
   {
     return --operator-();

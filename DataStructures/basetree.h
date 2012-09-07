@@ -6,7 +6,7 @@
 #include <cassert>
 #include "treeiterator.h"
 
-#define PREC_INDEX_TREE PREC(OutOfRange, index < BaseTree<T, Node>::size())
+#define PREC_INDEX_TREE(index) PREC(OutOfRange, (index < BaseTree<T, Node>::size()))
 #define assert_size(node) \
   assert(node->size == node->calculated_size())
 #define assert_parent(node) \
@@ -156,7 +156,7 @@ namespace DataStructures {
   template <typename T, typename Node>
   inline const T& BaseTree<T, Node>::operator[](size_type index) const
   {
-    tree_check_index(index);
+    PREC_INDEX_TREE(index);
     Node* current = m_root;
     while (true) {
       assert(current != NULL);
@@ -176,7 +176,7 @@ namespace DataStructures {
   template <typename T, typename Node>
   inline T& BaseTree<T, Node>::operator[](size_type index)
   {
-    tree_check_index(index);
+    PREC_INDEX_TREE(index);
     Node* current = m_root;
     while (true) {
       assert(current != NULL);

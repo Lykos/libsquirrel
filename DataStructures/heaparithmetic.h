@@ -7,6 +7,8 @@ namespace DataStructures {
 
   namespace HeapArithmetic {
 
+    using namespace ArithmeticHelper;
+
     inline uint64_t level_base(uint64_t index)
     {
       return next_pow2(index) - 1;

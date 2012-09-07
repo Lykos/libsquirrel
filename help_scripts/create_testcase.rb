@@ -23,16 +23,18 @@ File.open(File.join(File.dirname(__FILE__), '..', 'TestDataStructures', 'longint
       cpp.puts
     end
 
-    PRIMITIVE_CONSTRUCTORS.each do |generator|
-      cpp.puts generator.generate(N, [-1, 1], [100], [0, 1, 2])
+    (PRIMITIVE_CONSTRUCTORS + PRIMITIVE_CONVERSIONS).each_with_index do |generator, i|
+      i %= PRIMITIVE_LENGTHS.length
+      cpp.puts generator.generate(N, [-1, 1], [1 << PRIMITIVE_LENGTHS[i] / 2 - 1, 1 << PRIMITIVE_LENGTHS[i] - 1], [0, 1, 2])
       h.puts generator.test_method_header
       h.puts
       h.puts generator.data_method_header
       h.puts
     end
 
-    UNSIGNED_PRIMITIVE_CONSTRUCTORS.each do |generator|
-      cpp.puts generator.generate(N, [1], [100], [0, 1, 2])
+    (UNSIGNED_PRIMITIVE_CONSTRUCTORS + UNSIGNED_PRIMITIVE_CONVERSIONS).each_with_index do |generator, i|
+      i %= PRIMITIVE_LENGTHS.length
+      cpp.puts generator.generate(N, [1], [1 << PRIMITIVE_LENGTHS[i] / 2, 1 << PRIMITIVE_LENGTHS[i]], [0, 1, 2])
       h.puts generator.test_method_header
       h.puts
       h.puts generator.data_method_header

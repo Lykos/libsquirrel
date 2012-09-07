@@ -67,6 +67,14 @@ namespace DataStructures {
 
     inline explicit operator bool() const { return operator!=(zero()); }
 
+    inline explicit operator char() const { return m_content[0]; }
+
+    inline explicit operator unsigned char() const { return m_content[0]; }
+
+    inline explicit operator short int() const { return m_content[0]; }
+
+    inline explicit operator unsigned short int() const { return m_content[0]; }
+
     inline explicit operator int() const { return m_content[0]; }
 
     inline explicit operator unsigned int() const { return m_content[0]; }
@@ -79,11 +87,11 @@ namespace DataStructures {
 
     inline explicit operator unsigned long long int() const { return m_content[0]; }
 
-    inline explicit operator float() const;
+    explicit operator float() const;
 
-    inline explicit operator double() const;
+    explicit operator double() const;
 
-    inline explicit operator long double() const;
+    explicit operator long double() const;
 
     LongInt operator~() const;
 
