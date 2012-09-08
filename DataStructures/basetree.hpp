@@ -61,7 +61,7 @@ namespace DataStructures {
   }
 
   template <typename T, typename Node>
-  inline virtual void BaseTree<T, Node>::insert(const T& element)
+  inline void BaseTree<T, Node>::insert(const T& element)
   {
     internal_insert(element);
   }
@@ -404,31 +404,37 @@ namespace DataStructures {
     assert_pointers(parent);
   }
 
+  template <typename T, typename Node>
   inline typename BaseTree<T, Node>::size_type BaseTree<T, Node>::size() const
   {
     return m_root == NULL ? 0 : m_root->size;
   }
 
+  template <typename T, typename Node>
   inline bool BaseTree<T, Node>::is_empty() const
   {
     return m_root == NULL;
   }
 
+  template <typename T, typename Node>
   inline typename BaseTree<T, Node>::iterator BaseTree<T, Node>::begin()
   {
     return iterator(this, 0);
   }
 
+  template <typename T, typename Node>
   inline typename BaseTree<T, Node>::iterator BaseTree<T, Node>::end()
   {
     return iterator(this, size());
   }
 
+  template <typename T, typename Node>
   inline typename BaseTree<T, Node>::const_iterator BaseTree<T, Node>::begin() const
   {
     return const_iterator(this, 0);
   }
 
+  template <typename T, typename Node>
   inline typename BaseTree<T, Node>::const_iterator BaseTree<T, Node>::end() const
   {
     return const_iterator(this, size());

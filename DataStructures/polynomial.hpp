@@ -1,7 +1,6 @@
 #ifndef DATASTRUCTURES_POLYNOMIAL_HPP
 #define DATASTRUCTURES_POLYNOMIAL_HPP
 
-#include "incompletetypes.h"
 #include "arraylist.h"
 #include "longint.h"
 #include "algebrahelper.h"
@@ -9,116 +8,6 @@
 #include <ostream>
 
 namespace DataStructures {
-
-  template <typename T, typename Structure>
-  inline std::ostream& operator<<(std::ostream& out, const Polynomial<T, Structure>& element);
-
-  template <typename T, typename Structure>
-  class Polynomial
-  {
-    friend std::ostream& operator<< <> (std::ostream& out, const Polynomial<T, Structure>& element);
-
-  public:
-    typedef ArrayList<T> coefficient_list;
-
-    typedef typename coefficient_list::size_type size_type;
-
-    typedef typename coefficient_list::difference_type exponent_type;
-
-    typedef Ring< Polynomial< T, Structure > > ring_type;
-
-    inline Polynomial(const Structure *structure = NULL,
-                      const T& element = T(),
-                      size_type degree = 0);
-
-    inline Polynomial(const Structure *structure,
-                      const coefficient_list& coefficients);
-
-    template <typename Iterator>
-    inline Polynomial(const Structure *structure,
-                      const Iterator& begin,
-                      const Iterator& end);
-
-    inline Polynomial< T, Structure > zero() const;
-
-    inline Polynomial< T, Structure > one() const;
-
-    inline ring_type ring() const;
-
-    inline T operator()(const T& value) const;
-
-    inline Polynomial<T, Structure> operator-() const;
-
-    inline Polynomial<T, Structure> operator+() const;
-
-    inline Polynomial<T, Structure> operator+(const Polynomial<T, Structure>& other) const;
-
-    inline Polynomial<T, Structure> operator-(const Polynomial<T, Structure>& other) const;
-
-    inline Polynomial<T, Structure> operator*(const Polynomial<T, Structure>& other) const;
-
-    inline Polynomial<T, Structure> operator/(const Polynomial<T, Structure>& other) const;
-
-    inline Polynomial<T, Structure> operator%(const Polynomial<T, Structure>& other) const;
-
-    inline Polynomial<T, Structure> pow(exponent_type exponent) const;
-
-    inline Polynomial<T, Structure> pow_mod(const LongInt& exponent, const Polynomial<T, Structure>& modulus) const;
-
-    inline Polynomial<T, Structure> operator++(int);
-
-    inline Polynomial<T, Structure> operator--(int);
-
-    inline Polynomial<T, Structure>& operator++();
-
-    inline Polynomial<T, Structure>& operator--();
-
-    inline Polynomial<T, Structure>& operator+=(const Polynomial<T, Structure>& other);
-
-    inline Polynomial<T, Structure>& operator-=(const Polynomial<T, Structure>& other);
-
-    inline Polynomial<T, Structure>& operator*=(const Polynomial<T, Structure>& other);
-
-    inline Polynomial<T, Structure>& operator/=(const Polynomial<T, Structure>& other);
-
-    inline Polynomial<T, Structure>& operator%=(const Polynomial<T, Structure>& other);
-
-    inline Polynomial<T, Structure> pow_eq(exponent_type exponent);
-
-    inline Polynomial<T, Structure> pow_mod_eq(const LongInt& exponent, const Polynomial<T, Structure>& modulus);
-
-    inline Polynomial<T, Structure> mod(const Polynomial& modulus) const;
-
-    inline Polynomial<T, Structure> mult_inv_mod(const Polynomial<T, Structure>& modulus) const ;
-
-    inline Polynomial<T, Structure> add_inv_mod(const Polynomial<T, Structure>& modulus) const;
-
-    inline size_type size() const { return m_coefficients.size(); }
-
-    inline size_type deg() const { return m_coefficients.size() - 1; }
-
-    inline const coefficient_list& coefficients() { return m_coefficients; }
-
-    inline bool operator==(const Polynomial<T, Structure>& other) const { return m_coefficients == other.m_coefficients; }
-
-    inline bool operator!=(const Polynomial<T, Structure>& other) const { return !operator==(other); }
-
-    inline void divide(const Polynomial<T, Structure>& divisor, Polynomial<T, Structure>& quotient, Polynomial<T, Structure>& remainder) const;
-
-  private:
-    inline void add(const Polynomial<T, Structure>& other);
-
-    inline void subtract(const Polynomial<T, Structure>& other);
-
-    inline void remove_zeros();
-
-    inline void pad_zeros(size_type size);
-
-    const Structure* m_structure;
-
-    coefficient_list m_coefficients;
-
-  };
 
   template <typename T, typename Structure>
   inline std::ostream& operator<<(std::ostream& out, const Polynomial<T, Structure>& polynomial)
@@ -301,19 +190,19 @@ namespace DataStructures {
   }
 
   template <typename T, typename Structure>
-  inline size_type Polynomial<T, Structure>::size() const
+  inline typename Polynomial<T, Structure>::size_type Polynomial<T, Structure>::size() const
   {
     return m_coefficients.size();
   }
 
   template <typename T, typename Structure>
-  inline size_type Polynomial<T, Structure>::deg() const
+  inline typename Polynomial<T, Structure>::size_type Polynomial<T, Structure>::deg() const
   {
     return m_coefficients.size() - 1;
   }
 
   template <typename T, typename Structure>
-  inline const coefficient_list& Polynomial<T, Structure>::coefficients()
+  inline const typename Polynomial<T, Structure>::coefficient_list& Polynomial<T, Structure>::coefficients()
   {
     return m_coefficients;
   }

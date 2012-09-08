@@ -9,6 +9,9 @@
 namespace DataStructures {
 
   template <typename T, typename Structure>
+  class Polynomial;
+
+  template <typename T, typename Structure>
   inline std::ostream& operator<<(std::ostream& out, const Polynomial<T, Structure>& element);
 
   template <typename T, typename Structure>

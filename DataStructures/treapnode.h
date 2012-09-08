@@ -23,6 +23,6 @@ namespace DataStructures {
 
 }
 
-#include "treenode.hpp"
+#include "treapnode.hpp"
 
 #endif // DATASTRUCTURES_TREAPNODE_H

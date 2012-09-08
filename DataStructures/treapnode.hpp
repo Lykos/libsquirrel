@@ -1,7 +1,7 @@
 #ifndef DATASTRUCTURES_TREAPNODE_HPP
 #define DATASTRUCTURES_TREAPNODE_HPP
 
-#include "treapnode.h
+#include "treapnode.h"
 #include "infiniterandom.h"
 #include "treenode.h"
 
@@ -11,8 +11,7 @@ namespace DataStructures {
   TreapNode<T>::TreapNode(const T& new_element, TreapNode<T>* new_parent, direction new_parent_direction):
     TreeNode<T, TreapNode<T> >(new_element, new_parent, new_parent_direction),
     randomness ()
-  {
-  }
+  {}
 
   template <typename T>
   inline typename TreapNode<T>::direction TreapNode<T>::min_rand_direction() const

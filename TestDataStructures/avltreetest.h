@@ -4,12 +4,12 @@
 #include "DataStructures/avltree.h"
 #include "treetest.h"
 
-class AVLTreeTest : public QObject, public TreeTest<DataStructures::AVLTree<int> >
+class AVLTreeTest : public QObject, public TreeTest<DataStructures::AVLTree>
 {
   Q_OBJECT
 
 private:
-  typedef TreeTest<DataStructures::AVLTree<int> > Test;
+  typedef TreeTest<DataStructures::AVLTree> Test;
 
 private Q_SLOTS:
   void init() { Test::init(); }

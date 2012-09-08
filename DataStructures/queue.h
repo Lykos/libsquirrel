@@ -34,7 +34,7 @@ namespace DataStructures {
 
     inline bool operator==(const Queue<T>& other) const;
 
-    inline bool operator!=(const Queue<T>& other) const { return !operator==(other); }
+    inline bool operator!=(const Queue<T>& other) const;
 
     template <typename Iterator>
     inline void push_all(const Iterator& begin, const Iterator& end);

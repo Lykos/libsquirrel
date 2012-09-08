@@ -46,7 +46,7 @@ namespace DataStructures {
   template <typename T>
   inline bool AVLTree<T>::remove(const T &element)
   {
-    AVLNode<T>* current = BaseTree<T, AVLNode<T> >::root();
+    AVLNode<T>* current = BaseTree<T, AVLNode<T> >::m_root;
     while (current != NULL) {
       if (current->element == element) {
         if (current->is_inner()) {

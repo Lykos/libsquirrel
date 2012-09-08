@@ -44,7 +44,7 @@ namespace DataStructures {
   }
 
   template <typename T, typename Node>
-  inline virtual TreeNode<T, Node>::~TreeNode()
+  inline TreeNode<T, Node>::~TreeNode()
   {}
 
   template <typename T, typename Node>

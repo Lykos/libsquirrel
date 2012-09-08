@@ -78,7 +78,8 @@ HEADERS += \
     arraylist.hpp \
     arithmetichelper.hpp \
     algebrahelper.hpp \
-    add.hpp
+    add.hpp \
+    uniformlongintdistribution.hpp
 
 header_files.files = $$HEADERS
 header_files.path = /usr/local/include/DataStructures

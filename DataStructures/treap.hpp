@@ -57,7 +57,7 @@ namespace DataStructures {
   template <typename T>
   inline bool Treap<T>::remove(const T &element)
   {
-    TreapNode<T>* current = BaseTree<T, TreapNode<T> >::root();
+    TreapNode<T>* current = BaseTree<T, TreapNode<T> >::m_root;
     while (current != NULL) {
       if (current->element == element) {
         while (current->is_inner()) {

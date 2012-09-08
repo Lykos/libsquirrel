@@ -4,12 +4,12 @@
 #include "DataStructures/treap.h"
 #include "treetest.h"
 
-class TreapTest : public QObject, public TreeTest<DataStructures::Treap<int> >
+class TreapTest : public QObject, public TreeTest<DataStructures::Treap>
 {
   Q_OBJECT
 
 private:
-  typedef TreeTest<DataStructures::Treap<int> > Test;
+  typedef TreeTest<DataStructures::Treap> Test;
 
 private Q_SLOTS:
   void init() { Test::init(); }

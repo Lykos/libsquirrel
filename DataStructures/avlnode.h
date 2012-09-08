@@ -20,4 +20,6 @@ namespace DataStructures {
   
 } // namespace DataStructures
 
+#include "avlnode.hpp"
+
 #endif // DATASTRUCTURES_AVLNODE_H

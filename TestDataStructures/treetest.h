@@ -8,13 +8,13 @@
 #include <QtTest/QtTest>
 #include <iostream>
 
-template <typename Tree>
+template <template <typename T> class Tree>
 class TreeTest
 {
 private:
-  Tree m_tree;
+  Tree<int> m_tree;
 
-  void standard_fill(Tree& tree);
+  void standard_fill(Tree<int>& tree);
 
 protected:
   void init();
@@ -69,22 +69,22 @@ protected:
 #define COMPARE_INTS(actual, expected) QCOMPARE((int) (actual), (int) (expected))
 
 
-template <typename Tree>
+template <template <typename T> class Tree>
 void TreeTest<Tree>::test_empty_constructor()
 {
-  Tree t;
+  Tree<int> t;
   COMPARE_SIZE(t, 0);
 }
 
-template <typename Tree>
+template <template <typename T> class Tree>
 void TreeTest<Tree>::init()
 {
-  m_tree = Tree();
+  m_tree = Tree<int>();
   standard_fill(m_tree);
 }
 
-template <typename Tree>
-void TreeTest<Tree>::standard_fill(Tree& tree)
+template <template <typename T> class Tree>
+void TreeTest<Tree>::standard_fill(Tree<int>& tree)
 {
   for (int i = 0; i < 20; ++i) {
     tree.insert(0);
@@ -92,7 +92,7 @@ void TreeTest<Tree>::standard_fill(Tree& tree)
   }
 }
 
-template <typename Tree>
+template <template <typename T> class Tree>
 void TreeTest<Tree>::test_remove()
 {
   m_tree.remove(17);
@@ -111,10 +111,10 @@ void TreeTest<Tree>::test_remove()
   }
 }
 
-template <typename Tree>
+template <template <typename T> class Tree>
 void TreeTest<Tree>::test_insert()
 {
-  Tree t;
+  Tree<int> t;
   for (int i = 0; i < 5; ++i) {
     t.insert(0);
     COMPARE_SIZE(t, i + 1);
@@ -125,10 +125,10 @@ void TreeTest<Tree>::test_insert()
   }
 }
 
-template <typename Tree>
+template <template <typename T> class Tree>
 void TreeTest<Tree>::test_search()
 {
-  Tree t;
+  Tree<int> t;
   QVERIFY(!t.search(-1));
   t.insert(1);
   QVERIFY(!t.search(-1));
@@ -146,11 +146,11 @@ void TreeTest<Tree>::test_search()
   QVERIFY(t.search(2));
 }
 
-template <typename Tree>
+template <template <typename T> class Tree>
 void TreeTest<Tree>::test_insert_all()
 {
   int a[] = {1, 2, 3, 4, 5, 6, 7};
-  Tree t;
+  Tree<int> t;
   t.insert_all(a + 0, a + 4);
   COMPARE_SIZE(t, 4);
   for (int i = 0; i < 4; ++i) {
@@ -158,7 +158,7 @@ void TreeTest<Tree>::test_insert_all()
   }
 }
 
-template <typename Tree>
+template <template <typename T> class Tree>
 void TreeTest<Tree>::test_remove_all()
 {
   m_tree.remove_all(0);
@@ -169,10 +169,10 @@ void TreeTest<Tree>::test_remove_all()
   }
 }
 
-template <typename Tree>
+template <template <typename T> class Tree>
 void TreeTest<Tree>::test_clear()
 {
-  Tree t;
+  Tree<int> t;
   standard_fill(t);
   m_tree.clear();
   COMPARE_SIZE(m_tree, 0);
@@ -182,10 +182,10 @@ void TreeTest<Tree>::test_clear()
   COMPARE_SIZE(m_tree, 0);
 }
 
-template <typename Tree>
+template <template <typename T> class Tree>
 void TreeTest<Tree>::test_merge()
 {
-  Tree t1, t2;
+  Tree<int> t1, t2;
   standard_fill(t2);
   t1.insert(-2);
   t1.insert(-1);
@@ -197,19 +197,19 @@ void TreeTest<Tree>::test_merge()
   }
 }
 
-template <typename Tree>
+template <template <typename T> class Tree>
 void TreeTest<Tree>::test_copy_constructor()
 {
-  Tree t1;
+  Tree<int> t1;
   standard_fill(t1);
-  Tree t2 (t1);
+  Tree<int> t2 (t1);
   COMPARE_SIZE(t2, 40);
   for (int i = 0; i < 20; ++i) {
     QVERIFY(t2.search(i));
   }
 }
 
-template <typename Tree>
+template <template <typename T> class Tree>
 void TreeTest<Tree>::test_index()
 {
   for (int i = 0; i < 20; ++i) {
@@ -218,20 +218,20 @@ void TreeTest<Tree>::test_index()
   }
 }
 
-template <typename Tree>
+template <template <typename T> class Tree>
 void TreeTest<Tree>::test_const_index()
 {
-  const Tree& t = m_tree;
+  const Tree<int>& t = m_tree;
   for (int i = 0; i < 20; ++i) {
     COMPARE_INTS(t[i], 0);
     COMPARE_INTS(t[i + 20], i);
   }
 }
 
-template <typename Tree>
+template <template <typename T> class Tree>
 void TreeTest<Tree>::test_const_index_errors()
 {
-  const Tree& t = m_tree;
+  const Tree<int>& t = m_tree;
   int a = 333;
   try {
     a = t[-1];
@@ -248,7 +248,7 @@ void TreeTest<Tree>::test_const_index_errors()
   QCOMPARE(a, 333);
 }
 
-template <typename Tree>
+template <template <typename T> class Tree>
 void TreeTest<Tree>::test_index_errors()
 {
   int a = 333;
@@ -279,41 +279,41 @@ void TreeTest<Tree>::test_index_errors()
   QCOMPARE(a, 333);
 }
 
-template <typename Tree>
+template <template <typename T> class Tree>
 void TreeTest<Tree>::test_iterators()
 {
   int i = 0;
-  for (typename Tree::iterator it = m_tree.begin(); it < m_tree.end(); ++it, ++i)
+  for (typename Tree<int>::iterator it = m_tree.begin(); it < m_tree.end(); ++it, ++i)
   {
     COMPARE_INTS(*it, m_tree[i]);
   }
 }
 
-template <typename Tree>
+template <template <typename T> class Tree>
 void TreeTest<Tree>::test_const_iterators()
 {
-  const Tree& t = m_tree;
+  const Tree<int>& t = m_tree;
   int i = 0;
-  for (typename Tree::const_iterator it = m_tree.begin(); it < m_tree.end(); ++it, ++i)
+  for (typename Tree<int>::const_iterator it = m_tree.begin(); it < m_tree.end(); ++it, ++i)
   {
     COMPARE_INTS(*it, t[i]);
   }
 }
 
-template <typename Tree>
+template <template <typename T> class Tree>
 void TreeTest<Tree>::test_upper_bound_const()
 {
-  const Tree& t = m_tree;
+  const Tree<int>& t = m_tree;
   QCOMPARE(t.upper_bound(0), t.begin() + 21);
   QCOMPARE(t.upper_bound(-1), t.begin());
   QCOMPARE(t.upper_bound(1), t.begin() + 22);
   QCOMPARE(t.upper_bound(100), t.end());
 }
 
-template <typename Tree>
+template <template <typename T> class Tree>
 void TreeTest<Tree>::test_upper_bound()
 {
-  Tree t;
+  Tree<int> t;
   standard_fill(t);
   QCOMPARE(t.upper_bound(0), t.begin() + 21);
   QCOMPARE(t.upper_bound(-1), t.begin());
@@ -321,17 +321,17 @@ void TreeTest<Tree>::test_upper_bound()
   QCOMPARE(t.upper_bound(100), t.end());
 }
 
-template <typename Tree>
+template <template <typename T> class Tree>
 void TreeTest<Tree>::test_lower_bound_const()
 {
-  const Tree& t = m_tree;
+  const Tree<int>& t = m_tree;
   QCOMPARE(t.lower_bound(0), t.begin());
   QCOMPARE(t.lower_bound(-1), t.begin());
   QCOMPARE(t.lower_bound(1), t.begin() + 21);
   QCOMPARE(t.lower_bound(100), t.end());
 }
 
-template <typename Tree>
+template <template <typename T> class Tree>
 void TreeTest<Tree>::test_lower_bound()
 {
   QCOMPARE(m_tree.lower_bound(0), m_tree.begin());
@@ -340,10 +340,10 @@ void TreeTest<Tree>::test_lower_bound()
   QCOMPARE(m_tree.lower_bound(100), m_tree.end());
 }
 
-template <typename Tree>
+template <template <typename T> class Tree>
 void TreeTest<Tree>::test_assign()
 {
-  Tree t;
+  Tree<int> t;
   t.insert(-1);
   t = m_tree;
   COMPARE_SIZE(t, 40);
@@ -353,10 +353,10 @@ void TreeTest<Tree>::test_assign()
   }
 }
 
-template <typename Tree>
+template <template <typename T> class Tree>
 void TreeTest<Tree>::test_equals()
 {
-  Tree t1, t2;
+  Tree<int> t1, t2;
   QVERIFY(t1 == t2);
   standard_fill(t1);
   QVERIFY(!(t1 == t2));
@@ -371,10 +371,10 @@ void TreeTest<Tree>::test_equals()
   QVERIFY(t1 == t2);
 }
 
-template <typename Tree>
+template <template <typename T> class Tree>
 void TreeTest<Tree>::test_not_equals()
 {
-  Tree t1, t2;
+  Tree<int> t1, t2;
   QVERIFY(!(t1 != t2));
   standard_fill(t1);
   QVERIFY(t1 != t2);

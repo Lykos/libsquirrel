@@ -35,7 +35,7 @@ namespace DataStructures {
 
     inline virtual ~TreeNode();
 
-    inline size_type calculated_size();
+    inline size_type calculated_size() const;
 
     T element;
 

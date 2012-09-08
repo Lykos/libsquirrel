@@ -63,7 +63,7 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline Queue<T>::size_type Queue<T>::index_of(size_type index) const
+  inline typename Queue<T>::size_type Queue<T>::index_of(size_type index) const
   {
     return (index + m_begin) % BaseList<T>::capacity();
   }
@@ -111,13 +111,13 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline typename iterator Queue<T>::begin()
+  inline typename Queue<T>::iterator Queue<T>::begin()
   {
     return iterator(this, 0);
   }
 
   template <typename T>
-  inline typename const_iterator Queue<T>::begin() const
+  inline typename Queue<T>::const_iterator Queue<T>::begin() const
   {
     return const_iterator(this, 0);
   }
@@ -129,7 +129,7 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline typename const_iterator Queue<T>::end() const
+  inline typename Queue<T>::const_iterator Queue<T>::end() const
   {
     return const_iterator(this, BaseList<T>::size());
   }
