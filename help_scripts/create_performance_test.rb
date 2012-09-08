@@ -72,7 +72,16 @@ File.open(File.join(File.dirname(__FILE__), '..', 'PerformanceDataStructures', '
   f.puts
 
   [INC, DEC].each do |generator|
+<<<<<<< HEAD
     f.puts generator.generate_special((1 << limits[:inc_dec]) - 1)
+=======
+    f.puts generator.generate_special((1 << 1000000) - 1)
+    f.puts
+  end
+
+  [RIGHT_SHIFT, LEFT_SHIFT].each do |generator|
+    f.puts generator.generate_nospecial(1 << 1000000, 300)
+>>>>>>> performance
     f.puts
   end
 

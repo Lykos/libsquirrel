@@ -2,7 +2,7 @@
 
 namespace DataStructures {
   
-  PreconditionViolation::PreconditionViolation(ConditionType type, const char* dummy_message) throw():
+  PreconditionViolation::PreconditionViolation(ConditionType type, const char* dummy_message):
     m_type (type)
   {
     switch (type) {
