@@ -312,19 +312,82 @@ namespace DataStructures {
     return m_content[0];
   }
 
+  template <typename FLOAT_TYPE, typename INT_TYPE, int MANTISSA, int EXPONENT, int BIAS>
+  inline FLOAT_TYPE LongInt::convert() const
+  {
+    // TODO Use static assert
+    assert(sizeof(INT_TYPE) == sizeof(FLOAT_TYPE));
+    assert(MANTISSA + EXPONENT + 1 == CHAR_BIT * sizeof(FLOAT_TYPE));
+    assert(numeric_limits<INT_TYPE>::is_integer);
+    assert(!numeric_limits<FLOAT_TYPE>::is_integer);
+    assert(numeric_limits<INT_TYPE>::radix == 2);
+    union {
+      INT_TYPE i;
+      FLOAT_TYPE f;
+    } result;
+    // Treat 0 specially
+    if (operator==(ZERO)) {
+      result.i = 0;
+      return result.f;
+    }
+
+    // Take fist digit
+    part_type first_digit = m_content[size() - 1];
+    size_type exponent = log2(first_digit);
+
+    // If our first digit is already too large, truncate.
+    if (exponent > MANTISSA) {
+      first_digit >>= exponent - MANTISSA;
+    }
+
+    // Now it is guaranteed to fit.
+    result.i = first_digit;
+
+    // If there is space for more digits
+    if (exponent < MANTISSA) {
+      result.i <<= MANTISSA - exponent;
+      // Take as many digits as fit into the mantissa and as many as we have.
+      // Note that the for loop gets executed at most constantly many times since MANTISSA is a constant,
+      // so the compiler will probably unroll it.
+      for (uint_fast16_t i = 0; size() > i + 2 && MANTISSA > exponent + i * sizeof(part_type); ++i) {
+        // Insert the part at the right position, in the last step, this might be a right shift
+        result.i |= m_content[size() - i - 2] << (MANTISSA - exponent - (i + 1) * sizeof(part_type));
+      }
+    }
+
+    // Cut out leading bit
+    result.i &= (INT_TYPE(1) << MANTISSA) - 1;
+    exponent += (size() - 1) * sizeof(part_type) * CHAR_BIT + BIAS;
+    if (exponent >= 1 << EXPONENT) {
+      // Special case: Infinity
+      if (m_positive) {
+        return numeric_limits<FLOAT_TYPE>::infinity();
+      } else {
+        return -numeric_limits<FLOAT_TYPE>::infinity();
+      }
+    } else {
+      // Set exponent
+      result.i |= exponent << MANTISSA;
+    }
+    if (!m_positive) {
+      result.i |= INT_TYPE(1) << (MANTISSA + EXPONENT);
+    }
+    return result.f;
+  }
+
   LongInt::operator float() const
   {
-
+    return convert<float, int32_t, FLOAT_MANTISSA, FLOAT_EXPONENT, FLOAT_BIAS>();
   }
 
   LongInt::operator double() const
   {
-
+    return convert<double, int64_t, DOUBLE_MANTISSA, DOUBLE_EXPONENT, DOUBLE_BIAS>();
   }
 
   LongInt::operator long double() const
   {
-
+    return operator double();
   }
 
   LongInt LongInt::operator~() const

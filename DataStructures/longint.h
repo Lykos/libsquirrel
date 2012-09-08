@@ -198,6 +198,9 @@ namespace DataStructures {
     inline const part_list& data() const { return m_content; }
 
   private:
+    template <typename FLOAT_TYPE, typename INT_TYPE, int MANTISSA, int EXPONENT, int BIAS>
+    inline FLOAT_TYPE convert() const;
+
     inline size_type read_sign(const std::string& numerical_string);
 
     inline void write_decimal(std::ostream& out) const;

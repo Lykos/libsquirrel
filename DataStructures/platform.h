@@ -21,6 +21,17 @@ namespace DataStructures {
 
     typedef uint64_t part_type;
 
+    const uint_fast16_t FLOAT_MANTISSA = 23;
+
+    const uint_fast16_t DOUBLE_MANTISSA = 53;
+
+    const uint_fast16_t FLOAT_EXPONENT = 32 - FLOAT_MANTISSA - 1;
+
+    const uint_fast16_t DOUBLE_EXPONENT = 64 - DOUBLE_MANTISSA - 1;
+
+    const uint_fast16_t FLOAT_BIAS = 127;
+
+    const uint_fast16_t DOUBLE_BIAS = 1023;
   }
 
 }
