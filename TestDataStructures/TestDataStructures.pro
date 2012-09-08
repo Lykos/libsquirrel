@@ -24,12 +24,13 @@ SOURCES += \
     polynomialtest.cpp \
     finiteelementtest.cpp \
     arithmetichelpertest.cpp \
-    longinttest.cpp
+    longinttest.cpp \
+    heaparithmetictest.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
 
-INCLUDEPATH += $$PWD/..
+INCLUDEPATH += $$PWD/.. $$PWD/../DataStructures
 DEPENDPATH += $$PWD/../DataStructures
 
 HEADERS += \
@@ -44,4 +45,5 @@ HEADERS += \
     polynomialtest.h \
     finiteelementtest.h \
     arithmetichelpertest.h \
-    comparemacros.h
+    comparemacros.h \
+    heaparithmetictest.h

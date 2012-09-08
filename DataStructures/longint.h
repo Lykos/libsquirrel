@@ -1,16 +1,18 @@
 #ifndef DATASTRUCTURES_LONGINT_H
 #define DATASTRUCTURES_LONGINT_H
 
-#include "incompletetypes.h"
 #include "arraylist.h"
 #include "platform.h"
 #include "divide.h"
+#include "ring.h"
 #include <climits>
 #include <istream>
 #include <ostream>
 #include <vector>
 
 namespace DataStructures {
+
+  class LongInt;
 
   std::ostream& operator<<(std::ostream& out, const LongInt& longInt);
 

@@ -1,6 +1,7 @@
-#ifndef DATASTRUCTURES_FIBONACCIHEAP_H
-#define DATASTRUCTURES_FIBONACCIHEAP_H
+#ifndef DATASTRUCTURES_FIBONACCIHEAP_HPP
+#define DATASTRUCTURES_FIBONACCIHEAP_HPP
 
+#include "DataStructures_global.h"
 #include "fibonaccinode.h"
 #include "arraylist.h"
 
@@ -27,9 +28,8 @@ namespace DataStructures {
 
     inline T pop();
 
-    inline void merge(const FibonacciHeap& other);
-
-    inline void merge(FibonacciHeap&& other);
+    // Note that the other FibonacciHeap will be unusable.
+    inline void merge(FibonacciHeap& other);
 
   private:
     typedef FibonacciNode<T>* NodePointer;
@@ -44,4 +44,4 @@ namespace DataStructures {
   
 } // namespace DataStructures
 
-#endif // DATASTRUCTURES_FIBONACCIHEAP_H
+#endif // DATASTRUCTURES_FIBONACCIHEAP_HPP

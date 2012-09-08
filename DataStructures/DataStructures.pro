@@ -56,7 +56,29 @@ HEADERS += \
     preconditionviolation.h \
     conditiontype.h \
     ring.h \
-    incompletetypes.h
+    treenode.hpp \
+    treeiterator.hpp \
+    treapnode.hpp \
+    treap.hpp \
+    subtract.hpp \
+    ring.hpp \
+    queue.hpp \
+    polynomial.hpp \
+    listiterator.hpp \
+    heaparithmetic.hpp \
+    heap.hpp \
+    finitefield.hpp \
+    finiteelement.hpp \
+    fibonacciheap.hpp \
+    basetree.hpp \
+    baselist.hpp \
+    baseiterator.hpp \
+    avltree.hpp \
+    avlnode.hpp \
+    arraylist.hpp \
+    arithmetichelper.hpp \
+    algebrahelper.hpp \
+    add.hpp
 
 header_files.files = $$HEADERS
 header_files.path = /usr/local/include/DataStructures

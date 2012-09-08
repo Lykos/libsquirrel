@@ -1,21 +1,19 @@
 #ifndef DATASTRUCTURES_RING_H
 #define DATASTRUCTURES_RING_H
 
-#include "preconditionviolation.h"
-
 namespace DataStructures {
 
   template <typename T>
   class Ring
   {
   public:
-    inline Ring(const T& zero, const T& one): m_zero (zero), m_one (one) {}
+    inline Ring(const T& zero, const T& one);
 
     inline T add_inv(const T& element) const;
 
-    inline const T& zero() const { return m_zero; }
+    inline const T& zero() const;
 
-    inline const T& one() const { return m_one; }
+    inline const T& one() const;
 
   private:
     T m_zero;
@@ -24,12 +22,8 @@ namespace DataStructures {
 
   };
 
-  template <typename T>
-  inline T Ring<T>::add_inv(const T& element) const
-  {
-    return -element;
-  }
-
 } // namespace DataStructures
+
+#include "ring.hpp"
 
 #endif // DATASTRUCTURES_RING_H

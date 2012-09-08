@@ -8,6 +8,8 @@
 #include "treaptest.h"
 #include "avltreetest.h"
 #include "queuetest.h"
+#include "arithmetichelpertest.h"
+#include "heaparithmetictest.h"
 #include "heaptest.h"
 
 int main(int argc, char** argv) {
@@ -27,6 +29,10 @@ int main(int argc, char** argv) {
   QTest::qExec(&avl_tree_test, argc, argv);
   QueueTest queue_test;
   QTest::qExec(&queue_test, argc, argv);
+  ArithmeticHelperTest arithmetic_helper_test;
+  QTest::qExec(&arithmetic_helper_test, argc, argv);
+  HeapArithmeticTest heap_arithmetic_test;
+  QTest::qExec(&heap_arithmetic_test, argc, argv);
   HeapTest heap_test;
   QTest::qExec(&heap_test, argc, argv);
   return EXIT_SUCCESS;

@@ -5,6 +5,7 @@
 #include <iostream>
 
 using namespace DataStructures;
+using namespace std;
 
 void HeapTest::test_empty_constructor()
 {
@@ -114,7 +115,7 @@ void HeapTest::test_pop()
     b = h.pop();
     QFAIL("Popping from an empty heap didn't cause an exception.");
   } catch (PreconditionViolation e) {
-    QCOMPARE(e.type(), OutOfRange);
+    QCOMPARE(e.type(), EmptyList);
   }
   COMPARE_INTS(b, 4343);
 }
@@ -146,7 +147,7 @@ void HeapTest::test_top()
     b = h.top();
     QFAIL("Taking the top from an empty heap didn't cause an exception.");
   } catch (PreconditionViolation e) {
-    QCOMPARE(e.type(), OutOfRange);
+    QCOMPARE(e.type(), EmptyList);
   }
   COMPARE_INTS(b, 4343);
 }
@@ -179,7 +180,7 @@ void HeapTest::test_top_const()
     b = h.top();
     QFAIL("Taking the top from an empty const Heap didn't cause an exception.");
   } catch (PreconditionViolation e) {
-    QCOMPARE(e.type(), OutOfRange);
+    QCOMPARE(e.type(), EmptyList);
   }
   COMPARE_INTS(b, 4343);
 }

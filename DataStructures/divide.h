@@ -1,9 +1,9 @@
 #ifndef DATASTRUCTURES_LONGARITHMETIC_DIVIDE_H
 #define DATASTRUCTURES_LONGARITHMETIC_DIVIDE_H
 
-#include "longint.h"
-
 namespace DataStructures {
+
+  class LongInt;
 
   namespace LongArithmetic {
     
