@@ -31,11 +31,11 @@ namespace DataStructures {
   static const LongInt TWO (2);
   static const LongInt MINUS_ONE (-1);
 
+  static const Ring<LongInt> RING(ZERO, ONE);
+
   static const LongInt TEN_BUFFER_FACTOR (TEN.pow(DECIMAL_BUFFER_SIZE));
 
   static const uint_fast8_t base (10);
-
-  static const Ring<LongInt> RING(0, 1);
 
   const LongInt& LongInt::zero()
   {
@@ -603,7 +603,7 @@ namespace DataStructures {
     bool keep = true;
     for (ArrayList<part_type>::iterator it = m_content.begin(); keep; ++it) {
       if (it >= m_content.end()) {
-        m_content.push(0);
+        m_content.push_back(0);
       }
       asm("incq %0;\n"
       "\tsetc %1;"
@@ -638,7 +638,7 @@ namespace DataStructures {
     bool keep = true;
     for (ArrayList<part_type>::iterator it = m_content.begin(); keep; ++it) {
       if (it >= m_content.end()) {
-        m_content.push(0);
+        m_content.push_back(0);
       }
       asm("decq %0;\n"
       "\tsetc %1;"
@@ -736,7 +736,7 @@ namespace DataStructures {
                                 c,
                                 c + space);
     m_content.clear();
-    m_content.insert(m_content.end(), c, c_end);
+    m_content.push_all(c, c_end);
     free(c);
     m_positive = m_positive == other.m_positive;
     if (size() == 0) {
@@ -812,7 +812,7 @@ namespace DataStructures {
       }
     }
     if (part_shift > 0) {
-      m_content.insert(m_content.begin(), 0, part_shift);
+      m_content = part_list(part_shift, 0) + m_content;
     }
     return *this;
   }

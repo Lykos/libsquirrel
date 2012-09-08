@@ -18,22 +18,10 @@ namespace DataStructures {
 
   class LongInt
   {
-    friend std::ostream& operator<<(std::ostream& out, const LongInt& longInt);
-
-    friend std::istream& operator>>(std::istream& in, LongInt& longInt);
-
-    friend ArrayList<LongArithmetic::part_type>::size_type log2(const LongInt& number);
-
-    friend void LongArithmetic::divide(LongInt &dividend, LongInt &divisor, LongInt &quotient, LongInt &remainder, bool remainder_needed);
-
-    friend class UniformLongIntDistribution;
-
-    friend class LongIntConverter;
-
   public:
     typedef LongArithmetic::part_type part_type;
 
-    typedef std::vector<part_type> part_list;
+    typedef ArrayList<part_type> part_list;
 
     typedef part_list::size_type size_type;
 
@@ -194,6 +182,22 @@ namespace DataStructures {
     static const uint_fast16_t PART_SIZE = sizeof(part_type) * CHAR_BIT;
 
     inline const part_list& data() const { return m_content; }
+
+    friend std::ostream& operator<<(std::ostream& out, const LongInt& longInt);
+
+    friend std::istream& operator>>(std::istream& in, LongInt& longInt);
+
+    friend ArrayList<part_type>::size_type log2(const LongInt& number);
+
+    friend void LongArithmetic::divide(LongInt &dividend,
+                                       LongInt &divisor,
+                                       LongInt &quotient,
+                                       LongInt &remainder,
+                                       bool remainder_needed);
+
+    friend class UniformLongIntDistribution;
+
+    friend class LongIntConverter;
 
   private:
     template <typename FLOAT_TYPE, typename INT_TYPE, int MANTISSA, int EXPONENT, int BIAS>

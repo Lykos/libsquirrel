@@ -20,8 +20,7 @@ SOURCES += \
     longintconverter.cpp \
     divide.cpp \
     multiply.cpp \
-    preconditionviolation.cpp \
-    algebraicstructure.cpp
+    preconditionviolation.cpp
 
 HEADERS += \
     longint.h \
@@ -57,7 +56,6 @@ HEADERS += \
     preconditionviolation.h \
     conditiontype.h \
     ring.h \
-    algebraicstructure.h \
     incompletetypes.h
 
 header_files.files = $$HEADERS

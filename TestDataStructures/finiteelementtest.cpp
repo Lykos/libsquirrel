@@ -5,9 +5,9 @@
 
 using namespace DataStructures;
 
-typedef LongInt L;
-typedef FiniteElement<L> FE;
-typedef FiniteField<L> FF;
+typedef LongInt LongInt;
+typedef FiniteElement<LongInt> FE;
+typedef FiniteField<LongInt> FF;
 struct FEP {
   FEP(): fe (NULL) {}
   FEP(FE* e): fe (e) {}
@@ -15,7 +15,7 @@ struct FEP {
 };
 
 Q_DECLARE_METATYPE(FEP)
-Q_DECLARE_METATYPE(L)
+Q_DECLARE_METATYPE(LongInt)
 
 static const FF Z37 (37, 0, 1);
 

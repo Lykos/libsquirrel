@@ -11,12 +11,9 @@
 namespace DataStructures {
 
   template <typename T, typename Structure>
-  class Polynomial;
-
-  template <typename T, typename Structure>
   inline std::ostream& operator<<(std::ostream& out, const Polynomial<T, Structure>& element);
 
-  template <typename T, typename Structure >
+  template <typename T, typename Structure>
   class Polynomial
   {
     friend std::ostream& operator<< <> (std::ostream& out, const Polynomial<T, Structure>& element);
@@ -28,18 +25,25 @@ namespace DataStructures {
 
     typedef typename coefficient_list::difference_type exponent_type;
 
-    inline Polynomial(const Structure *structure = NULL, const T& element = T(), size_type degree = 0);
+    typedef Ring< Polynomial< T, Structure > > ring_type;
 
-    inline Polynomial(const Structure *structure, const coefficient_list& coefficients);
+    inline Polynomial(const Structure *structure = NULL,
+                      const T& element = T(),
+                      size_type degree = 0);
+
+    inline Polynomial(const Structure *structure,
+                      const coefficient_list& coefficients);
 
     template <typename Iterator>
-    inline Polynomial(const Structure *structure, const Iterator& begin, const Iterator& end);
+    inline Polynomial(const Structure *structure,
+                      const Iterator& begin,
+                      const Iterator& end);
 
-    inline const Polynomial<T, Structure>& zero() const;
+    inline Polynomial< T, Structure > zero() const;
 
-    inline const Polynomial<T, Structure>& one() const;
+    inline Polynomial< T, Structure > one() const;
 
-    inline const Ring< Polynomial<T, Structure> >* ring() const;
+    inline ring_type ring() const;
 
     inline T operator()(const T& value) const;
 
@@ -151,7 +155,9 @@ namespace DataStructures {
   }
 
   template <typename T, typename Structure>
-  inline Polynomial<T, Structure>::Polynomial(const Structure *structure, const T& element, size_type degree):
+  inline Polynomial<T, Structure>::Polynomial(const Structure *structure,
+                                              const T& element,
+                                              size_type degree):
     m_structure (structure),
     m_coefficients (element == structure->zero() ? 0 : degree, structure->zero())
   {
@@ -159,7 +165,8 @@ namespace DataStructures {
   }
 
   template <typename T, typename Structure>
-  inline Polynomial<T, Structure>::Polynomial(const Structure *structure, const coefficient_list& coefficients):
+  inline Polynomial<T, Structure>::Polynomial(const Structure *structure,
+                                              const coefficient_list& coefficients):
     m_structure (structure),
     m_coefficients (coefficients)
   {
@@ -168,7 +175,9 @@ namespace DataStructures {
 
   template <typename T, typename Structure>
   template <typename Iterator>
-  inline Polynomial<T, Structure>::Polynomial(const Structure *structure, const Iterator& begin, const Iterator& end):
+  inline Polynomial<T, Structure>::Polynomial(const Structure *structure,
+                                              const Iterator& begin,
+                                              const Iterator& end):
     m_structure (structure),
     m_coefficients ()
   {
@@ -177,21 +186,21 @@ namespace DataStructures {
   }
 
   template <typename T, typename Structure>
-  inline const Polynomial<T, Structure>& Polynomial<T, Structure>::zero() const
+  inline Polynomial< T, Structure > Polynomial< T, Structure >::zero() const
   {
-    return ring()->zero();
+    return Polynomial(m_structure, m_coefficients[0].zero());
   }
 
   template <typename T, typename Structure>
-  inline const Polynomial<T, Structure>& Polynomial<T, Structure>::one() const
+  inline Polynomial< T, Structure > Polynomial< T, Structure >::one() const
   {
-    return ring()->one();
+    return Polynomial(m_structure, m_coefficients[0].one());
   }
 
   template <typename T, typename Structure>
-  inline const Ring< Polynomial<T, Structure> >* Polynomial<T, Structure>::ring() const
+  inline typename Polynomial< T, Structure >::ring_type Polynomial< T, Structure >::ring() const
   {
-    return static_cast< const Ring< Polynomial<T, Structure> >* >(m_structure->polynomials());
+    return ring_type(zero(), one());
   }
 
   template <typename T, typename Structure>
@@ -357,13 +366,15 @@ namespace DataStructures {
   template <typename T, typename Structure>
   inline Polynomial<T, Structure> Polynomial<T, Structure>::pow_eq(exponent_type exponent)
   {
-    return AlgebraHelper::pow_eq(ring(), *this, exponent);
+    ring_type r = ring();
+    return AlgebraHelper::pow_eq(&r, *this, exponent);
   }
 
   template <typename T, typename Structure>
   inline Polynomial<T, Structure> Polynomial<T, Structure>::pow_mod_eq(const LongInt& exponent, const Polynomial<T, Structure>& modulus)
   {
-    AlgebraHelper::pow_mod_eq(ring(), *this, exponent, modulus);
+    ring_type r = ring();
+    AlgebraHelper::pow_mod_eq(&r, *this, exponent, modulus);
     remove_zeros();
     return *this;
   }
@@ -377,7 +388,8 @@ namespace DataStructures {
   template <typename T, typename Structure>
   inline Polynomial<T, Structure> Polynomial<T, Structure>::mult_inv_mod(const Polynomial<T, Structure>& modulus) const
   {
-    return AlgebraHelper::inv_mod(mod(modulus), modulus);
+    ring_type r = ring();
+    return AlgebraHelper::inv_mod(&r, mod(modulus), modulus);
   }
 
   template <typename T, typename Structure>
@@ -402,10 +414,10 @@ namespace DataStructures {
       return;
     }
     coefficient_list quotient_coefficients (new_deg + 1);
-    const T divisor_first_inv = m_structure->mult_inv(divisor.m_coefficients[divisor_deg]);
+    const T divisor_first_digit = divisor.m_coefficients[divisor_deg];
     for (size_type i = new_deg + 1; i > 0;) {
       --i;
-      quotient_coefficients[i] = remainder.m_coefficients[i + divisor_deg] * divisor_first_inv;
+      quotient_coefficients[i] = remainder.m_coefficients[i + divisor_deg] / divisor_first_digit;
       Polynomial<T, Structure> factor (m_structure, quotient_coefficients[i], i);
       Polynomial<T, Structure> back_calculated = factor * divisor;
       remainder.subtract(back_calculated);

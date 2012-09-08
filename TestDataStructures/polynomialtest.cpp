@@ -9,35 +9,34 @@
 
 using namespace DataStructures;
 
-typedef LongInt L;
-typedef Polynomial<L, Ring<L> > P;
+typedef Polynomial<LongInt, Ring<LongInt> > Poly;
 
-static const Ring <LongInt> RING (0, 1);
+static const Ring <LongInt> LongRing = LongInt::ring();
 
-Q_DECLARE_METATYPE(P)
-Q_DECLARE_METATYPE(L)
+Q_DECLARE_METATYPE(Poly)
+Q_DECLARE_METATYPE(LongInt)
 
 void PolynomialTest::test_pow_data()
 {
-  QTest::addColumn<P>("left");
+  QTest::addColumn<Poly>("left");
   QTest::addColumn<int>("right");
-  QTest::addColumn<P>("result");
+  QTest::addColumn<Poly>("result");
   // x^2 + 2
   LongInt input_coeffs[] {2, 0, 1};
   // x^8 + 8 x^6 + 24 x^4 + 32 x^2 + 16
   LongInt result_coeffs[] {16, 0, 32, 0, 24, 0, 8, 0, 1};
-  QTest::newRow("(x^2 + 2) ** 4") << P(&RING, input_coeffs + 0, input_coeffs + 3) << 4 << P(&RING, result_coeffs + 0, result_coeffs + 9);
+  QTest::newRow("(x^2 + 2) ** 4") << Poly(&LongRing, input_coeffs + 0, input_coeffs + 3) << 4 << Poly(&LongRing, result_coeffs + 0, result_coeffs + 9);
 }
 
 using namespace std;
 
 void PolynomialTest::test_pow()
 {
-  QFETCH(P, left);
+  QFETCH(Poly, left);
   QFETCH(int, right);
-  QFETCH(P, result);
+  QFETCH(Poly, result);
 
-  P copy (left);
+  Poly copy (left);
 
   QCOMPARE(left.pow(right), result);
   QCOMPARE(left, copy);
@@ -47,29 +46,29 @@ void PolynomialTest::test_pow()
 
 void PolynomialTest::test_evaluate_data()
 {
-  QTest::addColumn<P>("left");
-  QTest::addColumn<L>("right");
-  QTest::addColumn<L>("result");
+  QTest::addColumn<Poly>("left");
+  QTest::addColumn<LongInt>("right");
+  QTest::addColumn<LongInt>("result");
 
   // 3 x^2 + 4 x + 1
   LongInt left_coeffs[] = {1, 4, 3};
-  QTest::newRow("(3 x^2 + 4x + 1)(2)") << P(&RING, left_coeffs + 0, left_coeffs + 3) << L(2) << L(21);
-  QTest::newRow("(3 x^2 + 4x + 1)(10000000000000000)") << P(&RING, left_coeffs + 0, left_coeffs + 3) << L("10000000000000000") << L("300000000000000040000000000000001");
+  QTest::newRow("(3 x^2 + 4x + 1)(2)") << Poly(&LongRing, left_coeffs + 0, left_coeffs + 3) << LongInt(2) << LongInt(21);
+  QTest::newRow("(3 x^2 + 4x + 1)(10000000000000000)") << Poly(&LongRing, left_coeffs + 0, left_coeffs + 3) << LongInt("10000000000000000") << LongInt("300000000000000040000000000000001");
 }
 
 void PolynomialTest::test_evaluate()
 {
-  QFETCH(P, left);
-  QFETCH(L, right);
-  QFETCH(L, result);
+  QFETCH(Poly, left);
+  QFETCH(LongInt, right);
+  QFETCH(LongInt, result);
 
   QCOMPARE(left(right), result);
 }
 void PolynomialTest::test_modulo_data()
 {
-  QTest::addColumn<P>("left");
-  QTest::addColumn<P>("right");
-  QTest::addColumn<P>("result");
+  QTest::addColumn<Poly>("left");
+  QTest::addColumn<Poly>("right");
+  QTest::addColumn<Poly>("result");
 
   // 3 x^5 + 1
   LongInt left_coeffs[] = {1, 0, 0, 0, 0, 3};
@@ -77,16 +76,16 @@ void PolynomialTest::test_modulo_data()
   LongInt right_coeffs[] = {1, 0, 1};
   // 3x + 1
   LongInt result_coeffs[] = {1, 3};
-  QTest::newRow("(3 x^5 + 1) % (x^2 + 1)") << P(&RING, left_coeffs + 0, left_coeffs + 6) << P(&RING, right_coeffs + 0, right_coeffs + 3) << P(&RING, result_coeffs + 0, result_coeffs + 2);
+  QTest::newRow("(3 x^5 + 1) % (x^2 + 1)") << Poly(&LongRing, left_coeffs + 0, left_coeffs + 6) << Poly(&LongRing, right_coeffs + 0, right_coeffs + 3) << Poly(&LongRing, result_coeffs + 0, result_coeffs + 2);
 }
 
 void PolynomialTest::test_modulo()
 {
-  QFETCH(P, left);
-  QFETCH(P, right);
-  QFETCH(P, result);
+  QFETCH(Poly, left);
+  QFETCH(Poly, right);
+  QFETCH(Poly, result);
 
-  P copy (left);
+  Poly copy (left);
 
   QCOMPARE(left % right, result);
   QCOMPARE(left, copy);
@@ -96,9 +95,9 @@ void PolynomialTest::test_modulo()
 
 void PolynomialTest::test_divide_data()
 {
-  QTest::addColumn<P>("left");
-  QTest::addColumn<P>("right");
-  QTest::addColumn<P>("result");
+  QTest::addColumn<Poly>("left");
+  QTest::addColumn<Poly>("right");
+  QTest::addColumn<Poly>("result");
 
   // 3 x^2 + 1
   LongInt left_coeffs[] = {1, 0, 0, 0, 0, 3};
@@ -106,16 +105,16 @@ void PolynomialTest::test_divide_data()
   LongInt right_coeffs[] = {1, 0, 1};
   // 3x^3 - 3x
   LongInt result_coeffs[] = {0, -3, 0, 3};
-  QTest::newRow("(3 x^5 + 1) / (x^2 + 1)") << P(&RING, left_coeffs + 0, left_coeffs + 6) << P(&RING, right_coeffs + 0, right_coeffs + 3) << P(&RING, result_coeffs + 0, result_coeffs + 4);
+  QTest::newRow("(3 x^5 + 1) / (x^2 + 1)") << Poly(&LongRing, left_coeffs + 0, left_coeffs + 6) << Poly(&LongRing, right_coeffs + 0, right_coeffs + 3) << Poly(&LongRing, result_coeffs + 0, result_coeffs + 4);
 }
 
 void PolynomialTest::test_divide()
 {
-  QFETCH(P, left);
-  QFETCH(P, right);
-  QFETCH(P, result);
+  QFETCH(Poly, left);
+  QFETCH(Poly, right);
+  QFETCH(Poly, result);
 
-  P copy (left);
+  Poly copy (left);
 
   QCOMPARE(left / right, result);
   QCOMPARE(left, copy);

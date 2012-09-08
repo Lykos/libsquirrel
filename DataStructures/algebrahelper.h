@@ -16,7 +16,7 @@ namespace DataStructures {
   namespace AlgebraHelper {
 
     template <typename T, typename Structure>
-    inline T inv_mod(Structure structure, const T& element, const T &modulus)
+    inline T inv_mod(const Structure* structure, const T& element, const T &modulus)
     {
       T a (modulus);
       T b (element);
@@ -38,11 +38,8 @@ namespace DataStructures {
     template <typename T>
     T gcd(const T &first, const T &second)
     {
-      T a = first.abs();
-      T b = second.abs();
-      if (first < second) {
-        std::swap(a, b);
-      }
+      T a = first;
+      T b = second;
       while (b != b.zero()) {
         a %= b;
         std::swap(a, b);
@@ -51,7 +48,7 @@ namespace DataStructures {
     }
 
     template <typename T, typename Structure>
-    inline T& pow_eq(Structure structure, T& base, int64_t exponent)
+    inline T& pow_eq(const Structure* structure, T& base, int64_t exponent)
     {
       // It is probably safer to use a signed type and check >= 0 than to use an unsigned type.
       PREC(NegativeExponent, exponent >= 0);
@@ -71,7 +68,7 @@ namespace DataStructures {
     }
 
     template <typename T, typename Structure>
-    inline T& pow_mod_eq(Structure structure, T& base, const LongInt& exponent, const T& modulus)
+    inline T& pow_mod_eq(const Structure* structure, T& base, const LongInt& exponent, const T& modulus)
     {
       T factor = (exponent.positive() ? base : inv_mod(structure, base, modulus));
       T& result = base;
