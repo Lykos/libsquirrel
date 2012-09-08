@@ -567,15 +567,16 @@ namespace DataStructures {
 
   LongInt& LongInt::operator++()
   {
-    if (!m_positive && size() == 1 && m_content[0] == 1) {
-      m_content[0] = 0;
-      m_positive = true;
-    } else if (m_positive) {
-      inc();
-    } else {
-      dec();
-    }
-    return *this;
+    return operator+=(ONE);
+//    if (!m_positive && size() == 1 && m_content[0] == 1) {
+//      m_content[0] = 0;
+//      m_positive = true;
+//    } else if (m_positive) {
+//      inc();
+//    } else {
+//      dec();
+//    }
+//    return *this;
   }
 
   // Increments without looking at the sign
@@ -601,15 +602,16 @@ namespace DataStructures {
 
   LongInt& LongInt::operator--()
   {
-    if (size() == 1 && m_content[0] == 0) {
-      m_content[0] = 1;
-      m_positive = false;
-    } else if (m_positive) {
-      dec();
-    } else {
-      inc();
-    }
-    return *this;
+    return operator-=(ONE);
+//    if (size() == 1 && m_content[0] == 0) {
+//      m_content[0] = 1;
+//      m_positive = false;
+//    } else if (m_positive) {
+//      dec();
+//    } else {
+//      inc();
+//    }
+//    return *this;
   }
 
   // Decrements without looking at the sign
