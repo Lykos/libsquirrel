@@ -5,6 +5,7 @@
 #include "add.h"
 #include "subtract.h"
 #include "assembly.h"
+#include "ring.h"
 #include <cmath>
 #include <sstream>
 #include <cstdio>
@@ -33,6 +34,23 @@ namespace DataStructures {
   static const LongInt TEN_BUFFER_FACTOR (TEN.pow(DECIMAL_BUFFER_SIZE));
 
   static const uint_fast8_t base (10);
+
+  static const Ring<LongInt> RING(0, 1);
+
+  const LongInt& LongInt::zero()
+  {
+    return ZERO;
+  }
+
+  const LongInt& LongInt::one()
+  {
+    return ONE;
+  }
+
+  const Ring<LongInt>& LongInt::ring()
+  {
+    return RING;
+  }
 
   ostream& operator<<(ostream& out, const LongInt& longInt)
   {
@@ -82,43 +100,43 @@ namespace DataStructures {
   LongInt::LongInt():
     m_positive (true)
   {
-    m_content.push(0);
+    m_content.push_back(0);
   }
 
   LongInt::LongInt(long long int initial):
     m_positive (initial >= 0)
   {
-    m_content.push(m_positive ? initial : -initial);
+    m_content.push_back(m_positive ? initial : -initial);
   }
 
   LongInt::LongInt(unsigned long long int initial):
     m_positive (true)
   {
-    m_content.push(initial);
+    m_content.push_back(initial);
   }
 
   LongInt::LongInt(long int initial):
     m_positive (initial >= 0)
   {
-    m_content.push(m_positive ? initial : -initial);
+    m_content.push_back(m_positive ? initial : -initial);
   }
 
   LongInt::LongInt(unsigned long int initial):
     m_positive (true)
   {
-    m_content.push(initial);
+    m_content.push_back(initial);
   }
 
   LongInt::LongInt(int initial):
     m_positive (initial >= 0)
   {
-    m_content.push(m_positive ? initial : -initial);
+    m_content.push_back(m_positive ? initial : -initial);
   }
 
   LongInt::LongInt(unsigned int initial):
     m_positive (true)
   {
-    m_content.push(initial);
+    m_content.push_back(initial);
   }
 
   template <typename FLOAT_TYPE, typename INT_TYPE, int MANTISSA, int EXPONENT, int BIAS>
@@ -298,11 +316,11 @@ namespace DataStructures {
       LongInt remainder;
       longInt.divide(TEN_BUFFER_FACTOR, longInt, remainder, true);
       s << remainder.m_content[0];
-      parts.push(s.str());
+      parts.push_back(s.str());
       if (longInt > ZERO) {
         arithmetic_assert(DECIMAL_BUFFER_SIZE >= s.str().length());
         for (unsigned int j = 0; j < DECIMAL_BUFFER_SIZE - s.str().length(); ++j) {
-          parts.push("0");
+          parts.push_back("0");
         }
       }
     }
@@ -310,7 +328,7 @@ namespace DataStructures {
       out << "0";
     }
     while (!parts.is_empty()) {
-      out << parts.pop();
+      out << parts.pop_back();
     }
   }
 
@@ -338,7 +356,7 @@ namespace DataStructures {
 
   LongInt::operator bool() const
   {
-    return operator!=(zero());
+    return operator!=(ZERO);
   }
 
   LongInt::operator char() const {
@@ -620,10 +638,10 @@ namespace DataStructures {
     remove_zeros();
   }
 
-  inline void LongInt::pad_zeros(size_type new_size)
+  void LongInt::pad_zeros(size_type new_size)
   {
     for (size_type i = size(); i < new_size; ++i) {
-      m_content.push(0ul);
+      m_content.push_back(0ul);
     }
   }
 
@@ -672,11 +690,11 @@ namespace DataStructures {
                                 c,
                                 c + space);
     m_content.clear();
-    m_content.push_all(c, c_end);
+    m_content.insert(m_content.end(), c, c_end);
     free(c);
     m_positive = m_positive == other.m_positive;
     if (size() == 0) {
-      m_content.push(0);
+      m_content.push_back(0);
       m_positive = true;
     }
     remove_zeros();
@@ -739,7 +757,7 @@ namespace DataStructures {
       part_type keep = 0;
       for (size_type i = 0; keep != 0 || i < size(); ++i) {
         if (i >= size()) {
-          m_content.push(0);
+          m_content.push_back(0);
         }
         // Or works because exactly the space needed for keep gets shifted away.
         part_type shifted = (m_content[i] << per_part_shift) | keep;
@@ -748,7 +766,7 @@ namespace DataStructures {
       }
     }
     if (part_shift > 0) {
-      m_content = part_list (part_shift, 0) + m_content;
+      m_content.insert(m_content.begin(), 0, part_shift);
     }
     return *this;
   }
@@ -796,7 +814,7 @@ namespace DataStructures {
         *it = it[part_shift];
       }
       for (size_type i = 0; i < part_shift; ++i) {
-        m_content.pop();
+        m_content.pop_back();
       }
     }
     if (extra_bit) {
@@ -808,13 +826,13 @@ namespace DataStructures {
 
   LongInt& LongInt::pow_eq(exponent_type exponent)
   {
-    AlgebraHelper::pow_eq(*this, exponent);
+    AlgebraHelper::pow_eq(&RING, *this, exponent);
     return *this;
   }
 
   LongInt& LongInt::pow_mod_eq(const LongInt& exponent, const LongInt& modulus)
   {
-    AlgebraHelper::pow_mod_eq(*this, exponent, modulus);
+    AlgebraHelper::pow_mod_eq(&RING, *this, exponent, modulus);
     return *this;
   }
 
@@ -830,7 +848,7 @@ namespace DataStructures {
       other_part = complement_keep(other.m_positive, other.part_at(i), other_keep);
       new_part = complement_keep(new_positive, part | other_part, new_keep);
       if (i >= size()) {
-        m_content.push(new_part);
+        m_content.push_back(new_part);
       } else {
         m_content[i] = new_part;
       }
@@ -856,7 +874,7 @@ namespace DataStructures {
       other_part = complement_keep(other.m_positive, other.part_at(i), other_keep);
       new_part = complement_keep(new_positive, part ^ other_part, new_keep);
       if (i >= size()) {
-        m_content.push(new_part);
+        m_content.push_back(new_part);
       } else {
         m_content[i] = new_part;
       }
@@ -882,7 +900,7 @@ namespace DataStructures {
       other_part = complement_keep(other.m_positive, other.part_at(i), other_keep);
       new_part = complement_keep(new_positive, part & other_part, new_keep);
       if (i >= size()) {
-        m_content.push(new_part);
+        m_content.push_back(new_part);
       } else {
         m_content[i] = new_part;
       }
@@ -920,14 +938,14 @@ namespace DataStructures {
   void LongInt::remove_zeros()
   {
     while (size() > 1 && m_content[size() - 1] == 0) {
-      m_content.pop();
+      m_content.pop_back();
     }
   }
 
   LongInt LongInt::mult_inv_mod(const LongInt &modulus) const
   {
     PREC(InvalidModulus, modulus >= TWO);
-    return AlgebraHelper::inv_mod(mod(modulus), modulus);
+    return AlgebraHelper::inv_mod(&RING, mod(modulus), modulus);
   }
 
   LongInt LongInt::add_inv_mod(const LongInt &modulus) const

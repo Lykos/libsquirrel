@@ -4,6 +4,7 @@
 #include "finitefield.h"
 #include "conditiontype.h"
 #include "preconditionviolation.h"
+#include "longint.h"
 #include <ostream>
 
 #define PREC_FIELD(a, b) PREC(DifferentFields, *((a).m_field) == *((b).m_field))
@@ -65,10 +66,6 @@ namespace DataStructures {
     inline bool operator==(const FiniteElement<T>& other) const;
 
     inline bool operator!=(const FiniteElement<T>& other) const;
-
-    inline FiniteElement<T> zero() const;
-
-    inline FiniteElement<T> one() const;
 
   private:
     inline void normalize();
@@ -150,7 +147,7 @@ namespace DataStructures {
   template <typename T>
   inline FiniteElement<T>& FiniteElement<T>::operator++()
   {
-    return operator+=(one());
+    return operator+=(m_field->one());
   }
 
   template <typename T>
@@ -164,7 +161,7 @@ namespace DataStructures {
   template <typename T>
   inline FiniteElement<T>& FiniteElement<T>::operator--()
   {
-    return operator-=(one());
+    return operator-=(m_field->one());
   }
 
   template <typename T>
@@ -230,18 +227,6 @@ namespace DataStructures {
   inline bool FiniteElement<T>::operator!=(const FiniteElement<T>& other) const
   {
     return !operator==(other);
-  }
-
-  template <typename T>
-  inline FiniteElement<T> FiniteElement<T>::zero() const
-  {
-    return FiniteElement<T>(m_field, m_element.zero());
-  }
-
-  template <typename T>
-  inline FiniteElement<T> FiniteElement<T>::one() const
-  {
-    return FiniteElement<T>(m_field, m_element.one());
   }
 
   template <typename T>

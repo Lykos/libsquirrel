@@ -117,19 +117,19 @@ void ArrayListTest::test_size()
   COMPARE_SIZE(list, 20);
   list += list;
   COMPARE_SIZE(list, 40);
-  list.push(20);
+  list.push_back(20);
   COMPARE_SIZE(list, 41);
-  list.push(222);
+  list.push_back(222);
   COMPARE_SIZE(list, 42);
-  list.pop();
+  list.pop_back();
   COMPARE_SIZE(list, 41);
-  list.pop();
+  list.pop_back();
   COMPARE_SIZE(list, 40);
-  list.pop();
+  list.pop_back();
   COMPARE_SIZE(list, 39);
-  list.pop();
+  list.pop_back();
   COMPARE_SIZE(list, 38);
-  list.push(22);
+  list.push_back(22);
   COMPARE_SIZE(list, 39);
 }
 
@@ -137,22 +137,22 @@ void ArrayListTest::test_is_empty()
 {
   for (int i = 0; i < 20; ++i) {
     QVERIFY(!list.is_empty());
-    list.pop();
+    list.pop_back();
   }
   QVERIFY(list.is_empty());
   ArrayList<int> list2;
   QVERIFY(list2.is_empty());
-  list2.push(2);
+  list2.push_back(2);
   QVERIFY(!list2.is_empty());
-  list2.pop();
+  list2.pop_back();
   QVERIFY(list2.is_empty());
   ArrayList<int> list3 (1);
   QVERIFY(!list3.is_empty());
   list2 += list3;
   QVERIFY(!list2.is_empty());
-  list2.pop();
+  list2.pop_back();
   QVERIFY(list2.is_empty());
-  list3.pop();
+  list3.pop_back();
   QVERIFY(list3.is_empty());
 }
 
@@ -207,7 +207,7 @@ void ArrayListTest::test_index_errors()
 
 void ArrayListTest::test_push() {
   for (int i = 20; i < 25; ++i) {
-    list.push(i);
+    list.push_back(i);
   }
   COMPARE_SIZE(list, 25);
   for (int i = 0; i < 25; ++i) {
@@ -217,14 +217,14 @@ void ArrayListTest::test_push() {
 
 void ArrayListTest::test_pop() {
   for (int n = 19; n >= 0; --n) {
-    QCOMPARE(list.pop(), n);
+    QCOMPARE(list.pop_back(), n);
     COMPARE_SIZE(list, n);
     for (int i = 0; i < n; ++i) {
       QCOMPARE(list[i], i);
     }
   }
   try {
-    list.pop();
+    list.pop_back();
     QFAIL("Popping from an empty list didn't cause an exception.");
   } catch (PreconditionViolation e) {
     QCOMPARE(e.type(), EmptyList);
@@ -234,7 +234,7 @@ void ArrayListTest::test_pop() {
 void ArrayListTest::test_top() {
   for (int n = 19; n >= 0; --n) {
     QCOMPARE(list.back(), n);
-    list.pop();
+    list.pop_back();
   }
   int a = 29;
   try {
@@ -257,7 +257,7 @@ void ArrayListTest::test_clear() {
   list.clear();
   QVERIFY2(list.is_empty(), "Emptied list is not empty.");
   COMPARE_SIZE(list, 0);
-  list.push(22);
+  list.push_back(22);
   list.clear();
   QVERIFY2(list.is_empty(), "Emptied list is not empty.");
   COMPARE_SIZE(list, 0);
@@ -265,12 +265,12 @@ void ArrayListTest::test_clear() {
   list.clear();
   QVERIFY2(list.is_empty(), "Emptied list is not empty.");
   COMPARE_SIZE(list, 0);
-  list.push(22);
+  list.push_back(22);
   list += ArrayList<int>(2);
   list.clear();
   QVERIFY2(list.is_empty(), "Emptied list is not empty.");
   COMPARE_SIZE(list, 0);
-  list.push(22);
+  list.push_back(22);
 }
 
 void ArrayListTest::test_min_capacity()
@@ -284,11 +284,11 @@ void ArrayListTest::test_capacity()
   list.set_min_capacity(46);
   QVERIFY(list.capacity() >= 46);
   for (int i = 0; i < 100; ++i) {
-    list.push(0);
+    list.push_back(0);
     QVERIFY(list.capacity() >= 46);
   }
   for (int i = 0; i < 100; ++i) {
-    list.pop();
+    list.pop_back();
     QVERIFY(list.capacity() >= 46);
   }
 }
@@ -299,12 +299,12 @@ void ArrayListTest::test_equals()
   ArrayList<int> t1, t2;
   QVERIFY(t1 == t2);
   for (int i = 0; i < 30; ++i) {
-    t1.push(i);
+    t1.push_back(i);
   }
   QVERIFY(t1 == t1);
   QVERIFY(!(t1 == t2));
   for (int i = 0; i < 30; ++i) {
-    t2.push(i);
+    t2.push_back(i);
   }
   QVERIFY(t2 == t2);
 }
@@ -314,12 +314,12 @@ void ArrayListTest::test_unequals()
   ArrayList<int> t1, t2;
   QVERIFY(!(t1 != t2));
   for (int i = 0; i < 30; ++i) {
-    t1.push(i);
+    t1.push_back(i);
   }
   QVERIFY(!(t1 != t1));
   QVERIFY(t1 != t2);
   for (int i = 0; i < 30; ++i) {
-    t2.push(i);
+    t2.push_back(i);
   }
   QVERIFY(!(t1 != t2));
 }

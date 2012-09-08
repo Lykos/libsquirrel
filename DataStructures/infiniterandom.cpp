@@ -21,7 +21,7 @@ namespace DataStructures {
   {
     assert(index <= m_randomness.size());
     if (index == m_randomness.size()) {
-      m_randomness.push(rand());
+      m_randomness.push_back(rand());
     }
     return m_randomness[index];
   }

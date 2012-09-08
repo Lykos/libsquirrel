@@ -1,9 +1,11 @@
 #ifndef DATASTRUCTURES_ALGEBRAHELPER_H
 #define DATASTRUCTURES_ALGEBRAHELPER_H
 
+#include "incompletetypes.h"
 #include "longint.h"
 #include "conditiontype.h"
 #include "preconditionviolation.h"
+#include "ring.h"
 #include <climits>
 #include <cstdint>
 #include <sstream>
@@ -13,27 +15,21 @@ namespace DataStructures {
 
   namespace AlgebraHelper {
 
-    template <typename T>
-    inline T inv_mod(const T& element, const T& modulus);
-
-    template <typename T>
-    inline T gcd(const T& first, const T& second);
-
-    template <typename T>
-    T inv_mod(const T& element, const T &modulus)
+    template <typename T, typename Structure>
+    inline T inv_mod(Structure structure, const T& element, const T &modulus)
     {
       T a (modulus);
       T b (element);
-      T u_old = modulus.zero();
+      T u_old = structure->zero();
       T u = modulus.one();
-      while (b != modulus.zero()) {
+      while (b != structure->zero()) {
         T q;
         a.divide(b, q, a);
         u_old -= u * q;
         std::swap(a, b);
         std::swap(u, u_old);
       }
-      PREC(NotRelativelyPrime, a == modulus.one());
+      PREC(NotRelativelyPrime, a == structure->one());
       u_old += modulus;
       u_old %= modulus;
       return u_old;
@@ -54,14 +50,14 @@ namespace DataStructures {
       return a;
     }
 
-    template <typename T>
-    void pow_eq(T& base, int64_t exponent)
+    template <typename T, typename Structure>
+    inline T& pow_eq(Structure structure, T& base, int64_t exponent)
     {
       // It is probably safer to use a signed type and check >= 0 than to use an unsigned type.
       PREC(NegativeExponent, exponent >= 0);
       T factor (base);
       T& result = base;
-      result = base.one();
+      result = structure->one();
       for (uint_fast16_t j = sizeof(int64_t) * CHAR_BIT; j > 0;) {
         --j;
         if ((exponent >> j) & 1) {
@@ -71,14 +67,15 @@ namespace DataStructures {
           result *= result;
         }
       }
+      return result;
     }
 
-    template <typename T>
-    void pow_mod_eq(T& base, const LongInt& exponent, const T& modulus)
+    template <typename T, typename Structure>
+    inline T& pow_mod_eq(Structure structure, T& base, const LongInt& exponent, const T& modulus)
     {
-      T factor = (exponent.positive() ? base : inv_mod(base, modulus));
+      T factor = (exponent.positive() ? base : inv_mod(structure, base, modulus));
       T& result = base;
-      result = base.one();
+      result = structure->one();
       for (ulong i = exponent.size(); i > 0;) {
         --i;
         LongInt::part_type exponent_part = exponent.part_at(i);
@@ -93,6 +90,7 @@ namespace DataStructures {
           result %= modulus;
         }
       }
+      return result;
     }
 
   } // namespace AlgebraHelper

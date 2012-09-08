@@ -17,7 +17,7 @@ struct FEP {
 Q_DECLARE_METATYPE(FEP)
 Q_DECLARE_METATYPE(L)
 
-static const FF Z37 (37);
+static const FF Z37 (37, 0, 1);
 
 static FE LEFT (&Z37, 17);
 

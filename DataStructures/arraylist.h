@@ -49,9 +49,9 @@ namespace DataStructures {
 
     inline T& operator[](size_type i) { PREC_INDEX_LIST(i); return BaseList<T>::at(i); }
 
-    inline void push(const T& element);
+    inline void push_back(const T& element);
 
-    inline T pop();
+    inline T pop_back();
 
     inline bool remove(const T& element);
 
@@ -185,14 +185,14 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline void ArrayList<T>::push(const T& element)
+  inline void ArrayList<T>::push_back(const T& element)
   {
     BaseList<T>::prepare_size(BaseList<T>::size() + 1);
     BaseList<T>::create(BaseList<T>::size() - 1, element);
   }
 
   template <typename T>
-  inline T ArrayList<T>::pop()
+  inline T ArrayList<T>::pop_back()
   {
     PREC_EMPTY();
     T element = BaseList<T>::at(BaseList<T>::size() - 1);

@@ -19,7 +19,8 @@ namespace DataStructures {
     NANConversion,
     InfinityConversion,
     NegativeExponent,
-    NegationOverflow
+    NegationOverflow,
+    NoField
   };
 
 }

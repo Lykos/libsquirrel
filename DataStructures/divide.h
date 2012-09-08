@@ -1,13 +1,17 @@
 #ifndef DATASTRUCTURES_LONGARITHMETIC_DIVIDE_H
 #define DATASTRUCTURES_LONGARITHMETIC_DIVIDE_H
 
-namespace DataStructures {
+#include "longint.h"
 
-  class LongInt;
+namespace DataStructures {
 
   namespace LongArithmetic {
     
-    void divide(LongInt& dividend, LongInt& divisor, LongInt& quotient, LongInt& remainder, bool remainder_needed);
+    void divide(DataStructures::LongInt& dividend,
+                DataStructures::LongInt& divisor,
+                DataStructures::LongInt& quotient,
+                DataStructures::LongInt& remainder,
+                bool remainder_needed);
 
   } // namespace LongArithmetic
 

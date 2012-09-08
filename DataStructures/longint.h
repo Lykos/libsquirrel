@@ -1,20 +1,16 @@
 #ifndef DATASTRUCTURES_LONGINT_H
 #define DATASTRUCTURES_LONGINT_H
 
+#include "incompletetypes.h"
 #include "arraylist.h"
-#include "divide.h"
 #include "platform.h"
+#include "divide.h"
 #include <climits>
 #include <istream>
 #include <ostream>
+#include <vector>
 
 namespace DataStructures {
-
-  class LongInt;
-
-  class LongIntConverter;
-
-  class UniformLongIntDistribution;
 
   std::ostream& operator<<(std::ostream& out, const LongInt& longInt);
 
@@ -37,11 +33,17 @@ namespace DataStructures {
   public:
     typedef LongArithmetic::part_type part_type;
 
-    typedef ArrayList<part_type> part_list;
+    typedef std::vector<part_type> part_list;
 
     typedef part_list::size_type size_type;
 
     typedef part_list::difference_type exponent_type;
+
+    static const LongInt& zero();
+
+    static const LongInt& one();
+
+    static const Ring<LongInt>& ring();
 
     LongInt();
 
@@ -184,10 +186,6 @@ namespace DataStructures {
     LongInt add_inv_mod(const LongInt& modulus) const;
 
     void divide(const LongInt& other, LongInt& quotient, LongInt& remainder, bool remainder_needed = true);
-
-    inline LongInt zero() const { return 0; }
-
-    inline LongInt one() const { return 1; }
 
     inline size_type size() const { return m_content.size(); }
 

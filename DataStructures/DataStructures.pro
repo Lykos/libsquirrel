@@ -20,7 +20,8 @@ SOURCES += \
     longintconverter.cpp \
     divide.cpp \
     multiply.cpp \
-    preconditionviolation.cpp
+    preconditionviolation.cpp \
+    algebraicstructure.cpp
 
 HEADERS += \
     longint.h \
@@ -54,7 +55,10 @@ HEADERS += \
     assembly.h \
     platform.h \
     preconditionviolation.h \
-    conditiontype.h
+    conditiontype.h \
+    ring.h \
+    algebraicstructure.h \
+    incompletetypes.h
 
 header_files.files = $$HEADERS
 header_files.path = /usr/local/include/DataStructures
