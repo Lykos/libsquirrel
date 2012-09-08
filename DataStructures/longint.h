@@ -226,6 +226,10 @@ namespace DataStructures {
 
     inline void add(const LongInt& other);
 
+    inline void inc();
+
+    inline void dec();
+
     bool m_positive;
 
     part_list m_content;

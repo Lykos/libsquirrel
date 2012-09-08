@@ -12,9 +12,9 @@ namespace Crypto {
   class PreconditionViolation : public std::exception
   {
   public:
-    PreconditionViolation(ConditionType type, const char* message) throw();
+    PreconditionViolation(ConditionType type, const char* message);
 
-    ConditionType type() const throw() { return m_type; }
+    ConditionType type() const { return m_type; }
 
     virtual const char* what() const throw() { return m_message; }
 

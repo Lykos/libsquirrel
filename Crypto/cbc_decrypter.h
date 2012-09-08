@@ -37,17 +37,17 @@ namespace Crypto {
 
       inline message_size_t max_plain_length(message_size_t cipher_length) const;
 
-      inline message_size_t plain_block_size() const throw() { return m_plain_block_size; }
+      inline message_size_t plain_block_size() const { return m_plain_block_size; }
 
-      inline message_size_t cipher_block_size() const throw() { return m_cipher_block_size; }
+      inline message_size_t cipher_block_size() const { return m_cipher_block_size; }
 
-      inline message_size_t state_length() const throw() { return m_plain_block_size; }
+      inline message_size_t state_length() const { return m_plain_block_size; }
 
       inline std::string decrypt(const std::string& plain);
 
-      inline const std::string& state() const throw() { return m_state; }
+      inline const std::string& state() const { return m_state; }
 
-      inline bool state_valid() const throw() { return m_valid; }
+      inline bool state_valid() const { return m_valid; }
 
       inline const std::string& state(const std::string& initial_state);
 

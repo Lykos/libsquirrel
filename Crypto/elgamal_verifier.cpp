@@ -8,7 +8,7 @@ namespace Crypto {
 
   namespace Elgamal {
     
-    Verifier::Verifier(const public_key_t& public_key) throw(PreconditionViolation):
+    Verifier::Verifier(const public_key_t& public_key):
       m_modulus (public_key.modulus),
       m_generator (public_key.generator),
       m_gen_power (public_key.gen_power),
@@ -17,7 +17,7 @@ namespace Crypto {
       m_signature_length (m_r_length + m_s_length)
     {}
 
-    Verifier::Verifier(const std::string& raw_public_key) throw(PreconditionViolation)
+    Verifier::Verifier(const std::string& raw_public_key)
     {
       Converter conv;
       public_key_t public_key = conv.read_public_key(raw_public_key);
@@ -29,7 +29,7 @@ namespace Crypto {
       m_signature_length = m_r_length + m_s_length;
     }
 
-    bool Verifier::verify(const number_t& message, const number_t& r, const number_t& s) const throw()
+    bool Verifier::verify(const number_t& message, const number_t& r, const number_t& s) const
     {
       if (r <= 0 || s <= 0 || r >= m_modulus || s >= m_modulus - 1) {
         return false;
@@ -40,7 +40,7 @@ namespace Crypto {
       return g_h == (g_a_r * r_s).mod(m_modulus);
     }
 
-    bool Verifier::verify(const string& message) const throw()
+    bool Verifier::verify(const string& message) const
     {
       number_size_t length = message.length();
 
@@ -59,7 +59,7 @@ namespace Crypto {
       return verify(hash_number, r, s);
     }
 
-    std::string& Verifier::remove_signature(std::string& message) const throw(PreconditionViolation)
+    std::string& Verifier::remove_signature(std::string& message) const
     {
       number_size_t sig_len = signature_length();
       number_size_t length = message.length();
