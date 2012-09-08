@@ -21,8 +21,6 @@ namespace DataStructures {
 
     typedef ListIterator<T const, ArrayList<T> const > const_iterator;
 
-    typedef typename BaseList<T>::empty_list_error empty_list_error;
-
     typedef typename BaseList<T>::size_type size_type;
 
     inline ArrayList();

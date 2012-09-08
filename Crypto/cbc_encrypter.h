@@ -1,11 +1,9 @@
 #ifndef CRYPTO_CBC_ENCRYPTER_H
 #define CRYPTO_CBC_ENCRYPTER_H
 
-#include "Crypto_global.h"
 #include "conditiontype.h"
 #include "preconditionviolation.h"
 #include "types.h"
-#include <cassert>
 #include <string>
 #define ENC_PREC_STATE_LENGTH() PREC(StateLength, initial_state.length() >= state_length());
 
@@ -14,7 +12,7 @@ namespace Crypto {
   namespace CBC {
 
     template <typename BlockCipher>
-    class CRYPTOSHARED_EXPORT Encrypter
+    class Encrypter
     {
       friend void std::swap <>(Encrypter<BlockCipher>& first, Encrypter<BlockCipher>& second);
 

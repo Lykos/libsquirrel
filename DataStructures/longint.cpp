@@ -10,7 +10,6 @@
 #include <cstdio>
 #include <string>
 #include <climits>
-#include <iostream>
 
 namespace DataStructures {
 
@@ -120,6 +119,76 @@ namespace DataStructures {
     m_positive (true)
   {
     m_content.push(initial);
+  }
+
+  template <typename FLOAT_TYPE, typename INT_TYPE, int MANTISSA, int EXPONENT, int BIAS>
+  inline void LongInt::convert_from(FLOAT_TYPE f)
+  {
+    static_assert(sizeof(INT_TYPE) == sizeof(FLOAT_TYPE), "Incompatible sizes.");
+    static_assert(MANTISSA + EXPONENT + 1 == CHAR_BIT * sizeof(FLOAT_TYPE), "Invalid exponent or mantissa size.");
+    static_assert(numeric_limits<INT_TYPE>::is_integer, "Invalid integer type.");
+    static_assert(!numeric_limits<FLOAT_TYPE>::is_integer, "Invalid float type.");
+    static_assert(numeric_limits<FLOAT_TYPE>::has_infinity, "Invalid float type.");
+    static_assert(numeric_limits<INT_TYPE>::radix == 2, "Implementation assumes radix 2.");
+    PREC(NANConversion, f == f);
+    PREC(InfinityConversion, f == numeric_limits<FLOAT_TYPE>::infinity());
+    PREC(InfinityConversion, f == -numeric_limits<FLOAT_TYPE>::infinity());
+
+    // Treat 0 specially
+    if (f == 0.0) {
+      m_content = part_list(1, 0);
+    }
+
+    union {
+      INT_TYPE i;
+      FLOAT_TYPE f;
+    } result;
+    result.f = f;
+
+    // Get and set sign bit
+    m_positive = result.i >> (MANTISSA + EXPONENT);
+
+    // Extract exponent
+    int64_t exponent = (result.i >> MANTISSA) & ((1 << EXPONENT) - 1);
+
+    // Numbers smaller than 1 are just rounded to 0.
+    if (exponent < BIAS) {
+      m_content = part_list(1, 0);
+      return;
+    }
+
+    // Take bias away and compensate for the size of the mantissa
+    exponent -= BIAS + MANTISSA;
+
+    // Extract mantissa and set hidden bit
+    INT_TYPE mantissa = result.i & ((INT_TYPE(1) << MANTISSA) - 1);
+    mantissa |= INT_TYPE(1) << MANTISSA;
+
+    // Put into number
+    for (uint_fast16_t i = 0; i < (sizeof(INT_TYPE) - 1) / sizeof(part_type) + 1; ++i) {
+      m_content[i] = mantissa >> i * sizeof(part_type) * CHAR_BIT;
+    }
+
+    if (exponent > 0) {
+      operator<<=(exponent);
+    } else {
+      operator>>=(-exponent);
+    }
+  }
+
+  LongInt::LongInt(float initial)
+  {
+    convert_from<float, int32_t, FLOAT_MANTISSA, FLOAT_EXPONENT, FLOAT_BIAS>(initial);
+  }
+
+  LongInt::LongInt(double initial)
+  {
+    convert_from<double, int64_t, DOUBLE_MANTISSA, DOUBLE_EXPONENT, DOUBLE_BIAS>(initial);
+  }
+
+  LongInt::LongInt(long double initial):
+    LongInt(double(initial))
+  {
   }
 
   LongInt::LongInt(const string& numerical_string)
@@ -313,23 +382,23 @@ namespace DataStructures {
   }
 
   template <typename FLOAT_TYPE, typename INT_TYPE, int MANTISSA, int EXPONENT, int BIAS>
-  inline FLOAT_TYPE LongInt::convert() const
+  inline FLOAT_TYPE LongInt::convert_to() const
   {
-    // TODO Use static assert
-    assert(sizeof(INT_TYPE) == sizeof(FLOAT_TYPE));
-    assert(MANTISSA + EXPONENT + 1 == CHAR_BIT * sizeof(FLOAT_TYPE));
-    assert(numeric_limits<INT_TYPE>::is_integer);
-    assert(!numeric_limits<FLOAT_TYPE>::is_integer);
-    assert(numeric_limits<INT_TYPE>::radix == 2);
+    static_assert(sizeof(INT_TYPE) == sizeof(FLOAT_TYPE), "Incompatible sizes.");
+    static_assert(MANTISSA + EXPONENT + 1 == CHAR_BIT * sizeof(FLOAT_TYPE), "Invalid exponent or mantissa size.");
+    static_assert(numeric_limits<INT_TYPE>::is_integer, "Invalid integer type.");
+    static_assert(!numeric_limits<FLOAT_TYPE>::is_integer, "Invalid float type.");
+    static_assert(numeric_limits<FLOAT_TYPE>::has_infinity, "Invalid float type.");
+    static_assert(numeric_limits<INT_TYPE>::radix == 2, "Implementation assumes radix 2.");
+    // Treat 0 specially
+    if (operator==(ZERO)) {
+      return 0.0;
+    }
+
     union {
       INT_TYPE i;
       FLOAT_TYPE f;
     } result;
-    // Treat 0 specially
-    if (operator==(ZERO)) {
-      result.i = 0;
-      return result.f;
-    }
 
     // Take fist digit
     part_type first_digit = m_content[size() - 1];
@@ -377,12 +446,12 @@ namespace DataStructures {
 
   LongInt::operator float() const
   {
-    return convert<float, int32_t, FLOAT_MANTISSA, FLOAT_EXPONENT, FLOAT_BIAS>();
+    return convert_to<float, int32_t, FLOAT_MANTISSA, FLOAT_EXPONENT, FLOAT_BIAS>();
   }
 
   LongInt::operator double() const
   {
-    return convert<double, int64_t, DOUBLE_MANTISSA, DOUBLE_EXPONENT, DOUBLE_BIAS>();
+    return convert_to<double, int64_t, DOUBLE_MANTISSA, DOUBLE_EXPONENT, DOUBLE_BIAS>();
   }
 
   LongInt::operator long double() const
@@ -447,19 +516,19 @@ namespace DataStructures {
     return result.mod_eq(modulus);
   }
 
-  LongInt LongInt::operator<<(size_type shift_offset) const
+  LongInt LongInt::operator<<(exponent_type shift_offset) const
   {
     LongInt result(*this);
     return result <<= shift_offset;
   }
 
-  LongInt LongInt::operator>>(size_type shift_offset) const
+  LongInt LongInt::operator>>(exponent_type shift_offset) const
   {
     LongInt result(*this);
     return result >>= shift_offset;
   }
 
-  LongInt LongInt::pow(size_type exponent) const
+  LongInt LongInt::pow(exponent_type exponent) const
   {
     LongInt result(*this);
     return result.pow_eq(exponent);
@@ -658,8 +727,12 @@ namespace DataStructures {
     }
   }
 
-  LongInt& LongInt::operator<<=(size_type shift_offset)
+  LongInt& LongInt::operator<<=(exponent_type shift_offset)
   {
+    if (shift_offset < 0) {
+      PREC(NegationOverflow, shift_offset != -shift_offset);
+      return operator <<=(-shift_offset);
+    }
     size_type per_part_shift = shift_offset % PART_SIZE;
     size_type part_shift = shift_offset / PART_SIZE;
     if (per_part_shift != 0) {
@@ -680,8 +753,12 @@ namespace DataStructures {
     return *this;
   }
 
-  LongInt& LongInt::operator>>=(size_type shift_offset)
+  LongInt& LongInt::operator>>=(exponent_type shift_offset)
   {
+    if (shift_offset < 0) {
+      PREC(NegationOverflow, shift_offset != -shift_offset);
+      return operator <<=(-shift_offset);
+    }
     // Necessary because this could lead to an invalid index while calculating the correction bit in our implementation.
     if (shift_offset == 0) {
       return *this;
@@ -729,7 +806,7 @@ namespace DataStructures {
     return *this;
   }
 
-  LongInt& LongInt::pow_eq(size_type exponent)
+  LongInt& LongInt::pow_eq(exponent_type exponent)
   {
     AlgebraHelper::pow_eq(*this, exponent);
     return *this;
@@ -858,7 +935,7 @@ namespace DataStructures {
     return operator-().mod(modulus);
   }
 
-  LongInt::exponent_type log2(const LongInt& number)
+  LongInt::size_type log2(const LongInt& number)
   {
     return (number.size() - 1) * LongInt::PART_SIZE + log2(number.m_content[number.size() - 1]);
   }

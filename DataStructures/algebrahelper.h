@@ -55,12 +55,14 @@ namespace DataStructures {
     }
 
     template <typename T>
-    void pow_eq(T& base, u_int64_t exponent)
+    void pow_eq(T& base, int64_t exponent)
     {
+      // It is probably safer to use a signed type and check >= 0 than to use an unsigned type.
+      PREC(NegativeExponent, exponent >= 0);
       T factor (base);
       T& result = base;
       result = base.one();
-      for (u_int8_t j = sizeof(u_int64_t) * CHAR_BIT; j > 0;) {
+      for (uint_fast16_t j = sizeof(int64_t) * CHAR_BIT; j > 0;) {
         --j;
         if ((exponent >> j) & 1) {
           result *= factor;

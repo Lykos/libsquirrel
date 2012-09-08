@@ -41,7 +41,7 @@ namespace DataStructures {
 
     typedef part_list::size_type size_type;
 
-    typedef size_type exponent_type;
+    typedef part_list::difference_type exponent_type;
 
     LongInt();
 
@@ -199,7 +199,10 @@ namespace DataStructures {
 
   private:
     template <typename FLOAT_TYPE, typename INT_TYPE, int MANTISSA, int EXPONENT, int BIAS>
-    inline FLOAT_TYPE convert() const;
+    inline void convert_from(FLOAT_TYPE f);
+
+    template <typename FLOAT_TYPE, typename INT_TYPE, int MANTISSA, int EXPONENT, int BIAS>
+    inline FLOAT_TYPE convert_to() const;
 
     inline size_type read_sign(const std::string& numerical_string);
 
@@ -231,7 +234,7 @@ namespace DataStructures {
 
   };
 
-  LongInt::exponent_type log2(const LongInt& number);
+  LongInt::size_type log2(const LongInt& number);
 
   LongInt::part_type inline complement_keep(bool positive, LongInt::part_type part, bool& keep);
 

@@ -1,4 +1,5 @@
 #include "queuetest.h"
+#include "DataStructures/preconditionviolation.h"
 #include <QtTest/QtTest>
 #include <iostream>
 
@@ -93,19 +94,19 @@ void QueueTest::test_index()
   try {
     m_queue[-1] = 5;
     QFAIL("m_queue[-1] didn't cause an exception.");
-  } catch (Queue<int>::range_error e) {}
+  } catch (PreconditionViolation e) { QCOMPARE(e.type(), OutOfRange); }
   try {
     a = m_queue[-1];
     QFAIL("a = m_queue[-1] didn't cause an exception.");
-  } catch (Queue<int>::range_error e) {}
+  } catch (PreconditionViolation e) { QCOMPARE(e.type(), OutOfRange); }
   try {
     m_queue[20] = 5;
     QFAIL("m_queue[-20] didn't cause an exception.");
-  } catch (Queue<int>::range_error e) {}
+  } catch (PreconditionViolation e) { QCOMPARE(e.type(), OutOfRange); }
   try {
     a = m_queue[20];
     QFAIL("a = m_queue[20] didn't cause an exception.");
-  } catch (Queue<int>::range_error e) {}
+  } catch (PreconditionViolation e) { QCOMPARE(e.type(), OutOfRange); }
   QCOMPARE(a, 333);
 }
 
@@ -130,7 +131,9 @@ void QueueTest::test_pop() {
   try {
     m_queue.pop();
     QFAIL("Popping from an empty m_queue didn't cause an exception.");
-  } catch (Queue<int>::empty_list_error e) {}
+  } catch (PreconditionViolation e) {
+    QCOMPARE(e.type(), EmptyList);
+  }
 }
 
 void QueueTest::test_top() {
@@ -142,7 +145,9 @@ void QueueTest::test_top() {
   try {
     a = m_queue.front();
     QFAIL("Popping from an empty m_queue didn't cause an exception.");
-  } catch (Queue<int>::empty_list_error e) {}
+  } catch (PreconditionViolation e) {
+    QCOMPARE(e.type(), EmptyList);
+  }
   QCOMPARE(a, 29);
 }
 

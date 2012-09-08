@@ -14,7 +14,7 @@ namespace DataStructures {
   public:
     PreconditionViolation(ConditionType type, const char* message) throw();
 
-    ConditionType get_type() const throw() { return m_type; }
+    ConditionType type() const throw() { return m_type; }
 
     virtual const char* what() const throw() { return m_message; }
 

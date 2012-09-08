@@ -1,14 +1,13 @@
-#include <iostream>
 #include "arraylisttest.h"
-#define COMPARE_SIZE(list, expected_size) QCOMPARE((int) (list).size(), (expected_size))
-#define COMPARE_INTS(actual, expected) QCOMPARE((int) (actual), (int) (expected))
+#include "comparemacros.h"
+#include "DataStructures/preconditionviolation.h"
+#include <iostream>
 
 using namespace DataStructures;
 
 ArrayListTest::ArrayListTest():
   list(20)
-{
-}
+{}
 
 void ArrayListTest::init()
 {
@@ -164,11 +163,15 @@ void ArrayListTest::test_const_index_errors()
   try {
     a = l[-1];
     QFAIL("a = l[-1] didn't cause an exception.");
-  } catch (ArrayList<int>::range_error e) {}
+  } catch (PreconditionViolation e) {
+    QCOMPARE(e.type(), OutOfRange);
+  }
   try {
     a = l[20];
     QFAIL("a = l[20] didn't cause an exception.");
-  } catch (ArrayList<int>::range_error e) {}
+  } catch (PreconditionViolation e) {
+    QCOMPARE(e.type(), OutOfRange);
+  }
   QCOMPARE(a, 333);
 }
 
@@ -178,19 +181,27 @@ void ArrayListTest::test_index_errors()
   try {
     list[-1] = 5;
     QFAIL("list[-1] didn't cause an exception.");
-  } catch (ArrayList<int>::range_error e) {}
+  } catch (PreconditionViolation e) {
+    QCOMPARE(e.type(), OutOfRange);
+  }
   try {
     a = list[-1];
     QFAIL("a = list[-1] didn't cause an exception.");
-  } catch (ArrayList<int>::range_error e) {}
+  } catch (PreconditionViolation e) {
+    QCOMPARE(e.type(), OutOfRange);
+  }
   try {
     list[20] = 5;
     QFAIL("list[-20] didn't cause an exception.");
-  } catch (ArrayList<int>::range_error e) {}
+  } catch (PreconditionViolation e) {
+    QCOMPARE(e.type(), OutOfRange);
+  }
   try {
     a = list[20];
     QFAIL("a = list[20] didn't cause an exception.");
-  } catch (ArrayList<int>::range_error e) {}
+  } catch (PreconditionViolation e) {
+    QCOMPARE(e.type(), OutOfRange);
+  }
   QCOMPARE(a, 333);
 }
 
@@ -215,7 +226,9 @@ void ArrayListTest::test_pop() {
   try {
     list.pop();
     QFAIL("Popping from an empty list didn't cause an exception.");
-  } catch (ArrayList<int>::empty_list_error e) {}
+  } catch (PreconditionViolation e) {
+    QCOMPARE(e.type(), EmptyList);
+  }
 }
 
 void ArrayListTest::test_top() {
@@ -227,7 +240,9 @@ void ArrayListTest::test_top() {
   try {
     a = list.back();
     QFAIL("Popping from an empty list didn't cause an exception.");
-  } catch (ArrayList<int>::empty_list_error e) {}
+  } catch (PreconditionViolation e) {
+    QCOMPARE(e.type(), EmptyList);
+  }
   QCOMPARE(a, 29);
 }
 

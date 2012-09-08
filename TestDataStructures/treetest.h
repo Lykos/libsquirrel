@@ -1,11 +1,12 @@
 #ifndef TESTTREAP_H
 #define TESTTREAP_H
 
+#include "DataStructures/conditiontype.h"
+#include "DataStructures/preconditionviolation.h"
+#include "treetest.h"
 #include <QObject>
 #include <QtTest/QtTest>
 #include <iostream>
-#include "DataStructures/basetypes.h"
-#include "treetest.h"
 
 template <typename Tree>
 class TreeTest
@@ -85,7 +86,7 @@ void TreeTest<Tree>::init()
 template <typename Tree>
 void TreeTest<Tree>::standard_fill(Tree& tree)
 {
-  for (DataStructures::index_type i = 0; i < 20; ++i) {
+  for (int i = 0; i < 20; ++i) {
     tree.insert(0);
     tree.insert(i);
   }
@@ -96,15 +97,15 @@ void TreeTest<Tree>::test_remove()
 {
   m_tree.remove(17);
   COMPARE_SIZE(m_tree, 39);
-  for (DataStructures::index_type i = 0; i < 10; ++i) {
+  for (int i = 0; i < 10; ++i) {
     m_tree.remove(0);
     COMPARE_SIZE(m_tree, 38 - i);
   }
-  for (DataStructures::index_type i = 0; i < 10; ++i) {
+  for (int i = 0; i < 10; ++i) {
     m_tree.remove(17);
     COMPARE_SIZE(m_tree, 29);
   }
-  for (DataStructures::index_type i = 0; i < 10; ++i) {
+  for (int i = 0; i < 10; ++i) {
     m_tree.remove(i);
     COMPARE_SIZE(m_tree, 28 - i);
   }
@@ -114,11 +115,11 @@ template <typename Tree>
 void TreeTest<Tree>::test_insert()
 {
   Tree t;
-  for (DataStructures::index_type i = 0; i < 5; ++i) {
+  for (int i = 0; i < 5; ++i) {
     t.insert(0);
     COMPARE_SIZE(t, i + 1);
   }
-  for (DataStructures::index_type i = 5; i < 100; ++i) {
+  for (int i = 5; i < 100; ++i) {
     t.insert(rand());
     COMPARE_SIZE(t, i + 1);
   }
@@ -152,7 +153,7 @@ void TreeTest<Tree>::test_insert_all()
   Tree t;
   t.insert_all(a + 0, a + 4);
   COMPARE_SIZE(t, 4);
-  for (DataStructures::index_type i = 0; i < 4; ++i) {
+  for (int i = 0; i < 4; ++i) {
     QVERIFY(t.search(a[i]));
   }
 }
@@ -163,7 +164,7 @@ void TreeTest<Tree>::test_remove_all()
   m_tree.remove_all(0);
   COMPARE_SIZE(m_tree, 19);
   QVERIFY(!m_tree.search(0));
-  for (DataStructures::index_type i = 1; i < 10; ++i) {
+  for (int i = 1; i < 10; ++i) {
     QVERIFY(m_tree.search(i));
   }
 }
@@ -211,7 +212,7 @@ void TreeTest<Tree>::test_copy_constructor()
 template <typename Tree>
 void TreeTest<Tree>::test_index()
 {
-  for (DataStructures::index_type i = 0; i < 20; ++i) {
+  for (int i = 0; i < 20; ++i) {
     COMPARE_INTS(m_tree[i], 0);
     COMPARE_INTS(m_tree[i + 20], i);
   }
@@ -221,7 +222,7 @@ template <typename Tree>
 void TreeTest<Tree>::test_const_index()
 {
   const Tree& t = m_tree;
-  for (DataStructures::index_type i = 0; i < 20; ++i) {
+  for (int i = 0; i < 20; ++i) {
     COMPARE_INTS(t[i], 0);
     COMPARE_INTS(t[i + 20], i);
   }
@@ -235,11 +236,15 @@ void TreeTest<Tree>::test_const_index_errors()
   try {
     a = t[-1];
     QFAIL("a = t[-1] didn't cause an exception.");
-  } catch (typename Tree::range_error e) {}
+  } catch (DataStructures::PreconditionViolation e) {
+    QCOMPARE(e.type(), DataStructures::OutOfRange);
+  }
   try {
     a = t[50];
     QFAIL("a = t[50] didn't cause an exception.");
-  } catch (typename Tree::range_error e) {}
+  } catch (DataStructures::PreconditionViolation e) {
+    QCOMPARE(e.type(), DataStructures::OutOfRange);
+  }
   QCOMPARE(a, 333);
 }
 
@@ -250,26 +255,34 @@ void TreeTest<Tree>::test_index_errors()
   try {
     m_tree[-1] = 5;
     QFAIL("m_tree[-1] didn't cause an exception.");
-  } catch (typename Tree::range_error e) {}
+  } catch (DataStructures::PreconditionViolation e) {
+    QCOMPARE(e.type(), DataStructures::OutOfRange);
+  }
   try {
     a = m_tree[-1];
     QFAIL("a = m_tree[-1] didn't cause an exception.");
-  } catch (typename Tree::range_error e) {}
+  } catch (DataStructures::PreconditionViolation e) {
+    QCOMPARE(e.type(), DataStructures::OutOfRange);
+ }
   try {
     m_tree[50] = 5;
     QFAIL("m_tree[50] didn't cause an exception.");
-  } catch (typename Tree::range_error e) {}
+  } catch (DataStructures::PreconditionViolation e) {
+    QCOMPARE(e.type(), DataStructures::OutOfRange);
+  }
   try {
     a = m_tree[50];
     QFAIL("a = m_tree[50] didn't cause an exception.");
-  } catch (typename Tree::range_error e) {}
+  } catch (DataStructures::PreconditionViolation e) {
+    QCOMPARE(e.type(), DataStructures::OutOfRange);
+  }
   QCOMPARE(a, 333);
 }
 
 template <typename Tree>
 void TreeTest<Tree>::test_iterators()
 {
-  DataStructures::index_type i = 0;
+  int i = 0;
   for (typename Tree::iterator it = m_tree.begin(); it < m_tree.end(); ++it, ++i)
   {
     COMPARE_INTS(*it, m_tree[i]);
@@ -280,7 +293,7 @@ template <typename Tree>
 void TreeTest<Tree>::test_const_iterators()
 {
   const Tree& t = m_tree;
-  DataStructures::index_type i = 0;
+  int i = 0;
   for (typename Tree::const_iterator it = m_tree.begin(); it < m_tree.end(); ++it, ++i)
   {
     COMPARE_INTS(*it, t[i]);
@@ -348,11 +361,11 @@ void TreeTest<Tree>::test_equals()
   standard_fill(t1);
   QVERIFY(!(t1 == t2));
   QVERIFY(t1 == t1);
-  for (DataStructures::index_type i = 0; i < 20; ++i) {
+  for (int i = 0; i < 20; ++i) {
     t2.insert(i);
   }
   QVERIFY(!(t1 == t2));
-  for (DataStructures::index_type i = 0; i < 20; ++i) {
+  for (int i = 0; i < 20; ++i) {
     t2.insert(0);
   }
   QVERIFY(t1 == t2);
@@ -366,11 +379,11 @@ void TreeTest<Tree>::test_not_equals()
   standard_fill(t1);
   QVERIFY(t1 != t2);
   QVERIFY(!(t1 != t1));
-  for (DataStructures::index_type i = 0; i < 20; ++i) {
+  for (int i = 0; i < 20; ++i) {
     t2.insert(i);
   }
   QVERIFY(t1 != t2);
-  for (DataStructures::index_type i = 0; i < 20; ++i) {
+  for (int i = 0; i < 20; ++i) {
     t2.insert(0);
   }
   QVERIFY(!(t1 != t2));

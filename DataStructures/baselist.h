@@ -29,10 +29,6 @@ namespace DataStructures {
 
     static const size_type DEFAULT_MIN_CAPACITY;
 
-    typedef std::logic_error empty_list_error;
-
-    typedef std::out_of_range range_error;
-
     typedef T value_type;
 
     typedef T& reference_type;

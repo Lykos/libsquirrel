@@ -15,7 +15,11 @@ namespace DataStructures {
     NoDigits,
     InvalidDigit,
     NotImplemented,
-    InvalidModulus
+    InvalidModulus,
+    NANConversion,
+    InfinityConversion,
+    NegativeExponent,
+    NegationOverflow
   };
 
 }

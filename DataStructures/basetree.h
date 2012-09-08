@@ -48,8 +48,6 @@ namespace DataStructures {
     typedef typename Node::direction direction;
 
   public:
-    typedef std::out_of_range range_error;
-
     typedef typename Node::size_type size_type;
 
     typedef typename Node::difference_type difference_type;

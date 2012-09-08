@@ -1,9 +1,8 @@
 #include "heaptest.h"
+#include "comparemacros.h"
+#include "DataStructures/preconditionviolation.h"
 #include <QtTest/QtTest>
 #include <iostream>
-
-#define COMPARE_SIZE(m_queue, expected_size) QCOMPARE((int) (m_queue).size(), (expected_size))
-#define COMPARE_INTS(actual, expected) QCOMPARE((int) (actual), (int) (expected))
 
 using namespace DataStructures;
 
@@ -114,7 +113,9 @@ void HeapTest::test_pop()
   try {
     b = h.pop();
     QFAIL("Popping from an empty heap didn't cause an exception.");
-  } catch (Heap<int>::empty_list_error e) {}
+  } catch (PreconditionViolation e) {
+    QCOMPARE(e.type(), OutOfRange);
+  }
   COMPARE_INTS(b, 4343);
 }
 
@@ -144,7 +145,9 @@ void HeapTest::test_top()
   try {
     b = h.top();
     QFAIL("Taking the top from an empty heap didn't cause an exception.");
-  } catch (Heap<int>::empty_list_error e) {}
+  } catch (PreconditionViolation e) {
+    QCOMPARE(e.type(), OutOfRange);
+  }
   COMPARE_INTS(b, 4343);
 }
 
@@ -175,6 +178,8 @@ void HeapTest::test_top_const()
   try {
     b = h.top();
     QFAIL("Taking the top from an empty const Heap didn't cause an exception.");
-  } catch (Heap<int>::empty_list_error e) {}
+  } catch (PreconditionViolation e) {
+    QCOMPARE(e.type(), OutOfRange);
+  }
   COMPARE_INTS(b, 4343);
 }
