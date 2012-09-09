@@ -58,6 +58,7 @@ HEADERS += \
     conditiontype.h \
     ring.h \
     algebraicstructure.h \
+    fibonaccinode.h \
     treenode.hpp \
     treeiterator.hpp \
     treapnode.hpp \
@@ -81,7 +82,10 @@ HEADERS += \
     arithmetichelper.hpp \
     algebrahelper.hpp \
     add.hpp \
-    uniformlongintdistribution.hpp
+    uniformlongintdistribution.hpp \
+    fibonaccinode.hpp \
+    field.hpp \
+    field.h
 
 header_files.files = $$HEADERS
 header_files.path = /usr/local/include/DataStructures

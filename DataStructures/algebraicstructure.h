@@ -8,13 +8,13 @@ namespace DataStructures {
   public:
     AlgebraicStructure();
 
-    AlgebraicStructure(const AlgebraicStructure& other);
+    AlgebraicStructure(const AlgebraicStructure& other) = delete;
 
-    AlgebraicStructure(AlgebraicStructure&& other);
+    AlgebraicStructure(AlgebraicStructure&& other) = delete;
 
-    AlgebraicStructure& operator=(const AlgebraicStructure& other);
+    AlgebraicStructure& operator=(const AlgebraicStructure& other) = delete;
 
-    AlgebraicStructure& operator=(AlgebraicStructure&& other);
+    AlgebraicStructure& operator=(AlgebraicStructure&& other) = delete;
 
     virtual ~AlgebraicStructure();
 

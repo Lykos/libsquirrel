@@ -20,7 +20,9 @@ namespace DataStructures {
     InfinityConversion,
     NegativeExponent,
     NegationOverflow,
-    NoField
+    NoField,
+    SelfMerge,
+    InvalidNode
   };
 
 }

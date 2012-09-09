@@ -8,6 +8,18 @@
 namespace DataStructures {
 
   template <typename T>
+  inline bool Ring<T>::operator==(const Ring<T>& other) const
+  {
+    return m_zero == other.m_zero && m_one == other.m_one;
+  }
+
+  template <typename T>
+  inline bool Ring<T>::operator!=(const Ring<T>& other) const
+  {
+    return !operator==(other);
+  }
+
+  template <typename T>
   inline Ring<T>::Ring(const T& zero, const T& one):
     m_zero (zero),
     m_one (one)

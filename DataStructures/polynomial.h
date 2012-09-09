@@ -45,7 +45,7 @@ namespace DataStructures {
 
     inline Polynomial< T, Structure > one() const;
 
-    inline ring_type ring() const;
+    inline const ring_type* ring() const;
 
     inline T operator()(const T& value) const;
 

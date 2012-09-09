@@ -9,7 +9,19 @@ namespace DataStructures {
   class Ring : public AlgebraicStructure
   {
   public:
+    Ring& operator=(const Ring<T>& other) = delete;
+
+    Ring& operator=(Ring<T>&& other) = delete;
+
+    Ring(const Ring<T>& other) = delete;
+
+    Ring(Ring<T>&& other) = delete;
+
     inline Ring(const T& zero, const T& one);
+
+    inline bool operator==(const Ring<T>& other) const;
+
+    inline bool operator!=(const Ring<T>& other) const;
 
     inline T add_inv(const T& element) const;
 

@@ -86,9 +86,9 @@ namespace DataStructures {
   }
 
   template <typename T, typename Structure>
-  inline typename Polynomial< T, Structure >::ring_type Polynomial< T, Structure >::ring() const
+  inline const typename Polynomial< T, Structure >::ring_type* Polynomial< T, Structure >::ring() const
   {
-    return ring_type(zero(), one());
+    return new ring_type(zero(), one());
   }
 
   template <typename T, typename Structure>
@@ -284,16 +284,19 @@ namespace DataStructures {
   template <typename T, typename Structure>
   inline Polynomial<T, Structure> Polynomial<T, Structure>::pow_eq(exponent_type exponent)
   {
-    ring_type r = ring();
-    return AlgebraHelper::pow_eq(&r, *this, exponent);
+    const ring_type *r = ring();
+    AlgebraHelper::pow_eq(r, *this, exponent);
+    delete r;
+    return *this;
   }
 
   template <typename T, typename Structure>
   inline Polynomial<T, Structure> Polynomial<T, Structure>::pow_mod_eq(const LongInt& exponent, const Polynomial<T, Structure>& modulus)
   {
-    ring_type r = ring();
-    AlgebraHelper::pow_mod_eq(&r, *this, exponent, modulus);
+    const ring_type *r = ring();
+    AlgebraHelper::pow_mod_eq(r, *this, exponent, modulus);
     remove_zeros();
+    delete r;
     return *this;
   }
 
@@ -306,8 +309,10 @@ namespace DataStructures {
   template <typename T, typename Structure>
   inline Polynomial<T, Structure> Polynomial<T, Structure>::mult_inv_mod(const Polynomial<T, Structure>& modulus) const
   {
-    ring_type r = ring();
-    return AlgebraHelper::inv_mod(&r, mod(modulus), modulus);
+    const ring_type *r = ring();
+    Polynomial<T> inverse = AlgebraHelper::inv_mod(r, mod(modulus), modulus);
+    delete r;
+    return inverse;
   }
 
   template <typename T, typename Structure>
