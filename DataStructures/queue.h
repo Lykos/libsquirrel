@@ -32,12 +32,48 @@ namespace DataStructures {
     template <typename Iterator>
     inline Queue(const Iterator& begin, const Iterator& end);
 
+    inline int_fast8_t compare_to(const Queue<T>& other) const;
+
     inline bool operator==(const Queue<T>& other) const;
 
     inline bool operator!=(const Queue<T>& other) const;
 
+    inline bool operator<(const Queue<T>& other) const;
+
+    inline bool operator<=(const Queue<T>& other) const;
+
+    inline bool operator>(const Queue<T>& other) const;
+
+    inline bool operator>=(const Queue<T>& other) const;
+
     template <typename Iterator>
-    inline void push_all(const Iterator& begin, const Iterator& end);
+    inline void assign(Iterator begin, Iterator end);
+
+    inline void assign(size_type number, const T& element);
+
+    inline iterator erase(iterator position);
+
+    inline iterator erase(iterator start, iterator end);
+
+    inline iterator erase(size_type index);
+
+    inline iterator erase(size_type start, size_type end);
+
+    inline iterator insert(size_type index, const T& element);
+
+    inline void insert(size_type index, size_type number, const T& element);
+
+    template <typename Iterator>
+    inline void insert(size_type index, Iterator start, Iterator end);
+
+    inline iterator insert(iterator position, const T& element);
+
+    inline void insert(iterator position, size_type number, const T& element);
+
+    template <typename Iterator>
+    inline void insert(iterator position, Iterator start, Iterator end);
+
+    inline void resize(size_type new_size, const T& element = T());
 
     inline const T& operator[](size_type i) const;
 
@@ -75,7 +111,13 @@ namespace DataStructures {
 
     inline size_type index_of(size_type index) const;
 
-    size_type m_begin;
+    inline void destroy_queue_part(size_type q_start, size_type length);
+
+    inline void move_queue_part(size_type q_insert_position, size_type q_start, size_type length);
+
+    inline void move_queue_continuous(size_type q_insert_position, size_type q_start, size_type length);
+
+    size_type m_begin = 0;
 
   };
 

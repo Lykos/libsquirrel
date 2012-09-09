@@ -39,33 +39,52 @@ namespace DataStructures {
   template <typename Iterator>
   inline Queue<T>::Queue(const Iterator& begin, const Iterator& end)
   {
-    push_all(begin, end);
-  }
-
-  template <typename T>
-  template <typename Iterator>
-  inline void Queue<T>::push_all(const Iterator& begin, const Iterator& end)
-  {
-    if (end <= begin) {
-      return;
-    }
-    size_type i = BaseList<T>::size();
-    BaseList<T>::prepare_size(BaseList<T>::size() + (end - begin));
-    for (Iterator it = begin; it != end; ++it, ++i) {
-      BaseList<T>::create(index_of(i), *it);
-    }
-  }
-
-  template <typename T>
-  inline bool Queue<T>::operator!=(const Queue<T>& other) const
-  {
-    return !operator==(other);
+    insert(m_begin, begin, end);
   }
 
   template <typename T>
   inline typename Queue<T>::size_type Queue<T>::index_of(size_type index) const
   {
     return (index + m_begin) % BaseList<T>::capacity();
+  }
+
+  template <typename T>
+  inline void Queue<T>::destroy_queue_part(size_type q_start, size_type length)
+  {
+    assert(length <= BaseList<T>::capacity());
+    if (q_start + length <= BaseList<T>::capacity()) {
+      destroy_part(q_start, length);
+    } else {
+      size_type first_segment = BaseList<T>::capacity() - q_start;
+      destroy_part(q_start, first_segment);
+      destroy_part(0, length - first_segment);
+    }
+  }
+
+  template <typename T>
+  inline void Queue<T>::move_queue_part(size_type q_insert_position, size_type q_start, size_type length)
+  {
+    assert(length <= BaseList<T>::capacity());
+    if (q_start + length <= BaseList<T>::capacity()) {
+      move_queue_continuous(q_insert_position, q_start, length);
+    } else {
+      size_type first_segment = BaseList<T>::capacity() - q_start;
+      move_queue_continuous(q_insert_position, q_start, first_segment);
+      move_queue_continuous(q_insert_position + first_segment, 0, length - first_segment);
+    }
+  }
+
+  template <typename T>
+  inline void Queue<T>::move_queue_continuous(size_type q_insert_position, size_type q_start, size_type length)
+  {
+    assert(q_start + length <= BaseList<T>::capacity());
+    if (q_insert_position + length <= BaseList<T>::capacity()) {
+      move_part(q_insert_position, q_start, length);
+    } else {
+      size_type end_segment = BaseList<T>::capacity() - q_insert_position;
+      move_part(q_insert_position, q_start, end_segment);
+      move_part(0, q_start + end_segment, length - end_segment);
+    }
   }
 
   template <typename T>
@@ -135,17 +154,183 @@ namespace DataStructures {
   }
 
   template <typename T>
+  inline int_fast8_t Queue<T>::compare_to(const Queue<T>& other) const
+  {
+    if (this == &other) {
+      return 0;
+    }
+    for (size_type i = 0; i < BaseList<T>::size() && i < other.size(); ++i) {
+      if (BaseList<T>::at(index_of(i)) < other.at(other.index_of(i))) {
+        return -1;
+      } else if (other.at(other.index_of(i)) < BaseList<T>::at(index_of(i))) {
+        return 1;
+      }
+    }
+    if (BaseList<T>::size() < other.size()) {
+      return -1;
+    } else if (other.size() < BaseList<T>::size()) {
+      return 1;
+    }
+    return 0;
+  }
+
+  template <typename T>
   inline bool Queue<T>::operator==(const Queue<T>& other) const
   {
+    if (this == &other) {
+      return true;
+    }
     if (BaseList<T>::size() != other.size()) {
       return false;
     }
-    for (size_type i = 0; i < BaseList<T>::size(); ++i) {
-      if (operator[](i) != other.operator[](i)) {
-        return false;
-      }
+    return compare_to(other) == 0;
+  }
+
+  template <typename T>
+  inline bool Queue<T>::operator!=(const Queue<T>& other) const
+  {
+    return !operator==(other);
+  }
+
+  template <typename T>
+  inline bool Queue<T>::operator<(const Queue<T>& other) const
+  {
+    return compare_to(other) == -1;
+  }
+
+  template <typename T>
+  inline bool Queue<T>::operator<=(const Queue<T>& other) const
+  {
+    return compare_to(other) != 1;
+  }
+
+  template <typename T>
+  inline bool Queue<T>::operator>(const Queue<T>& other) const
+  {
+    return compare_to(other) == 1;
+  }
+
+  template <typename T>
+  inline bool Queue<T>::operator>=(const Queue<T>& other) const
+  {
+    return compare_to(other) != -1;
+  }
+
+  template <typename T>
+  template <typename Iterator>
+  inline void Queue<T>::assign(Iterator begin, Iterator end)
+  {
+    clear();
+    insert(0, begin, end);
+  }
+
+  template <typename T>
+  inline void Queue<T>::assign(size_type number, const T& element)
+  {
+    clear();
+    insert(0, number, element);
+  }
+
+  template <typename T>
+  inline typename Queue<T>::iterator Queue<T>::erase(iterator position)
+  {
+    return erase(position - begin());
+  }
+
+  template <typename T>
+  inline typename Queue<T>::iterator Queue<T>::erase(iterator start, iterator end)
+  {
+    return erase(start - begin(), end - begin());
+  }
+
+  template <typename T>
+  inline typename Queue<T>::iterator Queue<T>::erase(size_type index)
+  {
+    return erase(index, index + 1);
+  }
+
+  template <typename T>
+  inline typename Queue<T>::iterator Queue<T>::erase(size_type start, size_type end)
+  {
+    PREC_INDEX_INSERT_LIST(start);
+    PREC_INDEX_INSERT_LIST(end);
+    PREC(InvalidRange, start <= end);
+    BaseList<T>::destroy_part(index_of(start), end - start);
+    if (start < BaseList<T>::size() - end) {
+      move_queue_part(index_of(end - start), index_of(0), start);
+      m_begin = index_of(end - start);
+    } else {
+      move_queue_part(index_of(start), index_of(end), BaseList<T>::size() - end);
     }
-    return true;
+    BaseList<T>::prepare_size(BaseList<T>::size() - (end - start));
+    return iterator(this, start);
+  }
+
+  template <typename T>
+  inline typename Queue<T>::iterator Queue<T>::insert(size_type index, const T& element)
+  {
+    insert(index, size_type(1), element);
+    return iterator(this, index);
+  }
+
+  template <typename T>
+  inline void Queue<T>::insert(size_type index, size_type number, const T& element)
+  {
+    PREC_INDEX_INSERT_LIST(index);
+    size_type old_size = BaseList<T>::size();
+    BaseList<T>::prepare_size(old_size + number);
+    if (index < BaseList<T>::size() - index) {
+      assert(BaseList<T>::capacity() >= number);
+      move_queue_part(index_of(BaseList<T>::capacity() - number), index_of(0), index);
+      m_begin = index_of(BaseList<T>::capacity() - number);
+    } else {
+      move_queue_part(index_of(index + number), index_of(index), BaseList<T>::size() - index);
+    }
+    for (size_type i = index; i < index + number; ++i) {
+      BaseList<T>::create(i, element);
+    }
+  }
+
+  template <typename T>
+  template <typename Iterator>
+  inline void Queue<T>::insert(size_type index, Iterator begin, Iterator end)
+  {
+    PREC_INDEX_INSERT_LIST(index);
+    size_type old_size = BaseList<T>::size();
+    BaseList<T>::prepare_size(old_size + (end - begin));
+    BaseList<T>::move_part(index + (end - begin), index, old_size - index);
+    for (; begin != end; ++begin, ++index) {
+      BaseList<T>::create(index, *begin);
+    }
+  }
+
+  template <typename T>
+  inline typename Queue<T>::iterator Queue<T>::insert(iterator position, const T& element)
+  {
+    return insert(position - begin(), element);
+  }
+
+  template <typename T>
+  inline void Queue<T>::insert(iterator position, size_type number, const T& element)
+  {
+    insert(position - begin(), number, element);
+  }
+
+  template <typename T>
+  template <typename Iterator>
+  inline void Queue<T>::insert(iterator position, Iterator start, Iterator end)
+  {
+    insert(position - begin(), start, end);
+  }
+
+  template <typename T>
+  inline void Queue<T>::resize(size_type new_size, const T& element)
+  {
+    if (new_size < BaseList<T>::size()) {
+      erase(new_size, BaseList<T>::size());
+    } else if (new_size > BaseList<T>::size()) {
+      insert(BaseList<T>::size(), new_size - BaseList<T>::size(), element);
+    }
   }
 
   template <typename T>

@@ -28,16 +28,6 @@ void QueueTest::test_copy_constructor()
   QCOMPARE(m_queue, copied_m_queue);
 }
 
-void QueueTest::test_push_all()
-{
-  Queue<int> copied_queue;
-  copied_queue.push_all(m_queue.begin() + 5, m_queue.begin() + 14);
-  QCOMPARE((int) copied_queue.size(), 9);
-  for (int i = 0; i < 9; ++i) {
-    QCOMPARE(copied_queue[i], i + 5);
-  }
-}
-
 void QueueTest::test_assign()
 {
   Queue<int> copied_queue;
@@ -80,7 +70,7 @@ void QueueTest::test_is_empty()
   Queue<int> queue3;
   queue3.push_back(2);
   QVERIFY(!queue3.empty());
-  queue2.push_all(queue3.begin(), queue3.end());
+  queue2.insert(queue2.end(), queue3.begin(), queue3.end());
   QVERIFY(!queue2.empty());
   queue2.pop_front();
   QVERIFY(queue2.empty());
@@ -166,7 +156,7 @@ void QueueTest::test_clear() {
   m_queue.clear();
   QVERIFY2(m_queue.empty(), "Emptied m_queue is not empty.");
   COMPARE_SIZE(m_queue, 0);
-  m_queue.push_all(m_queue.begin(), m_queue.end());
+  m_queue.insert(m_queue.end(), m_queue.begin(), m_queue.end());
   m_queue.clear();
   QVERIFY2(m_queue.empty(), "Emptied m_queue is not empty.");
   COMPARE_SIZE(m_queue, 0);

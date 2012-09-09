@@ -18,8 +18,6 @@ private Q_SLOTS:
 
   void test_copy_constructor();
 
-  void test_push_all();
-
   void test_assign();
 
   void test_size();

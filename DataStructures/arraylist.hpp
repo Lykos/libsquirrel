@@ -5,8 +5,6 @@
 #include "arraylist.h"
 #include "listiterator.h"
 
-#define PREC_INDEX_INSERT_LIST(index) PREC(OutOfRange, index <= BaseList<T>::size())
-
 namespace DataStructures {
 
   template <typename T>
@@ -40,6 +38,27 @@ namespace DataStructures {
   ArrayList<T>::ArrayList(Iterator begin, Iterator end)
   {
     insert(0, begin, end);
+  }
+
+  template <typename T>
+  inline int_fast8_t ArrayList<T>::compare_to(const ArrayList<T>& other) const
+  {
+    if (this == &other) {
+      return 0;
+    }
+    for (size_type i = 0; i < BaseList<T>::size() && i < other.size(); ++i) {
+      if (BaseList<T>::at(i) < other.at(i)) {
+        return -1;
+      } else if (other.at(i) < BaseList<T>::at(i)) {
+        return 1;
+      }
+    }
+    if (BaseList<T>::size() < other.size()) {
+      return -1;
+    } else if (other.size() < BaseList<T>::size()) {
+      return 1;
+    }
+    return 0;
   }
 
   template <typename T>
@@ -114,11 +133,7 @@ namespace DataStructures {
   template <typename T>
   inline typename ArrayList<T>::iterator ArrayList<T>::erase(size_type index)
   {
-    PREC_INDEX_LIST(index);
-    BaseList<T>::destroy(index);
-    BaseList<T>::move_part(index, index + 1, BaseList<T>::size() - 1 - index);
-    BaseList<T>::prepare_size(BaseList<T>::size() - 1);
-    return iterator(this, index);
+    return erase(index, index + 1);
   }
 
   template <typename T>
@@ -326,27 +341,6 @@ namespace DataStructures {
   template <typename T>
   inline void ArrayList<T>::reorganize()
   {}
-
-  template <typename T>
-  inline int_fast8_t ArrayList<T>::compare_to(const ArrayList<T>& other) const
-  {
-    if (this == &other) {
-      return 0;
-    }
-    for (size_type i = 0; i < BaseList<T>::size() && i < other.size(); ++i) {
-      if (BaseList<T>::at(i) < other.at(i)) {
-        return -1;
-      } else if (other.at(i) < BaseList<T>::at(i)) {
-        return 1;
-      }
-    }
-    if (BaseList<T>::size() < other.size()) {
-      return -1;
-    } else if (other.size() < BaseList<T>::size()) {
-      return 1;
-    }
-    return 0;
-  }
 
 }
 

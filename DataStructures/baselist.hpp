@@ -12,6 +12,7 @@
 
 #define PREC_INDEX_LIST(index) PREC(OutOfRange, index < BaseList<T>::size())
 #define PREC_EMPTY() PREC(EmptyList, !BaseList<T>::empty())
+#define PREC_INDEX_INSERT_LIST(index) PREC(OutOfRange, index <= BaseList<T>::size())
 
 namespace DataStructures {
 
