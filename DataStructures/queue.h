@@ -25,7 +25,7 @@ namespace DataStructures {
 
     typedef typename BaseList<T>::difference_type difference_type;
 
-    inline Queue();
+    inline explicit Queue(size_type initial_size = 0, const T& element = T());
 
     inline Queue(const Queue<T>& other);
 
@@ -109,7 +109,7 @@ namespace DataStructures {
 
   private:
 
-    inline size_type index_of(size_type index) const;
+    inline size_type q_index(size_type index) const;
 
     inline void destroy_queue_part(size_type q_start, size_type length);
 

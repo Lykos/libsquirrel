@@ -8,6 +8,9 @@
 
 using namespace DataStructures;
 
+QueueTest::QueueTest()
+{}
+
 void QueueTest::init()
 {
   m_queue = Queue<int>();

@@ -17,7 +17,6 @@ TEMPLATE = app
 
 SOURCES += \
     infiniterandomtest.cpp \
-    queuetest.cpp \
     heaptest.cpp \
     datastructurestests.cpp \
     polynomialtest.cpp \
@@ -35,7 +34,6 @@ DEPENDPATH += $$PWD/../DataStructures
 HEADERS += \
     longinttest.h \
     infiniterandomtest.h \
-    queuetest.h \
     heaptest.h \
     treetest.h \
     treaptest.h \
@@ -45,7 +43,8 @@ HEADERS += \
     arithmetichelpertest.h \
     comparemacros.h \
     heaparithmetictest.h \
-    listtest.h \
     arraylisttest.h \
+    listtest.h \
     listtest.hpp \
-    treetest.hpp
+    treetest.hpp \
+    queuetest.h

@@ -9,11 +9,12 @@ class ArrayListTest : public QObject, public ListTest<DataStructures::ArrayList>
 {
   Q_OBJECT
 
-public:
-  ArrayListTest(): ListTest<DataStructures::ArrayList>() {}
-
 private:
   typedef ListTest<DataStructures::ArrayList> Test;
+
+public:
+  ArrayListTest(): Test() {}
+
 
 private Q_SLOTS:
   void init() { Test::init(); }
@@ -56,11 +57,11 @@ private Q_SLOTS:
 
   void test_const_index_errors() { Test::test_const_index_errors(); }
 
-  void test_push() { Test::test_push(); }
+  void test_push_back() { Test::test_push_back(); }
 
   void test_top() { Test::test_top(); }
 
-  void test_pop() { Test::test_pop(); }
+  void test_pop_back() { Test::test_pop_back(); }
 
   void test_iterate() { Test::test_iterate(); }
 

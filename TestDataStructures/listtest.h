@@ -53,11 +53,11 @@ protected:
 
   void test_const_index_errors();
 
-  void test_push();
+  void test_push_back();
 
   void test_top();
 
-  void test_pop();
+  void test_pop_back();
 
   void test_iterate();
 

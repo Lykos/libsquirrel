@@ -400,7 +400,7 @@ void ListTest<List>::test_index_errors()
 }
 
 template <template <typename T> class List>
-void ListTest<List>::test_push() {
+void ListTest<List>::test_push_back() {
   for (int i = 20; i < 25; ++i) {
     list.push_back(i);
   }
@@ -411,7 +411,7 @@ void ListTest<List>::test_push() {
 }
 
 template <template <typename T> class List>
-void ListTest<List>::test_pop() {
+void ListTest<List>::test_pop_back() {
   for (int n = 19; n >= 0; --n) {
     QCOMPARE(list.pop_back(), n);
     COMPARE_SIZE(list, n);

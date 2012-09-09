@@ -22,9 +22,8 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline Queue<T>::Queue():
-    BaseList<T>(),
-    m_begin(0)
+  inline Queue<T>::Queue(size_type initial_size, const T& element):
+    BaseList<T>(initial_size, element)
   {
   }
 
@@ -43,7 +42,7 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline typename Queue<T>::size_type Queue<T>::index_of(size_type index) const
+  inline typename Queue<T>::size_type Queue<T>::q_index(size_type index) const
   {
     return (index + m_begin) % BaseList<T>::capacity();
   }
@@ -79,11 +78,11 @@ namespace DataStructures {
   {
     assert(q_start + length <= BaseList<T>::capacity());
     if (q_insert_position + length <= BaseList<T>::capacity()) {
-      move_part(q_insert_position, q_start, length);
+      BaseList<T>::move_part(q_insert_position, q_start, length);
     } else {
       size_type end_segment = BaseList<T>::capacity() - q_insert_position;
-      move_part(q_insert_position, q_start, end_segment);
-      move_part(0, q_start + end_segment, length - end_segment);
+      BaseList<T>::move_part(q_insert_position, q_start, end_segment);
+      BaseList<T>::move_part(0, q_start + end_segment, length - end_segment);
     }
   }
 
@@ -91,14 +90,14 @@ namespace DataStructures {
   inline const T& Queue<T>::operator[](size_type i) const
   {
     PREC_INDEX_LIST(i);
-    return BaseList<T>::at(index_of(i));
+    return BaseList<T>::at(q_index(i));
   }
 
   template <typename T>
   inline T& Queue<T>::operator[](size_type i)
   {
     PREC_INDEX_LIST(i);
-    return BaseList<T>::at(index_of(i));
+    return BaseList<T>::at(q_index(i));
   }
 
   template <typename T>
@@ -160,9 +159,9 @@ namespace DataStructures {
       return 0;
     }
     for (size_type i = 0; i < BaseList<T>::size() && i < other.size(); ++i) {
-      if (BaseList<T>::at(index_of(i)) < other.at(other.index_of(i))) {
+      if (BaseList<T>::at(q_index(i)) < other.at(other.q_index(i))) {
         return -1;
-      } else if (other.at(other.index_of(i)) < BaseList<T>::at(index_of(i))) {
+      } else if (other.at(other.q_index(i)) < BaseList<T>::at(q_index(i))) {
         return 1;
       }
     }
@@ -255,12 +254,12 @@ namespace DataStructures {
     PREC_INDEX_INSERT_LIST(start);
     PREC_INDEX_INSERT_LIST(end);
     PREC(InvalidRange, start <= end);
-    BaseList<T>::destroy_part(index_of(start), end - start);
+    BaseList<T>::destroy_part(q_index(start), end - start);
     if (start < BaseList<T>::size() - end) {
-      move_queue_part(index_of(end - start), index_of(0), start);
-      m_begin = index_of(end - start);
+      move_queue_part(q_index(end - start), q_index(0), start);
+      m_begin = q_index(end - start);
     } else {
-      move_queue_part(index_of(start), index_of(end), BaseList<T>::size() - end);
+      move_queue_part(q_index(start), q_index(end), BaseList<T>::size() - end);
     }
     BaseList<T>::prepare_size(BaseList<T>::size() - (end - start));
     return iterator(this, start);
@@ -281,13 +280,13 @@ namespace DataStructures {
     BaseList<T>::prepare_size(old_size + number);
     if (index < BaseList<T>::size() - index) {
       assert(BaseList<T>::capacity() >= number);
-      move_queue_part(index_of(BaseList<T>::capacity() - number), index_of(0), index);
-      m_begin = index_of(BaseList<T>::capacity() - number);
+      move_queue_part(q_index(BaseList<T>::capacity() - number), q_index(0), index);
+      m_begin = q_index(BaseList<T>::capacity() - number);
     } else {
-      move_queue_part(index_of(index + number), index_of(index), BaseList<T>::size() - index);
+      move_queue_part(q_index(index + number), q_index(index), BaseList<T>::size() - index);
     }
     for (size_type i = index; i < index + number; ++i) {
-      BaseList<T>::create(i, element);
+      BaseList<T>::create(q_index(i), element);
     }
   }
 
@@ -300,7 +299,7 @@ namespace DataStructures {
     BaseList<T>::prepare_size(old_size + (end - begin));
     BaseList<T>::move_part(index + (end - begin), index, old_size - index);
     for (; begin != end; ++begin, ++index) {
-      BaseList<T>::create(index, *begin);
+      BaseList<T>::create(q_index(index), *begin);
     }
   }
 
@@ -376,9 +375,9 @@ namespace DataStructures {
   inline T Queue<T>::pop_back()
   {
     PREC_EMPTY();
-    size_type end = (m_begin + BaseList<T>::size()) % BaseList<T>::capacity();
-    T element = BaseList<T>::at(end);
-    BaseList<T>::destroy(end);
+    size_type q_end = q_index(BaseList<T>::size() - 1);
+    T element = BaseList<T>::at(q_end);
+    BaseList<T>::destroy(q_end);
     BaseList<T>::prepare_size(BaseList<T>::size() - 1);
     return element;
   }
