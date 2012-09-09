@@ -16,7 +16,6 @@ QMAKE_CXXFLAGS += -std=c++11
 TEMPLATE = app
 
 SOURCES += \
-    arraylisttest.cpp \
     infiniterandomtest.cpp \
     queuetest.cpp \
     heaptest.cpp \
@@ -35,7 +34,6 @@ DEPENDPATH += $$PWD/../DataStructures
 
 HEADERS += \
     longinttest.h \
-    arraylisttest.h \
     infiniterandomtest.h \
     queuetest.h \
     heaptest.h \
@@ -46,4 +44,8 @@ HEADERS += \
     finiteelementtest.h \
     arithmetichelpertest.h \
     comparemacros.h \
-    heaparithmetictest.h
+    heaparithmetictest.h \
+    listtest.h \
+    arraylisttest.h \
+    listtest.hpp \
+    treetest.hpp
