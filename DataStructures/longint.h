@@ -23,7 +23,7 @@ namespace DataStructures {
   public:
     typedef LongArithmetic::part_type part_type;
 
-    typedef ArrayList<part_type> part_list;
+    typedef std::vector<part_type> part_list;
 
     typedef part_list::size_type size_type;
 

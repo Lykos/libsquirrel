@@ -4,6 +4,7 @@
 #include <iostream>
 
 using namespace DataStructures;
+using namespace std;
 
 ArrayListTest::ArrayListTest():
   list(20)

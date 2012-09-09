@@ -34,6 +34,8 @@ namespace DataStructures {
 
     inline T& operator[](size_type i);
 
+    inline int_fast8_t compare_to(const ArrayList<T>& other) const;
+
     inline bool operator==(const ArrayList<T>& other) const;
 
     inline bool operator!=(const ArrayList<T>& other) const;
@@ -104,10 +106,6 @@ namespace DataStructures {
     inline void clear();
 
     inline void reorganize();
-
-  private:
-
-    inline int_fast8_t compare_to(const ArrayList<T>& other) const;
 
   };
 

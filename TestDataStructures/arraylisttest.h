@@ -35,14 +35,23 @@ private Q_SLOTS:
   void test_const_index_errors();
 
   void test_push();
+
   void test_top();
+
   void test_pop();
+
   void test_iterate();
+
   void test_clear();
+
   void test_min_capacity();
+
   void test_capacity();
+
   void test_equals();
+
   void test_unequals();
+
 };
 
 #endif // ARRAYLISTTEST_H

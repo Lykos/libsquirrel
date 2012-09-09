@@ -111,6 +111,9 @@ namespace DataStructures {
   inline void BaseList<T>::min_capacity(size_type min_capacity)
   {
     m_min_capacity = min_capacity;
+    if (m_capacity < m_min_capacity) {
+      adjust_capacity(m_min_capacity);
+    }
   }
 
   template <typename T>

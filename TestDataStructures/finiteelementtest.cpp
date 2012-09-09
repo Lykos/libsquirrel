@@ -2,7 +2,9 @@
 #include "DataStructures/longint.h"
 #include "DataStructures/finitefield.h"
 #include "DataStructures/finiteelement.h"
+#include <iostream>
 
+using namespace std;
 using namespace DataStructures;
 
 typedef LongInt LongInt;

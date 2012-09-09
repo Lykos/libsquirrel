@@ -123,7 +123,7 @@ namespace DataStructures {
   template <typename T>
   inline void ArrayList<T>::erase(size_type start, size_type end)
   {
-    PREC_INDEX_LIST(start);
+    PREC_INDEX_INSERT_LIST(start);
     PREC_INDEX_INSERT_LIST(end);
     PREC(InvalidRange, start <= end);
     BaseList<T>::destroy_part(start, end - start);

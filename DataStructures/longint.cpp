@@ -601,7 +601,7 @@ namespace DataStructures {
   void inline LongInt::inc()
   {
     bool keep = true;
-    for (ArrayList<part_type>::iterator it = m_content.begin(); keep; ++it) {
+    for (part_list::iterator it = m_content.begin(); keep; ++it) {
       if (it >= m_content.end()) {
         m_content.push_back(0);
       }
@@ -636,7 +636,7 @@ namespace DataStructures {
   void inline LongInt::dec()
   {
     bool keep = true;
-    for (ArrayList<part_type>::iterator it = m_content.begin(); keep; ++it) {
+    for (part_list::iterator it = m_content.begin(); keep; ++it) {
       if (it >= m_content.end()) {
         m_content.push_back(0);
       }
@@ -812,7 +812,7 @@ namespace DataStructures {
       }
     }
     if (part_shift > 0) {
-      m_content.insert(0, part_shift, 0);
+      m_content.insert(m_content.begin(), part_shift, 0);
     }
     return *this;
   }
@@ -856,16 +856,11 @@ namespace DataStructures {
       }
     }
     if (part_shift > 0) {
-      for (part_list::iterator it = m_content.begin(); it < m_content.end() - part_shift; ++it) {
-        *it = it[part_shift];
-      }
-      for (size_type i = 0; i < part_shift; ++i) {
-        m_content.pop_back();
-      }
+      m_content.erase(m_content.begin(), m_content.begin() + part_shift);
     }
     if (extra_bit) {
-      // We know the sign is negative, so -- increments the content
-      inc();
+      // TODO We know the sign is negative, so -- increments the content
+      operator--();
     }
     remove_zeros();
     return *this;
@@ -969,7 +964,7 @@ namespace DataStructures {
   int_fast8_t LongInt::u_compare_to(const LongInt& other) const
   {
     if (this == &other) {
-      return true;
+      return 0;
     }
     size_type max_index = max(size(), other.size());
     for (size_type i = max_index + 1; i > 0;) {
