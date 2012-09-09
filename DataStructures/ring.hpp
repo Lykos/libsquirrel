@@ -1,6 +1,7 @@
 #ifndef DATASTRUCTURES_RING_HPP
 #define DATASTRUCTURES_RING_HPP
 
+#include "polynomial.h"
 #include "ring.h"
 #include "preconditionviolation.h"
 
@@ -29,6 +30,15 @@ namespace DataStructures {
   inline const T& Ring<T>::one() const
   {
     return m_one;
+  }
+
+  template <typename T>
+  inline const AlgebraicStructure* Ring<T>::generate_polynomial_structure() const
+  {
+/*    Polynomial<T> poly_zero (*this, m_zero);
+    Polynomial<T> poly_one (*this, m_one);
+    return Ring< Polynomial<T> >(poly_zero, poly_one);*/
+    return 0;
   }
 
 } // namespace DataStructures

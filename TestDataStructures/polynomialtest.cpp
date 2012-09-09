@@ -9,7 +9,7 @@
 
 using namespace DataStructures;
 
-typedef Polynomial<LongInt, Ring<LongInt> > Poly;
+typedef Polynomial<LongInt> Poly;
 
 static const Ring <LongInt> LongRing = LongInt::ring();
 

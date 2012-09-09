@@ -11,8 +11,6 @@
 template <template <typename T> class Tree>
 class TreeTest
 {
-  Q_OBJECT
-
 private:
   Tree<int> m_tree;
 

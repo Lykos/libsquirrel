@@ -14,7 +14,7 @@ namespace DataStructures {
   template <typename T, typename Structure>
   inline std::ostream& operator<<(std::ostream& out, const Polynomial<T, Structure>& element);
 
-  template <typename T, typename Structure>
+  template <typename T, typename Structure = Ring<T> >
   class Polynomial
   {
     friend std::ostream& operator<< <> (std::ostream& out, const Polynomial<T, Structure>& element);

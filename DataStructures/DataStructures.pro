@@ -9,7 +9,7 @@ QT       -= core gui
 TARGET = DataStructures
 TEMPLATE = lib
 CONFIG += warn_on
-QMAKE_CXXFLAGS += -std=c++11 -O2
+QMAKE_CXXFLAGS += -std=c++11
 
 DEFINES += DATASTRUCTURES_LIBRARY
 
@@ -20,7 +20,8 @@ SOURCES += \
     longintconverter.cpp \
     divide.cpp \
     multiply.cpp \
-    preconditionviolation.cpp
+    preconditionviolation.cpp \
+    algebraicstructure.cpp
 
 HEADERS += \
     longint.h \
@@ -56,6 +57,7 @@ HEADERS += \
     preconditionviolation.h \
     conditiontype.h \
     ring.h \
+    algebraicstructure.h \
     treenode.hpp \
     treeiterator.hpp \
     treapnode.hpp \

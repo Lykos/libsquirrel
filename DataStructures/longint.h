@@ -4,11 +4,12 @@
 #include "arraylist.h"
 #include "platform.h"
 #include "divide.h"
+#define DATASTRUCTURES_RING_NO_HPP
 #include "ring.h"
+// ring.hpp included at end of file.
 #include <climits>
 #include <istream>
 #include <ostream>
-#include <vector>
 
 namespace DataStructures {
 
@@ -23,7 +24,7 @@ namespace DataStructures {
   public:
     typedef LongArithmetic::part_type part_type;
 
-    typedef std::vector<part_type> part_list;
+    typedef ArrayList<part_type> part_list;
 
     typedef part_list::size_type size_type;
 
@@ -247,5 +248,7 @@ namespace DataStructures {
   LongInt::part_type inline complement_keep(bool positive, LongInt::part_type part, bool& keep);
 
 }
+
+#include "ring.hpp"
 
 #endif // DATASTRUCTURES_LONGINT_H
