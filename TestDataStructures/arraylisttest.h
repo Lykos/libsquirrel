@@ -22,7 +22,25 @@ private Q_SLOTS:
 
   void test_copy_constructor();
 
+  void test_erase_index_range();
+
+  void test_erase_index_element();
+
   void test_insert_index_range();
+
+  void test_insert_index_element();
+
+  void test_insert_index_fill();
+
+  void test_erase_iterator_range();
+
+  void test_erase_iterator_element();
+
+  void test_insert_iterator_range();
+
+  void test_insert_iterator_element();
+
+  void test_insert_iterator_fill();
 
   void test_assign();
 

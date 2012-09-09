@@ -45,13 +45,217 @@ void ArrayListTest::test_copy_constructor()
   QCOMPARE(list, copied_list);
 }
 
+void ArrayListTest::test_erase_index_range()
+{
+  list.erase(4, 10);
+  COMPARE_SIZE(list, 14);
+  for (int i = 0; i < 4; ++i) {
+    QCOMPARE(list[i], i);
+  }
+  for (int i = 10; i < 20; ++i) {
+    QCOMPARE(list[i - 6], i);
+  }
+}
+
+void ArrayListTest::test_erase_index_element()
+{
+  list.erase(4);
+  COMPARE_SIZE(list, 19);
+  for (int i = 0; i < 4; ++i) {
+    QCOMPARE(list[i], i);
+  }
+  for (int i = 5; i < 20; ++i) {
+    QCOMPARE(list[i - 1], i);
+  }
+}
+
+void ArrayListTest::test_erase_iterator_range()
+{
+  list.erase(list.begin() + 4, list.begin() + 10);
+  COMPARE_SIZE(list, 14);
+  for (int i = 0; i < 4; ++i) {
+    QCOMPARE(list[i], i);
+  }
+  for (int i = 10; i < 20; ++i) {
+    QCOMPARE(list[i - 6], i);
+  }
+}
+
+void ArrayListTest::test_erase_iterator_element()
+{
+  list.erase(list.begin() + 4);
+  COMPARE_SIZE(list, 19);
+  for (int i = 0; i < 4; ++i) {
+    QCOMPARE(list[i], i);
+  }
+  for (int i = 5; i < 20; ++i) {
+    QCOMPARE(list[i - 1], i);
+  }
+}
+
 void ArrayListTest::test_insert_index_range()
 {
   ArrayList<int> copied_list;
-  copied_list.insert(copied_list.end(), list.begin() + 5, list.begin() + 14);
-  QCOMPARE((int) copied_list.size(), 9);
+  copied_list.insert(copied_list.size(), list.begin() + 5, list.begin() + 14);
+  COMPARE_SIZE(copied_list, 9);
   for (int i = 0; i < 9; ++i) {
     QCOMPARE(copied_list[i], i + 5);
+  }
+  copied_list.insert(4, list.begin() + 5, list.begin() + 14);
+  COMPARE_SIZE(copied_list, 18);
+  for (int i = 0; i < 4; ++i) {
+    QCOMPARE(copied_list[i], i + 5);
+  }
+  for (int i = 0; i < 9; ++i) {
+    QCOMPARE(copied_list[i + 4], i + 5);
+  }
+  for (int i = 4; i < 9; ++i) {
+    QCOMPARE(copied_list[i + 9], i + 5);
+  }
+}
+
+void ArrayListTest::test_insert_index_element()
+{
+  list.insert(list.size(), 1);
+  COMPARE_SIZE(list, 21);
+  for (int i = 0; i < 20; ++i) {
+    QCOMPARE(list[i], i);
+  }
+  QCOMPARE(list[20], 1);
+  list.insert(0, 5);
+  COMPARE_SIZE(list, 22);
+  QCOMPARE(list[0], 5);
+  for (int i = 0; i < 20; ++i) {
+    QCOMPARE(list[i + 1], i);
+  }
+  QCOMPARE(list[21], 1);
+  list.insert(1, 17);
+  COMPARE_SIZE(list, 23);
+  QCOMPARE(list[0], 5);
+  QCOMPARE(list[1], 17);
+  for (int i = 0; i < 20; ++i) {
+    QCOMPARE(list[i + 2], i);
+  }
+  QCOMPARE(list[22], 1);
+}
+
+void ArrayListTest::test_insert_index_fill()
+{
+  list.insert(list.size(), 5ul, 1);
+  COMPARE_SIZE(list, 25);
+  for (int i = 0; i < 20; ++i) {
+    QCOMPARE(list[i], i);
+  }
+  for (int i = 0; i < 5; ++i) {
+    QCOMPARE(list[i + 20], 1);
+  }
+  list.insert(0, 4ul, 5);
+  COMPARE_SIZE(list, 29);
+  for (int i = 0; i < 4; ++i) {
+    QCOMPARE(list[i], 5);
+  }
+  for (int i = 0; i < 20; ++i) {
+    QCOMPARE(list[i + 4], i);
+  }
+  for (int i = 0; i < 5; ++i) {
+    QCOMPARE(list[i + 24], 1);
+  }
+  list.insert(4, 17ul, 1716);
+  COMPARE_SIZE(list, 46);
+  for (int i = 0; i < 4; ++i) {
+    QCOMPARE(list[i], 5);
+  }
+  for (int i = 0; i < 17; ++i) {
+    QCOMPARE(list[i + 4], 1716);
+  }
+  for (int i = 0; i < 20; ++i) {
+    QCOMPARE(list[i + 21], i);
+  }
+  for (int i = 0; i < 5; ++i) {
+    QCOMPARE(list[i + 41], 1);
+  }
+}
+
+void ArrayListTest::test_insert_iterator_range()
+{
+  ArrayList<int> copied_list;
+  copied_list.insert(copied_list.end(), list.begin() + 5, list.begin() + 14);
+  COMPARE_SIZE(copied_list, 9);
+  for (int i = 0; i < 9; ++i) {
+    QCOMPARE(copied_list[i], i + 5);
+  }
+  copied_list.insert(copied_list.begin() + 4, list.begin() + 5, list.begin() + 14);
+  COMPARE_SIZE(copied_list, 18);
+  for (int i = 0; i < 4; ++i) {
+    QCOMPARE(copied_list[i], i + 5);
+  }
+  for (int i = 0; i < 9; ++i) {
+    QCOMPARE(copied_list[i + 4], i + 5);
+  }
+  for (int i = 4; i < 9; ++i) {
+    QCOMPARE(copied_list[i + 9], i + 5);
+  }
+}
+
+void ArrayListTest::test_insert_iterator_element()
+{
+  list.insert(list.end(), 1);
+  COMPARE_SIZE(list, 21);
+  for (int i = 0; i < 20; ++i) {
+    QCOMPARE(list[i], i);
+  }
+  QCOMPARE(list[20], 1);
+  list.insert(list.begin(), 5);
+  COMPARE_SIZE(list, 22);
+  QCOMPARE(list[0], 5);
+  for (int i = 0; i < 20; ++i) {
+    QCOMPARE(list[i + 1], i);
+  }
+  QCOMPARE(list[21], 1);
+  list.insert(list.begin() + 1, 17);
+  COMPARE_SIZE(list, 23);
+  QCOMPARE(list[0], 5);
+  QCOMPARE(list[1], 17);
+  for (int i = 0; i < 20; ++i) {
+    QCOMPARE(list[i + 2], i);
+  }
+  QCOMPARE(list[22], 1);
+}
+
+void ArrayListTest::test_insert_iterator_fill()
+{
+  list.insert(list.end(), 5ul, 1);
+  COMPARE_SIZE(list, 25);
+  for (int i = 0; i < 20; ++i) {
+    QCOMPARE(list[i], i);
+  }
+  for (int i = 0; i < 5; ++i) {
+    QCOMPARE(list[i + 20], 1);
+  }
+  list.insert(list.begin(), 4ul, 5);
+  COMPARE_SIZE(list, 29);
+  for (int i = 0; i < 4; ++i) {
+    QCOMPARE(list[i], 5);
+  }
+  for (int i = 0; i < 20; ++i) {
+    QCOMPARE(list[i + 4], i);
+  }
+  for (int i = 0; i < 5; ++i) {
+    QCOMPARE(list[i + 24], 1);
+  }
+  list.insert(list.begin() + 4, 17ul, 1716);
+  COMPARE_SIZE(list, 46);
+  for (int i = 0; i < 4; ++i) {
+    QCOMPARE(list[i], 5);
+  }
+  for (int i = 0; i < 17; ++i) {
+    QCOMPARE(list[i + 4], 1716);
+  }
+  for (int i = 0; i < 20; ++i) {
+    QCOMPARE(list[i + 21], i);
+  }
+  for (int i = 0; i < 5; ++i) {
+    QCOMPARE(list[i + 41], 1);
   }
 }
 

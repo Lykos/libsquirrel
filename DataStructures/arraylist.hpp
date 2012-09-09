@@ -100,28 +100,29 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline void ArrayList<T>::erase(iterator position)
+  inline typename ArrayList<T>::iterator ArrayList<T>::erase(iterator position)
   {
-    erase(position - begin());
+    return erase(position - begin());
   }
 
   template <typename T>
-  inline void ArrayList<T>::erase(iterator start, iterator end)
+  inline typename ArrayList<T>::iterator ArrayList<T>::erase(iterator start, iterator end)
   {
-    erase(start - begin(), end - begin());
+    return erase(start - begin(), end - begin());
   }
 
   template <typename T>
-  inline void ArrayList<T>::erase(size_type index)
+  inline typename ArrayList<T>::iterator ArrayList<T>::erase(size_type index)
   {
     PREC_INDEX_LIST(index);
     BaseList<T>::destroy(index);
     BaseList<T>::move_part(index, index + 1, BaseList<T>::size() - 1 - index);
     BaseList<T>::prepare_size(BaseList<T>::size() - 1);
+    return iterator(this, index);
   }
 
   template <typename T>
-  inline void ArrayList<T>::erase(size_type start, size_type end)
+  inline typename ArrayList<T>::iterator ArrayList<T>::erase(size_type start, size_type end)
   {
     PREC_INDEX_INSERT_LIST(start);
     PREC_INDEX_INSERT_LIST(end);
@@ -129,33 +130,31 @@ namespace DataStructures {
     BaseList<T>::destroy_part(start, end - start);
     BaseList<T>::move_part(start, end, BaseList<T>::size() - end);
     BaseList<T>::prepare_size(BaseList<T>::size() - (end - start));
+    return iterator(this, start);
   }
 
   template <typename T>
-  typename ArrayList<T>::iterator ArrayList<T>::insert(size_type index, const T& element)
+  inline typename ArrayList<T>::iterator ArrayList<T>::insert(size_type index, const T& element)
   {
-    PREC_INDEX_INSERT_LIST(index);
-    size_type old_size = BaseList<T>::size();
-    BaseList<T>::prepare_size(old_size + 1);
-    BaseList<T>::move(old_size, index);
-    BaseList<T>::create(index, element);
+    insert(index, size_type(1), element);
+    return iterator(this, index);
   }
 
   template <typename T>
-  void ArrayList<T>::insert(size_type index, size_type number, const T& element)
+  inline void ArrayList<T>::insert(size_type index, size_type number, const T& element)
   {
     PREC_INDEX_INSERT_LIST(index);
     size_type old_size = BaseList<T>::size();
     BaseList<T>::prepare_size(old_size + number);
     BaseList<T>::move_part(index + number, index, old_size - index);
-    for (; index < old_size; ++index) {
-      BaseList<T>::create(index, element);
+    for (size_type i = index; i < index + number; ++i) {
+      BaseList<T>::create(i, element);
     }
   }
 
   template <typename T>
   template <typename Iterator>
-  void ArrayList<T>::insert(size_type index, Iterator begin, Iterator end)
+  inline void ArrayList<T>::insert(size_type index, Iterator begin, Iterator end)
   {
     PREC_INDEX_INSERT_LIST(index);
     size_type old_size = BaseList<T>::size();
@@ -167,26 +166,26 @@ namespace DataStructures {
   }
 
   template <typename T>
-  typename ArrayList<T>::iterator ArrayList<T>::insert(iterator position, const T& element)
+  inline typename ArrayList<T>::iterator ArrayList<T>::insert(iterator position, const T& element)
   {
-    insert(position - begin(), element);
+    return insert(position - begin(), element);
   }
 
   template <typename T>
-  void ArrayList<T>::insert(iterator position, size_type number, const T& element)
+  inline void ArrayList<T>::insert(iterator position, size_type number, const T& element)
   {
     insert(position - begin(), number, element);
   }
 
   template <typename T>
   template <typename Iterator>
-  void ArrayList<T>::insert(iterator position, Iterator start, Iterator end)
+  inline void ArrayList<T>::insert(iterator position, Iterator start, Iterator end)
   {
     insert(position - begin(), start, end);
   }
 
   template <typename T>
-  void ArrayList<T>::resize(size_type new_size, const T& element)
+  inline void ArrayList<T>::resize(size_type new_size, const T& element)
   {
     if (new_size < BaseList<T>::size()) {
       erase(new_size, BaseList<T>::size());

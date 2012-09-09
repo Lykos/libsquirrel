@@ -53,29 +53,29 @@ namespace DataStructures {
 
     inline void assign(size_type number, const T& element);
 
-    inline void erase(iterator position);
+    inline iterator erase(iterator position);
 
-    inline void erase(iterator start, iterator end);
+    inline iterator erase(iterator start, iterator end);
 
-    inline void erase(size_type index);
+    inline iterator erase(size_type index);
 
-    inline void erase(size_type start, size_type end);
+    inline iterator erase(size_type start, size_type end);
 
-    iterator insert(size_type index, const T& element);
+    inline iterator insert(size_type index, const T& element);
 
-    void insert(size_type index, size_type number, const T& element);
-
-    template <typename Iterator>
-    void insert(size_type index, Iterator start, Iterator end);
-
-    iterator insert(iterator position, const T& element);
-
-    void insert(iterator position, size_type number, const T& element);
+    inline void insert(size_type index, size_type number, const T& element);
 
     template <typename Iterator>
-    void insert(iterator position, Iterator start, Iterator end);
+    inline void insert(size_type index, Iterator start, Iterator end);
 
-    void resize(size_type new_size, const T& element = T());
+    inline iterator insert(iterator position, const T& element);
+
+    inline void insert(iterator position, size_type number, const T& element);
+
+    template <typename Iterator>
+    inline void insert(iterator position, Iterator start, Iterator end);
+
+    inline void resize(size_type new_size, const T& element = T());
 
     inline void push_back(const T& element);
 
