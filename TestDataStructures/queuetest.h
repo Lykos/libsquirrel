@@ -58,7 +58,13 @@ private Q_SLOTS:
 
   void test_push_back() { Test::test_push_back(); }
 
-  void test_top() { Test::test_top(); }
+  void test_back() { Test::test_back(); }
+
+  void test_push_front();
+
+  void test_pop_front();
+
+  void test_random_queueing();
 
   void test_pop_back() { Test::test_pop_back(); }
 

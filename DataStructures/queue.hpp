@@ -52,11 +52,11 @@ namespace DataStructures {
   {
     assert(length <= BaseList<T>::capacity());
     if (q_start + length <= BaseList<T>::capacity()) {
-      destroy_part(q_start, length);
+      BaseList<T>::destroy_part(q_start, length);
     } else {
       size_type first_segment = BaseList<T>::capacity() - q_start;
-      destroy_part(q_start, first_segment);
-      destroy_part(0, length - first_segment);
+      BaseList<T>::destroy_part(q_start, first_segment);
+      BaseList<T>::destroy_part(0, length - first_segment);
     }
   }
 
@@ -81,6 +81,8 @@ namespace DataStructures {
       BaseList<T>::move_part(q_insert_position, q_start, length);
     } else {
       size_type end_segment = BaseList<T>::capacity() - q_insert_position;
+      // TODO Do inplace
+      BaseList<T>
       BaseList<T>::move_part(q_insert_position, q_start, end_segment);
       BaseList<T>::move_part(0, q_start + end_segment, length - end_segment);
     }
@@ -254,7 +256,7 @@ namespace DataStructures {
     PREC_INDEX_INSERT_LIST(start);
     PREC_INDEX_INSERT_LIST(end);
     PREC(InvalidRange, start <= end);
-    BaseList<T>::destroy_part(q_index(start), end - start);
+    destroy_queue_part(q_index(start), end - start);
     if (start < BaseList<T>::size() - end) {
       move_queue_part(q_index(end - start), q_index(0), start);
       m_begin = q_index(end - start);
@@ -335,9 +337,7 @@ namespace DataStructures {
   template <typename T>
   inline void Queue<T>::clear()
   {
-    size_type part_length = std::min(BaseList<T>::size(), BaseList<T>::capacity() - m_begin);
-    BaseList<T>::destroy_part(m_begin, part_length);
-    BaseList<T>::destroy_part(0, BaseList<T>::size() - part_length);
+    destroy_queue_part(0, BaseList<T>::size());
     BaseList<T>::prepare_size(0);
   }
 
@@ -346,7 +346,7 @@ namespace DataStructures {
   {
     size_type old_size = BaseList<T>::size();
     BaseList<T>::prepare_size(BaseList<T>::size() + 1);
-    BaseList<T>::create(old_size, element);
+    BaseList<T>::create(q_index(old_size), element);
   }
 
   template <typename T>
@@ -395,16 +395,16 @@ namespace DataStructures {
       assert(part_start < capacity);
       assert(size <= BaseList<T>::size());
       assert(part_start <= begin && begin <= capacity);
-      assert(part_start <= end && begin <= capacity);
+      assert(part_start <= end && end <= capacity);
       assert(begin <= end || (capacity - begin) + (end - part_start) == size);
       assert(begin >= end || end - begin == size);
       assert(begin != end || size == 0 || part_start + size == capacity);
-      if (begin == end || begin == capacity || begin == part_start) {
+      if (size == 0 || begin == capacity || begin == part_start) {
         // #||# -> ## ||
         // 12|##| -> 12## ||
         // |12|## -> 12## ||
         break;
-        /* Unecessary, but would be correct:
+        /* Unecessary, but would be the correct transformation:
         part_start = capacity;
         begin = capacity;
         end = capacity;
@@ -415,7 +415,7 @@ namespace DataStructures {
         // ##|1234|# -> 1234### ||
         BaseList<T>::move_part(part_start, begin, size);
         part_start = capacity;
-        /* Unnecessary, but would be correct:
+        /* Unnecessary, but would be the correct transformation:
         begin = capacity;
         end = capacity;
         size = 0;*/
@@ -442,12 +442,12 @@ namespace DataStructures {
           begin += size_moved;
           end += size_moved;
         } else if (end_size <= begin_size) {
-          // 45|##|123 -> 123 #|45|#
+          // 45|##|123 -> 123 #|45|# 
           BaseList<T>::swap_parts(part_start, begin, end_size);
           BaseList<T>::move_part(end, begin + end_size, begin_size - end_size);
           part_start += begin_size;
           size = end_size;
-          end += begin_size;
+          end = begin + end_size;
           // begin remains unchanged
         } else {
           assert(false);

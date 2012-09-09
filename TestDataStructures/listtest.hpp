@@ -401,12 +401,15 @@ void ListTest<List>::test_index_errors()
 
 template <template <typename T> class List>
 void ListTest<List>::test_push_back() {
-  for (int i = 20; i < 25; ++i) {
-    list.push_back(i);
-  }
-  COMPARE_SIZE(list, 25);
-  for (int i = 0; i < 25; ++i) {
-    QCOMPARE(list[i], i);
+  for (int n = 0; n < 100; ++n) {
+    list.push_back(n);
+    COMPARE_SIZE(list, 21 + n);
+    for (int i = 0; i < 20; ++i) {
+      QCOMPARE(list[i], i);
+    }
+    for (int i = 0; i < n; ++i) {
+      QCOMPARE(list[i + 20], i);
+    }
   }
 }
 
@@ -428,7 +431,7 @@ void ListTest<List>::test_pop_back() {
 }
 
 template <template <typename T> class List>
-void ListTest<List>::test_top() {
+void ListTest<List>::test_back() {
   for (int n = 19; n >= 0; --n) {
     QCOMPARE(list.back(), n);
     list.pop_back();

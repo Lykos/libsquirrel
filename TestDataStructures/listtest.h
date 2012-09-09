@@ -7,10 +7,9 @@ class ListTest
 public:
   ListTest();
 
-private:
+protected:
   List<int> list;
 
-protected:
   void init();
 
   void test_default_constructor();
@@ -55,7 +54,7 @@ protected:
 
   void test_push_back();
 
-  void test_top();
+  void test_back();
 
   void test_pop_back();
 

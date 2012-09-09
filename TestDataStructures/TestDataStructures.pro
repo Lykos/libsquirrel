@@ -23,7 +23,8 @@ SOURCES += \
     finiteelementtest.cpp \
     arithmetichelpertest.cpp \
     longinttest.cpp \
-    heaparithmetictest.cpp
+    heaparithmetictest.cpp \
+    queuetest.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
