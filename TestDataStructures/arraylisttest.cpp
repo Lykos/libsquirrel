@@ -20,9 +20,9 @@ void ArrayListTest::init()
 void ArrayListTest::test_default_constructor()
 {
   ArrayList<int> list1;
-  QVERIFY2(list1.is_empty(), "Default constructed list is not empty.");
+  QVERIFY2(list1.empty(), "Default constructed list is not empty.");
   ArrayList<int> list5 (5);
-  QVERIFY2(!list5.is_empty(), "List with 5 elements is empty.");
+  QVERIFY2(!list5.empty(), "List with 5 elements is empty.");
   COMPARE_SIZE(list5, 5);
 }
 
@@ -32,7 +32,7 @@ void ArrayListTest::test_fill_constructor()
   for (int i = 0; i < 6; ++i) {
     QCOMPARE(list1[i], 0);
   }
-  ArrayList<int> list2 (6, 122);
+  ArrayList<int> list2 (6ull, 122);
   for (int i = 0; i < 6; ++i) {
     QCOMPARE(list2[i], 122);
   }
@@ -44,10 +44,10 @@ void ArrayListTest::test_copy_constructor()
   QCOMPARE(list, copied_list);
 }
 
-void ArrayListTest::test_push_all()
+void ArrayListTest::test_insert_index_range()
 {
   ArrayList<int> copied_list;
-  copied_list.push_all(list.begin() + 5, list.begin() + 14);
+  copied_list.insert(copied_list.end(), list.begin() + 5, list.begin() + 14);
   QCOMPARE((int) copied_list.size(), 9);
   for (int i = 0; i < 9; ++i) {
     QCOMPARE(copied_list[i], i + 5);
@@ -61,61 +61,10 @@ void ArrayListTest::test_assign()
   QCOMPARE(list, copied_list);
 }
 
-void ArrayListTest::test_plus()
-{
-  ArrayList<int> prefix (5, 677);
-  ArrayList<int> postfix(10, 174);
-  ArrayList<int> together (prefix + list + postfix);
-  COMPARE_SIZE(together, 35);
-  for (int i = 0; i < 5; ++i) {
-    QCOMPARE(together[i], 677);
-  }
-  for (int i = 5; i < 25; ++i) {
-    QCOMPARE(together[i], i - 5);
-  }
-  for (int i = 25; i < 35; ++i) {
-    QCOMPARE(together[i], 174);
-  }
-}
-
-void ArrayListTest::test_plus_assign()
-{
-  ArrayList<int> postfix(11, 1);
-  list += postfix;
-  COMPARE_SIZE(list, 31);
-  for (int i = 0; i < 20; ++i) {
-    QCOMPARE(list[i], i);
-  }
-  for (int i = 20; i < 31; ++i) {
-    QCOMPARE(list[i], 1);
-  }
-}
-
-void ArrayListTest::test_times()
-{
-  ArrayList<int> lists5 (list * 5);
-  COMPARE_SIZE(lists5, 100);
-  for (int i = 0; i < 5; ++i) {
-    for (int j = 0; j < 20; ++j) {
-      QCOMPARE(lists5[i * 20 + j], j);
-    }
-  }
-}
-
-void ArrayListTest::test_times_assign() {
-  list *= 3;
-  QCOMPARE((int) list.size(), 60);
-  for (int i = 0; i < 3; ++i) {
-    for (int j = 0; j < 20; ++j) {
-      QCOMPARE(list[i * 20 + j], j);
-    }
-  }
-}
-
 void ArrayListTest::test_size()
 {
   COMPARE_SIZE(list, 20);
-  list += list;
+  list.insert(list.end(), list.begin(), list.end());
   COMPARE_SIZE(list, 40);
   list.push_back(20);
   COMPARE_SIZE(list, 41);
@@ -136,24 +85,24 @@ void ArrayListTest::test_size()
 void ArrayListTest::test_is_empty()
 {
   for (int i = 0; i < 20; ++i) {
-    QVERIFY(!list.is_empty());
+    QVERIFY(!list.empty());
     list.pop_back();
   }
-  QVERIFY(list.is_empty());
+  QVERIFY(list.empty());
   ArrayList<int> list2;
-  QVERIFY(list2.is_empty());
+  QVERIFY(list2.empty());
   list2.push_back(2);
-  QVERIFY(!list2.is_empty());
+  QVERIFY(!list2.empty());
   list2.pop_back();
-  QVERIFY(list2.is_empty());
+  QVERIFY(list2.empty());
   ArrayList<int> list3 (1);
-  QVERIFY(!list3.is_empty());
-  list2 += list3;
-  QVERIFY(!list2.is_empty());
+  QVERIFY(!list3.empty());
+  list2.insert(list2.begin(), list3.begin(), list3.end());
+  QVERIFY(!list2.empty());
   list2.pop_back();
-  QVERIFY(list2.is_empty());
+  QVERIFY(list2.empty());
   list3.pop_back();
-  QVERIFY(list3.is_empty());
+  QVERIFY(list3.empty());
 }
 
 void ArrayListTest::test_const_index_errors()
@@ -255,33 +204,33 @@ void ArrayListTest::test_iterate() {
 
 void ArrayListTest::test_clear() {
   list.clear();
-  QVERIFY2(list.is_empty(), "Emptied list is not empty.");
+  QVERIFY2(list.empty(), "Emptied list is not empty.");
   COMPARE_SIZE(list, 0);
   list.push_back(22);
   list.clear();
-  QVERIFY2(list.is_empty(), "Emptied list is not empty.");
+  QVERIFY2(list.empty(), "Emptied list is not empty.");
   COMPARE_SIZE(list, 0);
-  list += list;
+  list.insert(list.end(), list.begin(), list.end());
   list.clear();
-  QVERIFY2(list.is_empty(), "Emptied list is not empty.");
+  QVERIFY2(list.empty(), "Emptied list is not empty.");
   COMPARE_SIZE(list, 0);
   list.push_back(22);
-  list += ArrayList<int>(2);
+  list.insert(list.end(), 2ul, 34);
   list.clear();
-  QVERIFY2(list.is_empty(), "Emptied list is not empty.");
+  QVERIFY2(list.empty(), "Emptied list is not empty.");
   COMPARE_SIZE(list, 0);
   list.push_back(22);
 }
 
 void ArrayListTest::test_min_capacity()
 {
-  list.set_min_capacity(55);
+  list.min_capacity(55);
   COMPARE_INTS(list.min_capacity(), 55);
 }
 
 void ArrayListTest::test_capacity()
 {
-  list.set_min_capacity(46);
+  list.min_capacity(46);
   QVERIFY(list.capacity() >= 46);
   for (int i = 0; i < 100; ++i) {
     list.push_back(0);

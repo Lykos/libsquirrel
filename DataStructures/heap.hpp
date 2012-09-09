@@ -19,8 +19,8 @@ namespace DataStructures {
   }
 
   template <typename T>
-  template <typename Begin, typename End>
-  Heap<T>::Heap(Begin begin, End end):
+  template <typename Iterator>
+  Heap<T>::Heap(Iterator begin, Iterator end):
     BaseList<T>()
   {
     push_all(begin, end);
@@ -41,16 +41,17 @@ namespace DataStructures {
   }
 
   template <typename T>
-  template <typename Begin, typename End>
-  void Heap<T>::push_all(const Begin& begin, const End& end)
+  inline void Heap<T>::reorganize()
+  {}
+
+  template <typename T>
+  template <typename Iterator>
+  void Heap<T>::push_all(Iterator begin, Iterator end)
   {
-    if (begin > end) {
-      return;
-    }
     size_type i = BaseList<T>::size();
     BaseList<T>::prepare_size(BaseList<T>::size() + (end - begin));
-    for (Begin it = begin; it != end; ++it, ++i) {
-      BaseList<T>::create(i, *it);
+    for (; begin != end; ++begin, ++i) {
+      BaseList<T>::create(i, *begin);
       bubble_up(i);
     }
   }

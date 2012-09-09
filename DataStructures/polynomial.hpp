@@ -68,9 +68,8 @@ namespace DataStructures {
                                               const Iterator& begin,
                                               const Iterator& end):
     m_structure (structure),
-    m_coefficients ()
+    m_coefficients (begin, end)
   {
-    m_coefficients.push_all(begin, end);
     remove_zeros();
   }
 

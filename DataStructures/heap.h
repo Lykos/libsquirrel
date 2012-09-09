@@ -11,23 +11,27 @@ namespace DataStructures {
   public:
     typedef typename BaseList<T>::size_type size_type;
 
-    Heap();
+    inline Heap();
 
-    Heap(const Heap<T>& other);
+    inline Heap(const Heap<T>& other);
 
-    template <typename Begin, typename End>
-    Heap(Begin begin, End end);
+    template <typename Iterator>
+    inline Heap(Iterator begin, Iterator end);
 
-    template <typename Begin, typename End>
-    void push_all(const Begin& begin, const End& end);
+    template <typename Iterator>
+    inline void push_all(Iterator begin, Iterator end);
 
-    void push(const T& element);
+    inline void push(const T& element);
 
-    T pop();
+    inline T pop();
 
-    const T& top() const;
+    inline const T& top() const;
 
-    T& top();
+    inline T& top();
+
+    inline void reorganize();
+
+    inline void clear();
 
   private:
 

@@ -125,19 +125,21 @@ namespace DataStructures {
 
     LongInt& operator--();
 
-    int compareTo(const LongInt& other) const;
+    int_fast8_t compare_to(const LongInt& other) const;
 
-    bool operator<(const LongInt& other) const { return compareTo(other) == -1; }
+    int_fast8_t u_compare_to(const LongInt& other) const;
 
-    bool operator<=(const LongInt& other) const { return compareTo(other) != 1; }
+    bool operator<(const LongInt& other) const { return compare_to(other) == -1; }
 
-    bool operator==(const LongInt& other) const { return compareTo(other) == 0; }
+    bool operator<=(const LongInt& other) const { return compare_to(other) != 1; }
 
-    bool operator>=(const LongInt& other) const { return compareTo(other) != -1; }
+    bool operator==(const LongInt& other) const { return compare_to(other) == 0; }
 
-    bool operator>(const LongInt& other) const { return compareTo(other) == 1; }
+    bool operator>=(const LongInt& other) const { return compare_to(other) != -1; }
 
-    bool operator!=(const LongInt& other) const { return compareTo(other) != 0; }
+    bool operator>(const LongInt& other) const { return compare_to(other) == 1; }
+
+    bool operator!=(const LongInt& other) const { return compare_to(other) != 0; }
 
     LongInt& operator+=(const LongInt& other);
 
@@ -221,8 +223,6 @@ namespace DataStructures {
     inline void read_octal(const std::string& numerical_string, size_type start_index);
 
     inline void read_hexadecimal(const std::string& numerical_string, size_type start_index);
-
-    inline int uCompareTo(const LongInt& other) const;
 
     void remove_zeros();
 

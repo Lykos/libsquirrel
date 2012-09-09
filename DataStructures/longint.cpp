@@ -154,7 +154,7 @@ namespace DataStructures {
 
     // Treat 0 specially
     if (f == 0.0) {
-      m_content = part_list(1, 0);
+      m_content = part_list(1ull, 0);
     }
 
     union {
@@ -171,7 +171,7 @@ namespace DataStructures {
 
     // Numbers smaller than 1 are just rounded to 0.
     if (exponent < BIAS) {
-      m_content = part_list(1, 0);
+      m_content = part_list(1ull, 0);
       return;
     }
 
@@ -246,7 +246,7 @@ namespace DataStructures {
   {
     bool positive = m_positive;
     m_positive = true;
-    m_content = part_list(1, 0);
+    m_content = part_list(1ull, 0);
     PREC(NoDigits, start_index < numerical_string.length());
 
     for (string::const_iterator it = numerical_string.begin() + start_index; it < numerical_string.end(); ++it) {
@@ -324,10 +324,10 @@ namespace DataStructures {
         }
       }
     }
-    if (parts.is_empty()) {
+    if (parts.empty()) {
       out << "0";
     }
-    while (!parts.is_empty()) {
+    while (!parts.empty()) {
       out << parts.pop_back();
     }
   }
@@ -646,19 +646,19 @@ namespace DataStructures {
     }
   }
 
-  int LongInt::compareTo(const LongInt& other) const
+  int_fast8_t LongInt::compare_to(const LongInt& other) const
   {
     if (m_positive) {
       if (!other.m_positive) {
         return 1;
       } else {
-        return uCompareTo(other);
+        return u_compare_to(other);
       }
     } else {
       if (other.m_positive) {
         return -1;
       } else {
-        return -uCompareTo(other);
+        return -u_compare_to(other);
       }
     }
   }
@@ -704,7 +704,7 @@ namespace DataStructures {
   // Treat other number as same sign
   void inline LongInt::subtract(const LongInt &other)
   {
-    if (uCompareTo(other) == -1) {
+    if (u_compare_to(other) == -1) {
       pad_zeros(other.size());
       DataStructures::subtract(&m_content[0],
                                &m_content[0] + size(),
@@ -736,7 +736,7 @@ namespace DataStructures {
                                 c,
                                 c + space);
     m_content.clear();
-    m_content.push_all(c, c_end);
+    m_content.insert(m_content.end(), c, c_end);
     free(c);
     m_positive = m_positive == other.m_positive;
     if (size() == 0) {
@@ -812,7 +812,7 @@ namespace DataStructures {
       }
     }
     if (part_shift > 0) {
-      m_content = part_list(part_shift, 0) + m_content;
+      m_content.insert(0, part_shift, 0);
     }
     return *this;
   }
@@ -966,8 +966,11 @@ namespace DataStructures {
     return m_positive ? *this : operator-();
   }
 
-  int inline LongInt::uCompareTo(const LongInt& other) const
+  int_fast8_t LongInt::u_compare_to(const LongInt& other) const
   {
+    if (this == &other) {
+      return true;
+    }
     size_type max_index = max(size(), other.size());
     for (size_type i = max_index + 1; i > 0;) {
       --i;

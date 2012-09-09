@@ -33,7 +33,9 @@ namespace DataStructures {
 
     // inline virtual BaseList<T>& operator=(BaseList<T>&& other);
 
-    inline virtual void reorganize() {}
+    // This has to move the elements such that they are in subsequent order again.
+    // This is important for resizing
+    virtual void reorganize() = 0;
 
     template <typename Iterator>
     BaseList(Iterator begin, Iterator end);
@@ -42,19 +44,19 @@ namespace DataStructures {
 
     inline size_type size() const;
 
-    inline bool is_empty() const;
-
-    inline virtual void clear();
+    inline bool empty() const;
 
     inline size_type min_capacity() const;
 
-    inline void set_min_capacity(size_type min_capacity);
+    inline void min_capacity(size_type min_capacity);
 
     inline size_type capacity() const;
 
-    inline void set_shrinkable(bool is_shrinkable);
+    inline void reserve(size_type capacity);
 
-    inline bool is_shrinkable() const;
+    inline void shrinkable(bool shrinkable);
+
+    inline bool shrinkable() const;
 
   private:
     static const size_type CAPACITY_DECREASE_FACTOR;

@@ -12,14 +12,14 @@ void QueueTest::init()
 {
   m_queue = Queue<int>();
   for (int i = 0; i < 20; ++i) {
-    m_queue.push(i);
+    m_queue.push_back(i);
   }
 }
 
 void QueueTest::test_default_constructor()
 {
   Queue<int> queue1;
-  QVERIFY2(queue1.is_empty(), "Default constructed Queue is not empty.");
+  QVERIFY2(queue1.empty(), "Default constructed Queue is not empty.");
 }
 
 void QueueTest::test_copy_constructor()
@@ -48,44 +48,44 @@ void QueueTest::test_assign()
 void QueueTest::test_size()
 {
   COMPARE_SIZE(m_queue, 20);
-  m_queue.push(20);
+  m_queue.push_back(20);
   COMPARE_SIZE(m_queue, 21);
-  m_queue.push(222);
+  m_queue.push_back(222);
   COMPARE_SIZE(m_queue, 22);
-  m_queue.pop();
+  m_queue.pop_front();
   COMPARE_SIZE(m_queue, 21);
-  m_queue.pop();
+  m_queue.pop_front();
   COMPARE_SIZE(m_queue, 20);
-  m_queue.pop();
+  m_queue.pop_front();
   COMPARE_SIZE(m_queue, 19);
-  m_queue.pop();
+  m_queue.pop_front();
   COMPARE_SIZE(m_queue, 18);
-  m_queue.push(22);
+  m_queue.push_back(22);
   COMPARE_SIZE(m_queue, 19);
 }
 
 void QueueTest::test_is_empty()
 {
   for (int i = 0; i < 20; ++i) {
-    QVERIFY(!m_queue.is_empty());
-    m_queue.pop();
+    QVERIFY(!m_queue.empty());
+    m_queue.pop_front();
   }
-  QVERIFY(m_queue.is_empty());
+  QVERIFY(m_queue.empty());
   Queue<int> queue2;
-  QVERIFY(queue2.is_empty());
-  queue2.push(2);
-  QVERIFY(!queue2.is_empty());
-  queue2.pop();
-  QVERIFY(queue2.is_empty());
+  QVERIFY(queue2.empty());
+  queue2.push_back(2);
+  QVERIFY(!queue2.empty());
+  queue2.pop_front();
+  QVERIFY(queue2.empty());
   Queue<int> queue3;
-  queue3.push(2);
-  QVERIFY(!queue3.is_empty());
+  queue3.push_back(2);
+  QVERIFY(!queue3.empty());
   queue2.push_all(queue3.begin(), queue3.end());
-  QVERIFY(!queue2.is_empty());
-  queue2.pop();
-  QVERIFY(queue2.is_empty());
-  queue3.pop();
-  QVERIFY(queue3.is_empty());
+  QVERIFY(!queue2.empty());
+  queue2.pop_front();
+  QVERIFY(queue2.empty());
+  queue3.pop_front();
+  QVERIFY(queue3.empty());
 }
 
 void QueueTest::test_index()
@@ -112,7 +112,7 @@ void QueueTest::test_index()
 
 void QueueTest::test_push() {
   for (int i = 20; i < 25; ++i) {
-    m_queue.push(i);
+    m_queue.push_back(i);
   }
   COMPARE_SIZE(m_queue, 25);
   for (int i = 0; i < 25; ++i) {
@@ -122,14 +122,14 @@ void QueueTest::test_push() {
 
 void QueueTest::test_pop() {
   for (int n = 0; n < 20; ++n) {
-    QCOMPARE(m_queue.pop(), n);
+    QCOMPARE(m_queue.pop_front(), n);
     COMPARE_SIZE(m_queue, 19 - n);
     for (int i = 0; i < 19 - n; ++i) {
       QCOMPARE(m_queue[i], i + n + 1);
     }
   }
   try {
-    m_queue.pop();
+    m_queue.pop_front();
     QFAIL("Popping from an empty m_queue didn't cause an exception.");
   } catch (PreconditionViolation e) {
     QCOMPARE(e.type(), EmptyList);
@@ -139,7 +139,7 @@ void QueueTest::test_pop() {
 void QueueTest::test_top() {
   for (int n = 0; n < 20; ++n) {
     QCOMPARE(m_queue.front(), n);
-    m_queue.pop();
+    m_queue.pop_front();
   }
   int a = 29;
   try {
@@ -160,40 +160,40 @@ void QueueTest::test_iterate() {
 
 void QueueTest::test_clear() {
   m_queue.clear();
-  QVERIFY2(m_queue.is_empty(), "Emptied m_queue is not empty.");
+  QVERIFY2(m_queue.empty(), "Emptied m_queue is not empty.");
   COMPARE_SIZE(m_queue, 0);
-  m_queue.push(22);
+  m_queue.push_back(22);
   m_queue.clear();
-  QVERIFY2(m_queue.is_empty(), "Emptied m_queue is not empty.");
+  QVERIFY2(m_queue.empty(), "Emptied m_queue is not empty.");
   COMPARE_SIZE(m_queue, 0);
   m_queue.push_all(m_queue.begin(), m_queue.end());
   m_queue.clear();
-  QVERIFY2(m_queue.is_empty(), "Emptied m_queue is not empty.");
+  QVERIFY2(m_queue.empty(), "Emptied m_queue is not empty.");
   COMPARE_SIZE(m_queue, 0);
-  m_queue.push(22);
-  m_queue.push(0);
+  m_queue.push_back(22);
+  m_queue.push_back(0);
   m_queue.clear();
-  QVERIFY2(m_queue.is_empty(), "Emptied m_queue is not empty.");
+  QVERIFY2(m_queue.empty(), "Emptied m_queue is not empty.");
   COMPARE_SIZE(m_queue, 0);
-  m_queue.push(22);
+  m_queue.push_back(22);
 }
 
 void QueueTest::test_min_capacity()
 {
-  m_queue.set_min_capacity(55);
+  m_queue.min_capacity(55);
   COMPARE_INTS(m_queue.min_capacity(), 55);
 }
 
 void QueueTest::test_capacity()
 {
-  m_queue.set_min_capacity(46);
+  m_queue.min_capacity(46);
   QVERIFY(m_queue.capacity() >= 46);
   for (int i = 0; i < 100; ++i) {
-    m_queue.push(0);
+    m_queue.push_back(0);
     QVERIFY(m_queue.capacity() >= 46);
   }
   for (int i = 0; i < 100; ++i) {
-    m_queue.pop();
+    m_queue.pop_front();
     QVERIFY(m_queue.capacity() >= 46);
   }
 }
@@ -204,12 +204,12 @@ void QueueTest::test_equals()
   Queue<int> t1, t2;
   QVERIFY(t1 == t2);
   for (int i = 0; i < 30; ++i) {
-    t1.push(i);
+    t1.push_back(i);
   }
   QVERIFY(t1 == t1);
   QVERIFY(!(t1 == t2));
   for (int i = 0; i < 30; ++i) {
-    t2.push(i);
+    t2.push_back(i);
   }
   QVERIFY(t2 == t2);
 }
@@ -219,12 +219,12 @@ void QueueTest::test_unequals()
   Queue<int> t1, t2;
   QVERIFY(!(t1 != t2));
   for (int i = 0; i < 30; ++i) {
-    t1.push(i);
+    t1.push_back(i);
   }
   QVERIFY(!(t1 != t1));
   QVERIFY(t1 != t2);
   for (int i = 0; i < 30; ++i) {
-    t2.push(i);
+    t2.push_back(i);
   }
   QVERIFY(!(t1 != t2));
 }

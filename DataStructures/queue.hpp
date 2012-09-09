@@ -158,7 +158,7 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline void Queue<T>::push(const T& element)
+  inline void Queue<T>::push_back(const T& element)
   {
     size_type old_size = BaseList<T>::size();
     BaseList<T>::prepare_size(BaseList<T>::size() + 1);
@@ -166,12 +166,34 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline T Queue<T>::pop()
+  inline void Queue<T>::push_front(const T& element)
+  {
+    BaseList<T>::prepare_size(BaseList<T>::size() + 1);
+    if (m_begin == 0) {
+      m_begin = BaseList<T>::capacity();
+    }
+    --m_begin;
+    BaseList<T>::create(m_begin, element);
+  }
+
+  template <typename T>
+  inline T Queue<T>::pop_front()
   {
     PREC_EMPTY();
     T element = BaseList<T>::at(m_begin);
     BaseList<T>::destroy(m_begin);
     ++m_begin;
+    BaseList<T>::prepare_size(BaseList<T>::size() - 1);
+    return element;
+  }
+
+  template <typename T>
+  inline T Queue<T>::pop_back()
+  {
+    PREC_EMPTY();
+    size_type end = (m_begin + BaseList<T>::size()) % BaseList<T>::capacity();
+    T element = BaseList<T>::at(end);
+    BaseList<T>::destroy(end);
     BaseList<T>::prepare_size(BaseList<T>::size() - 1);
     return element;
   }

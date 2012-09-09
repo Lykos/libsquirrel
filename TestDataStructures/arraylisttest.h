@@ -15,15 +15,17 @@ private:
 
 private Q_SLOTS:
   void init();
+
   void test_default_constructor();
+
   void test_fill_constructor();
+
   void test_copy_constructor();
-  void test_push_all();
+
+  void test_insert_index_range();
+
   void test_assign();
-  void test_plus();
-  void test_plus_assign();
-  void test_times();
-  void test_times_assign();
+
   void test_size();
 
   void test_is_empty();

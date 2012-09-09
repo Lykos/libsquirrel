@@ -45,9 +45,13 @@ namespace DataStructures {
 
     inline void clear();
 
-    inline void push(const T& element);
+    inline void push_back(const T& element);
 
-    inline T pop();
+    inline void push_front(const T& element);
+
+    inline T pop_back();
+
+    inline T pop_front();
 
     inline const T& front() const;
 

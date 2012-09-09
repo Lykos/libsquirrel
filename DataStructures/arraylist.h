@@ -27,27 +27,53 @@ namespace DataStructures {
 
     inline explicit ArrayList(size_type initial_size, const T& element = T());
 
-    /*template <typename Iterator>
-    ArrayList(const Iterator& begin, const Iterator& end);*/
-
     template <typename Iterator>
-    void push_all(const Iterator& begin, const Iterator& end);
+    ArrayList(Iterator begin, Iterator end);
 
-    inline ArrayList<T> operator+(const ArrayList<T>& other) const;
+    inline const T& operator[](size_type i) const;
 
-    inline ArrayList<T>& operator+=(const ArrayList<T>& other);
-
-    inline ArrayList<T> operator*(size_type factor) const;
-
-    inline ArrayList<T>& operator*=(size_type factor);
+    inline T& operator[](size_type i);
 
     inline bool operator==(const ArrayList<T>& other) const;
 
     inline bool operator!=(const ArrayList<T>& other) const;
 
-    inline const T& operator[](size_type i) const;
+    inline bool operator<(const ArrayList<T>& other) const;
 
-    inline T& operator[](size_type i);
+    inline bool operator<=(const ArrayList<T>& other) const;
+
+    inline bool operator>(const ArrayList<T>& other) const;
+
+    inline bool operator>=(const ArrayList<T>& other) const;
+
+    template <typename Iterator>
+    inline void assign(Iterator begin, Iterator end);
+
+    inline void assign(size_type number, const T& element);
+
+    inline void erase(iterator position);
+
+    inline void erase(iterator start, iterator end);
+
+    inline void erase(size_type index);
+
+    inline void erase(size_type start, size_type end);
+
+    iterator insert(size_type index, const T& element);
+
+    void insert(size_type index, size_type number, const T& element);
+
+    template <typename Iterator>
+    void insert(size_type index, Iterator start, Iterator end);
+
+    iterator insert(iterator position, const T& element);
+
+    void insert(iterator position, size_type number, const T& element);
+
+    template <typename Iterator>
+    void insert(iterator position, Iterator start, Iterator end);
+
+    void resize(size_type new_size, const T& element = T());
 
     inline void push_back(const T& element);
 
@@ -56,10 +82,6 @@ namespace DataStructures {
     inline bool remove(const T& element);
 
     inline size_type remove_all(const T& element);
-
-    inline void remove_position(size_type position);
-
-    inline void remove_range(size_type start, size_type end);
 
     inline const T& front() const;
 
@@ -78,6 +100,14 @@ namespace DataStructures {
     inline const_iterator end() const;
 
     inline const T* data() const;
+
+    inline void clear();
+
+    inline void reorganize();
+
+  private:
+
+    inline int_fast8_t compare_to(const ArrayList<T>& other) const;
 
   };
 

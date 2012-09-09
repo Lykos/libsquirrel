@@ -5,6 +5,8 @@
 #include "arraylist.h"
 #include "listiterator.h"
 
+#define PREC_INDEX_INSERT_LIST(index) PREC(OutOfRange, index <= BaseList<T>::size())
+
 namespace DataStructures {
 
   template <typename T>
@@ -33,64 +35,11 @@ namespace DataStructures {
   {
   }
 
-  /*template <typename T>
-  template <typename Iterator>
-  ArrayList<T>::ArrayList(const Iterator& begin, const Iterator& end)
-  {
-    push_all(begin, end);
-  }*/
-
   template <typename T>
   template <typename Iterator>
-  inline void ArrayList<T>::push_all(const Iterator& begin, const Iterator& end)
+  ArrayList<T>::ArrayList(Iterator begin, Iterator end)
   {
-    if (end <= begin) {
-      return;
-    }
-    size_type i = BaseList<T>::size();
-    BaseList<T>::prepare_size(BaseList<T>::size() + (end - begin));
-    for (Iterator it = begin; it != end; ++it, ++i) {
-      BaseList<T>::create(i, *it);
-    }
-  }
-
-  template <typename T>
-  inline ArrayList<T> ArrayList<T>::operator+(const ArrayList<T>& other) const
-  {
-    ArrayList<T> result(BaseList<T>::size() + other.size());
-    result.add_content(BaseList<T>::data(), 0, BaseList<T>::size());
-    result.add_content(other.data(), BaseList<T>::size(), other.size());
-    return result;
-  }
-
-  template <typename T>
-  inline ArrayList<T>& ArrayList<T>::operator+=(const ArrayList<T>& other)
-  {
-    size_type old_size = BaseList<T>::size();
-    BaseList<T>::prepare_size(BaseList<T>::size() + other.size());
-    BaseList<T>::add_content(other.data(), old_size, other.size());
-    return *this;
-  }
-
-  template <typename T>
-  inline ArrayList<T> ArrayList<T>::operator*(size_type factor) const
-  {
-    ArrayList<T> result (BaseList<T>::size() * factor);
-    for (size_type i = 0; i < factor; ++i) {
-      result.add_content(BaseList<T>::data(), i * BaseList<T>::size(), BaseList<T>::size());
-    }
-    return result;
-  }
-
-  template <typename T>
-  inline ArrayList<T>& ArrayList<T>::operator*=(size_type factor)
-  {
-    size_type old_size = BaseList<T>::size();
-    BaseList<T>::prepare_size(BaseList<T>::size() * factor);
-    for (size_type i = 1; i < factor; ++i) {
-      BaseList<T>::add_content(BaseList<T>::data(), i * old_size, old_size);
-    }
-    return *this;
+    insert(0, begin, end);
   }
 
   template <typename T>
@@ -102,18 +51,148 @@ namespace DataStructures {
     if (BaseList<T>::size() != other.size()) {
       return false;
     }
-    for (size_type i = 0; i < BaseList<T>::size(); ++i) {
-      if (BaseList<T>::at(i) != other.at(i)) {
-        return false;
-      }
-    }
-    return true;
+    return compare_to(other) == 0;
   }
 
   template <typename T>
   inline bool ArrayList<T>::operator!=(const ArrayList<T>& other) const
   {
     return !operator==(other);
+  }
+
+  template <typename T>
+  inline bool ArrayList<T>::operator<(const ArrayList<T>& other) const
+  {
+    return compare_to(other) == -1;
+  }
+
+  template <typename T>
+  inline bool ArrayList<T>::operator<=(const ArrayList<T>& other) const
+  {
+    return compare_to(other) != 1;
+  }
+
+  template <typename T>
+  inline bool ArrayList<T>::operator>(const ArrayList<T>& other) const
+  {
+    return compare_to(other) == 1;
+  }
+
+  template <typename T>
+  inline bool ArrayList<T>::operator>=(const ArrayList<T>& other) const
+  {
+    return compare_to(other) != -1;
+  }
+
+  template <typename T>
+  template <typename Iterator>
+  inline void ArrayList<T>::assign(Iterator begin, Iterator end)
+  {
+    clear();
+    insert(0, begin, end);
+  }
+
+  template <typename T>
+  inline void ArrayList<T>::assign(size_type number, const T& element)
+  {
+    clear();
+    insert(0, number, element);
+  }
+
+  template <typename T>
+  inline void ArrayList<T>::erase(iterator position)
+  {
+    erase(position - begin());
+  }
+
+  template <typename T>
+  inline void ArrayList<T>::erase(iterator start, iterator end)
+  {
+    erase(start - begin(), end - begin());
+  }
+
+  template <typename T>
+  inline void ArrayList<T>::erase(size_type index)
+  {
+    PREC_INDEX_LIST(index);
+    BaseList<T>::destroy(index);
+    BaseList<T>::move_part(index, index + 1, BaseList<T>::size() - 1 - index);
+    BaseList<T>::prepare_size(BaseList<T>::size() - 1);
+  }
+
+  template <typename T>
+  inline void ArrayList<T>::erase(size_type start, size_type end)
+  {
+    PREC_INDEX_LIST(start);
+    PREC_INDEX_INSERT_LIST(end);
+    PREC(InvalidRange, start <= end);
+    BaseList<T>::destroy_part(start, end - start);
+    BaseList<T>::move_part(start, end, BaseList<T>::size() - end);
+    BaseList<T>::prepare_size(BaseList<T>::size() - (end - start));
+  }
+
+  template <typename T>
+  typename ArrayList<T>::iterator ArrayList<T>::insert(size_type index, const T& element)
+  {
+    PREC_INDEX_INSERT_LIST(index);
+    size_type old_size = BaseList<T>::size();
+    BaseList<T>::prepare_size(old_size + 1);
+    BaseList<T>::move(old_size, index);
+    BaseList<T>::create(index, element);
+  }
+
+  template <typename T>
+  void ArrayList<T>::insert(size_type index, size_type number, const T& element)
+  {
+    PREC_INDEX_INSERT_LIST(index);
+    size_type old_size = BaseList<T>::size();
+    BaseList<T>::prepare_size(old_size + number);
+    BaseList<T>::move_part(index + number, index, old_size - index);
+    for (; index < old_size; ++index) {
+      BaseList<T>::create(index, element);
+    }
+  }
+
+  template <typename T>
+  template <typename Iterator>
+  void ArrayList<T>::insert(size_type index, Iterator begin, Iterator end)
+  {
+    PREC_INDEX_INSERT_LIST(index);
+    size_type old_size = BaseList<T>::size();
+    BaseList<T>::prepare_size(old_size + (end - begin));
+    BaseList<T>::move_part(index + (end - begin), index, old_size - index);
+    for (; begin != end; ++begin, ++index) {
+      BaseList<T>::create(index, *begin);
+    }
+  }
+
+  template <typename T>
+  typename ArrayList<T>::iterator ArrayList<T>::insert(iterator position, const T& element)
+  {
+    insert(position - begin(), element);
+  }
+
+  template <typename T>
+  void ArrayList<T>::insert(iterator position, size_type number, const T& element)
+  {
+    insert(position - begin(), number, element);
+  }
+
+  template <typename T>
+  template <typename Iterator>
+  void ArrayList<T>::insert(iterator position, Iterator start, Iterator end)
+  {
+    insert(position - begin(), start, end);
+  }
+
+  template <typename T>
+  void ArrayList<T>::resize(size_type new_size, const T& element)
+  {
+    if (new_size < BaseList<T>::size()) {
+      erase(new_size, BaseList<T>::size());
+    } else if (new_size > BaseList<T>::size()) {
+      insert(BaseList<T>::size(), new_size - BaseList<T>::size(), element);
+    }
   }
 
   template <typename T>
@@ -183,30 +262,6 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline void ArrayList<T>::remove_position(size_type position)
-  {
-    PREC_INDEX_LIST(position);
-    BaseList<T>::move_part(position, position + 1, BaseList<T>::size() - (position + 1));
-    destroy(BaseList<T>::size() - 1);
-    BaseList<T>::prepare_size(BaseList<T>::size() - 1);
-  }
-
-  template <typename T>
-  inline void ArrayList<T>::remove_range(size_type start, size_type end)
-  {
-    if (start >= end) {
-      return;
-    }
-    PREC_INDEX_LIST(start);
-    end = std::min(end, BaseList<T>::size());
-    size_type length = end - start;
-    size_type tail_length = std::min(length, BaseList<T>::size() - end);
-    BaseList<T>::move_part(start, end, tail_length);
-    BaseList<T>::destroy_part(BaseList<T>::size() - length, length);
-    BaseList<T>::prepare_size(BaseList<T>::size() - length);
-  }
-
-  template <typename T>
   inline const T& ArrayList<T>::front() const
   {
     PREC_EMPTY();
@@ -261,6 +316,37 @@ namespace DataStructures {
   inline const T* ArrayList<T>::data() const
   {
     return BaseList<T>::data();
+  }
+
+  template <typename T>
+  inline void ArrayList<T>::clear()
+  {
+    erase(0, BaseList<T>::size());
+  }
+
+  template <typename T>
+  inline void ArrayList<T>::reorganize()
+  {}
+
+  template <typename T>
+  inline int_fast8_t ArrayList<T>::compare_to(const ArrayList<T>& other) const
+  {
+    if (this == &other) {
+      return 0;
+    }
+    for (size_type i = 0; i < BaseList<T>::size() && i < other.size(); ++i) {
+      if (BaseList<T>::at(i) < other.at(i)) {
+        return -1;
+      } else if (other.at(i) < BaseList<T>::at(i)) {
+        return 1;
+      }
+    }
+    if (BaseList<T>::size() < other.size()) {
+      return -1;
+    } else if (other.size() < BaseList<T>::size()) {
+      return 1;
+    }
+    return 0;
   }
 
 }

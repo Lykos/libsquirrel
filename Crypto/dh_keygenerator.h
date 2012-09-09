@@ -1,6 +1,7 @@
 #ifndef CRYPTO_DH_KEYGENERATOR_H
 #define CRYPTO_DH_KEYGENERATOR_H
 
+#include "DataStructures/uniformlongintdistribution.h"
 #include "dh_types.h"
 
 namespace Crypto {

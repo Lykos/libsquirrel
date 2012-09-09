@@ -286,7 +286,8 @@ module Generators
     end
 
     def tests
-      [IntTest.new(super[0]), super[1]]
+      [IntTest.new(super[0].actual, super[0].expected),
+       super[1]]
     end
 
     def data_columns
@@ -642,7 +643,7 @@ module Generators
     end
 
     def tests
-      [Test.new("left.compareTo(right)", "result"),
+      [IntTest.new("left.compare_to(right)", "result"),
        Test.new("left > right", "larger"),
        Test.new("left >= right", "larger_equal"),
        Test.new("left == right", "equal"),

@@ -11,7 +11,7 @@
 #include <cstring>
 
 #define PREC_INDEX_LIST(index) PREC(OutOfRange, index < BaseList<T>::size())
-#define PREC_EMPTY() PREC(EmptyList, !BaseList<T>::is_empty())
+#define PREC_EMPTY() PREC(EmptyList, !BaseList<T>::empty())
 
 namespace DataStructures {
 
@@ -86,7 +86,6 @@ namespace DataStructures {
   template <typename T>
   BaseList<T>::~BaseList()
   {
-    clear();
     free(m_content);
   }
 
@@ -97,16 +96,9 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline bool BaseList<T>::is_empty() const
+  inline bool BaseList<T>::empty() const
   {
     return m_size == 0;
-  }
-
-  template <typename T>
-  inline void BaseList<T>::clear()
-  {
-    destroy_part(0, m_size);
-    prepare_size(0);
   }
 
   template <typename T>
@@ -116,7 +108,7 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline void BaseList<T>::set_min_capacity(size_type min_capacity)
+  inline void BaseList<T>::min_capacity(size_type min_capacity)
   {
     m_min_capacity = min_capacity;
   }
@@ -128,13 +120,13 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline void BaseList<T>::set_shrinkable(bool is_shrinkable)
+  inline void BaseList<T>::shrinkable(bool is_shrinkable)
   {
     m_is_shrinkable = is_shrinkable;
   }
 
   template <typename T>
-  inline bool BaseList<T>::is_shrinkable() const
+  inline bool BaseList<T>::shrinkable() const
   {
     return m_is_shrinkable;
   }
@@ -164,8 +156,6 @@ namespace DataStructures {
     if (this == &other) {
       return *this;
     }
-    // TODO efficiency
-    clear();
     m_min_capacity = other.m_min_capacity;
     prepare_size(other.m_size);
     add_content(other.m_content, 0, other.m_size);
@@ -264,6 +254,14 @@ namespace DataStructures {
   inline T& BaseList<T>::at(size_type index)
   {
     return m_content[index];
+  }
+
+  template <typename T>
+  inline void BaseList<T>::reserve(size_type capacity)
+  {
+    if (capacity > m_capacity) {
+      adjust_capacity(capacity);
+    }
   }
 
   template <typename T>
