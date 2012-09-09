@@ -11,6 +11,8 @@
 template <template <typename T> class Tree>
 class TreeTest
 {
+  Q_OBJECT
+
 private:
   Tree<int> m_tree;
 
@@ -388,4 +390,5 @@ void TreeTest<Tree>::test_not_equals()
   }
   QVERIFY(!(t1 != t2));
 }
+
 #endif // TESTTREAP_H
