@@ -115,7 +115,7 @@ namespace DataStructures {
 
     inline void move_queue_part(size_type q_insert_position, size_type q_start, size_type length);
 
-    inline void move_queue_continuous(size_type q_insert_position, size_type q_start, size_type length);
+    inline void make_room(size_type index, size_type old_length, size_type length);
 
     size_type m_begin = 0;
 

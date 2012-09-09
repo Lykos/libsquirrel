@@ -2,7 +2,6 @@
 #define CRYPTO_CBC_DECRYPTER_H
 
 #include "types.h"
-#include "Crypto_global.h"
 #include "preconditionviolation.h"
 #include "conditiontype.h"
 #include <string>
@@ -13,7 +12,7 @@ namespace Crypto {
   namespace CBC {
 
     template <typename BlockCipher>
-    class CRYPTOSHARED_EXPORT Decrypter
+    class Decrypter
     {
       friend void std::swap <>(Decrypter<BlockCipher>& first, Decrypter<BlockCipher>& second);
 

@@ -22,7 +22,6 @@ void QueueTest::test_random_queueing()
   Queue<int> actual (size_type(100), 34);
   for (int i = 0; i < 1000; ++i) {
     int operation = op_dist(rng);
-    cout << operation << endl;
     if (operation == 0) {
       for (int i = 0; i < 20; ++i) {
         int elem = elem_dist(rng);
@@ -43,7 +42,7 @@ void QueueTest::test_random_queueing()
       }
     } else if (operation == 3 && expected.size() >= 15) {
       for (int i = 0; i < 15; ++i) {
-        QCOMPARE(actual.back(), expected.front());
+        QCOMPARE(actual.front(), expected.front());
         expected.pop_front();
         actual.pop_front();
       }
@@ -74,7 +73,6 @@ void QueueTest::test_random_queueing()
       expected.insert(expected.begin() + start, elems.begin(), elems.end());
       actual.insert(start, elems.begin(), elems.end());
     }
-    cout << actual << endl;
     QCOMPARE(actual.size(), expected.size());
     for (size_type i = 0; i < expected.size(); ++i) {
       QCOMPARE(expected[i], actual[i]);
