@@ -5,10 +5,12 @@
 #include "fibonaccinode.h"
 // fibonaccinode.hpp is included at file end
 #include "arraylist.h"
+#include "less.h"
+#include <initializer_list>
 
 namespace DataStructures {
   
-  template <typename T>
+  template < typename T, typename Compare = Less<T> >
   class FibonacciHeap
   {
   public:
@@ -16,20 +18,23 @@ namespace DataStructures {
 
     typedef typename Node<T>::size_type size_type;
 
-    inline FibonacciHeap();
+    template <typename T, typename Compare>
+    inline FibonacciHeap(std::initializer_list<T> list);
 
-    inline FibonacciHeap(const FibonacciHeap& other);
+    inline explicit FibonacciHeap(const Compare& compare = compare());
 
-    inline FibonacciHeap(FibonacciHeap&& other);
+    inline FibonacciHeap(const FibonacciHeap<T, Compare>& other);
+
+    inline FibonacciHeap(FibonacciHeap<T, Compare>&& other);
 
     inline ~FibonacciHeap();
 
-    inline FibonacciHeap& operator=(const FibonacciHeap& other);
+    inline FibonacciHeap& operator=(const FibonacciHeap<T, Compare>& other);
 
-    inline FibonacciHeap& operator=(FibonacciHeap&& other);
+    inline FibonacciHeap& operator=(FibonacciHeap<T, Compare>&& other);
 
-    template <typename Iterator>
-    inline FibonacciHeap(Iterator begin, Iterator end);
+    template <typename InputIterator>
+    inline FibonacciHeap(InputIterator begin, InputIterator end, const Compare& compare = compare());
 
     inline void decrease_key(node_pointer node);
 
@@ -43,14 +48,16 @@ namespace DataStructures {
 
     inline T pop();
 
-    inline void merge(const FibonacciHeap& other);
+    inline void merge(const FibonacciHeap<T, Compare>& other);
 
-    inline void merge(FibonacciHeap&& other);
+    inline void merge(FibonacciHeap<T, Compare>&& other);
 
   private:
     node_pointer m_root = NULL;
 
     size_type m_size = 0;
+
+    Compare m_compare;
 
     inline void push(node_pointer node);
 

@@ -3,23 +3,23 @@
 #include <QtTest/QtTest>
 #include <QElapsedTimer>
 #include <string>
-#include "longint.h"
+#include "DataStructures/longint.h"
 #include "performancetest.h"
 
 class LongIntTest : public PerformanceTest
 {
   Q_OBJECT
 public:
-  LongIntTest();
-
-  inline std::string get_description() const
+  inline std::string description() const
   {
     return "LongIntTest";
   }
 
 private Q_SLOTS:
-  void test_string_constructor_data();
-  void test_string_constructor();
+  void test_right_shift_data();
+  void test_right_shift();
+  void test_left_shift_data();
+  void test_left_shift();
   void test_inc_data();
   void test_inc();
   void test_dec_data();

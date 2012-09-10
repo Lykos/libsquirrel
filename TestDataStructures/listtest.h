@@ -32,15 +32,15 @@ protected:
 
   void test_insert_index_fill();
 
-  void test_erase_iterator_range();
+  void test_erase_InputIterator_range();
 
-  void test_erase_iterator_element();
+  void test_erase_InputIterator_element();
 
-  void test_insert_iterator_range();
+  void test_insert_InputIterator_range();
 
-  void test_insert_iterator_element();
+  void test_insert_InputIterator_element();
 
-  void test_insert_iterator_fill();
+  void test_insert_InputIterator_fill();
 
   void test_assign();
 

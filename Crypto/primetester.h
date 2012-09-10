@@ -6,15 +6,12 @@
 #include "DataStructures/uniformlongintdistribution.h"
 #include "primes.h"
 #include "DataStructures/treap.h"
-#include <cstring>
 
 namespace Crypto {
 
   class PrimeTester
   {
   public:
-    typedef bool (*predicate_t)(const DataStructures::LongInt&);
-
   // The probability that a non-prime is mistaken for a prime is 2^-security
     template <typename Engine>
     DataStructures::LongInt random_prime(Engine& engine, DataStructures::LongInt min, DataStructures::LongInt max, number_size_t security);

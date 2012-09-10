@@ -7,7 +7,7 @@ namespace DataStructures {
     OutOfRange,
     EmptyList,
     NumberLength,
-    InvalidIterator,
+    InvalidInputIterator,
     InvalidRange,
     NotRelativelyPrime,
     DivideByZero,

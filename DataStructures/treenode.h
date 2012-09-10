@@ -21,8 +21,6 @@ namespace DataStructures {
 
     inline TreeNode(const T& new_element, Node* new_parent = NULL, direction new_parent_direction = TREE_INVALID);
 
-    inline direction element_direction(const T& other_element) const;
-
     inline direction min_size_direction() const;
 
     inline size_type dir_size(direction dir) const;

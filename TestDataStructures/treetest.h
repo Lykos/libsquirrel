@@ -3,18 +3,19 @@
 
 #include "DataStructures/conditiontype.h"
 #include "DataStructures/preconditionviolation.h"
+#include "DataStructures/less.h"
 #include "treetest.h"
 #include <QObject>
 #include <QtTest/QtTest>
 #include <iostream>
 
-template <template <typename T> class Tree>
+template <template <typename T, typename Compare> class Tree>
 class TreeTest
 {
 private:
-  Tree<int> m_tree;
+  Tree< int, DataStructures::Less<int> > m_tree;
 
-  void standard_fill(Tree<int>& tree);
+  void standard_fill(Tree< int, DataStructures::Less<int> >& tree);
 
 protected:
   void init();

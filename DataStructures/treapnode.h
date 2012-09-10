@@ -9,8 +9,6 @@ namespace DataStructures {
   template <typename T>
   struct TreapNode : public TreeNode<T, TreapNode<T> >
   {
-    typedef TreapNode<T>* TreapNodePointer;
-
     typedef typename TreeNode<T, TreapNode<T> >::direction direction;
 
     inline TreapNode(const T& new_element, TreapNode<T>* new_parent = NULL, direction new_parent_direction = TREE_INVALID);

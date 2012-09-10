@@ -1,5 +1,5 @@
-#ifndef DATASTRUCTURES_LISTITERATOR_HPP
-#define DATASTRUCTURES_LISTITERATOR_HPP
+#ifndef DATASTRUCTURES_ListIterator_HPP
+#define DATASTRUCTURES_ListIterator_HPP
 
 #include "listiterator.h"
 #include "baseiterator.h"
@@ -104,9 +104,9 @@ namespace DataStructures {
   template <typename T, typename List>
   T* ListIterator<T, List>::operator->() const
   {
-    return &operator*();
+    return &(operator*());
   }
 
 }
 
-#endif // DATASTRUCTURES_LISTITERATOR_HPP
+#endif // DATASTRUCTURES_ListIterator_HPP

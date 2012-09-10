@@ -36,10 +36,10 @@ namespace DataStructures {
     inline Polynomial(const Structure *structure,
                       const coefficient_list& coefficients);
 
-    template <typename Iterator>
+    template <typename InputIterator>
     inline Polynomial(const Structure *structure,
-                      const Iterator& begin,
-                      const Iterator& end);
+                      InputIterator begin,
+                      InputIterator end);
 
     inline Polynomial< T, Structure > zero() const;
 

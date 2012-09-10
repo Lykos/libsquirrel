@@ -2,7 +2,7 @@
 #define DATASTRUCTURES_UNIFORMLONGINTDISTRIBUTION_H
 
 #include "longint.h"
-#include <uniformlongintdistribution.h>
+#include <boost/random/uniform_int_distribution.hpp>
 #include <stdexcept>
 #include <istream>
 #include <ostream>

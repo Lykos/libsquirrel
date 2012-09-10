@@ -5,7 +5,7 @@
 #include <QElapsedTimer>
 #include <QtTest/QtTest>
 #include <string>
-#include "arraylist.h"
+#include "DataStructures/arraylist.h"
 #include "performanceresult.h"
 #include "compositeperformanceresult.h"
 
@@ -16,7 +16,7 @@ class PerformanceTest : public QObject
 public:
   CompositePerformanceResult<PerformanceResult> accumulate_results() const;
 
-  virtual std::string get_description() const = 0;
+  virtual std::string description() const = 0;
 
 protected:
   QElapsedTimer m_timer;

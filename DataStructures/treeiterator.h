@@ -1,5 +1,5 @@
-#ifndef DATASTRUCTURES_TREEITERATOR_H
-#define DATASTRUCTURES_TREEITERATOR_H
+#ifndef DATASTRUCTURES_TreeIterator_H
+#define DATASTRUCTURES_TreeIterator_H
 
 #include "baseiterator.h"
 #include "treenode.h"
@@ -69,4 +69,4 @@ namespace DataStructures {
 
 #include "treeiterator.hpp"
 
-#endif // DATASTRUCTURES_TREEITERATOR_H
+#endif // DATASTRUCTURES_TreeIterator_H

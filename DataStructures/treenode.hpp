@@ -8,12 +8,6 @@
 namespace DataStructures {
 
   template <typename T, typename Node>
-  inline typename TreeNode<T, Node>::direction TreeNode<T, Node>::element_direction(const T& other_element) const
-  {
-    return other_element < element ? TREE_LEFT : TREE_RIGHT;
-  }
-
-  template <typename T, typename Node>
   inline typename TreeNode<T, Node>::direction TreeNode<T, Node>::min_size_direction() const
   {
     return dir_size(TREE_LEFT) < dir_size(TREE_RIGHT) ? TREE_LEFT : TREE_RIGHT;

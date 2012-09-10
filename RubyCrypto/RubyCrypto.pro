@@ -62,13 +62,13 @@ unix:!symbian {
 unix:!macx:!symbian: LIBS += -L$$PWD/../Crypto-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lCrypto
 
 INCLUDEPATH += $$PWD/..
-DEPENDPATH += $$PWD/../Crypto
+DEPENDPATH += $$PWD/..
 
 unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
 
 
 INCLUDEPATH += $$PWD/..
-DEPENDPATH += $$PWD/../DataStructures
+DEPENDPATH += $$PWD/..
 
 unix|win32: LIBS += -lruby -lboost_random
 

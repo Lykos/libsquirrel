@@ -3,39 +3,41 @@
 
 #include "avlnode.h"
 #include "basetree.h"
+#include "less.h"
 #include <ostream>
+#include <initializer_list>
 
 namespace DataStructures {
 
   typedef char balance_t;
 
-  template <typename T>
+  template <typename T, typename Compare>
   class AVLTree;
 
-  template <typename T>
-  inline std::ostream& operator<<(std::ostream& out, const AVLTree<T>& it);
+  template <typename T, typename Compare>
+  inline std::ostream& operator<<(std::ostream& out, const AVLTree<T, Compare>& it);
 
-  template <typename T>
-  class AVLTree : public BaseTree<T, AVLNode<T> >
+  template <typename T, typename Compare = Less<T> >
+  class AVLTree : public BaseTree<T, AVLNode<T>, Compare>
   {
-    friend std::ostream& operator<< <> (std::ostream& out, const AVLTree<T>& it);
+    friend std::ostream& operator<< <> (std::ostream& out, const AVLTree<T, Compare>& it);
 
   public:
-    inline AVLTree();
+    inline explicit AVLTree(const Compare& compare = Compare());
 
-    inline AVLTree(const AVLTree<T>& other);
+    inline AVLTree(std::initializer_list<T> list);
 
     inline void insert(const T &element);
 
     inline bool remove(const T &element);
 
-    template <typename Iterator>
-    inline AVLTree(const Iterator& begin, const Iterator& end);
+    template <typename InputIterator>
+    inline AVLTree(InputIterator begin, InputIterator end, const Compare& compare = Compare());
 
   private:
     typedef typename AVLNode<T>::balance_t balance_t;
 
-    typedef typename BaseTree<T, AVLNode<T> >::direction direction;
+    typedef typename BaseTree<T, AVLNode<T>, Compare>::direction direction;
 
     inline void rebalance(AVLNode<T>* current, direction dir);
 

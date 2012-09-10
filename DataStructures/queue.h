@@ -32,8 +32,8 @@ namespace DataStructures {
 
     inline Queue(const Queue<T>& other);
 
-    template <typename Iterator>
-    inline Queue(const Iterator& begin, const Iterator& end);
+    template <typename InputIterator>
+    inline Queue(InputIterator begin, InputIterator end);
 
     inline int_fast8_t compare_to(const Queue<T>& other) const;
 
@@ -49,8 +49,8 @@ namespace DataStructures {
 
     inline bool operator>=(const Queue<T>& other) const;
 
-    template <typename Iterator>
-    inline void assign(Iterator begin, Iterator end);
+    template <typename InputIterator>
+    inline void assign(InputIterator begin, InputIterator end);
 
     inline void assign(size_type number, const T& element);
 
@@ -66,15 +66,15 @@ namespace DataStructures {
 
     inline void insert(size_type index, size_type number, const T& element);
 
-    template <typename Iterator>
-    inline void insert(size_type index, Iterator start, Iterator end);
+    template <typename InputIterator>
+    inline void insert(size_type index, InputIterator start, InputIterator end);
 
     inline iterator insert(iterator position, const T& element);
 
     inline void insert(iterator position, size_type number, const T& element);
 
-    template <typename Iterator>
-    inline void insert(iterator position, Iterator start, Iterator end);
+    template <typename InputIterator>
+    inline void insert(iterator position, InputIterator start, InputIterator end);
 
     inline void resize(size_type new_size, const T& element = T());
 

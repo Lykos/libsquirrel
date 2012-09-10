@@ -6,7 +6,7 @@
 namespace DataStructures {
   
   template <typename T>
-  FibonacciNode::FibonacciNode(const FibonacciHeap<T>* heap,
+  FibonacciNode<T, Compare>::FibonacciNode(const FibonacciHeap<T>* heap,
                                const T& element):
     m_heap (heap),
     m_element (element)
@@ -16,13 +16,13 @@ namespace DataStructures {
   }
 
   template <typename T>
-  const T& FibonacciNode::element() const
+  const T& FibonacciNode<T, Compare>::element() const
   {
     return m_element;
   }
 
   template <typename T>
-  T& FibonacciNode::element()
+  T& FibonacciNode<T, Compare>::element()
   {
     return m_element;
   }

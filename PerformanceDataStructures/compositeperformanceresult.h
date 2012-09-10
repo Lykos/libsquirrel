@@ -1,10 +1,10 @@
 #ifndef COMPOSITEPERFORMANCERESULT_H
 #define COMPOSITEPERFORMANCERESULT_H
 
+#include "DataStructures/arraylist.h"
 #include <string>
 #include <ostream>
 #include <sstream>
-#include "arraylist.h"
 
 template <typename T>
 class CompositePerformanceResult;
@@ -61,7 +61,7 @@ const DataStructures::ArrayList<T>& CompositePerformanceResult<T>::get_sub_resul
 template <typename T>
 void CompositePerformanceResult<T>::add_sub_result(const T& sub_result)
 {
-  m_sub_results.push(sub_result);
+  m_sub_results.push_back(sub_result);
 }
 
 template <typename T>

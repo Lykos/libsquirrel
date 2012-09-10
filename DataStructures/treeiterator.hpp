@@ -1,8 +1,7 @@
-#ifndef DATASTRUCTURES_TREEITERATOR_HPP
-#define DATASTRUCTURES_TREEITERATOR_HPP
+#ifndef DATASTRUCTURES_TreeIterator_HPP
+#define DATASTRUCTURES_TreeIterator_HPP
 
 #include "treeiterator.h"
-#include "baseiterator.h"
 #include "treenode.h"
 #include "conditiontype.h"
 #include "preconditionviolation.h"
@@ -106,7 +105,7 @@ namespace DataStructures {
   {
     PREC_INDEX_TREE_IT(BaseIt::m_index);
     // Should only happen if the user does funny things while iterating
-    PREC(InvalidIterator, m_current != NULL);
+    PREC(InvalidInputIterator, m_current != NULL);
     return m_current->element;
   }
 
@@ -120,7 +119,7 @@ namespace DataStructures {
   template <typename T, typename Node, typename Tree>
   inline T* TreeIterator<T, Node, Tree>::operator->() const
   {
-    return &operator*();
+    return &(operator*());
   }
 
   template <typename T, typename Node, typename Tree>
@@ -137,21 +136,21 @@ namespace DataStructures {
       direction parent_dir = m_current->parent_direction;
       m_current = m_current->parent;
       if (parent_dir == TREE_RIGHT) {
-        PREC(InvalidIterator, m_left_size >= m_current->dir_size(TREE_LEFT) + 1);
+        PREC(InvalidInputIterator, m_left_size >= m_current->dir_size(TREE_LEFT) + 1);
         m_left_size -= m_current->dir_size(TREE_LEFT) + 1;
       }
     }
     size_type current_index = m_left_size + m_current->dir_size(TREE_LEFT);
     while (current_index != BaseIt::m_index) {
-      PREC(InvalidIterator, m_current != NULL);
-      PREC(InvalidIterator, (BaseIt::m_index >= m_left_size));
-      PREC(InvalidIterator, (BaseIt::m_index < m_left_size + m_current->size));
+      PREC(InvalidInputIterator, m_current != NULL);
+      PREC(InvalidInputIterator, (BaseIt::m_index >= m_left_size));
+      PREC(InvalidInputIterator, (BaseIt::m_index < m_left_size + m_current->size));
       if (current_index > BaseIt::m_index) {
-        PREC(InvalidIterator, m_current->children[TREE_LEFT] != NULL);
+        PREC(InvalidInputIterator, m_current->children[TREE_LEFT] != NULL);
         m_current = m_current->children[TREE_LEFT];
       } else {
-        PREC(InvalidIterator, (current_index < BaseIt::m_index));
-        PREC(InvalidIterator, m_current->children[TREE_RIGHT] != NULL);
+        PREC(InvalidInputIterator, (current_index < BaseIt::m_index));
+        PREC(InvalidInputIterator, m_current->children[TREE_RIGHT] != NULL);
         m_left_size = current_index + 1;
         m_current = m_current->children[TREE_RIGHT];
       }
@@ -161,4 +160,4 @@ namespace DataStructures {
 
 }
 
-#endif // DATASTRUCTURES_TREEITERATOR_HPP
+#endif // DATASTRUCTURES_TreeIterator_HPP

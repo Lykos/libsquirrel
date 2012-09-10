@@ -39,8 +39,8 @@ namespace DataStructures {
   {}
 
   template <typename T>
-  template <typename Iterator>
-  inline Queue<T>::Queue(const Iterator& begin, const Iterator& end)
+  template <typename InputIterator>
+  inline Queue<T>::Queue(InputIterator begin, InputIterator end)
   {
     insert(m_begin, begin, end);
   }
@@ -222,8 +222,8 @@ namespace DataStructures {
   }
 
   template <typename T>
-  template <typename Iterator>
-  inline void Queue<T>::assign(Iterator begin, Iterator end)
+  template <typename InputIterator>
+  inline void Queue<T>::assign(InputIterator begin, InputIterator end)
   {
     clear();
     insert(0, begin, end);
@@ -291,8 +291,8 @@ namespace DataStructures {
   }
 
   template <typename T>
-  template <typename Iterator>
-  inline void Queue<T>::insert(size_type index, Iterator begin, Iterator end)
+  template <typename InputIterator>
+  inline void Queue<T>::insert(size_type index, InputIterator begin, InputIterator end)
   {
     PREC_INDEX_INSERT_LIST(index);
     size_type old_size = BaseList<T>::size();
@@ -316,8 +316,8 @@ namespace DataStructures {
   }
 
   template <typename T>
-  template <typename Iterator>
-  inline void Queue<T>::insert(iterator position, Iterator start, Iterator end)
+  template <typename InputIterator>
+  inline void Queue<T>::insert(iterator position, InputIterator start, InputIterator end)
   {
     insert(position - begin(), start, end);
   }

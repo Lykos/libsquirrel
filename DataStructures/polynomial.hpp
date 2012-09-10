@@ -63,10 +63,10 @@ namespace DataStructures {
   }
 
   template <typename T, typename Structure>
-  template <typename Iterator>
+  template <typename InputIterator>
   inline Polynomial<T, Structure>::Polynomial(const Structure *structure,
-                                              const Iterator& begin,
-                                              const Iterator& end):
+                                              InputIterator begin,
+                                              InputIterator end):
     m_structure (structure),
     m_coefficients (begin, end)
   {

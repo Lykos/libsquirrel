@@ -48,8 +48,12 @@ module Generators
 
     attr_reader :actual, :expected
 
+    def compare_macro
+      "QCOMPARE"
+    end
+
     def to_s
-      "QCOMPARE(#{@actual}, #{@expected});"
+      compare_macro + "(#{@actual}, #{@expected});"
     end
 
   end
@@ -60,8 +64,8 @@ module Generators
       super(actual, expected)
     end
 
-    def to_s
-      "COMPARE_INTS(#{@actual}, #{@expected});"
+    def compare_macro
+      "COMPARE_INTS"
     end
 
   end

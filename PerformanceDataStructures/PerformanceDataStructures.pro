@@ -24,11 +24,12 @@ SOURCES += \
 
 unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
 
-INCLUDEPATH += $$PWD/../DataStructures
-DEPENDPATH += $$PWD/../DataStructures
+INCLUDEPATH += $$PWD/..
+DEPENDPATH += $$PWD/..
 
 HEADERS += \
     compositeperformanceresult.h \
     performanceresult.h \
     longinttest.h \
-    performancetest.h
+    performancetest.h \
+    comparemacros.h

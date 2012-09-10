@@ -10,12 +10,12 @@ namespace DataStructures {
 
   static const balance_t BALANCE_SIGN[] = {-1, 1};
 
-  template <typename T>
-  inline std::ostream& operator<<(std::ostream& out, const AVLTree<T>& tree)
+  template <typename T, typename Compare>
+  inline std::ostream& operator<<(std::ostream& out, const AVLTree<T, Compare>& tree)
   {
     out << "AVLTree[";
-    for (typename AVLTree<T>::const_iterator it = tree.begin(); it < tree.end(); ++it) {
-      out << (*it).get_element();
+    for (typename AVLTree<T, Compare>::const_iterator it = tree.begin(); it < tree.end(); ++it) {
+      out << *it;
       if (it + 1 < tree.end()) {
         out << ", ";
       }
@@ -24,29 +24,27 @@ namespace DataStructures {
     return out;
   }
 
-  template <typename T>
-  inline AVLTree<T>::AVLTree():
-    BaseTree<T, AVLNode<T> >()
-  {
-  }
+  template <typename T, typename Compare>
+  inline AVLTree<T, Compare>::AVLTree(const Compare& compare):
+    BaseTree<T, AVLNode<T>, Compare>(compare)
+  {}
 
-  template <typename T>
-  inline AVLTree<T>::AVLTree(const AVLTree<T>& other):
-    BaseTree<T, AVLNode<T> >(other)
-  {
-  }
 
-  template <typename T>
-  template <typename Iterator>
-  inline AVLTree<T>::AVLTree(const Iterator& begin, const Iterator& end):
-    BaseTree<T, AVLNode<T> > (begin, end)
-  {
-  }
+  template <typename T, typename Compare>
+  inline AVLTree<T, Compare>::AVLTree(std::initializer_list<T> list):
+    AVLTree<T, Compare>(list.begin(), list.end())
+  {}
 
-  template <typename T>
-  inline bool AVLTree<T>::remove(const T &element)
+  template <typename T, typename Compare>
+  template <typename InputIterator>
+  inline AVLTree<T, Compare>::AVLTree(InputIterator begin, InputIterator end, const Compare& compare):
+    BaseTree<T, AVLNode<T>, Compare> (begin, end, compare)
+  {}
+
+  template <typename T, typename Compare>
+  inline bool AVLTree<T, Compare>::remove(const T &element)
   {
-    AVLNode<T>* current = BaseTree<T, AVLNode<T> >::m_root;
+    AVLNode<T>* current = BaseTree<T, AVLNode<T>, Compare>::m_root;
     while (current != NULL) {
       if (current->element == element) {
         if (current->is_inner()) {
@@ -56,14 +54,14 @@ namespace DataStructures {
         }
         return true;
       }
-      direction dir = current->element_direction(element);
+      direction dir = BaseTree<T, AVLNode<T>, Compare>::element_direction(current, element);
       current = current->children[dir];
     }
     return false;
   }
 
-  template <typename T>
-  inline void AVLTree<T>::inner_remove(AVLNode<T>* node)
+  template <typename T, typename Compare>
+  inline void AVLTree<T, Compare>::inner_remove(AVLNode<T>* node)
   {
     assert(node != NULL);
     AVLNode<T>* current = node->children[TREE_LEFT];
@@ -75,14 +73,14 @@ namespace DataStructures {
     non_inner_remove_rebalance(current);
   }
 
-  template <typename T>
-  inline void AVLTree<T>::non_inner_remove_rebalance(AVLNode<T>* node)
+  template <typename T, typename Compare>
+  inline void AVLTree<T, Compare>::non_inner_remove_rebalance(AVLNode<T>* node)
   {
     assert(node != NULL);
     assert(!(node->is_inner()));
     AVLNode<T>* current = node->parent;
     direction dir = node->parent_direction;
-    BaseTree<T, AVLNode<T> >::non_inner_remove(node);
+    BaseTree<T, AVLNode<T>, Compare>::non_inner_remove(node);
     balance_t old_balance = current->balance;
     current->balance -= BALANCE_SIGN[dir];
     balance_t new_balance = current->balance;
@@ -101,20 +99,20 @@ namespace DataStructures {
     }
   }
 
-  template <typename T>
-  inline void AVLTree<T>::exchange_content(AVLNode<T>* node1, AVLNode<T>* node2)
+  template <typename T, typename Compare>
+  inline void AVLTree<T, Compare>::exchange_content(AVLNode<T>* node1, AVLNode<T>* node2)
   {
     std::swap(node1->element, node2->element);
   }
 
-  template <typename T>
-  inline void AVLTree<T>::insert(const T& element)
+  template <typename T, typename Compare>
+  inline void AVLTree<T, Compare>::insert(const T& element)
   {
-    if (BaseTree<T, AVLNode<T> >::m_root == NULL) {
-      BaseTree<T, AVLNode<T> >::m_root = new AVLNode<T>(element);
+    if (BaseTree<T, AVLNode<T>, Compare>::m_root == NULL) {
+      BaseTree<T, AVLNode<T>, Compare>::m_root = new AVLNode<T>(element);
       return;
     }
-    AVLNode<T>* new_node = BaseTree<T, AVLNode<T> >::internal_insert(element);
+    AVLNode<T>* new_node = BaseTree<T, AVLNode<T>, Compare>::internal_insert(element);
     direction dir = new_node->parent_direction;
     AVLNode<T>* current = new_node->parent;
     balance_t old_balance = current->balance;
@@ -135,8 +133,8 @@ namespace DataStructures {
     }
   }
 
-  template <typename T>
-  inline void AVLTree<T>::rebalance(AVLNode<T>* current, direction dir)
+  template <typename T, typename Compare>
+  inline void AVLTree<T, Compare>::rebalance(AVLNode<T>* current, direction dir)
   {
     assert(current != NULL);
     assert(current->balance == BALANCE_SIGN[dir]);
@@ -146,7 +144,7 @@ namespace DataStructures {
       // Normal rotate
       child->balance = 0;
       current->balance = 0;
-      BaseTree<T, AVLNode<T> >::rotate(current, dir);
+      BaseTree<T, AVLNode<T>, Compare>::rotate(current, dir);
     } else {
       // Zic zac rotate
       assert(current->balance == -child->balance);
@@ -163,8 +161,8 @@ namespace DataStructures {
         child->balance = 0;
       }
       new_parent->balance = 0;
-      BaseTree<T, AVLNode<T> >::rotate(child, 1 - dir);
-      BaseTree<T, AVLNode<T> >::rotate(current, dir);
+      BaseTree<T, AVLNode<T>, Compare>::rotate(child, 1 - dir);
+      BaseTree<T, AVLNode<T>, Compare>::rotate(current, dir);
     }
   }
   

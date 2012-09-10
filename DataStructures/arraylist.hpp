@@ -32,8 +32,8 @@ namespace DataStructures {
   {}
 
   template <typename T>
-  template <typename Iterator>
-  ArrayList<T>::ArrayList(Iterator begin, Iterator end)
+  template <typename InputIterator>
+  ArrayList<T>::ArrayList(InputIterator begin, InputIterator end)
   {
     insert(0, begin, end);
   }
@@ -102,8 +102,8 @@ namespace DataStructures {
   }
 
   template <typename T>
-  template <typename Iterator>
-  inline void ArrayList<T>::assign(Iterator begin, Iterator end)
+  template <typename InputIterator>
+  inline void ArrayList<T>::assign(InputIterator begin, InputIterator end)
   {
     clear();
     insert(0, begin, end);
@@ -166,15 +166,15 @@ namespace DataStructures {
   }
 
   template <typename T>
-  template <typename Iterator>
-  inline void ArrayList<T>::insert(size_type index, Iterator begin, Iterator end)
+  template <typename InputIterator>
+  inline void ArrayList<T>::insert(size_type index, InputIterator start, InputIterator end)
   {
     PREC_INDEX_INSERT_LIST(index);
     size_type old_size = BaseList<T>::size();
-    BaseList<T>::prepare_size(old_size + (end - begin));
-    BaseList<T>::move_part(index + (end - begin), index, old_size - index);
-    for (; begin != end; ++begin, ++index) {
-      BaseList<T>::create(index, *begin);
+    BaseList<T>::prepare_size(old_size + (end - start));
+    BaseList<T>::move_part(index + (end - start), index, old_size - index);
+    for (; start != end; ++start, ++index) {
+      BaseList<T>::create(index, *start);
     }
   }
 
@@ -191,8 +191,8 @@ namespace DataStructures {
   }
 
   template <typename T>
-  template <typename Iterator>
-  inline void ArrayList<T>::insert(iterator position, Iterator start, Iterator end)
+  template <typename InputIterator>
+  inline void ArrayList<T>::insert(iterator position, InputIterator start, InputIterator end)
   {
     insert(position - begin(), start, end);
   }

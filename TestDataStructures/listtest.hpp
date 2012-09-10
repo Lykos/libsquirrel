@@ -85,7 +85,7 @@ void ListTest<List>::test_erase_index_element()
 }
 
 template <template <typename T> class List>
-void ListTest<List>::test_erase_iterator_range()
+void ListTest<List>::test_erase_InputIterator_range()
 {
   list.erase(list.begin() + 4, list.begin() + 10);
   COMPARE_SIZE(list, 14);
@@ -98,7 +98,7 @@ void ListTest<List>::test_erase_iterator_range()
 }
 
 template <template <typename T> class List>
-void ListTest<List>::test_erase_iterator_element()
+void ListTest<List>::test_erase_InputIterator_element()
 {
   list.erase(list.begin() + 4);
   COMPARE_SIZE(list, 19);
@@ -197,7 +197,7 @@ void ListTest<List>::test_insert_index_fill()
 }
 
 template <template <typename T> class List>
-void ListTest<List>::test_insert_iterator_range()
+void ListTest<List>::test_insert_InputIterator_range()
 {
   List<int> copied_list;
   copied_list.insert(copied_list.end(), list.begin() + 5, list.begin() + 14);
@@ -219,7 +219,7 @@ void ListTest<List>::test_insert_iterator_range()
 }
 
 template <template <typename T> class List>
-void ListTest<List>::test_insert_iterator_element()
+void ListTest<List>::test_insert_InputIterator_element()
 {
   list.insert(list.end(), 1);
   COMPARE_SIZE(list, 21);
@@ -245,7 +245,7 @@ void ListTest<List>::test_insert_iterator_element()
 }
 
 template <template <typename T> class List>
-void ListTest<List>::test_insert_iterator_fill()
+void ListTest<List>::test_insert_InputIterator_fill()
 {
   list.insert(list.end(), 5ul, 1);
   COMPARE_SIZE(list, 25);

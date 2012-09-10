@@ -1,52 +1,61 @@
 #ifndef DATASTRUCTURES_HEAP_HPP
 #define DATASTRUCTURES_HEAP_HPP
 
+#include "heap.h"
+#include "less.h"
 #include "baselist.h"
 #include "heaparithmetic.h"
 
 namespace DataStructures {
 
-  template <typename T>
-  Heap<T>::Heap():
-    BaseList<T>()
-  {
-  }
+  template <typename T, typename Compare>
+  inline Heap<T, Compare>::Heap(std::initializer_list<T> list):
+    Heap<T, Compare>(list.begin(), list.end())
+  {}
 
-  template <typename T>
-  Heap<T>::Heap(const Heap<T> &other):
-    BaseList<T>(other)
-  {
-  }
 
-  template <typename T>
-  template <typename Iterator>
-  Heap<T>::Heap(Iterator begin, Iterator end):
-    BaseList<T>()
+  template <typename T, typename Compare>
+  Heap<T, Compare>::Heap(const Compare& compare):
+    BaseList<T>(),
+    m_compare (compare)
+  {}
+
+  template <typename T, typename Compare>
+  Heap<T, Compare>::Heap(const Heap<T, Compare> &other):
+    BaseList<T>(other),
+    m_compare (other.m_compare)
+  {}
+
+  template <typename T, typename Compare>
+  template <typename InputIterator>
+  Heap<T, Compare>::Heap(InputIterator begin, InputIterator end, const Compare& compare):
+    BaseList<T>(),
+    m_compare (compare)
   {
     push_all(begin, end);
   }
 
-  template <typename T>
-  const T& Heap<T>::top() const
+  template <typename T, typename Compare>
+  const T& Heap<T, Compare>::top() const
   {
     PREC_EMPTY();
     return BaseList<T>::at(0);
   }
 
-  template <typename T>
-  T& Heap<T>::top()
+  template <typename T, typename Compare>
+  T& Heap<T, Compare>::top()
   {
     PREC_EMPTY();
     return BaseList<T>::at(0);
   }
 
-  template <typename T>
-  inline void Heap<T>::reorganize()
+  template <typename T, typename Compare>
+  inline void Heap<T, Compare>::reorganize()
   {}
 
-  template <typename T>
-  template <typename Iterator>
-  void Heap<T>::push_all(Iterator begin, Iterator end)
+  template <typename T, typename Compare>
+  template <typename InputIterator>
+  void Heap<T, Compare>::push_all(InputIterator begin, InputIterator end)
   {
     size_type i = BaseList<T>::size();
     BaseList<T>::prepare_size(BaseList<T>::size() + (end - begin));
@@ -56,8 +65,8 @@ namespace DataStructures {
     }
   }
 
-  template <typename T>
-  void Heap<T>::push(const T& element)
+  template <typename T, typename Compare>
+  void Heap<T, Compare>::push(const T& element)
   {
     size_type old_size = BaseList<T>::size();
     BaseList<T>::prepare_size(BaseList<T>::size() + 1);
@@ -65,8 +74,8 @@ namespace DataStructures {
     bubble_up(old_size);
   }
 
-  template <typename T>
-  T Heap<T>::pop()
+  template <typename T, typename Compare>
+  T Heap<T, Compare>::pop()
   {
     PREC_EMPTY();
     T element = BaseList<T>::at(0);
@@ -77,8 +86,8 @@ namespace DataStructures {
     return element;
   }
 
-  template <typename T>
-  inline typename Heap<T>::size_type Heap<T>::min_child(size_type index) const
+  template <typename T, typename Compare>
+  inline typename Heap<T, Compare>::size_type Heap<T, Compare>::min_child(size_type index) const
   {
     size_type left = HeapArithmetic::left_child(index);
     size_type right = HeapArithmetic::right_child(index);
@@ -86,16 +95,16 @@ namespace DataStructures {
     if (right >= BaseList<T>::size()) {
       return left;
     } else {
-      return BaseList<T>::at(left) < BaseList<T>::at(right) ? left : right;
+      return m_compare(BaseList<T>::at(left), BaseList<T>::at(right)) ? left : right;
     }
   }
 
-  template <typename T>
-  inline void Heap<T>::bubble_up(size_type index)
+  template <typename T, typename Compare>
+  inline void Heap<T, Compare>::bubble_up(size_type index)
   {
     while (index > 0) {
       size_type new_index = HeapArithmetic::parent(index);
-      if (BaseList<T>::at(new_index) < BaseList<T>::at(index)) {
+      if (m_compare(BaseList<T>::at(new_index), BaseList<T>::at(index))) {
         return;
       }
       BaseList<T>::swap(new_index, index);
@@ -103,12 +112,12 @@ namespace DataStructures {
     }
   }
 
-  template <typename T>
-  inline void Heap<T>::bubble_down(size_type index)
+  template <typename T, typename Compare>
+  inline void Heap<T, Compare>::bubble_down(size_type index)
   {
     while (HeapArithmetic::left_child(index) < BaseList<T>::size()) {
       size_type new_index = min_child(index);
-      if (BaseList<T>::at(index) < BaseList<T>::at(new_index)) {
+      if (m_compare(BaseList<T>::at(index), BaseList<T>::at(new_index))) {
         return;
       }
       BaseList<T>::swap(new_index, index);

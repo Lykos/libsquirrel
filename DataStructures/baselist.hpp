@@ -8,7 +8,6 @@
 #include <climits>
 #include <algorithm>
 #include <ostream>
-#include <cstring>
 
 #define PREC_INDEX_LIST(index) PREC(OutOfRange, index < BaseList<T>::size())
 #define PREC_EMPTY() PREC(EmptyList, !BaseList<T>::empty())
@@ -21,11 +20,6 @@ namespace DataStructures {
 
   template <typename T>
   const typename BaseList<T>::size_type BaseList<T>::CAPACITY_DECREASE_FACTOR(4);
-
-  template <typename T>
-  inline BaseList<T>::BaseList(std::initializer_list<T> list):
-    BaseList<T>(list.begin(), list.end())
-  {}
 
   template <typename T>
   BaseList<T>::BaseList(size_type initial_size, const T& element):
@@ -41,8 +35,8 @@ namespace DataStructures {
   }
 
   template <typename T>
-  template <typename Iterator>
-  BaseList<T>::BaseList(Iterator begin, Iterator end):
+  template <typename InputIterator>
+  BaseList<T>::BaseList(InputIterator begin, InputIterator end):
     m_content (NULL),
     m_size (end - begin),
     m_min_capacity (DEFAULT_MIN_CAPACITY),
@@ -196,7 +190,7 @@ namespace DataStructures {
   template <typename T>
   inline void BaseList<T>::move(size_type target, size_type source)
   {
-    memmove(m_content + target, m_content + source, sizeof(T));
+    m_content[target] = m_content[source];
   }
 
   template <typename T>
@@ -209,7 +203,17 @@ namespace DataStructures {
     assert(start < m_capacity);
     assert(insert_position + length <= m_capacity);
     assert(start + length <= m_capacity);
-    memmove(m_content + insert_position, m_content + start, length * sizeof(T));
+
+    if (insert_position < start) {
+      for (size_type i = 0; i < length; ++i) {
+        m_content[insert_position + i] = m_content[start + i];
+      }
+    } else {
+      for (size_type i = length; i > 0;) {
+        --i;
+        m_content[insert_position + i] = m_content[start + i];
+      }
+    }
   }
 
   template <typename T>

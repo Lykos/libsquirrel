@@ -28,7 +28,7 @@ HEADERS += \
     infiniterandom.h \
     treap.h \
     treapnode.h \
-    baseiterator.h \
+    BaseIterator.h \
     queue.h \
     listiterator.h \
     baselist.h \
@@ -75,7 +75,7 @@ HEADERS += \
     fibonacciheap.hpp \
     basetree.hpp \
     baselist.hpp \
-    baseiterator.hpp \
+    BaseIterator.hpp \
     avltree.hpp \
     avlnode.hpp \
     arraylist.hpp \
@@ -85,7 +85,9 @@ HEADERS += \
     uniformlongintdistribution.hpp \
     fibonaccinode.hpp \
     field.hpp \
-    field.h
+    field.h \
+    less.hpp \
+    less.h
 
 header_files.files = $$HEADERS
 header_files.path = /usr/local/include/DataStructures

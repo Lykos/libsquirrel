@@ -6,25 +6,25 @@
 
 namespace DataStructures {
 
-  template <typename T, typename Node>
+  template <typename T, typename Node, typename Compare>
   class BaseTree;
 
-  template <typename T, typename Node>
-  std::ostream& operator<<(std::ostream& out, const BaseTree<T, Node>& it);
+  template <typename T, typename Node, typename Compare>
+  std::ostream& operator<<(std::ostream& out, const BaseTree<T, Node, Compare>& it);
 
-  template <typename T, typename Node>
+  template <typename T, typename Node, typename Compare>
   class BaseTree
   {
-    friend std::ostream& operator<< <> (std::ostream& out, const BaseTree<T, Node>& it);
+    friend std::ostream& operator<< <> (std::ostream& out, const BaseTree<T, Node, Compare>& it);
 
-    friend class TreeIterator<T, Node, BaseTree<T, Node> >;
+    friend class TreeIterator<T, Node, BaseTree<T, Node, Compare> >;
 
-    friend class TreeIterator<T const, Node const, BaseTree<T, Node> const >;
+    friend class TreeIterator<T const, Node const, BaseTree<T, Node, Compare> const >;
 
   public:
-    typedef TreeIterator<T const, Node const, BaseTree<T, Node> const> const_iterator;
+    typedef TreeIterator<T const, Node const, BaseTree<T, Node, Compare> const> const_iterator;
 
-    typedef TreeIterator<T, Node, BaseTree<T, Node> > iterator;
+    typedef TreeIterator<T, Node, BaseTree<T, Node, Compare> > iterator;
 
   protected:
     typedef typename Node::direction direction;
@@ -34,29 +34,29 @@ namespace DataStructures {
 
     typedef typename Node::difference_type difference_type;
 
-    inline BaseTree();
+    inline BaseTree(const Compare& compare);
 
-    inline BaseTree(const BaseTree<T, Node>& other);
+    inline BaseTree(const BaseTree<T, Node, Compare>& other);
 
-    template <typename Iterator>
-    inline BaseTree(Iterator begin, Iterator end);
+    template <typename InputIterator>
+    inline BaseTree(InputIterator begin, InputIterator end, const Compare& compare);
 
     inline virtual ~BaseTree();
 
-    inline BaseTree& operator=(const BaseTree<T, Node>& other);
+    inline BaseTree& operator=(const BaseTree<T, Node, Compare>& other);
 
-    inline bool operator==(const BaseTree<T, Node>& other) const;
+    inline bool operator==(const BaseTree<T, Node, Compare>& other) const;
 
-    inline bool operator!=(const BaseTree<T, Node>& other) const;
+    inline bool operator!=(const BaseTree<T, Node, Compare>& other) const;
 
     inline void clear();
 
-    inline void merge(const BaseTree<T, Node>& other);
+    inline void merge(const BaseTree<T, Node, Compare>& other);
 
     inline virtual void insert(const T& element);
 
-    template <typename Iterator>
-    inline void insert_all(const Iterator& begin, const Iterator& end);
+    template <typename InputIterator>
+    inline void insert_all(InputIterator begin, InputIterator end);
 
     inline bool search(const T& element) const;
 
@@ -94,6 +94,10 @@ namespace DataStructures {
 
   protected:
     Node* m_root;
+
+    Compare m_compare;
+
+    inline direction element_direction(Node* current, const T& element) const;
 
     inline void rotate(Node* node, direction dir);
 

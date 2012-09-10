@@ -102,4 +102,4 @@ unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in
 LIBS += -lboost_random -lgmp -lgmpxx
 
 INCLUDEPATH += $$PWD/..
-DEPENDPATH += $$PWD/../DataStructures
+DEPENDPATH += $$PWD/..

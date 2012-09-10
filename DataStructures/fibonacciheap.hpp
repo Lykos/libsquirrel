@@ -9,57 +9,67 @@
 
 namespace DataStructures {
 
-  template <typename T>
-  inline FibonacciHeap<T>::FibonacciHeap()
+  template <typename T, typename Compare>
+  inline FibonacciHeap<T, Compare>::FibonacciHeap(const Compare& compare):
+    m_compare (compare)
   {}
 
-  template <typename T>
-  inline FibonacciHeap<T>::FibonacciHeap(const FibonacciHeap<T>& other):
+  template <typename T, typename Compare>
+  inline FibonacciHeap<T, Compare>::FibonacciHeap(std::initializer_list<T> list):
+    FibonacciHeap<T, Compare>(list.begin(), list.end())
+  {}
+
+  template <typename T, typename Compare>
+  inline FibonacciHeap<T, Compare>::FibonacciHeap(const FibonacciHeap<T, Compare>& other):
     m_root (NULL),
-    m_size (other.m_size)
+    m_size (other.m_size),
+    m_compare (other.m_compare)
   {
     merge(other);
   }
 
-  inline FibonacciHeap<T>::FibonacciHeap(FibonacciHeap<T>&& other):
+  inline FibonacciHeap<T, Compare>::FibonacciHeap(FibonacciHeap<T, Compare>&& other):
     m_root (other.m_root),
-    m_size (other.m_size)
+    m_size (other.m_size),
+    m_compare (std::move(other.m_compare))
   {
     other.m_root = NULL;
     other.m_size = 0;
   }
 
-  inline FibonacciHeap<T>::~FibonacciHeap()
+  inline FibonacciHeap<T, Compare>::~FibonacciHeap()
   {
     traverse([](node_pointer node) { delete node; });
   }
 
-  inline FibonacciHeap& FibonacciHeap<T>::operator=(const FibonacciHeap<T>& other)
+  inline FibonacciHeap& FibonacciHeap<T, Compare>::operator=(const FibonacciHeap<T, Compare>& other)
   {
     ~FibonacciHeap();
     m_root = NULL;
     m_size = 0;
+    m_compare = other.m_compare;
     merge(other);
   }
 
-  inline FibonacciHeap& FibonacciHeap<T>::operator=(FibonacciHeap<T>&& other):
-    m_root (other.m_root),
-    m_size (other.m_size)
+  inline FibonacciHeap& FibonacciHeap<T, Compare>::operator=(FibonacciHeap<T, Compare>&& other)
   {
+    m_root = other.m_root;
+    m_size = other.m_size;
+    m_compare = std::move(other.m_compare);
     other.m_root = NULL;
     other.m_size = 0;
   }
 
-  template <typename Iterator>
-  inline FibonacciHeap<T>::FibonacciHeap(Iterator begin, Iterator end)
+  template <typename InputIterator>
+  inline FibonacciHeap<T, Compare>::FibonacciHeap(InputIterator begin, InputIterator end)
   {
     for (; begin != end; ++begin) {
       push(*begin);
     }
   }
 
-  template <typename T>
-  inline void FibonacciHeap<T>::decrease_key(node_pointer node)
+  template <typename T, typename Compare>
+  inline void FibonacciHeap<T, Compare>::decrease_key(node_pointer node)
   {
     PREC(InvalidNode, node == NULL);
     PREC(InvalidNode, node->m_heap == this);
@@ -67,18 +77,18 @@ namespace DataStructures {
       return;
     }
     node_pointer parent = node->m_parent;
-    if (parent != NULL && node->element() < parent->element()) {
+    if (parent != NULL && m_compare(node->element(), parent->element())) {
       take_out(node);
       mark(parent);
       push(node);
     }
-    if (node->element() < m_root->element()) {
+    if (m_compare(node->element(), m_root->element())) {
       m_root = node;
     }
   }
 
-  template <typename T>
-  inline typename FibonacciHeap<T>::node_pointer FibonacciHeap<T>::push(const T& element)
+  template <typename T, typename Compare>
+  inline typename FibonacciHeap<T, Compare>::node_pointer FibonacciHeap<T, Compare>::push(const T& element)
   {
     ++m_size;
     node_pointer node = new node_pointer(element);
@@ -86,8 +96,8 @@ namespace DataStructures {
     return node;
   }
 
-  template <typename T>
-  inline void FibonacciHeap<T>::remove(node_pointer node)
+  template <typename T, typename Compare>
+  inline void FibonacciHeap<T, Compare>::remove(node_pointer node)
   {
     PREC(InvalidNode, node == NULL);
     PREC(InvalidNode, node->m_heap == this);
@@ -104,20 +114,20 @@ namespace DataStructures {
     pop();
   }
 
-  template <typename T>
-  inline const T& FibonacciHeap<T>::top() const
+  template <typename T, typename Compare>
+  inline const T& FibonacciHeap<T, Compare>::top() const
   {
     return m_root->element();
   }
 
-  template <typename T>
-  inline T& FibonacciHeap<T>::top()
+  template <typename T, typename Compare>
+  inline T& FibonacciHeap<T, Compare>::top()
   {
     return m_root->element();
   }
 
-  template <typename T>
-  inline T FibonacciHeap<T>::pop()
+  template <typename T, typename Compare>
+  inline T FibonacciHeap<T, Compare>::pop()
   {
     PREC(EmptyList, m_size > 0);
     assert(m_root != NULL);
@@ -146,14 +156,14 @@ namespace DataStructures {
     return min;
   }
 
-  template <typename T>
-  inline void FibonacciHeap<T>::merge(const FibonacciHeap& other)
+  template <typename T, typename Compare>
+  inline void FibonacciHeap<T, Compare>::merge(const FibonacciHeap& other)
   {
-    other.traverse([](node_pointer node) { push(new FibonacciNode<T>(node->element())); });
+    other.traverse([](node_pointer node) { push(new FibonacciNode<T, Compare>(node->element())); });
   }
 
-  template <typename T>
-  inline void FibonacciHeap<T>::merge(FibonacciHeap&& other)
+  template <typename T, typename Compare>
+  inline void FibonacciHeap<T, Compare>::merge(FibonacciHeap&& other)
   {
     PREC(SelfMerge, this != &other);
     if (other.m_root == NULL) {
@@ -170,8 +180,8 @@ namespace DataStructures {
     left->m_right = right;
   }
 
-  template <typename T>
-  inline void FibonacciHeap<T>::push(node_pointer node)
+  template <typename T, typename Compare>
+  inline void FibonacciHeap<T, Compare>::push(node_pointer node)
   {
     assert(node != NULL);
     if (m_root == NULL) {
@@ -179,15 +189,15 @@ namespace DataStructures {
       connect_self(node);
     } else {
       add_left(m_root, node);
-      if (node->element < m_root->element()) {
+      if (n_compare(node->element, m_root->element())) {
         m_root = node;
       }
     }
     node->m_parent = NULL;
   }
 
-  template <typename T>
-  inline void FibonacciHeap<T>::take_out(node_pointer node)
+  template <typename T, typename Compare>
+  inline void FibonacciHeap<T, Compare>::take_out(node_pointer node)
   {
     assert(node != NULL);
     assert(node != m_root);
@@ -208,7 +218,7 @@ namespace DataStructures {
           assert(node->m_right != node);
           parent->m_child = node->m_left;
           for (node_pointer child = node->m_left->m_left; child != node; child = child->m_left) {
-            if (child < parent->m_child) {
+            if (m_compare(child->element(), parent->m_child->element())) {
               parent->m_child = child;
             }
           }
@@ -222,8 +232,8 @@ namespace DataStructures {
     }
   }
 
-  template <typename T>
-  inline void FibonacciHeap<T>::mark(node_pointer node)
+  template <typename T, typename Compare>
+  inline void FibonacciHeap<T, Compare>::mark(node_pointer node)
   {
     while (node != NULL && node->m_parent != NULL && node->m_marked) {
       node_pointer parent = node->m_parent;
@@ -236,8 +246,8 @@ namespace DataStructures {
     }
   }
 
-  template <typename T>
-  inline void FibonacciHeap<T>::cleanup_insert(node_pointer *nodes, node_pointer node, size_type max_deg)
+  template <typename T, typename Compare>
+  inline void FibonacciHeap<T, Compare>::cleanup_insert(node_pointer *nodes, node_pointer node, size_type max_deg)
   {
     assert(node != NULL);
     assert(node->m_children <= max_deg);
@@ -246,7 +256,7 @@ namespace DataStructures {
       size_type old_children = node->m_children;
 #endif
       node_pointer other = nodes[node->m_children];
-      if (other->element() < node->element()) {
+      if (m_compare(other->element(), node->element())) {
         add_child(other, node);
         node = other;
       } else {
@@ -259,8 +269,8 @@ namespace DataStructures {
   }
 
 
-  template <typename T>
-  inline void FibonacciHeap<T>::add_child(node_pointer node, node_pointer new_child)
+  template <typename T, typename Compare>
+  inline void FibonacciHeap<T, Compare>::add_child(node_pointer node, node_pointer new_child)
   {
     assert(node != NULL);
     assert(new_child != NULL);
@@ -272,14 +282,14 @@ namespace DataStructures {
       node->m_child = new_child;
     } else {
       add_left(child, new_child);
-      if (new_child->element() < child->element()) {
+      if (m_compare(new_child->element(), child->element())) {
         node->m_child = new_child;
       }
     }
   }
 
-  template <typename T>
-  inline void FibonacciHeap<T>::add_left(node_pointer node, node_pointer new_left)
+  template <typename T, typename Compare>
+  inline void FibonacciHeap<T, Compare>::add_left(node_pointer node, node_pointer new_left)
   {
     new_left->m_left = node->m_left;
     new_left->m_right = node;
@@ -288,15 +298,15 @@ namespace DataStructures {
   }
 
 
-  template <typename T>
-  inline void FibonacciHeap<T>::connect_self(node_pointer node)
+  template <typename T, typename Compare>
+  inline void FibonacciHeap<T, Compare>::connect_self(node_pointer node)
   {
     node->m_left = node;
     node->m_right = node;
   }
 
-  template <typename T>
-  inline void FibonacciHeap<T>::traverse(void (*operation)(node_pointer node))
+  template <typename T, typename Compare>
+  inline void FibonacciHeap<T, Compare>::traverse(void (*operation)(node_pointer node))
   {
     // Note that this has to handle the case that operation deletes the pointer
     if (m_root != NULL) {

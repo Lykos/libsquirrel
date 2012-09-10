@@ -22,9 +22,7 @@ namespace DataStructures {
 
     typedef T* pointer_type;
 
-    inline BaseList(std::initializer_list<T> list);
-
-    explicit inline BaseList(size_type initial_size = 0, const T& element = T());
+    inline explicit BaseList(size_type initial_size = 0, const T& element = T());
 
     inline BaseList(const BaseList<T>& other);
 
@@ -38,8 +36,8 @@ namespace DataStructures {
     // This is important for resizing
     virtual void reorganize() = 0;
 
-    template <typename Iterator>
-    BaseList(Iterator begin, Iterator end);
+    template <typename InputIterator>
+    BaseList(InputIterator begin, InputIterator end);
 
     inline virtual ~BaseList();
 

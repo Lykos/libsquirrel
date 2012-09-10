@@ -5,13 +5,13 @@
 
 namespace DataStructures {
 
-  template <typename T>
+  template <typename T, typename Compare>
   class FibonacciHeap;
   
-  template <typename T>
+  template <typename T, typename Compare>
   class FibonacciNode
   {
-    friend class FibonacciHeap<T>;
+    friend class FibonacciHeap<T, Compare>;
 
   public:
     typedef size_t size_type;
@@ -21,7 +21,7 @@ namespace DataStructures {
     T& element();
 
   private:
-    inline FibonacciNode(const FibonacciHeap<T>* heap, const T& m_element);
+    inline FibonacciNode(const FibonacciHeap<T, Compare>* heap, const T& m_element);
 
     FibonacciNode& operator=(const FibonacciNode& other) = delete;
 
@@ -31,7 +31,7 @@ namespace DataStructures {
 
     FibonacciNode(FibonacciNode&& other) = delete;
 
-    const FibonacciHeap<T>* const m_heap;
+    const FibonacciHeap<T, Compare>* const m_heap;
 
     T m_element;
 

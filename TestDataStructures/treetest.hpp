@@ -4,22 +4,22 @@
 #include "treetest.h"
 #include "comparemacros.h"
 
-template <template <typename T> class Tree>
+template <template <typename T, typename Compare> class Tree>
 void TreeTest<Tree>::test_empty_constructor()
 {
-  Tree<int> t;
+  Tree< int, DataStructures::Less<int> > t;
   COMPARE_SIZE(t, 0);
 }
 
-template <template <typename T> class Tree>
+template <template <typename T, typename Compare> class Tree>
 void TreeTest<Tree>::init()
 {
-  m_tree = Tree<int>();
+  m_tree = Tree< int, DataStructures::Less<int> >();
   standard_fill(m_tree);
 }
 
-template <template <typename T> class Tree>
-void TreeTest<Tree>::standard_fill(Tree<int>& tree)
+template <template <typename T, typename Compare> class Tree>
+void TreeTest<Tree>::standard_fill(Tree< int, DataStructures::Less<int> >& tree)
 {
   for (int i = 0; i < 20; ++i) {
     tree.insert(0);
@@ -27,7 +27,7 @@ void TreeTest<Tree>::standard_fill(Tree<int>& tree)
   }
 }
 
-template <template <typename T> class Tree>
+template <template <typename T, typename Compare> class Tree>
 void TreeTest<Tree>::test_remove()
 {
   m_tree.remove(17);
@@ -46,10 +46,10 @@ void TreeTest<Tree>::test_remove()
   }
 }
 
-template <template <typename T> class Tree>
+template <template <typename T, typename Compare> class Tree>
 void TreeTest<Tree>::test_insert()
 {
-  Tree<int> t;
+  Tree< int, DataStructures::Less<int> > t;
   for (int i = 0; i < 5; ++i) {
     t.insert(0);
     COMPARE_SIZE(t, i + 1);
@@ -60,10 +60,10 @@ void TreeTest<Tree>::test_insert()
   }
 }
 
-template <template <typename T> class Tree>
+template <template <typename T, typename Compare> class Tree>
 void TreeTest<Tree>::test_search()
 {
-  Tree<int> t;
+  Tree< int, DataStructures::Less<int> > t;
   QVERIFY(!t.search(-1));
   t.insert(1);
   QVERIFY(!t.search(-1));
@@ -81,11 +81,11 @@ void TreeTest<Tree>::test_search()
   QVERIFY(t.search(2));
 }
 
-template <template <typename T> class Tree>
+template <template <typename T, typename Compare> class Tree>
 void TreeTest<Tree>::test_insert_all()
 {
   int a[] = {1, 2, 3, 4, 5, 6, 7};
-  Tree<int> t;
+  Tree< int, DataStructures::Less<int> > t;
   t.insert_all(a + 0, a + 4);
   COMPARE_SIZE(t, 4);
   for (int i = 0; i < 4; ++i) {
@@ -93,7 +93,7 @@ void TreeTest<Tree>::test_insert_all()
   }
 }
 
-template <template <typename T> class Tree>
+template <template <typename T, typename Compare> class Tree>
 void TreeTest<Tree>::test_remove_all()
 {
   m_tree.remove_all(0);
@@ -104,10 +104,10 @@ void TreeTest<Tree>::test_remove_all()
   }
 }
 
-template <template <typename T> class Tree>
+template <template <typename T, typename Compare> class Tree>
 void TreeTest<Tree>::test_clear()
 {
-  Tree<int> t;
+  Tree< int, DataStructures::Less<int> > t;
   standard_fill(t);
   m_tree.clear();
   COMPARE_SIZE(m_tree, 0);
@@ -117,10 +117,10 @@ void TreeTest<Tree>::test_clear()
   COMPARE_SIZE(m_tree, 0);
 }
 
-template <template <typename T> class Tree>
+template <template <typename T, typename Compare> class Tree>
 void TreeTest<Tree>::test_merge()
 {
-  Tree<int> t1, t2;
+  Tree< int, DataStructures::Less<int> > t1, t2;
   standard_fill(t2);
   t1.insert(-2);
   t1.insert(-1);
@@ -132,19 +132,19 @@ void TreeTest<Tree>::test_merge()
   }
 }
 
-template <template <typename T> class Tree>
+template <template <typename T, typename Compare> class Tree>
 void TreeTest<Tree>::test_copy_constructor()
 {
-  Tree<int> t1;
+  Tree< int, DataStructures::Less<int> > t1;
   standard_fill(t1);
-  Tree<int> t2 (t1);
+  Tree< int, DataStructures::Less<int> > t2 (t1);
   COMPARE_SIZE(t2, 40);
   for (int i = 0; i < 20; ++i) {
     QVERIFY(t2.search(i));
   }
 }
 
-template <template <typename T> class Tree>
+template <template <typename T, typename Compare> class Tree>
 void TreeTest<Tree>::test_index()
 {
   for (int i = 0; i < 20; ++i) {
@@ -153,20 +153,20 @@ void TreeTest<Tree>::test_index()
   }
 }
 
-template <template <typename T> class Tree>
+template <template <typename T, typename Compare> class Tree>
 void TreeTest<Tree>::test_const_index()
 {
-  const Tree<int>& t = m_tree;
+  const Tree< int, DataStructures::Less<int> >& t = m_tree;
   for (int i = 0; i < 20; ++i) {
     COMPARE_INTS(t[i], 0);
     COMPARE_INTS(t[i + 20], i);
   }
 }
 
-template <template <typename T> class Tree>
+template <template <typename T, typename Compare> class Tree>
 void TreeTest<Tree>::test_const_index_errors()
 {
-  const Tree<int>& t = m_tree;
+  const Tree< int, DataStructures::Less<int> >& t = m_tree;
   int a = 333;
   try {
     a = t[-1];
@@ -183,7 +183,7 @@ void TreeTest<Tree>::test_const_index_errors()
   QCOMPARE(a, 333);
 }
 
-template <template <typename T> class Tree>
+template <template <typename T, typename Compare> class Tree>
 void TreeTest<Tree>::test_index_errors()
 {
   int a = 333;
@@ -214,41 +214,41 @@ void TreeTest<Tree>::test_index_errors()
   QCOMPARE(a, 333);
 }
 
-template <template <typename T> class Tree>
+template <template <typename T, typename Compare> class Tree>
 void TreeTest<Tree>::test_iterators()
 {
   int i = 0;
-  for (typename Tree<int>::iterator it = m_tree.begin(); it < m_tree.end(); ++it, ++i)
+  for (typename Tree< int, DataStructures::Less<int> >::iterator it = m_tree.begin(); it < m_tree.end(); ++it, ++i)
   {
     COMPARE_INTS(*it, m_tree[i]);
   }
 }
 
-template <template <typename T> class Tree>
+template <template <typename T, typename Compare> class Tree>
 void TreeTest<Tree>::test_const_iterators()
 {
-  const Tree<int>& t = m_tree;
+  const Tree< int, DataStructures::Less<int> >& t = m_tree;
   int i = 0;
-  for (typename Tree<int>::const_iterator it = m_tree.begin(); it < m_tree.end(); ++it, ++i)
+  for (typename Tree< int, DataStructures::Less<int> >::const_iterator it = m_tree.begin(); it < m_tree.end(); ++it, ++i)
   {
     COMPARE_INTS(*it, t[i]);
   }
 }
 
-template <template <typename T> class Tree>
+template <template <typename T, typename Compare> class Tree>
 void TreeTest<Tree>::test_upper_bound_const()
 {
-  const Tree<int>& t = m_tree;
+  const Tree< int, DataStructures::Less<int> >& t = m_tree;
   QCOMPARE(t.upper_bound(0), t.begin() + 21);
   QCOMPARE(t.upper_bound(-1), t.begin());
   QCOMPARE(t.upper_bound(1), t.begin() + 22);
   QCOMPARE(t.upper_bound(100), t.end());
 }
 
-template <template <typename T> class Tree>
+template <template <typename T, typename Compare> class Tree>
 void TreeTest<Tree>::test_upper_bound()
 {
-  Tree<int> t;
+  Tree< int, DataStructures::Less<int> > t;
   standard_fill(t);
   QCOMPARE(t.upper_bound(0), t.begin() + 21);
   QCOMPARE(t.upper_bound(-1), t.begin());
@@ -256,17 +256,17 @@ void TreeTest<Tree>::test_upper_bound()
   QCOMPARE(t.upper_bound(100), t.end());
 }
 
-template <template <typename T> class Tree>
+template <template <typename T, typename Compare> class Tree>
 void TreeTest<Tree>::test_lower_bound_const()
 {
-  const Tree<int>& t = m_tree;
+  const Tree< int, DataStructures::Less<int> >& t = m_tree;
   QCOMPARE(t.lower_bound(0), t.begin());
   QCOMPARE(t.lower_bound(-1), t.begin());
   QCOMPARE(t.lower_bound(1), t.begin() + 21);
   QCOMPARE(t.lower_bound(100), t.end());
 }
 
-template <template <typename T> class Tree>
+template <template <typename T, typename Compare> class Tree>
 void TreeTest<Tree>::test_lower_bound()
 {
   QCOMPARE(m_tree.lower_bound(0), m_tree.begin());
@@ -275,10 +275,10 @@ void TreeTest<Tree>::test_lower_bound()
   QCOMPARE(m_tree.lower_bound(100), m_tree.end());
 }
 
-template <template <typename T> class Tree>
+template <template <typename T, typename Compare> class Tree>
 void TreeTest<Tree>::test_assign()
 {
-  Tree<int> t;
+  Tree< int, DataStructures::Less<int> > t;
   t.insert(-1);
   t = m_tree;
   COMPARE_SIZE(t, 40);
@@ -288,10 +288,10 @@ void TreeTest<Tree>::test_assign()
   }
 }
 
-template <template <typename T> class Tree>
+template <template <typename T, typename Compare> class Tree>
 void TreeTest<Tree>::test_equals()
 {
-  Tree<int> t1, t2;
+  Tree< int, DataStructures::Less<int> > t1, t2;
   QVERIFY(t1 == t2);
   standard_fill(t1);
   QVERIFY(!(t1 == t2));
@@ -306,10 +306,10 @@ void TreeTest<Tree>::test_equals()
   QVERIFY(t1 == t2);
 }
 
-template <template <typename T> class Tree>
+template <template <typename T, typename Compare> class Tree>
 void TreeTest<Tree>::test_not_equals()
 {
-  Tree<int> t1, t2;
+  Tree< int, DataStructures::Less<int> > t1, t2;
   QVERIFY(!(t1 != t2));
   standard_fill(t1);
   QVERIFY(t1 != t2);

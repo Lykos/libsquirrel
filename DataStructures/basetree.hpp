@@ -4,7 +4,7 @@
 #include "basetree.h"
 #include "treeiterator.h"
 
-#define PREC_INDEX_TREE(index) PREC(OutOfRange, (index < BaseTree<T, Node>::size()))
+#define PREC_INDEX_TREE(index) PREC(OutOfRange, (index < BaseTree<T, Node, Compare>::size()))
 #define assert_size(node) \
   assert(node->size == node->calculated_size())
 #define assert_parent(node) \
@@ -20,11 +20,11 @@
 
 namespace DataStructures {
 
-  template <typename T, typename Node>
-  inline std::ostream& operator<<(std::ostream& out, const BaseTree<T, Node>& tree)
+  template <typename T, typename Node, typename Compare>
+  inline std::ostream& operator<<(std::ostream& out, const BaseTree<T, Node, Compare>& tree)
   {
     out << "BaseTree[";
-    for (typename BaseTree<T, Node>::const_iterator it = tree.begin(); it < tree.end(); ++it) {
+    for (typename BaseTree<T, Node, Compare>::const_iterator it = tree.begin(); it < tree.end(); ++it) {
       out << (*it).get_element();
       if (it + 1 < tree.end()) {
         out << ", ";
@@ -34,40 +34,47 @@ namespace DataStructures {
     return out;
   }
 
-  template <typename T, typename Node>
-  inline bool BaseTree<T, Node>::operator!=(const BaseTree<T, Node>& other) const
+  template <typename T, typename Node, typename Compare>
+  inline bool BaseTree<T, Node, Compare>::operator!=(const BaseTree<T, Node, Compare>& other) const
   {
     return !operator==(other);
   }
 
-  template <typename T, typename Node>
-  inline bool BaseTree<T, Node>::search(const T& element) const
+  template <typename T, typename Node, typename Compare>
+  inline bool BaseTree<T, Node, Compare>::search(const T& element) const
   {
     Node* current = m_root;
     while (current != NULL) {
       if (current->element == element) {
         return true;
       }
-      direction dir = current->element_direction(element);
+      direction dir = element_direction(current, element);
       current = current->children[dir];
     }
     return false;
   }
 
-  template <typename T, typename Node>
-  inline void BaseTree<T, Node>::merge(const BaseTree<T, Node>& other)
+  template <typename T, typename Node, typename Compare>
+  inline void BaseTree<T, Node, Compare>::merge(const BaseTree<T, Node, Compare>& other)
   {
     insert_all(other.begin(), other.end());
   }
 
-  template <typename T, typename Node>
-  inline void BaseTree<T, Node>::insert(const T& element)
+  template <typename T, typename Node, typename Compare>
+  inline void BaseTree<T, Node, Compare>::insert(const T& element)
   {
     internal_insert(element);
   }
 
-  template <typename T, typename Node>
-  inline const T& BaseTree<T, Node>::operator[](size_type index) const
+  template <typename T, typename Node, typename Compare>
+  inline typename BaseTree<T, Node, Compare>::direction
+  BaseTree<T, Node, Compare>::element_direction(Node* current, const T& element) const
+  {
+    return m_compare(element, current->element) ? TREE_LEFT : TREE_RIGHT;
+  }
+
+  template <typename T, typename Node, typename Compare>
+  inline const T& BaseTree<T, Node, Compare>::operator[](size_type index) const
   {
     PREC_INDEX_TREE(index);
     Node* current = m_root;
@@ -86,8 +93,8 @@ namespace DataStructures {
     }
   }
 
-  template <typename T, typename Node>
-  inline T& BaseTree<T, Node>::operator[](size_type index)
+  template <typename T, typename Node, typename Compare>
+  inline T& BaseTree<T, Node, Compare>::operator[](size_type index)
   {
     PREC_INDEX_TREE(index);
     Node* current = m_root;
@@ -106,35 +113,47 @@ namespace DataStructures {
     }
   }
 
-  template <typename T, typename Node>
-  inline BaseTree<T, Node>::BaseTree():
-    m_root (NULL)
-  {
-  }
+  template <typename T, typename Node, typename Compare>
+  inline BaseTree<T, Node, Compare>::BaseTree(const Compare& compare):
+    m_root (NULL),
+    m_compare (compare)
+  {}
 
-  template <typename T, typename Node>
-  inline BaseTree<T, Node>::BaseTree(const BaseTree<T, Node>& other):
-    m_root (NULL)
+  template <typename T, typename Node, typename Compare>
+  inline BaseTree<T, Node, Compare>::BaseTree(const BaseTree<T, Node, Compare>& other):
+    m_root (NULL),
+    m_compare (other.m_compare)
   {
     insert_all(other.begin(), other.end());
   }
 
-  template <typename T, typename Node>
-  template <typename Iterator>
-  inline BaseTree<T, Node>::BaseTree(Iterator begin, Iterator end):
-    m_root (NULL)
+  template <typename T, typename Node, typename Compare>
+  template <typename InputIterator>
+  inline BaseTree<T, Node, Compare>::BaseTree(InputIterator begin, InputIterator end, const Compare& compare):
+    m_root (NULL),
+    m_compare (compare)
   {
     insert_all(begin, end);
   }
 
-  template <typename T, typename Node>
-  inline BaseTree<T, Node>::~BaseTree()
+  template <typename T, typename Node, typename Compare>
+  inline void element_direction(Node* current, const T& element)
+  {
+    if (m_compare(current, element)) {
+      return TREE_LEFT;
+    } else {
+      return TREE_RIGHT;
+    }
+  }
+
+  template <typename T, typename Node, typename Compare>
+  inline BaseTree<T, Node, Compare>::~BaseTree()
   {
     clear();
   }
 
-  template <typename T, typename Node>
-  inline BaseTree<T, Node>& BaseTree<T, Node>::operator=(const BaseTree<T, Node>& other)
+  template <typename T, typename Node, typename Compare>
+  inline BaseTree<T, Node, Compare>& BaseTree<T, Node, Compare>::operator=(const BaseTree<T, Node, Compare>& other)
   {
     if ((&other) == this) {
       return *this;
@@ -144,8 +163,8 @@ namespace DataStructures {
     return *this;
   }
 
-  template <typename T, typename Node>
-  inline bool BaseTree<T, Node>::operator==(const BaseTree<T, Node>& other) const
+  template <typename T, typename Node, typename Compare>
+  inline bool BaseTree<T, Node, Compare>::operator==(const BaseTree<T, Node, Compare>& other) const
   {
     if (size() != other.size()) {
       return false;
@@ -159,8 +178,8 @@ namespace DataStructures {
     return true;
   }
 
-  template <typename T, typename Node>
-  inline void BaseTree<T, Node>::clear()
+  template <typename T, typename Node, typename Compare>
+  inline void BaseTree<T, Node, Compare>::clear()
   {
     if (m_root == NULL) {
       return;
@@ -187,8 +206,8 @@ namespace DataStructures {
     delete m_root;
     m_root = NULL;
   }
-  template <typename T, typename Node>
-  inline Node* BaseTree<T, Node>::internal_insert(const T& element)
+  template <typename T, typename Node, typename Compare>
+  inline Node* BaseTree<T, Node, Compare>::internal_insert(const T& element)
   {
     if (m_root == NULL) {
       Node* new_node = new Node(element);
@@ -196,11 +215,11 @@ namespace DataStructures {
       return new_node;
     }
     Node* current = m_root;
-    direction dir = m_root->element_direction(element);
+    direction dir = BaseTree<T, Node, Compare>::element_direction(m_root, element);
     ++(current->size);
     while (current->children[dir] != NULL) {
       current = current->children[dir];
-      dir = current->element_direction(element);
+      dir = element_direction(current, element);
       ++(current->size);
     }
     Node* new_node = new Node(element, current, dir);
@@ -208,23 +227,23 @@ namespace DataStructures {
     return new_node;
   }
 
-  template <typename T, typename Node>
-  template <typename Iterator>
-  inline void BaseTree<T, Node>::insert_all(const Iterator& begin, const Iterator& end)
+  template <typename T, typename Node, typename Compare>
+  template <typename InputIterator>
+  inline void BaseTree<T, Node, Compare>::insert_all(InputIterator begin, InputIterator end)
   {
-    for (Iterator it = begin; it != end; ++it) {
+    for (InputIterator it = begin; it != end; ++it) {
       insert(*it);
     }
   }
 
-  template <typename T, typename Node>
-  typename BaseTree<T, Node>::iterator BaseTree<T, Node>::lower_bound(const T& element)
+  template <typename T, typename Node, typename Compare>
+  typename BaseTree<T, Node, Compare>::iterator BaseTree<T, Node, Compare>::lower_bound(const T& element)
   {
     Node* current = m_root;
     size_type correct_index = size();
     size_type left_size = 0;
     while (current != NULL) {
-      if (current->element < element) {
+      if (m_compare(current->element, element)) {
         left_size += 1 + current->dir_size(TREE_LEFT);
         current = current->children[TREE_RIGHT];
       } else {
@@ -232,17 +251,17 @@ namespace DataStructures {
         current = current->children[TREE_LEFT];
       }
     }
-    return iterator (this, correct_index);
+    return iterator(this, correct_index);
   }
 
-  template <typename T, typename Node>
-  inline typename BaseTree<T, Node>::const_iterator BaseTree<T, Node>::lower_bound(const T& element) const
+  template <typename T, typename Node, typename Compare>
+  inline typename BaseTree<T, Node, Compare>::const_iterator BaseTree<T, Node, Compare>::lower_bound(const T& element) const
   {
     Node* current = m_root;
     size_type correct_index = size();
     size_type left_size = 0;
     while (current != NULL) {
-      if (current->element < element) {
+      if (m_compare(current->element, element)) {
         left_size += 1 + current->dir_size(TREE_LEFT);
         current = current->children[TREE_RIGHT];
       } else {
@@ -253,8 +272,8 @@ namespace DataStructures {
     return const_iterator (this, correct_index);
   }
 
-  template <typename T, typename Node>
-  typename BaseTree<T, Node>::iterator BaseTree<T, Node>::upper_bound(const T& element)
+  template <typename T, typename Node, typename Compare>
+  typename BaseTree<T, Node, Compare>::iterator BaseTree<T, Node, Compare>::upper_bound(const T& element)
   {
     Node* current = m_root;
     size_type correct_index = size();
@@ -268,11 +287,11 @@ namespace DataStructures {
         current = current->children[TREE_LEFT];
       }
     }
-    return iterator (this, correct_index);
+    return iterator(this, correct_index);
   }
 
-  template <typename T, typename Node>
-  typename BaseTree<T, Node>::const_iterator BaseTree<T, Node>::upper_bound(const T& element) const
+  template <typename T, typename Node, typename Compare>
+  typename BaseTree<T, Node, Compare>::const_iterator BaseTree<T, Node, Compare>::upper_bound(const T& element) const
   {
     Node* current = m_root;
     size_type correct_index = size();
@@ -289,20 +308,20 @@ namespace DataStructures {
     return const_iterator (this, correct_index);
   }
 
-  template <typename T, typename Node>
-  inline typename std::pair< typename BaseTree<T, Node>::iterator, typename BaseTree<T, Node>::iterator > BaseTree<T, Node>::equal_range(const T &element)
+  template <typename T, typename Node, typename Compare>
+  inline typename std::pair< typename BaseTree<T, Node, Compare>::iterator, typename BaseTree<T, Node, Compare>::iterator > BaseTree<T, Node, Compare>::equal_range(const T &element)
   {
     return make_pair(lower_bound(element), upper_bound(element));
   }
 
-  template <typename T, typename Node>
-  inline typename std::pair< typename BaseTree<T, Node>::const_iterator, typename BaseTree<T, Node>::const_iterator > BaseTree<T, Node>::equal_range(const T &element) const
+  template <typename T, typename Node, typename Compare>
+  inline typename std::pair< typename BaseTree<T, Node, Compare>::const_iterator, typename BaseTree<T, Node, Compare>::const_iterator > BaseTree<T, Node, Compare>::equal_range(const T &element) const
   {
     return make_pair(lower_bound(element), upper_bound(element));
   }
 
-  template <typename T, typename Node>
-  inline typename BaseTree<T, Node>::size_type BaseTree<T, Node>::remove_all(const T &element)
+  template <typename T, typename Node, typename Compare>
+  inline typename BaseTree<T, Node, Compare>::size_type BaseTree<T, Node, Compare>::remove_all(const T &element)
   {
     // TODO efficiency
     size_type result;
@@ -310,8 +329,8 @@ namespace DataStructures {
     return result;
   }
 
-  template <typename T, typename Node>
-  inline bool BaseTree<T, Node>::remove(const T& element)
+  template <typename T, typename Node, typename Compare>
+  inline bool BaseTree<T, Node, Compare>::remove(const T& element)
   {
     Node* current = m_root;
     while (current != NULL) {
@@ -323,14 +342,14 @@ namespace DataStructures {
         non_inner_remove(current);
         return true;
       }
-      direction dir = current->element_direction(element);
+      direction dir = element_direction(current, element);
       current = current->children[dir];
     }
     return false;
   }
 
-  template <typename T, typename Node>
-  inline void BaseTree<T, Node>::non_inner_remove(Node* node)
+  template <typename T, typename Node, typename Compare>
+  inline void BaseTree<T, Node, Compare>::non_inner_remove(Node* node)
   {
     assert(node != NULL);
     assert(!(node->is_inner()));
@@ -362,8 +381,8 @@ namespace DataStructures {
     }
   }
 
-  template <typename T, typename Node>
-  inline void BaseTree<T, Node>::rotate(Node* node, direction dir)
+  template <typename T, typename Node, typename Compare>
+  inline void BaseTree<T, Node, Compare>::rotate(Node* node, direction dir)
   {
     // Precondition
     assert(node != NULL);
@@ -404,38 +423,38 @@ namespace DataStructures {
     assert_pointers(parent);
   }
 
-  template <typename T, typename Node>
-  inline typename BaseTree<T, Node>::size_type BaseTree<T, Node>::size() const
+  template <typename T, typename Node, typename Compare>
+  inline typename BaseTree<T, Node, Compare>::size_type BaseTree<T, Node, Compare>::size() const
   {
     return m_root == NULL ? 0 : m_root->size;
   }
 
-  template <typename T, typename Node>
-  inline bool BaseTree<T, Node>::is_empty() const
+  template <typename T, typename Node, typename Compare>
+  inline bool BaseTree<T, Node, Compare>::is_empty() const
   {
     return m_root == NULL;
   }
 
-  template <typename T, typename Node>
-  inline typename BaseTree<T, Node>::iterator BaseTree<T, Node>::begin()
+  template <typename T, typename Node, typename Compare>
+  inline typename BaseTree<T, Node, Compare>::iterator BaseTree<T, Node, Compare>::begin()
   {
     return iterator(this, 0);
   }
 
-  template <typename T, typename Node>
-  inline typename BaseTree<T, Node>::iterator BaseTree<T, Node>::end()
+  template <typename T, typename Node, typename Compare>
+  inline typename BaseTree<T, Node, Compare>::iterator BaseTree<T, Node, Compare>::end()
   {
     return iterator(this, size());
   }
 
-  template <typename T, typename Node>
-  inline typename BaseTree<T, Node>::const_iterator BaseTree<T, Node>::begin() const
+  template <typename T, typename Node, typename Compare>
+  inline typename BaseTree<T, Node, Compare>::const_iterator BaseTree<T, Node, Compare>::begin() const
   {
     return const_iterator(this, 0);
   }
 
-  template <typename T, typename Node>
-  inline typename BaseTree<T, Node>::const_iterator BaseTree<T, Node>::end() const
+  template <typename T, typename Node, typename Compare>
+  inline typename BaseTree<T, Node, Compare>::const_iterator BaseTree<T, Node, Compare>::end() const
   {
     return const_iterator(this, size());
   }

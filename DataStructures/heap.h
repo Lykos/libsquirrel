@@ -2,24 +2,28 @@
 #define DATASTRUCTURES_HEAP_H
 
 #include "baselist.h"
+#include "less.h"
+#include <initializer_list>
 
 namespace DataStructures {
 
-  template <typename T>
+  template <typename T, typename Compare = Less<T> >
   class Heap : public BaseList<T>
   {
   public:
     typedef typename BaseList<T>::size_type size_type;
 
-    inline Heap();
+    inline explicit Heap(const Compare& compare = Compare());
 
-    inline Heap(const Heap<T>& other);
+    inline Heap(const Heap<T, Compare>& other);
 
-    template <typename Iterator>
-    inline Heap(Iterator begin, Iterator end);
+    inline Heap(std::initializer_list<T> list);
 
-    template <typename Iterator>
-    inline void push_all(Iterator begin, Iterator end);
+    template <typename InputIterator>
+    inline Heap(InputIterator begin, InputIterator end, const Compare& compare = Compare());
+
+    template <typename InputIterator>
+    inline void push_all(InputIterator begin, InputIterator end);
 
     inline void push(const T& element);
 
@@ -34,6 +38,7 @@ namespace DataStructures {
     inline void clear();
 
   private:
+    Compare m_compare;
 
     inline void bubble_up(size_type index);
 
