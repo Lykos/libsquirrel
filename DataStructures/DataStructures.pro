@@ -9,7 +9,7 @@ QT       -= core gui
 TARGET = DataStructures
 TEMPLATE = lib
 CONFIG += warn_on
-QMAKE_CXXFLAGS += -std=c++11 -O2
+QMAKE_CXXFLAGS += -std=c++11
 
 DEFINES += DATASTRUCTURES_LIBRARY
 

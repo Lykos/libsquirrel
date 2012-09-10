@@ -246,7 +246,7 @@ namespace DataStructures {
   {
     bool positive = m_positive;
     m_positive = true;
-    m_content = part_list(1ull, 0);
+    m_content = part_list(size_type(1), 0);
     PREC(NoDigits, start_index < numerical_string.length());
 
     for (string::const_iterator it = numerical_string.begin() + start_index; it < numerical_string.end(); ++it) {
@@ -669,6 +669,7 @@ namespace DataStructures {
   // Treat other number as same sign
   void inline LongInt::add(const LongInt &other)
   {
+    arithmetic_assert(size() > 0);
     pad_zeros(max(size(), other.size()) + 1);
     DataStructures::add(&m_content[0],
                         &m_content[0] + size(),
@@ -697,6 +698,7 @@ namespace DataStructures {
   // Treat other number as same sign
   void inline LongInt::subtract(const LongInt &other)
   {
+    arithmetic_assert(size() > 0);
     if (u_compare_to(other) == -1) {
       pad_zeros(other.size());
       DataStructures::subtract(&m_content[0],
@@ -720,6 +722,7 @@ namespace DataStructures {
 
   LongInt& LongInt::operator*=(const LongInt& other)
   {
+    arithmetic_assert(size() > 0);
     size_type space = space_usage(size(), other.size());
     part_type *c = static_cast<part_type*>(malloc(space * sizeof(part_type)));
     part_type *c_end = multiply(&m_content[0],
@@ -736,7 +739,6 @@ namespace DataStructures {
       m_content.push_back(0);
       m_positive = true;
     }
-    remove_zeros();
     return *this;
   }
 
@@ -814,7 +816,7 @@ namespace DataStructures {
   {
     if (shift_offset < 0) {
       PREC(NegationOverflow, shift_offset != -shift_offset);
-      return operator <<=(-shift_offset);
+      return operator<<=(-shift_offset);
     }
     // Necessary because this could lead to an invalid index while calculating the correction bit in our implementation.
     if (shift_offset == 0) {
@@ -842,7 +844,7 @@ namespace DataStructures {
     }
     if (per_part_shift > 0) {
       part_type keep = 0;
-      for (size_type i = size() - 1; i > 1; --i) {
+      for (size_type i = size() - 1; i > 0; --i) {
         // Or works because exactly the space needed for keep gets shifted away.
         part_type shifted = (m_content[i] >> per_part_shift) | keep;
         keep = m_content[i] << (PART_SIZE - per_part_shift);
@@ -974,7 +976,7 @@ namespace DataStructures {
 
   void LongInt::remove_zeros()
   {
-    while (!m_content.empty() && m_content[size() - 1] == 0) {
+    while (m_content.size() > 1 && m_content[size() - 1] == 0) {
       m_content.pop_back();
     }
   }

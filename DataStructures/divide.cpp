@@ -80,7 +80,7 @@ namespace DataStructures {
             lower = old_remainder.m_content[i];
             remainder.pad_zeros(i + 1);
             // upper:lower / scale_factor, store remainder into upper
-            ASM_DIVIDE_REMAINDER(lower, upper, scale_factor, remainder.m_content[i], upper)
+            ASM_DIVIDE_REMAINDER(lower, upper, scale_factor, remainder.m_content[i], upper);
           }
           // The division has to work without remainder
           arithmetic_assert(upper == 0);

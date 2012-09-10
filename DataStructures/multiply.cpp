@@ -124,7 +124,7 @@ namespace DataStructures {
       arithmetic_assert(space >= a_size + b_size);
       // For 1, take scalar_multiply
       arithmetic_assert(b_size > 1);
-      space_end = space + a_size + b_size;
+      space_end = space_begin + a_size + b_size;
       memset(space_begin, 0, (a_size + b_size) * sizeof(part_type));
       for (size_type i = 0; i < a_size; ++i) {
         for (size_type j = 0; j < b_size; ++j) {
@@ -302,13 +302,16 @@ namespace DataStructures {
         c_end = scalar_multiply(a_begin, a_end, b_begin[0], space_begin, space_end);
       } else if (b_size <= a_size - a_size / 2) {
         c_end = heterogen_multiply(a_begin, a_end, b_begin, b_end, space_begin, space_end);
+      } else if (a_size < 3) {
+        c_end = school_multiply(a_begin, a_end, b_begin, b_end, space_begin, space_end);
       } else {
         c_end = karatsuba_multiply(a_begin, a_end, b_begin, b_end, space_begin, space_end);
       }
       size_type c_size = c_end - c_begin;
       arithmetic_assert(c_size <= a_size + b_size);
       arithmetic_assert(c_size >= a_size + b_size - 1);
-      arithmetic_assert(c_end[-1] != 0);
+      arithmetic_assert(space_begin == c_end || c_end[-1] != 0);
+      arithmetic_assert(space_begin != c_end || c_end[-1] == 0);
       return c_end;
     }
 
