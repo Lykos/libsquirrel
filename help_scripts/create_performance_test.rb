@@ -74,6 +74,7 @@ class BinaryGenerator
 end
 
 limits = YAML::load(File.read(File.join(File.dirname(__FILE__), 'performance_limits.yml')))
+verbose = ARGV.any? { |a| a == "-v" || a == "--verbose" }
 
 File.open(File.join(File.dirname(__FILE__), '..', 'PerformanceDataStructures', 'longinttest.h'), 'r') do |h|
   File.open(File.join(File.dirname(__FILE__), '..', 'PerformanceDataStructures', 'longinttest.cpp'), 'w') do |cpp|
@@ -85,31 +86,42 @@ File.open(File.join(File.dirname(__FILE__), '..', 'PerformanceDataStructures', '
     cpp.puts "#define ITERATIONS #{ITERATIONS}"
     cpp.puts CPP_HEADER
 
+    puts "Created header" if verbose
+
     [INC, DEC].each do |generator|
       cpp.puts generator.generate_special(1, (1 << limits[:inc_dec]) - 1)
       cpp.puts
+      puts "Created #{generator.name}" if verbose
     end
 
     cpp.puts LEFT_SHIFT.generate_nospecial(TESTS, 1 << limits[:left_shift_number], limits[:left_shift_offset])
     cpp.puts
+    puts "Created #{LEFT_SHIFT.name}" if verbose
 
     cpp.puts RIGHT_SHIFT.generate_nospecial(TESTS, 1 << limits[:right_shift_number], limits[:right_shift_offset])
+    cpp.puts
+    puts "Created #{RIGHT_SHIFT.name}" if verbose
 
     [PLUS, MINUS].each do |generator|
       cpp.puts generator.generate_nospecial(TESTS, 1 << limits[:plus_minus], 1 << limits[:plus_minus])
       cpp.puts
+      puts "Created #{generator.name}" if verbose
     end
 
     cpp.puts TIMES.generate_nospecial(TESTS, 1 << limits[:times], 1 << limits[:times])
     cpp.puts
+    puts "Created #{TIMES.name}" if verbose
 
     cpp.puts MODULO.generate_nospecial(TESTS, 1 << limits[:modulo_dividend], 1 << limits[:modulo_divisor])
     cpp.puts
+    puts "Created #{MODULO.name}" if verbose
 
     cpp.puts DIVIDED.generate_nospecial(TESTS, 1 << limits[:divide_dividend], 1 << limits[:divide_divisor])
     cpp.puts
+    puts "Created #{DIVIDED.name}" if verbose
 
     cpp.puts POWER.generate_nospecial(TESTS, 1 << limits[:power_base], limits[:power_exponent])
     cpp.puts
+    puts "Created #{POWER.name}" if verbose
   end
 end

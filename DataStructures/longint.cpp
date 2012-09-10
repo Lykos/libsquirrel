@@ -605,9 +605,7 @@ namespace DataStructures {
       if (it >= m_content.end()) {
         m_content.push_back(0);
       }
-      asm("incq %0;\n"
-      "\tsetc %1;"
-      : "=q" (*it), "=q" (keep) : "0" (*it), "1" (keep));
+      ASM_INC_SETCF(*it, keep);
     }
   }
 
@@ -637,12 +635,7 @@ namespace DataStructures {
   {
     bool keep = true;
     for (part_list::iterator it = m_content.begin(); keep; ++it) {
-      if (it >= m_content.end()) {
-        m_content.push_back(0);
-      }
-      asm("decq %0;\n"
-      "\tsetc %1;"
-      : "=q" (*it), "=q" (keep) : "0" (*it), "1" (keep));
+      ASM_DEC_SETCF(*it, keep);
     }
   }
 
@@ -843,25 +836,19 @@ namespace DataStructures {
       // Check if a bit in the part that gets shifted away partially is 1
       extra_bit = extra_bit || (((m_content[part_shift] >> per_part_shift) << per_part_shift) != m_content[part_shift]);
     }
+    if (part_shift > 0) {
+      arithmetic_assert(part_shift < size() - 1);
+      m_content.erase(m_content.begin(), m_content.begin() + part_shift);
+    }
     if (per_part_shift > 0) {
       part_type keep = 0;
-      size_type j = size();
-      // The strange for loop is necessary because of the unsigned types.
-      for (size_type i = 0; i < size(); ++i) {
-        --j;
+      for (size_type i = size() - 1; i > 1; --i) {
         // Or works because exactly the space needed for keep gets shifted away.
-        part_type shifted = (m_content[j] >> per_part_shift) | keep;
-        keep = m_content[j] << (PART_SIZE - per_part_shift);
-        m_content[j] = shifted;
+        part_type shifted = (m_content[i] >> per_part_shift) | keep;
+        keep = m_content[i] << (PART_SIZE - per_part_shift);
+        m_content[i] = shifted;
       }
-    }
-    if (part_shift > 0) {
-      if (part_shift < size() - 1) {
-        m_content.erase(m_content.begin(), m_content.begin() + part_shift);
-      } else {
-        m_content.erase(m_content.begin(), m_content.end() - 1);
-        m_content[0] = 0;
-      }
+      m_content[0] = (m_content[0] >> per_part_shift) | keep;
     }
     remove_zeros();
     if (extra_bit) {

@@ -79,6 +79,8 @@ module Generators
       @name = name
     end
 
+    attr_reader :name
+
     def generate_n_random(n, *args)
       cases = []
       n.times do

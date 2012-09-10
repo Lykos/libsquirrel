@@ -3,6 +3,7 @@
 #include "subtract.h"
 #include "longint.h"
 #include "assembly.h"
+#include <cstring>
 
 namespace DataStructures {
 
@@ -31,11 +32,11 @@ namespace DataStructures {
       }
     }
 
-    part_type* scalar_multiply(const part_type* const a_begin,
-                               const part_type* const a_end,
-                               register const part_type b,
-                               part_type* const space_begin,
-                               part_type* const space_end)
+    inline part_type* scalar_multiply(const part_type* const a_begin,
+                                      const part_type* const a_end,
+                                      register const part_type b,
+                                      part_type* const space_begin,
+                                      part_type* const space_end)
     {
       // Valid ranges
       arithmetic_assert(a_end >= a_begin);
@@ -54,11 +55,7 @@ namespace DataStructures {
         // Note that no overflow can happen for mathematical reasons.
         ASM_TWO_ADD(c_begin[i], c_begin[i + 1], c0, c1);
       }
-      if (c_end[-1] != 0) {
-        return c_end;
-      } else {
-        return c_end - 1;
-      }
+      return c_end[-1] ? c_end : c_end - 1;
     }
 
     inline part_type* heterogen_multiply(const part_type* const a_begin,
@@ -106,14 +103,40 @@ namespace DataStructures {
             intermediate_begin,
             intermediate_end);
       }
-      if (c_end[-1] != 0) {
-        return c_end;
-      } else {
-        return c_end - 1;
-      }
+      return c_end[-1] ? c_end : c_end - 1;
     }
 
-    void inline karatsuba_xy2(const part_type* const xy0_begin,
+    inline part_type* school_multiply(const part_type* const a_begin,
+                                      const part_type* const a_end,
+                                      const part_type* const b_begin,
+                                      const part_type* const b_end,
+                                      part_type* space_begin,
+                                      part_type* space_end)
+    {
+      // Valid ranges
+      arithmetic_assert(a_end >= a_begin);
+      arithmetic_assert(b_end >= b_begin);
+      arithmetic_assert(space_end >= space_begin);
+      size_type a_size = a_end - a_begin;
+      size_type b_size = b_end - b_begin;
+      size_type space = space_end - space_begin;
+      // Used space without recursion
+      arithmetic_assert(space >= a_size + b_size);
+      // For 1, take scalar_multiply
+      arithmetic_assert(b_size > 1);
+      space_end = space + a_size + b_size;
+      memset(space_begin, 0, (a_size + b_size) * sizeof(part_type));
+      for (size_type i = 0; i < a_size; ++i) {
+        for (size_type j = 0; j < b_size; ++j) {
+          part_type c[2];
+          ASM_MUL(c[0], c[1], a_begin[i], b_begin[j]);
+          add(space_begin + i + j, space_end, c, c + 2);
+        }
+      }
+      return space_end[-1] ? space_end : space_end - 1;
+    }
+
+    inline void karatsuba_xy2(const part_type* const xy0_begin,
                               const part_type* const xy0_end,
                               const part_type* const xy1_begin,
                               const part_type* const xy1_end,

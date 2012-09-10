@@ -14,12 +14,31 @@
 #define arithmetic_assert(b)
 #endif
 
+#define LONGINT64
+#define USE_ASSEMBLY
+
 // Internal header for platform dependent typedefs and constants
 namespace DataStructures {
 
   namespace LongArithmetic {
 
+#ifdef LONGINT64
     typedef uint64_t part_type;
+#else
+#ifdef LONGINT32
+    typedef uint32_t part_type;
+#else
+#ifdef LONGINT16
+    typedef uint16_t part_type;
+#else
+#ifdef LONGINT8
+    typedef uint8_t part_type;
+#else
+#error One of LONGINT64 LONGINT32 LONGINT16 or LONGINT8 has to be defined.
+#endif
+#endif
+#endif
+#endif
 
     const uint_fast16_t FLOAT_MANTISSA = 23;
 

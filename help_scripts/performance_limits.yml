@@ -1,15 +1,15 @@
 ---
-:string_constructor: 100000
-:inc_dec: 1000000
-:plus_minus: 1000000
-:times: 40000
+:string_constructor: 1000000
+:inc_dec: 10000000
+:plus_minus: 5000000
+:times: 20000
 :modulo_dividend: 20000
 :modulo_divisor: 10000
 :divide_dividend: 20000
 :divide_divisor: 10000
 :power_base: 300
 :power_exponent: 100
-:right_shift_number: 1000000
-:right_shift_offset: 100000
+:right_shift_number: 500000
+:right_shift_offset: 50000
 :left_shift_number: 1000
-:left_shift_offset: 200
+:left_shift_offset: 500

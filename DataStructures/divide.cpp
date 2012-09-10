@@ -49,8 +49,8 @@ namespace DataStructures {
         remainder += dividend.m_content[i];
         if (remainder.size() >= divisor_size) {
           // Guess according to the first one or two parts of the active part and the first digit of the divisor,
-          // how many times the divisor fits into the active part. This guess can never be to high and because
-          // of our scaling factor, it can be at most 2 to low (according to a proof of Knuth)
+          // how many times the divisor fits into the active part. This guess can never be too low and because
+          // of our scaling factor, it can be at most 2 to high (according to a proof of Knuth)
           part_type guess;
           ASM_DIVIDE(remainder.m_content[divisor_size - 1], remainder.part_at(divisor_size), divisor_first_digit, guess);
            LongInt back_calculated (divisor * LongInt(guess));
