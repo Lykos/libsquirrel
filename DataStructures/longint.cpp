@@ -728,7 +728,7 @@ namespace DataStructures {
   LongInt& LongInt::operator*=(const LongInt& other)
   {
     size_type space = space_usage(size(), other.size());
-    part_type *c = (part_type*)malloc(space * sizeof(part_type));
+    part_type *c = static_cast<part_type*>(malloc(space * sizeof(part_type)));
     part_type *c_end = multiply(&m_content[0],
                                 &m_content[0] + size(),
                                 &other.m_content[0],

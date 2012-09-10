@@ -71,7 +71,7 @@ namespace DataStructures {
     for (size_type i = 0; i < length; ++i) {
       BaseList<T>::at((q_insert_position + i) % BaseList<T>::capacity()) = tmp[i];
     }
-    delete tmp;
+    free(tmp);
   }
 
   template <typename T>
