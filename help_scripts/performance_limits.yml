@@ -9,5 +9,7 @@
 :divide_divisor: 10000
 :power_base: 300
 :power_exponent: 100
-:shift_number: 1000000
-:shift_offset: 200
+:right_shift_number: 1000000
+:right_shift_offset: 100000
+:left_shift_number: 1000
+:left_shift_offset: 200
