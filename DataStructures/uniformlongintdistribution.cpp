@@ -1,6 +1,9 @@
 #include "uniformlongintdistribution.h"
 #include "conditiontype.h"
 #include "preconditionviolation.h"
+#include <random>
+#include <ostream>
+#include <istream>
 
 namespace DataStructures {
 

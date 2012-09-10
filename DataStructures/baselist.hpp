@@ -23,14 +23,9 @@ namespace DataStructures {
   const typename BaseList<T>::size_type BaseList<T>::CAPACITY_DECREASE_FACTOR(4);
 
   template <typename T>
-  BaseList<T>::BaseList():
-    m_content (NULL),
-    m_size (0),
-    m_min_capacity (DEFAULT_MIN_CAPACITY),
-    m_is_shrinkable (false)
-  {
-    adjust_capacity(0);
-  }
+  inline BaseList<T>::BaseList(std::initializer_list<T> list):
+    BaseList<T>(list.begin(), list.end())
+  {}
 
   template <typename T>
   BaseList<T>::BaseList(size_type initial_size, const T& element):

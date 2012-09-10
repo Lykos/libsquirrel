@@ -4,7 +4,6 @@
 #include "uniformlongintdistribution.h"
 #include "longint.h"
 #include <boost/random/uniform_int_distribution.hpp>
-#include <stdexcept>
 #include <istream>
 #include <ostream>
 

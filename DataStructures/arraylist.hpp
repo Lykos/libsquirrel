@@ -22,16 +22,14 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline ArrayList<T>::ArrayList():
-    BaseList<T>()
-  {
-  }
+  inline ArrayList<T>::ArrayList(std::initializer_list<T> list):
+    ArrayList<T>(list.begin(), list.end())
+  {}
 
   template <typename T>
   inline ArrayList<T>::ArrayList(size_type initial_size, const T& element):
     BaseList<T>(initial_size, element)
-  {
-  }
+  {}
 
   template <typename T>
   template <typename Iterator>

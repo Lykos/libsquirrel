@@ -2,6 +2,7 @@
 #define DATASTRUCTURES_BASELIST_H
 
 #include <cstddef>
+#include <initializer_list>
 
 namespace DataStructures {
 
@@ -21,9 +22,9 @@ namespace DataStructures {
 
     typedef T* pointer_type;
 
-    inline BaseList();
+    inline BaseList(std::initializer_list<T> list);
 
-    explicit inline BaseList(size_type initial_size, const T& element = T());
+    explicit inline BaseList(size_type initial_size = 0, const T& element = T());
 
     inline BaseList(const BaseList<T>& other);
 

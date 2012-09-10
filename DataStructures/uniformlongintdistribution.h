@@ -2,7 +2,7 @@
 #define DATASTRUCTURES_UNIFORMLONGINTDISTRIBUTION_H
 
 #include "longint.h"
-#include <boost/random/uniform_int_distribution.hpp>
+#include <uniformlongintdistribution.h>
 #include <stdexcept>
 #include <istream>
 #include <ostream>
@@ -36,9 +36,9 @@ namespace DataStructures {
 
     LongInt::size_type m_size;
 
-    boost::random::uniform_int_distribution<LongInt::part_type> m_first_distribution;
+    std::uniform_int_distribution<LongInt::part_type> m_first_distribution;
 
-    boost::random::uniform_int_distribution<LongInt::part_type> m_part_distribution;
+    std::uniform_int_distribution<LongInt::part_type> m_part_distribution;
 
   };
 

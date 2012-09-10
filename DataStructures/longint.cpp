@@ -998,6 +998,11 @@ namespace DataStructures {
     return operator-().mod(modulus);
   }
 
+  LongInt operator "" _long(const char * literal_string)
+  {
+    return LongInt(string(literal_string));
+  }
+
   LongInt::size_type log2(const LongInt& number)
   {
     return (number.size() - 1) * LongInt::PART_SIZE + log2(number.m_content[number.size() - 1]);

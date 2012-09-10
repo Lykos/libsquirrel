@@ -33,7 +33,7 @@ namespace DataStructures {
 
     inline void decrease_key(node_pointer node);
 
-    inline node_pointer insert(const T& element);
+    inline node_pointer push(const T& element);
 
     inline void remove(const T& element);
 
@@ -52,7 +52,7 @@ namespace DataStructures {
 
     size_type m_size = 0;
 
-    inline void insert(node_pointer node);
+    inline void push(node_pointer node);
 
     inline void take_out(node_pointer node);
 

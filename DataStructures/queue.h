@@ -3,6 +3,7 @@
 
 #include "baselist.h"
 #include "listiterator.h"
+#include <initializer_list>
 
 namespace DataStructures {
 
@@ -24,6 +25,8 @@ namespace DataStructures {
     typedef typename BaseList<T>::size_type size_type;
 
     typedef typename BaseList<T>::difference_type difference_type;
+
+    inline Queue(std::initializer_list<T> list);
 
     inline explicit Queue(size_type initial_size = 0, const T& element = T());
 

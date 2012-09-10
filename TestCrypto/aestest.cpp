@@ -30,6 +30,6 @@ void AESTest::test_exception()
     Encrypter enc (key);
     QFAIL("No exception after invalid key length.");
   } catch (PreconditionViolation &e) {
-    QCOMPARE(e.get_type(), ConditionType::KeyLength);
+    QCOMPARE(e.type(), ConditionType::AESKeyLength);
   }
 }

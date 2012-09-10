@@ -11,7 +11,7 @@ module Generators
 
     def construct(element)
       case @type
-      when :LongInt then sprintf("LongInt(\"%s0x%x\")", element >= 0 ? "" : "-", element.abs)
+      when :LongInt then sprintf("%s0x%x_long", element >= 0 ? "" : "-", element.abs)
       when :bool then element ? "true" : "false"
       when :qlonglong then sprintf("qlonglong(%s0x%x)", element >= 0 ? "" : "-", element.abs)
       when :string then "string(\"#{element}\")"
@@ -56,8 +56,8 @@ module Generators
 
   class IntTest < Test
 
-    def initialize(test)
-      super(test.actual, test.expected)
+    def initialize(actual, expected)
+      super(actual, expected)
     end
 
     def to_s

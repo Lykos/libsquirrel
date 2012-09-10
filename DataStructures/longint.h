@@ -243,6 +243,8 @@ namespace DataStructures {
 
   };
 
+  LongInt operator"" _long(const char * literal_string);
+
   LongInt::size_type log2(const LongInt& number);
 
   LongInt::part_type inline complement_keep(bool positive, LongInt::part_type part, bool& keep);

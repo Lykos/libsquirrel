@@ -54,7 +54,7 @@ namespace DataStructures {
   inline FibonacciHeap<T>::FibonacciHeap(Iterator begin, Iterator end)
   {
     for (; begin != end; ++begin) {
-      insert(*begin);
+      push(*begin);
     }
   }
 
@@ -70,7 +70,7 @@ namespace DataStructures {
     if (parent != NULL && node->element() < parent->element()) {
       take_out(node);
       mark(parent);
-      insert(node);
+      push(node);
     }
     if (node->element() < m_root->element()) {
       m_root = node;
@@ -78,11 +78,11 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline typename FibonacciHeap<T>::node_pointer FibonacciHeap<T>::insert(const T& element)
+  inline typename FibonacciHeap<T>::node_pointer FibonacciHeap<T>::push(const T& element)
   {
     ++m_size;
     node_pointer node = new node_pointer(element);
-    insert(node);
+    push(node);
     return node;
   }
 
@@ -98,7 +98,7 @@ namespace DataStructures {
       if (node->m_parent != NULL) {
         mark(node->m_parent);
       }
-      insert(node);
+      push(node);
       m_root = node;
     }
     pop();
@@ -140,7 +140,7 @@ namespace DataStructures {
     m_root = NULL;
     for (size_type i = 0; i < max_deg; ++i) {
       if (nodes[i] != NULL) {
-        insert(nodes[i]);
+        push(nodes[i]);
       }
     }
     return min;
@@ -149,7 +149,7 @@ namespace DataStructures {
   template <typename T>
   inline void FibonacciHeap<T>::merge(const FibonacciHeap& other)
   {
-    other.traverse([](node_pointer node) { insert(new FibonacciNode<T>(node->element())); });
+    other.traverse([](node_pointer node) { push(new FibonacciNode<T>(node->element())); });
   }
 
   template <typename T>
@@ -171,7 +171,7 @@ namespace DataStructures {
   }
 
   template <typename T>
-  inline void FibonacciHeap<T>::insert(node_pointer node)
+  inline void FibonacciHeap<T>::push(node_pointer node)
   {
     assert(node != NULL);
     if (m_root == NULL) {
@@ -228,7 +228,7 @@ namespace DataStructures {
     while (node != NULL && node->m_parent != NULL && node->m_marked) {
       node_pointer parent = node->m_parent;
       take_out(node);
-      insert(node);
+      push(node);
       node = parent;
     }
     if (node != NULL && node->m_parent != NULL) {

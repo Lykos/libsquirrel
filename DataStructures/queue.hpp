@@ -22,17 +22,21 @@ namespace DataStructures {
   }
 
   template <typename T>
+  inline Queue<T>::Queue(std::initializer_list<T> list):
+    BaseList<T>(list.begin(), list.end())
+  {}
+
+
+  template <typename T>
   inline Queue<T>::Queue(size_type initial_size, const T& element):
     BaseList<T>(initial_size, element)
-  {
-  }
+  {}
 
   template <typename T>
   inline Queue<T>::Queue(const Queue<T> &other):
     BaseList<T>(other),
     m_begin (other.m_begin)
-  {
-  }
+  {}
 
   template <typename T>
   template <typename Iterator>

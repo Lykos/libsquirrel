@@ -30,10 +30,10 @@ namespace Crypto {
       static const number_t ONE = 1;
       DataStructures::LongInt min = ++(ONE << (number_bits - 1));
       DataStructures::LongInt max = --(ONE << number_bits);
-      number_t p = m_prime_tester.random_prime(engine, min, max, std::max(20u, number_bits + 10));
+      number_t p = m_prime_tester.random_prime(engine, min, max, std::max(number_size_t(20), number_bits + 10));
       number_t q;
       do {
-        q = m_prime_tester.random_prime(engine, min, max, std::max(20u, number_bits + 10));
+        q = m_prime_tester.random_prime(engine, min, max, std::max(number_size_t(20), number_bits + 10));
       } while (p == q);
       number_t modulus = p * q;
       number_t phi_n = (p - ONE) * (q - ONE);
@@ -41,7 +41,7 @@ namespace Crypto {
       do {
         DataStructures::UniformLongIntDistribution dist (0, phi_n - ONE);
         e = dist(engine);
-      } while (DataStructures::ArithmeticHelper::gcd(phi_n, e) != ONE);
+      } while (DataStructures::AlgebraHelper::gcd(phi_n, e) != ONE);
       exponent_t d = e.mult_inv_mod(phi_n);
       private_key_t private_key {modulus, e, p, q, true};
       public_key_t public_key {modulus, d};
