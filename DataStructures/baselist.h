@@ -22,7 +22,9 @@ namespace DataStructures {
 
     typedef T* pointer_type;
 
-    inline explicit BaseList(size_type initial_size = 0, const T& element = T());
+    inline BaseList();
+
+    inline explicit BaseList(size_type initial_size, const T& element = T());
 
     inline BaseList(const BaseList<T>& other);
 

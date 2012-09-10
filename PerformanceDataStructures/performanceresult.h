@@ -11,18 +11,24 @@ class PerformanceResult {
   friend std::ostream& operator<<(std::ostream& out, const PerformanceResult& result);
 
 public:
+  PerformanceResult(const PerformanceResult& other);
 
-  PerformanceResult();
+  PerformanceResult(PerformanceResult&& other);
 
-  PerformanceResult(const std::string& description, unsigned long milliseconds);
+  PerformanceResult& operator=(const PerformanceResult& other);
 
-  const std::string& get_description() const;
+  PerformanceResult& operator=(PerformanceResult&& other);
 
-  unsigned long get_milliseconds() const;
+  ~PerformanceResult();
+
+  PerformanceResult(const char* description, unsigned long milliseconds);
+
+  const char* description() const;
+
+  unsigned long milliseconds() const;
 
 private:
-
-  std::string m_description;
+  const char* m_description;
 
   unsigned long m_milliseconds;
 

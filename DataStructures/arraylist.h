@@ -25,7 +25,9 @@ namespace DataStructures {
 
     inline ArrayList(std::initializer_list<T> list);
 
-    inline explicit ArrayList(size_type initial_size = 0, const T& element = T());
+    inline ArrayList();
+
+    inline explicit ArrayList(size_type initial_size, const T& element = T());
 
     template <typename InputIterator>
     ArrayList(InputIterator begin, InputIterator end);

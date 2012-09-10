@@ -795,7 +795,7 @@ namespace DataStructures {
   {
     if (shift_offset < 0) {
       PREC(NegationOverflow, shift_offset != -shift_offset);
-      return operator <<=(-shift_offset);
+      return operator<<=(-shift_offset);
     }
     size_type per_part_shift = shift_offset % PART_SIZE;
     size_type part_shift = shift_offset / PART_SIZE;
@@ -856,13 +856,18 @@ namespace DataStructures {
       }
     }
     if (part_shift > 0) {
-      m_content.erase(m_content.begin(), m_content.begin() + part_shift);
+      if (part_shift < size() - 1) {
+        m_content.erase(m_content.begin(), m_content.begin() + part_shift);
+      } else {
+        m_content.erase(m_content.begin(), m_content.end() - 1);
+        m_content[0] = 0;
+      }
     }
+    remove_zeros();
     if (extra_bit) {
       // TODO We know the sign is negative, so -- increments the content
       operator--();
     }
-    remove_zeros();
     return *this;
   }
 
@@ -982,7 +987,7 @@ namespace DataStructures {
 
   void LongInt::remove_zeros()
   {
-    while (size() > 1 && m_content[size() - 1] == 0) {
+    while (!m_content.empty() && m_content[size() - 1] == 0) {
       m_content.pop_back();
     }
   }

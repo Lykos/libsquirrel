@@ -5,10 +5,10 @@ CompositePerformanceResult<PerformanceResult> PerformanceTest::accumulate_result
 {
   CompositePerformanceResult<PerformanceResult> results (description());
   for (DataStructures::ArrayList<PerformanceResult>::const_iterator it = m_results.begin(); it < m_results.end(); ++it) {
-    std::string description = (*it).get_description();
+    const char* description = it->description();
     unsigned long milliseconds = 0;
-    for (; it < m_results.end() && (*it).get_description() == description; ++it) {
-      milliseconds += (*it).get_milliseconds();
+    for (; it < m_results.end() && it->description() == description; ++it) {
+      milliseconds += it->milliseconds();
     }
     results.add_sub_result(PerformanceResult(description, milliseconds));
   }

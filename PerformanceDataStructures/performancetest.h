@@ -16,11 +16,13 @@ class PerformanceTest : public QObject
 public:
   CompositePerformanceResult<PerformanceResult> accumulate_results() const;
 
-  virtual std::string description() const = 0;
+  virtual const char* description() const = 0;
 
 protected:
   QElapsedTimer m_timer;
+
   DataStructures::ArrayList<PerformanceResult> m_results;
+
 };
 
 #endif // PERFORMANCETEST_H

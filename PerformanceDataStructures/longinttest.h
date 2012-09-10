@@ -10,7 +10,7 @@ class LongIntTest : public PerformanceTest
 {
   Q_OBJECT
 public:
-  inline std::string description() const
+  inline const char* description() const
   {
     return "LongIntTest";
   }

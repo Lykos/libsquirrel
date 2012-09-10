@@ -22,6 +22,10 @@ namespace DataStructures {
   }
 
   template <typename T>
+  inline ArrayList<T>::ArrayList()
+  {}
+
+  template <typename T>
   inline ArrayList<T>::ArrayList(std::initializer_list<T> list):
     ArrayList<T>(list.begin(), list.end())
   {}

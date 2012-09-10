@@ -22,7 +22,7 @@ public:
 
   explicit CompositePerformanceResult(const std::string& description);
 
-  const std::string& get_description() const;
+  const std::string& description() const;
 
   const DataStructures::ArrayList<T>& get_sub_results() const;
 
@@ -30,24 +30,18 @@ public:
 
 private:
   std::string m_description;
+
   DataStructures::ArrayList<T> m_sub_results;
 
 };
 
 template <typename T>
-CompositePerformanceResult<T>::CompositePerformanceResult():
-  m_description ("")
-{
-}
-
-template <typename T>
 CompositePerformanceResult<T>::CompositePerformanceResult(const std::string& description):
   m_description (description)
-{
-}
+{}
 
 template <typename T>
-const std::string& CompositePerformanceResult<T>::get_description() const
+const std::string& CompositePerformanceResult<T>::description() const
 {
   return m_description;
 }

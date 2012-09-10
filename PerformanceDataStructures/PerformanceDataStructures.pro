@@ -20,7 +20,8 @@ SOURCES += \
     performanceresult.cpp \
     performancetest.cpp \
     AllPerformanceTests.cpp \
-    longinttest.cpp
+    longinttest.cpp \
+    comparemilliseconds.cpp
 
 unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
 
@@ -32,4 +33,5 @@ HEADERS += \
     performanceresult.h \
     longinttest.h \
     performancetest.h \
-    comparemacros.h
+    comparemacros.h \
+    comparemilliseconds.h

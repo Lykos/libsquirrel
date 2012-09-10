@@ -15,7 +15,11 @@ USED_MEASUREMENTS = 2
 class Test
 
   def to_s
-    @actual.to_s + ";"
+    if @actual =~ /\s|\.|\+|\-/ && !(@actual =~ /=|eq/)
+      @actual + ";"
+    else
+      ""
+    end
   end
 
 end
@@ -23,23 +27,31 @@ end
 class CaseGenerator
 
   def test_method_body
-    bla = tests.collect { |c| INDENTATION + c.to_s}
+    bla = tests.collect { |c| INDENTATION * 2 + c.to_s}
     join_indent(fetching) + "\n\n" +
-      join_indent(start_timer) + "\n" +
-      join_indent(construction.collect {|c| INDENTATION + c}) + "\n\n" +
-      join_indent(bla) + "\n" +
+      join_indent(start_timer) +
+      join_indent(construction.collect {|c| INDENTATION * 2 + c}) + "\n" +
+      join_indent(bla) +
       join_indent(end_timer)
   end
 
+  def title
+    self.class
+  end
+
   def start_timer
-    ["for (unsigned int i = 0; i < #{MEASUREMENTS}; ++i) {",
-     "m_timer.start();",
-     "for (unsigned int j = 0; i < #{ITERATIONS}; ++i) {"]
+    ["Heap<PerformanceResult, CompareMilliseconds> measurements;",
+     "for (unsigned int i = 0; i < MEASUREMENTS; ++i) {",
+     INDENTATION + "m_timer.start();",
+     INDENTATION + "for (unsigned int j = 0; j < ITERATIONS; ++j) {"]
   end
 
   def end_timer
-    ["}",
-     "m_results.push_back(PerformanceResult(\"#{@name}\", m_timer.elapsed()));",
+    [INDENTATION + "}",
+     INDENTATION + "measurements.push(PerformanceResult(\"#{@name}\", m_timer.elapsed()));",
+     "}",
+     "for (unsigned int i = 0; i < USED_MEASUREMENTS; ++i) {",
+     INDENTATION + "m_results.push_back(measurements.pop());",
      "}"]
   end
 
@@ -66,6 +78,11 @@ limits = YAML::load(File.read(File.join(File.dirname(__FILE__), 'performance_lim
 File.open(File.join(File.dirname(__FILE__), '..', 'PerformanceDataStructures', 'longinttest.h'), 'r') do |h|
   File.open(File.join(File.dirname(__FILE__), '..', 'PerformanceDataStructures', 'longinttest.cpp'), 'w') do |cpp|
     cpp.puts "#include \"performanceresult.h\""
+    cpp.puts "#include \"DataStructures/heap.h\""
+    cpp.puts "#include \"comparemilliseconds.h\""
+    cpp.puts "#define MEASUREMENTS #{MEASUREMENTS}"
+    cpp.puts "#define USED_MEASUREMENTS #{USED_MEASUREMENTS}"
+    cpp.puts "#define ITERATIONS #{ITERATIONS}"
     cpp.puts CPP_HEADER
 
     [INC, DEC].each do |generator|
@@ -73,10 +90,10 @@ File.open(File.join(File.dirname(__FILE__), '..', 'PerformanceDataStructures', '
       cpp.puts
     end
 
-    [RIGHT_SHIFT, LEFT_SHIFT].each do |generator|
-      cpp.puts generator.generate_nospecial(TESTS, 1 << limits[:shift_number], limits[:shift_offset])
-      cpp.puts
-    end
+    cpp.puts LEFT_SHIFT.generate_nospecial(TESTS, 1 << limits[:left_shift_number], limits[:left_shift_offset])
+    cpp.puts
+
+    cpp.puts RIGHT_SHIFT.generate_nospecial(TESTS, 1 << limits[:right_shift_number], limits[:right_shift_offset])
 
     [PLUS, MINUS].each do |generator|
       cpp.puts generator.generate_nospecial(TESTS, 1 << limits[:plus_minus], 1 << limits[:plus_minus])

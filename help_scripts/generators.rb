@@ -88,7 +88,8 @@ module Generators
     end
 
     def join_indent(lines)
-      lines.collect { |l| INDENTATION + l + "\n" }.join
+      # ignore empty lines
+      lines.select { |l| !(l =~ /^\s*$/) }.collect { |l| INDENTATION + l + "\n" }.join
     end
 
     def data_method_signature
