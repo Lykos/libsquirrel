@@ -3,9 +3,10 @@
 #include "subtract.h"
 #include "longint.h"
 #include "assembly.h"
+#include "compare.h"
+#include "shifts.h"
+#include "thresholds.h"
 #include <cstring>
-
-#define KARATSUBA_THRESHOLD 3
 
 namespace DataStructures {
 
@@ -32,61 +33,6 @@ namespace DataStructures {
         ASM_MUL(dummy, carry, *begin, 3);
       }
       arithmetic_assert(carry == 0);
-    }
-
-    // Compare numbers TODO: Merge the code with the normal compare
-    inline int_fast8_t compare_to(const part_type* const a_begin,
-                                  const part_type* a_end,
-                                  const part_type* const b_begin,
-                                  const part_type* b_end)
-    {
-      arithmetic_assert(a_begin <= a_end);
-      arithmetic_assert(b_begin <= b_end);
-      size_type a_size = a_end - a_begin;
-      size_type b_size = b_end - b_begin;
-      if (a_size < b_size) {
-        return -1;
-      } else if (b_size < a_size) {
-        return 1;
-      }
-      for (; a_end > a_begin;) {
-        --a_end;
-        arithmetic_assert(b_end > b_begin);
-        if (*a_begin > *b_begin) {
-          return 1;
-        } else if (*b_begin > *a_begin) {
-          return -1;
-        }
-      }
-      return 0;
-    }
-
-    // TODO Merge with normal left shift
-    inline void left_shift(part_type* begin, part_type* end, size_type offset)
-    {
-      arithmetic_assert(offset < LongInt::PART_SIZE);
-      part_type keep = 0;
-      for (; begin < end; ++begin) {
-        // Or works because exactly the space needed for keep gets shifted away.
-        part_type shifted = (*begin << offset) | keep;
-        keep = *begin >> (LongInt::PART_SIZE - offset);
-        *begin = shifted;
-      }
-      arithmetic_assert(keep == 0);
-    }
-
-    // TODO Merge with normal right shift
-    inline void right_shift(part_type* begin, part_type* end, size_type offset)
-    {
-      arithmetic_assert(offset < LongInt::PART_SIZE);
-      part_type keep = 0;
-      for (--end; end > begin; --end) {
-        // Or works because exactly the space needed for keep gets shifted away.
-        part_type shifted = (*end >> offset) | keep;
-        keep = *end << (LongInt::PART_SIZE - offset);
-        *end = shifted;
-      }
-      *end = (*end >> offset) | keep;
     }
 
     inline void copy_pad_part(part_type* const dst_begin,
@@ -432,7 +378,7 @@ namespace DataStructures {
       bool p_1_positive = signed_sub(true, p_1_begin, p_1_end, true, a1_begin, a1_end, false);
       copy_pad_part(p_2_begin + 1, p_2_begin, p_1_begin, p_1_end);
       bool tmp_positive = signed_add(p_1_positive, p_2_begin, p_2_end, true, a2_begin, a2_end);
-      left_shift(p_2_begin, p_2_end, 1);
+      shift_left(p_2_begin, p_2_end, 1);
       bool p_2_positive = signed_sub(tmp_positive, p_2_begin, p_2_end, true, a0_begin, a0_end, false);
 
       copy_pad_part(q1_begin, q1_end, a0_begin, a0_end);
@@ -442,23 +388,23 @@ namespace DataStructures {
       bool q_1_positive = signed_sub(true, q_1_begin, q_1_end, true, a1_begin, a1_end, false);
       copy_pad_part(q_2_begin + 1, q_2_begin, q_1_begin, q_1_end);
       bool tmq_positive = signed_add(q_1_positive, q_2_begin, q_2_end, true, a2_begin, a2_end);
-      left_shift(q_2_begin, q_2_end, 1);
+      shift_left(q_2_begin, q_2_end, 1);
       bool q_2_positive = signed_sub(tmq_positive, q_2_begin, q_2_end, true, a0_begin, a0_end, false);
 
       // Pointwise multiply the rest
       part_type* const r1_begin (q_2_end);
       part_type* const r1_end = multiply(p1_begin, p1_end, q1_begin, q1_end, r1_begin, space_end);
-      arithmetic_assert(r1_end <= q2_end + 2 * part_size + 2);
+      arithmetic_assert(r1_end <= q_2_end + 2 * part_size + 2);
 
       part_type* const r_1_begin (q_2_end + 2 * part_size + 2);
       part_type* const r_1_end = multiply(p_1_begin, p_1_end, q_1_begin, q_1_end, r_1_begin, space_end);
       bool r_1_positive = q_1_positive ^ p_1_positive;
-      arithmetic_assert(r1_end <= q2_end + 4 * part_size + 4);
+      arithmetic_assert(r1_end <= q_2_end + 4 * part_size + 4);
 
       part_type* const r_2_begin (q_2_end + 4 * part_size + 4);
       part_type* const r_2_end = multiply(p_2_begin, p_2_end, q_2_begin, q_2_end, r_2_begin, space_end);
       bool r_2_positive = q_2_positive ^ p_2_positive;
-      arithmetic_assert(r1_end <= q2_end + 6 * part_size + 6);
+      arithmetic_assert(r1_end <= q_2_end + 6 * part_size + 6);
 
       // Interpolate
       part_type* const r3_begin (r_2_begin);
@@ -469,7 +415,7 @@ namespace DataStructures {
       // We reuse the variable: r1 is now the coefficient r1, not r(1) any more.
       bool r1_positive = signed_sub(true, r1_begin, r1_end, r_1_positive, r_1_begin, r_1_end, false);
       arithmetic_assert(!(*r1_begin & 1));
-      right_shift(r1_begin, r1_end, 1);
+      shift_right(r1_begin, r1_end, 1);
       part_type* const r2_begin (r_1_begin);
       part_type* const r2_end (r_1_begin + 2 * part_size + 2);
       zero_out(r_1_end, r2_end);
@@ -478,9 +424,9 @@ namespace DataStructures {
       // Instead of shifting r_inf, we shift one mor than we want and shift back afterwards
       arithmetic_assert(!(*r3_begin & 1));
       bool r3_bit = *r3_begin >> 1 & 1;
-      right_shift(r3_begin, r3_end, 2);
+      shift_right(r3_begin, r3_end, 2);
       r3_positive = signed_add(r3_positive, r3_begin, r3_end, true, rinf_begin, rinf_end);
-      left_shift(r3_begin, r3_end, 2);
+      shift_left(r3_begin, r3_end, 2);
       *r3_begin |= r3_bit;
       r2_positive = signed_add(r2_positive, r2_begin, r2_end, r1_positive, r1_begin, r1_end);
       r2_positive = signed_sub(r2_positive, r2_begin, r2_end, true, rinf_begin, rinf_end, false);

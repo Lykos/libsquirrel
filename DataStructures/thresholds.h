@@ -1,0 +1,6 @@
+#ifndef THRESHOLDS_H
+#define THRESHOLDS_H
+
+#define KARATSUBA_THRESHOLD 3
+
+#endif // THRESHOLDS_H

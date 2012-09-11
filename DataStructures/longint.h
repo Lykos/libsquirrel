@@ -184,8 +184,6 @@ namespace DataStructures {
 
     inline part_type part_at(size_type i) const { return i < size() ? m_content[i] : 0l; }
 
-    static const uint_fast16_t PART_SIZE = sizeof(part_type) * CHAR_BIT;
-
     inline const part_list& data() const { return m_content; }
 
     friend std::ostream& operator<<(std::ostream& out, const LongInt& longInt);

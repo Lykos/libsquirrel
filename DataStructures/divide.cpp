@@ -10,7 +10,7 @@ namespace DataStructures {
   namespace LongArithmetic {
 
     static const LongInt ZERO = 0;
-    
+
     // No aliasing allowed at this stage, all numbers are assumed to be positive
     void divide(LongInt& dividend, LongInt& divisor, LongInt& quotient, LongInt& remainder, bool remainder_needed)
     {
@@ -45,7 +45,7 @@ namespace DataStructures {
       remainder = ZERO;
       for (LongInt::size_type i = dividend.size(); i > 0;) {
         --i;
-        remainder <<= LongInt::PART_SIZE;
+        remainder <<= PART_SIZE;
         remainder += dividend.m_content[i];
         if (remainder.size() >= divisor_size) {
           // Guess according to the first one or two parts of the active part and the first digit of the divisor,

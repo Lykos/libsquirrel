@@ -45,12 +45,12 @@ asm("\tsubq %2, %0;\n" \
     : "=g" (a), "=g" (carry) : "g" (b), "0" (a) : "cc")
 
 #define ASM_INC_SETCF(a, carry) \
-asm("\tincq %0;\n" \
+asm("\taddq $1, %0;\n" \
     "\tsetc %1;\n" \
     : "=q" (a), "=q" (carry) : "0" (a), "1" (carry) : "cc")
 
 #define ASM_DEC_SETCF(a, carry) \
-asm("\tdecq %0;\n" \
+asm("\tsubq $1, %0;\n" \
     "\tsetc %1;\n" \
     : "=q" (a), "=q" (carry) : "0" (a), "1" (carry) : "cc")
 

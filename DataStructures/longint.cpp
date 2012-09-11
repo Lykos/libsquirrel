@@ -6,6 +6,7 @@
 #include "subtract.h"
 #include "assembly.h"
 #include "ring.h"
+#include "shifts.h"
 #include <cmath>
 #include <sstream>
 #include <string>
@@ -20,8 +21,8 @@ namespace DataStructures {
   using namespace LongArithmetic;
   using namespace std;
 
-  static const unsigned int DECIMAL_BUFFER_SIZE = (LongInt::PART_SIZE * 1233) >> 12; // Calculates log_10(2^PART_SIZE)
-  static const unsigned int OCTAL_BUFFER_SIZE = (LongInt::PART_SIZE / 3); // Calculates log_8(2^PART_SIZE)
+  static const unsigned int DECIMAL_BUFFER_SIZE = (PART_SIZE * 1233) >> 12; // Calculates log_10(2^PART_SIZE)
+  static const unsigned int OCTAL_BUFFER_SIZE = (PART_SIZE / 3); // Calculates log_8(2^PART_SIZE)
 
   static const string HEXADECIMAL_BASE = "0x";
   static const string OCTAL_BASE = "0";
@@ -625,16 +626,15 @@ namespace DataStructures {
 
   LongInt& LongInt::operator++()
   {
-    return operator+=(ONE);
-//    if (!m_positive && size() == 1 && m_content[0] == 1) {
-//      m_content[0] = 0;
-//      m_positive = true;
-//    } else if (m_positive) {
-//      inc();
-//    } else {
-//      dec();
-//    }
-//    return *this;
+    if (!m_positive && size() == 1 && m_content[0] == 1) {
+      m_content[0] = 0;
+      m_positive = true;
+    } else if (m_positive) {
+      inc();
+    } else {
+      dec();
+    }
+    return *this;
   }
 
   // Increments without looking at the sign
@@ -658,16 +658,15 @@ namespace DataStructures {
 
   LongInt& LongInt::operator--()
   {
-    return operator-=(ONE);
-//    if (size() == 1 && m_content[0] == 0) {
-//      m_content[0] = 1;
-//      m_positive = false;
-//    } else if (m_positive) {
-//      dec();
-//    } else {
-//      inc();
-//    }
-//    return *this;
+    if (size() == 1 && m_content[0] == 0) {
+      m_content[0] = 1;
+      m_positive = false;
+    } else if (m_positive) {
+      dec();
+    } else {
+      inc();
+    }
+    return *this;
   }
 
   // Decrements without looking at the sign
@@ -835,16 +834,8 @@ namespace DataStructures {
     size_type per_part_shift = shift_offset % PART_SIZE;
     size_type part_shift = shift_offset / PART_SIZE;
     if (per_part_shift != 0) {
-      part_type keep = 0;
-      for (size_type i = 0; keep != 0 || i < size(); ++i) {
-        if (i >= size()) {
-          m_content.push_back(0);
-        }
-        // Or works because exactly the space needed for keep gets shifted away.
-        part_type shifted = (m_content[i] << per_part_shift) | keep;
-        keep = m_content[i] >> (PART_SIZE - per_part_shift);
-        m_content[i] = shifted;
-      }
+      part_type keep = shift_left(&m_content[0], &m_content[0] + size(), per_part_shift);
+      m_content.push_back(keep);
     }
     if (part_shift > 0) {
       m_content.insert(m_content.begin(), part_shift, 0);
@@ -883,14 +874,7 @@ namespace DataStructures {
       m_content.erase(m_content.begin(), m_content.begin() + part_shift);
     }
     if (per_part_shift > 0) {
-      part_type keep = 0;
-      for (size_type i = size() - 1; i > 0; --i) {
-        // Or works because exactly the space needed for keep gets shifted away.
-        part_type shifted = (m_content[i] >> per_part_shift) | keep;
-        keep = m_content[i] << (PART_SIZE - per_part_shift);
-        m_content[i] = shifted;
-      }
-      m_content[0] = (m_content[0] >> per_part_shift) | keep;
+      shift_right(&m_content[0], &m_content[0] + m_content.size(), per_part_shift);
     }
     remove_zeros();
     if (extra_bit) {
@@ -1039,7 +1023,7 @@ namespace DataStructures {
 
   LongInt::size_type log2(const LongInt& number)
   {
-    return (number.size() - 1) * LongInt::PART_SIZE + log2(number.m_content[number.size() - 1]);
+    return (number.size() - 1) * PART_SIZE + log2(number.m_content[number.size() - 1]);
   }
 
   LongInt::part_type inline complement_keep(bool positive, LongInt::part_type part, bool& keep)

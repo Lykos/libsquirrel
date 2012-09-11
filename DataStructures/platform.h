@@ -1,7 +1,11 @@
 #ifndef DATASTRUCTURES_PLATFORM_H
 #define DATASTRUCTURES_PLATFORM_H
 
-#include <stdint.h>
+#include <cstdint>
+#include <climits>
+#include <cstddef>
+
+#define ARITHMETIC_DEBUG
 
 /*
  * Assertions for internal consistency checks.
@@ -39,6 +43,10 @@ namespace DataStructures {
 #endif
 #endif
 #endif
+
+    typedef size_t size_type;
+
+    const uint_fast16_t PART_SIZE = sizeof(part_type) * CHAR_BIT;
 
     const uint_fast16_t FLOAT_MANTISSA = 23;
 

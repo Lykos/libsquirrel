@@ -8,10 +8,10 @@ namespace DataStructures {
 
   namespace LongArithmetic {
 
-    void inline subtract(LongInt::part_type* a_begin,
-                         LongInt::part_type* const a_end,
-                         const LongInt::part_type* b_begin,
-                         const LongInt::part_type* const b_end,
+    void inline subtract(LongInt::part_type* tgt_begin,
+                         LongInt::part_type* const tgt_end,
+                         const LongInt::part_type* src_begin,
+                         const LongInt::part_type* const src_end,
                          bool exchange);
 
   } // namespace LongArithmetic

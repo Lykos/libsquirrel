@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
   timeinfo = localtime(&rawtime);
 
   // description
-  string version_name ("first_tests");
+  string version_name ("inc dec optimizations");
   ostringstream oss;
   oss << version_name << " " << hostname << " " << (1900 + timeinfo->tm_year) << "-" << timeinfo->tm_mon << "-"
       << timeinfo->tm_mday << " " << timeinfo->tm_hour << ":" << timeinfo->tm_min << ":" << timeinfo->tm_sec;
