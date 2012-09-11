@@ -5,12 +5,97 @@
 #include "assembly.h"
 #include <cstring>
 
+#define KARATSUBA_THRESHOLD 3
+
 namespace DataStructures {
 
   namespace LongArithmetic {
 
     typedef LongInt::part_type part_type;
     typedef LongInt::size_type size_type;
+
+    static const part_type INV_3 = 0xAAAAAAAAAAAAAAAB; // TODO make this depending on the size of part_type
+
+    inline void div_exact_3(part_type* begin, part_type* end)
+    {
+
+    }
+
+    // Compare numbers TODO: Merge the code with the normal compare
+    inline int_fast8_t compare_to(const part_type* const a_begin,
+                                  const part_type* a_end,
+                                  const part_type* const b_begin,
+                                  const part_type* b_end)
+    {
+      arithmetic_assert(a_begin <= a_end);
+      arithmetic_assert(b_begin <= b_end);
+      size_type a_size = a_end - a_begin;
+      size_type b_size = b_end - b_begin;
+      if (a_size < b_size) {
+        return -1;
+      } else if (b_size < a_size) {
+        return 1;
+      }
+      for (; a_end > a_begin;) {
+        --a_end;
+        arithmetic_assert(b_end > b_begin);
+        if (*a_begin > *b_begin) {
+          return 1;
+        } else if (*b_begin > *a_begin) {
+          return -1;
+        }
+      }
+      return 0;
+    }
+
+    inline void copy_pad_part(part_type* const dst_begin,
+                              part_type* const dst_end,
+                              const part_type* const src_begin,
+                              const part_type* const src_end)
+    {
+      arithmetic_assert(src_begin <= src_end);
+      arithmetic_assert(dst_begin <= dst_end);
+      size_type a_size = src_end - src_begin;
+      size_type b_size = dst_end - dst_begin;
+      arithmetic_assert(a_size <= b_size);
+      memcpy(dst_begin, src_begin, a_size * sizeof(part_type));
+      memset(dst_begin + a_size, 0, (b_size - a_size) * sizeof(part_type));
+    }
+
+    // TODO Reuse the normal add/sub code
+    inline bool signed_add(bool a_positive,
+                           part_type* a_begin,
+                           part_type* a_end,
+                           bool b_positive,
+                           const part_type* const b_begin,
+                           const part_type* const b_end)
+    {
+      if (a_positive == b_positive) {
+        add(a_begin, a_end, b_begin, b_end);
+        return a_positive;
+      } else {
+        bool exchange = compare_to(a_begin, a_end, b_begin, b_end) == -1;
+        subtract(a_begin, a_end, b_begin, b_end, exchange);
+        return a_positive ^ exchange;
+      }
+    }
+
+    inline bool signed_sub(bool a_positive,
+                           part_type* a_begin,
+                           part_type* a_end,
+                           bool b_positive,
+                           const part_type* const b_begin,
+                           const part_type* const b_end)
+    {
+      if (a_positive == b_positive) {
+        bool exchange = compare_to(a_begin, a_end, b_begin, b_end) == -1;
+        subtract(a_begin, a_end, b_begin, b_end, exchange);
+        return a_positive ^ exchange;
+      } else {
+        add(a_begin, a_end, b_begin, b_end);
+        return a_positive;
+      }
+    }
 
     inline part_type* simple_multiply(const part_type a,
                                       const part_type b,
@@ -58,7 +143,7 @@ namespace DataStructures {
       return c_end[-1] ? c_end : c_end - 1;
     }
 
-    inline part_type* heterogen_multiply(const part_type* const a_begin,
+    inline part_type* unbalanced_multiply(const part_type* const a_begin,
                                          const part_type* const a_end,
                                          const part_type* const b_begin,
                                          const part_type* const b_end,
@@ -179,10 +264,6 @@ namespace DataStructures {
       arithmetic_assert(y_size >= part_size);
       // Termination relies on this
       arithmetic_assert(part_size >= 1);
-      // Valid ranges
-      arithmetic_assert(x_end >= x_begin);
-      arithmetic_assert(y_end >= y_begin);
-      arithmetic_assert(space_end >= space_begin);
       // Don't allow aliasing with output pointer
       arithmetic_assert(x_end <= space_begin || space_end <= x_begin);
       arithmetic_assert(y_end <= space_begin || space_end <= y_begin);
@@ -239,20 +320,118 @@ namespace DataStructures {
       return z2_end;
     }
 
-    size_type space_usage(size_type size_a, size_type size_b)
+    part_type* toom3_multiply(const part_type* a_begin,
+                              const part_type* a_end,
+                              const part_type* b_begin,
+                              const part_type* b_end,
+                              part_type* const space_begin,
+                              part_type* const space_end)
     {
-      if (size_a < size_b) {
-        return space_usage(size_b, size_a);
+      arithmetic_assert(a_end >= a_begin);
+      arithmetic_assert(b_end >= b_begin);
+      arithmetic_assert(space_end >= space_begin);
+      // No unwanted aliasing
+      arithmetic_assert(a_end <= space_begin || space_end <= a_begin);
+      arithmetic_assert(b_end <= space_begin || space_end <= b_begin);
+      size_type a_size = a_end - a_begin;
+      size_type b_size = b_end - b_begin;
+      size_type part_size = a_size - 2 * a_size / 3;
+      // Otherwise dividing into 3 pieces is not useful
+      arithmetic_assert(a_size >= 3);
+      arithmetic_assert(a_size >= b_size);
+      // Use unbalanced multiply for the other part
+      arithmetic_assert(b_size >= part_size);
+
+      // Define aliases to make later code more clear
+      const part_type* const a0_begin (a_begin);
+      const part_type* const a0_end (a_begin + part_size);
+      const part_type* const a1_begin (a0_end);
+      const part_type* const a1_end (a1_begin + part_size);
+      const part_type* const a2_begin (a1_end);
+      const part_type* const a2_end (a_end);
+
+      const part_type* const b0_begin (b_begin);
+      const part_type* const b0_end (b_begin + part_size);
+      const part_type* const b1_begin (b0_end);
+      const part_type* const b1_end (std::min(b1_begin + part_size, b_end));
+      const part_type* const b2_begin (b1_end);
+      const part_type* const b2_end (b_end);
+
+      // Pointwise multiply at 0 and infty
+      part_type* const r0_begin (space_begin);
+      const part_type* const r0_end = multiply(a0_begin, a0_end, b0_begin, b0_end, r0_begin, space_end);
+
+      part_type* const r4_begin (space_begin + 4 * part_size);
+      // Pad Set the gap in the result to 0.
+      for (part_type* it = r0_begin; it < r4_begin; ++it) {
+        *it = 0;
       }
-      if (size_b == 0) {
-        return 0;
-      }
+      part_type* const r4_end = multiply(a2_begin, a2_end, b2_begin, b2_end, r4_begin, space_end);
+
+      // Aliases for the evaluation points
+      part_type* const p1_begin (space_begin + 6 * part_size);
+      part_type* const p1_end (p1_begin + part_size + 2);
+      part_type* const p_1_begin (p1_end);
+      part_type* const p_1_end (p_1_begin + part_size + 1);
+      part_type* const p_2_begin (p_1_end);
+      part_type* const p_2_end (p_2_begin + part_size + 3);
+
+      part_type* const q1_begin (p_2_end);
+      part_type* const q1_end (q1_begin + part_size + 2);
+      part_type* const q_1_begin (q1_end);
+      part_type* const q_1_end (q_1_begin + part_size + 1);
+      part_type* const q_2_begin (q_1_end);
+      part_type* const q_2_end (q_2_begin + part_size + 3);
+
+      // Evaluate the polynomials
+      copy_pad_part(p1_begin, p1_end, a0_begin, a0_end);
+      add(p1_begin, p1_end, a2_begin, a2_end);
+      copy_pad_part(p_1_begin, p_1_end, p1_begin, p1_end);
+      add(p1_begin, p1_end, a1_begin, a1_end);
+      bool p_1_positive = signed_sub(true, p_1_begin, p_1_end, true, a1_begin, a1_end);
+      copy_pad_part(p_2_begin + 1, p_2_begin, p_1_begin, p_1_end);
+      bool tmp_positive = signed_add(p_1_positive, p_2_begin + 1, p_2_end, true, a2_begin, a2_end);
+      bool p_2_positive = signed_sub(tmp_positive, p_2_begin, p_2_end, true, a0_begin, a0_end);
+
+      copy_pad_part(q1_begin, q1_end, a0_begin, a0_end);
+      add(q1_begin, q1_end, a2_begin, a2_end);
+      copy_pad_part(q_1_begin, q_1_end, q1_begin, q1_end);
+      add(q1_begin, q1_end, a1_begin, a1_end);
+      bool q_1_positive = signed_sub(true, q_1_begin, q_1_end, true, a1_begin, a1_end);
+      copy_pad_part(q_2_begin + 1, q_2_begin, q_1_begin, q_1_end);
+      bool tmq_positive = signed_add(q_1_positive, q_2_begin + 1, q_2_end, true, a2_begin, a2_end);
+      bool q_2_positive = signed_sub(tmq_positive, q_2_begin, q_2_end, true, a0_begin, a0_end);
+
+      // Pointwise multiply the rest
+      part_type* const r1_begin (q_2_end);
+      part_type* const r1_end = multiply(p1_begin, p1_end, q1_begin, q1_end, r1_begin, space_end);
+
+      part_type* const r_1_begin (r1_end);
+      part_type* const r_1_end = multiply(p_1_begin, p_1_end, q_1_begin, q_1_end, r_1_begin, space_end);
+      bool r_1_positive = q_1_positive ^ p_1_positive;
+
+      part_type* const r_2_begin (r_1_end);
+      part_type* const r_2_end = multiply(p_2_begin, p_2_end, q_2_begin, q_2_end, r_2_begin, space_end);
+      bool r_2_positive = q_2_positive ^ p_2_positive;
+
+      // Evaluate and put the result together
+      return r4_end;
+    }
+
+    inline size_type unbalanced_space_usage(size_type size_a, size_type size_b)
+    {
+      return size_a + size_b + space_usage(size_b, size_b);
+    }
+
+    inline size_type school_space_usage(size_type size_a, size_type size_b)
+    {
+      return size_a + size_b;
+    }
+
+    size_type karatsuba_space_usage(size_type size_a, size_type size_b)
+    {
       size_type part_size = size_a - size_a / 2;
-      if (size_b == 1) {
-        return size_a + 1;
-      } else if (size_b <= size_a - size_a / 2) {
-        return size_a + size_b + space_usage(size_b, size_b);
-      } else if (part_size + 1 == size_a) {
+      if (part_size + 1 == size_a) {
         // In this case, the lower recursion would not terminate, but the worst case can only appear once and
         // The second time, it gets smaller.
         return 12 * part_size + 4 + space_usage(part_size, part_size);
@@ -261,6 +440,29 @@ namespace DataStructures {
       }
     }
 
+    size_type toom3_space_usage(size_type size_a, size_type size_b)
+    {
+      return -1;
+    }
+
+    size_type space_usage(size_type size_a, size_type size_b)
+    {
+      if (size_a < size_b) {
+        return space_usage(size_b, size_a);
+      }
+      if (size_b == 0) {
+        return 0;
+      }
+      if (size_b == 1) {
+        return size_a + 1;
+      } else if (size_b <= size_a - size_a / 2) {
+        return unbalanced_space_usage(size_a, size_b);
+      } else if (size_a < KARATSUBA_THRESHOLD) {
+        return school_space_usage(size_a, size_b);
+      } else {
+        return karatsuba_space_usage(size_a, size_b);
+      }
+    }
     part_type* multiply(const part_type* a_begin,
                         const part_type* a_end,
                         const part_type* b_begin,
@@ -301,8 +503,8 @@ namespace DataStructures {
       } else if (b_size == 1) {
         c_end = scalar_multiply(a_begin, a_end, b_begin[0], space_begin, space_end);
       } else if (b_size <= a_size - a_size / 2) {
-        c_end = heterogen_multiply(a_begin, a_end, b_begin, b_end, space_begin, space_end);
-      } else if (a_size < 3) {
+        c_end = unbalanced_multiply(a_begin, a_end, b_begin, b_end, space_begin, space_end);
+      } else if (a_size < KARATSUBA_THRESHOLD) {
         c_end = school_multiply(a_begin, a_end, b_begin, b_end, space_begin, space_end);
       } else {
         c_end = karatsuba_multiply(a_begin, a_end, b_begin, b_end, space_begin, space_end);

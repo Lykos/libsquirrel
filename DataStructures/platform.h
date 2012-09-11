@@ -8,7 +8,6 @@
  * May be very inefficient and hence they are usually disabled, but
  * they can be turned on to help to track down bugs faster.
  */
-#define ARITHMETIC_DEBUG
 #ifdef ARITHMETIC_DEBUG
 #define arithmetic_assert(b) assert(b)
 #else

@@ -641,11 +641,11 @@ namespace DataStructures {
   void inline LongInt::inc()
   {
     bool keep = true;
-    for (part_list::iterator it = m_content.begin(); keep; ++it) {
-      if (it >= m_content.end()) {
-        m_content.push_back(0);
-      }
+    for (part_list::iterator it = m_content.begin(); keep && it < m_content.end(); ++it) {
       ASM_INC_SETCF(*it, keep);
+    }
+    if (keep) {
+      m_content.push_back(1);
     }
   }
 

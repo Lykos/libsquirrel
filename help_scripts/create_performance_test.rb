@@ -7,7 +7,7 @@ require 'yaml'
 
 include Generators
 
-TESTS = 1
+TESTS = 2
 ITERATIONS = 100
 MEASUREMENTS = 5
 USED_MEASUREMENTS = 2
