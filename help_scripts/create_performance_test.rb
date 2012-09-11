@@ -8,7 +8,7 @@ require 'yaml'
 include Generators
 
 TESTS = 1
-ITERATIONS = 1000
+ITERATIONS = 100
 MEASUREMENTS = 5
 USED_MEASUREMENTS = 2
 TEST_DIRECTORY = '../performance_inputs'
@@ -37,7 +37,7 @@ class CaseGenerator
       f.puts cases.length
       cases.each { |c| f.puts c }
     end
-    join_indent(column_declarations) + "\n" +
+    join_indent(column_declarations[0..-2]) + "\n" +
       join_indent(["ifstream f (\"#{File.join(TEST_DIRECTORY, @name + ".txt")}\");",
                    "int lines;",
                    "f >> lines;",
@@ -45,14 +45,14 @@ class CaseGenerator
                    "for (int i = 0; i < lines; ++i) {"] +
                     data_columns[0..-2].collect { |c| INDENTATION + c.typename + " " + c.name + ";" } +
                   [INDENTATION + "f >> " + data_columns[0..-2].collect { |c| c.name }.join(" >> ") + ";",
-                   INDENTATION + "QTest::newRow(\"#{@name}\") << " + data_columns.collect { |c| c.name }.join(" << ") + ";",
+                   INDENTATION + "QTest::newRow(\"#{@name}\") << " + data_columns[0..-2].collect { |c| c.name }.join(" << ") + ";",
                    "}",
                    "f.close();"])
   end
 
   def test_method_body
     bla = tests.collect { |c| INDENTATION * 2 + c.to_s}
-    join_indent(fetching) + "\n\n" +
+    join_indent(fetching[0..-2]) + "\n\n" +
       join_indent(start_timer) +
       join_indent(construction.collect {|c| INDENTATION * 2 + c}) + "\n" +
       join_indent(bla) +

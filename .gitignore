@@ -1,5 +1,7 @@
 *.pro.user
 *.pro.user.*
+performance_inputs
+performance_results
 TestCrypto-build-desktop-Qt_4_8_0_in_Pfad__System__Debug
 TestCrypto-build-desktop-Qt_4_8_0_in_Pfad__System__Release
 Crypto-build-desktop-Qt_4_8_0_in_Pfad__System__Debug

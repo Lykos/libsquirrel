@@ -1,14 +1,14 @@
 ---
-:inc_dec: 10000000
-:plus_minus: 5000000
-:times: 20000
-:modulo_dividend: 20000
-:modulo_divisor: 10000
-:divide_dividend: 20000
-:divide_divisor: 10000
-:power_base: 300
-:power_exponent: 100
-:right_shift_number: 500000
-:right_shift_offset: 50000
-:left_shift_number: 1000
-:left_shift_offset: 1000
+:inc_dec: 80000000
+:plus_minus: 40000000
+:times: 200000
+:modulo_dividend: 200000
+:modulo_divisor: 100000
+:divide_dividend: 200000
+:divide_divisor: 100000
+:power_base: 3000
+:power_exponent: 2000
+:right_shift_number: 40000000
+:right_shift_offset: 200000
+:left_shift_number: 1000000
+:left_shift_offset: 100000
