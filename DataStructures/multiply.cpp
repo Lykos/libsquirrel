@@ -16,9 +16,22 @@ namespace DataStructures {
 
     static const part_type INV_3 = 0xAAAAAAAAAAAAAAAB; // TODO make this depending on the size of part_type
 
+    inline void zero_out(part_type* begin, part_type* end)
+    {
+      arithmetic_assert(end >= begin);
+      memset(begin, 0, (end - begin) * sizeof(part_type));
+    }
+
     inline void div_exact_3(part_type* begin, part_type* end)
     {
-
+      part_type carry = 0;
+      for (; begin < end; ++begin) {
+        // Note that I want this to be modulo 1 << PART_SIZE, so * is fine.
+        *begin = ((*begin) - carry) * INV_3;
+        part_type dummy;
+        ASM_MUL(dummy, carry, *begin, 3);
+      }
+      arithmetic_assert(carry == 0);
     }
 
     // Compare numbers TODO: Merge the code with the normal compare
@@ -48,6 +61,34 @@ namespace DataStructures {
       return 0;
     }
 
+    // TODO Merge with normal left shift
+    inline void left_shift(part_type* begin, part_type* end, size_type offset)
+    {
+      arithmetic_assert(offset < LongInt::PART_SIZE);
+      part_type keep = 0;
+      for (; begin < end; ++begin) {
+        // Or works because exactly the space needed for keep gets shifted away.
+        part_type shifted = (*begin << offset) | keep;
+        keep = *begin >> (LongInt::PART_SIZE - offset);
+        *begin = shifted;
+      }
+      arithmetic_assert(keep == 0);
+    }
+
+    // TODO Merge with normal right shift
+    inline void right_shift(part_type* begin, part_type* end, size_type offset)
+    {
+      arithmetic_assert(offset < LongInt::PART_SIZE);
+      part_type keep = 0;
+      for (--end; end > begin; --end) {
+        // Or works because exactly the space needed for keep gets shifted away.
+        part_type shifted = (*end >> offset) | keep;
+        keep = *end << (LongInt::PART_SIZE - offset);
+        *end = shifted;
+      }
+      *end = (*end >> offset) | keep;
+    }
+
     inline void copy_pad_part(part_type* const dst_begin,
                               part_type* const dst_end,
                               const part_type* const src_begin,
@@ -55,11 +96,11 @@ namespace DataStructures {
     {
       arithmetic_assert(src_begin <= src_end);
       arithmetic_assert(dst_begin <= dst_end);
-      size_type a_size = src_end - src_begin;
-      size_type b_size = dst_end - dst_begin;
-      arithmetic_assert(a_size <= b_size);
-      memcpy(dst_begin, src_begin, a_size * sizeof(part_type));
-      memset(dst_begin + a_size, 0, (b_size - a_size) * sizeof(part_type));
+      size_type src_size = src_end - src_begin;
+      size_type dst_size = dst_end - dst_begin;
+      arithmetic_assert(src_size <= dst_size);
+      memcpy(dst_begin, src_begin, src_size * sizeof(part_type));
+      zero_out(dst_begin + src_size, dst_end);
     }
 
     // TODO Reuse the normal add/sub code
@@ -85,15 +126,16 @@ namespace DataStructures {
                            part_type* a_end,
                            bool b_positive,
                            const part_type* const b_begin,
-                           const part_type* const b_end)
+                           const part_type* const b_end,
+                           bool exchange)
     {
       if (a_positive == b_positive) {
-        bool exchange = compare_to(a_begin, a_end, b_begin, b_end) == -1;
+        exchange ^= compare_to(a_begin, a_end, b_begin, b_end) == -1;
         subtract(a_begin, a_end, b_begin, b_end, exchange);
         return a_positive ^ exchange;
       } else {
         add(a_begin, a_end, b_begin, b_end);
-        return a_positive;
+        return a_positive ^ exchange;
       }
     }
 
@@ -164,9 +206,7 @@ namespace DataStructures {
       size_type chunks = 1 + (a_size - 1) / b_size;
       // Termination relies on this
       arithmetic_assert(chunks >= 2);
-      for (size_type i = 0; i < a_size + b_size; ++i) {
-        space_begin[i] = 0;
-      }
+      zero_out(space_begin, space_begin + a_size + b_size);
       // The range for the result
       part_type* const c_begin = space_begin;
       part_type* const c_end = c_begin + a_size + b_size;
@@ -359,63 +399,100 @@ namespace DataStructures {
 
       // Pointwise multiply at 0 and infty
       part_type* const r0_begin (space_begin);
-      const part_type* const r0_end = multiply(a0_begin, a0_end, b0_begin, b0_end, r0_begin, space_end);
+      part_type* const r0_end = multiply(a0_begin, a0_end, b0_begin, b0_end, r0_begin, space_end);
 
-      part_type* const r4_begin (space_begin + 4 * part_size);
+      part_type* const rinf_begin (space_begin + 4 * part_size);
       // Pad Set the gap in the result to 0.
-      for (part_type* it = r0_begin; it < r4_begin; ++it) {
+      zero_out(r0_end, rinf_begin);
+      for (part_type* it = r0_begin; it < rinf_begin; ++it) {
         *it = 0;
       }
-      part_type* const r4_end = multiply(a2_begin, a2_end, b2_begin, b2_end, r4_begin, space_end);
+      part_type* const rinf_end = multiply(a2_begin, a2_end, b2_begin, b2_end, rinf_begin, space_end);
 
       // Aliases for the evaluation points
       part_type* const p1_begin (space_begin + 6 * part_size);
-      part_type* const p1_end (p1_begin + part_size + 2);
+      part_type* const p1_end (p1_begin + part_size + 1);
       part_type* const p_1_begin (p1_end);
       part_type* const p_1_end (p_1_begin + part_size + 1);
       part_type* const p_2_begin (p_1_end);
-      part_type* const p_2_end (p_2_begin + part_size + 3);
+      part_type* const p_2_end (p_2_begin + part_size + 1);
 
       part_type* const q1_begin (p_2_end);
-      part_type* const q1_end (q1_begin + part_size + 2);
+      part_type* const q1_end (q1_begin + part_size + 1);
       part_type* const q_1_begin (q1_end);
       part_type* const q_1_end (q_1_begin + part_size + 1);
       part_type* const q_2_begin (q_1_end);
-      part_type* const q_2_end (q_2_begin + part_size + 3);
+      part_type* const q_2_end (q_2_begin + part_size + 1);
 
       // Evaluate the polynomials
       copy_pad_part(p1_begin, p1_end, a0_begin, a0_end);
       add(p1_begin, p1_end, a2_begin, a2_end);
       copy_pad_part(p_1_begin, p_1_end, p1_begin, p1_end);
       add(p1_begin, p1_end, a1_begin, a1_end);
-      bool p_1_positive = signed_sub(true, p_1_begin, p_1_end, true, a1_begin, a1_end);
+      bool p_1_positive = signed_sub(true, p_1_begin, p_1_end, true, a1_begin, a1_end, false);
       copy_pad_part(p_2_begin + 1, p_2_begin, p_1_begin, p_1_end);
-      bool tmp_positive = signed_add(p_1_positive, p_2_begin + 1, p_2_end, true, a2_begin, a2_end);
-      bool p_2_positive = signed_sub(tmp_positive, p_2_begin, p_2_end, true, a0_begin, a0_end);
+      bool tmp_positive = signed_add(p_1_positive, p_2_begin, p_2_end, true, a2_begin, a2_end);
+      left_shift(p_2_begin, p_2_end, 1);
+      bool p_2_positive = signed_sub(tmp_positive, p_2_begin, p_2_end, true, a0_begin, a0_end, false);
 
       copy_pad_part(q1_begin, q1_end, a0_begin, a0_end);
       add(q1_begin, q1_end, a2_begin, a2_end);
       copy_pad_part(q_1_begin, q_1_end, q1_begin, q1_end);
       add(q1_begin, q1_end, a1_begin, a1_end);
-      bool q_1_positive = signed_sub(true, q_1_begin, q_1_end, true, a1_begin, a1_end);
+      bool q_1_positive = signed_sub(true, q_1_begin, q_1_end, true, a1_begin, a1_end, false);
       copy_pad_part(q_2_begin + 1, q_2_begin, q_1_begin, q_1_end);
-      bool tmq_positive = signed_add(q_1_positive, q_2_begin + 1, q_2_end, true, a2_begin, a2_end);
-      bool q_2_positive = signed_sub(tmq_positive, q_2_begin, q_2_end, true, a0_begin, a0_end);
+      bool tmq_positive = signed_add(q_1_positive, q_2_begin, q_2_end, true, a2_begin, a2_end);
+      left_shift(q_2_begin, q_2_end, 1);
+      bool q_2_positive = signed_sub(tmq_positive, q_2_begin, q_2_end, true, a0_begin, a0_end, false);
 
       // Pointwise multiply the rest
       part_type* const r1_begin (q_2_end);
       part_type* const r1_end = multiply(p1_begin, p1_end, q1_begin, q1_end, r1_begin, space_end);
+      arithmetic_assert(r1_end <= q2_end + 2 * part_size + 2);
 
-      part_type* const r_1_begin (r1_end);
+      part_type* const r_1_begin (q_2_end + 2 * part_size + 2);
       part_type* const r_1_end = multiply(p_1_begin, p_1_end, q_1_begin, q_1_end, r_1_begin, space_end);
       bool r_1_positive = q_1_positive ^ p_1_positive;
+      arithmetic_assert(r1_end <= q2_end + 4 * part_size + 4);
 
-      part_type* const r_2_begin (r_1_end);
+      part_type* const r_2_begin (q_2_end + 4 * part_size + 4);
       part_type* const r_2_end = multiply(p_2_begin, p_2_end, q_2_begin, q_2_end, r_2_begin, space_end);
       bool r_2_positive = q_2_positive ^ p_2_positive;
+      arithmetic_assert(r1_end <= q2_end + 6 * part_size + 6);
 
-      // Evaluate and put the result together
-      return r4_end;
+      // Interpolate
+      part_type* const r3_begin (r_2_begin);
+      part_type* const r3_end (r_2_begin + 2 * part_size + 2);
+      zero_out(r_2_end, r3_end);
+      bool r3_positive = signed_sub(r_2_positive, r3_begin, r3_end, true, r1_begin, r1_end, false);
+      div_exact_3(r3_begin, r3_end);
+      // We reuse the variable: r1 is now the coefficient r1, not r(1) any more.
+      bool r1_positive = signed_sub(true, r1_begin, r1_end, r_1_positive, r_1_begin, r_1_end, false);
+      arithmetic_assert(!(*r1_begin & 1));
+      right_shift(r1_begin, r1_end, 1);
+      part_type* const r2_begin (r_1_begin);
+      part_type* const r2_end (r_1_begin + 2 * part_size + 2);
+      zero_out(r_1_end, r2_end);
+      bool r2_positive = signed_sub(r_1_positive, r2_begin, r2_end, true, r0_begin, r0_end, false);
+      r3_positive = signed_sub(r3_positive, r3_begin, r3_end, r2_positive, r2_begin, r2_end, true);
+      // Instead of shifting r_inf, we shift one mor than we want and shift back afterwards
+      arithmetic_assert(!(*r3_begin & 1));
+      bool r3_bit = *r3_begin >> 1 & 1;
+      right_shift(r3_begin, r3_end, 2);
+      r3_positive = signed_add(r3_positive, r3_begin, r3_end, true, rinf_begin, rinf_end);
+      left_shift(r3_begin, r3_end, 2);
+      *r3_begin |= r3_bit;
+      r2_positive = signed_add(r2_positive, r2_begin, r2_end, r1_positive, r1_begin, r1_end);
+      r2_positive = signed_sub(r2_positive, r2_begin, r2_end, true, rinf_begin, rinf_end, false);
+      r1_positive = signed_sub(r1_positive, r1_begin, r1_end, r3_positive, r3_begin, r3_end, false);
+      bool check = true;
+      check = signed_add(true, r0_begin + part_size, rinf_end, r1_positive, r1_begin, r1_end);
+      arithmetic_assert(check);
+      check = signed_add(true, r0_begin + 2 * part_size, rinf_end, r2_positive, r2_begin, r2_end);
+      arithmetic_assert(check);
+      check = signed_add(true, r0_begin + 3 * part_size, rinf_end, r3_positive, r3_begin, r3_end);
+      arithmetic_assert(check);
+      return rinf_end;
     }
 
     inline size_type unbalanced_space_usage(size_type size_a, size_type size_b)
