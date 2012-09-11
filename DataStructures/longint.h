@@ -211,19 +211,23 @@ namespace DataStructures {
     template <typename FLOAT_TYPE, typename INT_TYPE, int MANTISSA, int EXPONENT, int BIAS>
     inline FLOAT_TYPE convert_to() const;
 
-    inline size_type read_sign(const std::string& numerical_string);
+    inline bool read_sign(std::istream& in);
 
-    inline void write_decimal(std::ostream& out) const;
+    inline void read_nosign(std::istream& in);
 
-    inline void write_octal(std::ostream& out) const;
+    inline bool read_and_set_base(std::istream& in) const;
 
-    inline void write_hexadecimal(std::ostream& out) const;
+    inline void write_decimal_nosign(std::ostream& out) const;
 
-    inline void read_decimal(const std::string& numerical_string, size_type start_index);
+    inline void write_octal_nosign(std::ostream& out) const;
 
-    inline void read_octal(const std::string& numerical_string, size_type start_index);
+    inline void write_hexadecimal_nosign(std::ostream& out) const;
 
-    inline void read_hexadecimal(const std::string& numerical_string, size_type start_index);
+    inline void read_decimal_nosign(std::istream& in);
+
+    inline void read_octal_nosign(std::istream& in);
+
+    inline void read_hexadecimal_nosign(std::istream& in);
 
     void remove_zeros();
 

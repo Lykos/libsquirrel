@@ -8,8 +8,8 @@ def gen_parts(number)
     r = intermediate_result
     parts = []
     while r > 0
-      parts.push((r % (1 << 32)).to_s.rjust(10))
-      r /= 1 << 32
+      parts.push((r % (1 << 64)).to_s.rjust(20))
+      r /= 1 << 64
     end
     parts.reverse!
     lines.push(parts.join(" "))

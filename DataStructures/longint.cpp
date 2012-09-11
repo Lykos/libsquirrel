@@ -8,9 +8,11 @@
 #include "ring.h"
 #include <cmath>
 #include <sstream>
-#include <cstdio>
 #include <string>
 #include <climits>
+#include <cctype>
+
+#define NIBBLE_BIT 4
 
 namespace DataStructures {
 
@@ -19,7 +21,6 @@ namespace DataStructures {
   using namespace std;
 
   static const unsigned int DECIMAL_BUFFER_SIZE = (LongInt::PART_SIZE * 1233) >> 12; // Calculates log_10(2^PART_SIZE)
-  static const unsigned int HEXADECIMAL_BUFFER_SIZE = (LongInt::PART_SIZE / 4); // Calculates log_16(2^PART_SIZE)
   static const unsigned int OCTAL_BUFFER_SIZE = (LongInt::PART_SIZE / 3); // Calculates log_8(2^PART_SIZE)
 
   static const string HEXADECIMAL_BASE = "0x";
@@ -66,35 +67,38 @@ namespace DataStructures {
       if (ff & ios_base::showbase) {
         out << HEXADECIMAL_BASE;
       }
-      longInt.write_hexadecimal(out);
+      longInt.write_hexadecimal_nosign(out);
     } else if (ff & ios_base::oct) {
       if (ff & ios_base::showbase) {
         out << OCTAL_BASE;
       }
-      longInt.write_octal(out);
+      longInt.write_octal_nosign(out);
     } else {
-      longInt.write_decimal(out);
+      longInt.write_decimal_nosign(out);
     }
     return out;
   }
 
   istream& operator>>(istream& in, LongInt& longInt)
   {
-    ios_base::fmtflags ff = in.flags();
-    string s;
-    in >> s;
-    LongInt::size_type length = s.length();
-    LongInt::size_type start_index = longInt.read_sign(s);
-    arithmetic_assert(start_index <= length);
-    PREC(NoDigits, start_index < length);
-    if (ff & ios_base::hex) {
-      longInt.read_hexadecimal(s, start_index);
-    } else if (ff & ios_base::oct) {
-      longInt.read_octal(s, start_index);
-    } else {
-      longInt.read_decimal(s, start_index);
+    while (!in.eof() && !in.bad() && isspace(in.peek())) {
+      in.get();
     }
+    longInt.read_sign(in);
+    longInt.read_nosign(in);
     return in;
+  }
+
+  void LongInt::read_nosign(istream& in)
+  {
+    ios_base::fmtflags ff = in.flags();
+    if (ff & ios_base::hex) {
+      read_hexadecimal_nosign(in);
+    } else if (ff & ios_base::oct) {
+      read_octal_nosign(in);
+    } else {
+      read_decimal_nosign(in);
+    }
   }
 
   LongInt::LongInt():
@@ -206,107 +210,143 @@ namespace DataStructures {
 
   LongInt::LongInt(long double initial):
     LongInt(double(initial))
-  {
-  }
+  {}
 
   LongInt::LongInt(const string& numerical_string)
   {
     PREC(NoDigits, !numerical_string.empty());
-    size_type length = numerical_string.length();
-    size_type start_index = read_sign(numerical_string);
-    arithmetic_assert(start_index <= length);
-    PREC(NoDigits, start_index < length);
-    if (numerical_string.find(HEXADECIMAL_BASE, start_index) == start_index) {
-      start_index += HEXADECIMAL_BASE.length();
-      read_hexadecimal(numerical_string, start_index);
-    } else if (numerical_string.find(OCTAL_BASE, start_index) == start_index && length > OCTAL_BASE.length()) {
-      start_index += OCTAL_BASE.length();
-      read_octal(numerical_string, start_index);
-    } else {
-      read_decimal(numerical_string, start_index);
+    istringstream iss (numerical_string);
+    read_sign(iss);
+    PREC(NoDigits, !iss.eof());
+    PREC(NoDigits, !iss.fail());
+    if (read_and_set_base(iss)) {
+      m_content = part_list(size_type(1), 0);
+      m_positive = true;
+      return;
     }
+    PREC(NoDigits, !iss.eof());
+    PREC(NoDigits, !iss.fail());
+    read_nosign(iss);
+    PREC(NoDigits, !iss.fail());
+    PREC(InvalidDigit, iss.eof());
   }
 
-  inline LongInt::size_type LongInt::read_sign(const string& numerical_string)
+  // Returns true if it is just a simple zero
+  inline bool LongInt::read_and_set_base(istream& in) const
   {
-    arithmetic_assert(numerical_string.size() >= 1);
-    if (numerical_string[0] == '-') {
+    if (in.bad() || in.eof()) {
+      in.setstate(ios_base::failbit);
+    } else if (in.peek() == '0') {
+      in.get();
+      if (in.bad()) {
+        in.setstate(ios_base::failbit);
+      } else if (in.eof()) {
+        in.seekg(-1, ios_base::cur);
+      } else if (in.peek() == 'x') {
+        in.get();
+        in.setf(ios_base::hex, ios_base::basefield);
+      } else if ('0' <= in.peek() && in.peek() <= '7') {
+        in.setf(ios_base::oct, ios_base::basefield);
+      } else {
+        // We have to treat this specially because we have already read the zero.
+        return true;
+      }
+    } else {
+      in.setf(ios_base::dec, ios_base::basefield);
+    }
+    return false;
+  }
+
+  inline bool LongInt::read_sign(istream& in)
+  {
+    if (in.peek() == '-') {
       m_positive = false;
-      return 1;
-    } else if (numerical_string[1] == '+') {
+      in.get();
+    } else if (in.peek() == '+') {
       m_positive = true;
-      return 1;
+      in.get();
     } else {
       m_positive = true;
-      return 0;
     }
+    return m_positive;
   }
 
-  inline void LongInt::read_decimal(const string& numerical_string, size_type start_index)
+  inline void LongInt::read_decimal_nosign(istream& in)
   {
+    // TODO Efficiency using hierarchical buffers
     bool positive = m_positive;
-    m_positive = true;
+    m_positive = true; // We want the multiplications/additions to be unsigned
     m_content = part_list(size_type(1), 0);
-    PREC(NoDigits, start_index < numerical_string.length());
-
-    for (string::const_iterator it = numerical_string.begin() + start_index; it < numerical_string.end(); ++it) {
-      PREC(InvalidDigit, *it >= '0' && *it <= '9');
+    if (in.eof() || in.bad() || !isdigit(in.peek())) {
+      in.setstate(ios_base::failbit);
+      return;
     }
-    unsigned int i;
-    for (i = start_index; i + DECIMAL_BUFFER_SIZE < numerical_string.length(); i += DECIMAL_BUFFER_SIZE) {
-      operator*=(TEN_BUFFER_FACTOR);
-      istringstream iss (numerical_string.substr(i, DECIMAL_BUFFER_SIZE));
-      part_type part;
-      iss >> part;
-      operator+=(part);
+    size_type buffer_size = 0;
+    part_type buffer = 0;
+    while (!in.eof() && !in.bad() && isdigit(in.peek())) {
+      char c = in.get() - '0';
+      buffer *= 10;
+      buffer += c;
+      ++buffer_size;
+      if (buffer_size == DECIMAL_BUFFER_SIZE) {
+        operator*=(TEN_BUFFER_FACTOR);
+        operator+=(buffer);
+        buffer_size = 0;
+        buffer = 0;
+      }
     }
-    unsigned int rest_length = numerical_string.length() - i;
-    if (rest_length > 0) {
+    if (buffer_size > 0) {
       LongInt base_power (TEN);
-      base_power.pow_eq(rest_length);
+      base_power.pow_eq(buffer_size);
       operator*=(base_power);
-      istringstream iss (numerical_string.substr(i, DECIMAL_BUFFER_SIZE));
-      part_type part;
-      iss >> part;
-      operator+=(part);
+      operator+=(buffer);
     }
     m_positive = positive;
   }
 
-  inline void LongInt::read_hexadecimal(const string& numerical_string, size_type start_index)
+  inline void LongInt::read_hexadecimal_nosign(istream& in)
   {
-    PREC(NoDigits, start_index < numerical_string.length());
-    for (string::const_iterator it = numerical_string.begin() + start_index; it < numerical_string.end(); ++it) {
-      PREC(InvalidDigit, (*it >= '0' && *it <= '9') || (*it >= 'A' && *it <= 'F') || (*it >= 'a' && *it <= 'f'));
+    m_content = part_list(size_type(1), 0);
+    if (in.eof() || in.bad() || !isxdigit(in.peek())) {
+      m_positive = true;
+      in.setstate(ios_base::failbit);
+      return;
     }
-    size_type length = numerical_string.length() - start_index;
-    size_type size = length / HEXADECIMAL_BUFFER_SIZE;
-    if (size * HEXADECIMAL_BUFFER_SIZE < length) {
-      ++size;
+    size_type buffer_size = 0;
+    while (!in.eof() && !in.bad() && isxdigit(in.peek())) {
+      if (buffer_size == PART_SIZE) {
+        m_content.push_back(0);
+        buffer_size = 0;
+      }
+      char c = in.get();
+      m_content.back() <<= NIBBLE_BIT;
+      if ('0' <= c && c <= '9') {
+        m_content.back() += c - '0';
+      } else if ('A' <= c && c <= 'F') {
+        m_content.back() += c - 'A' + 10;
+      } else if ('a' <= c && c <= 'f') {
+        m_content.back() += c - 'a' + 10;
+      } else {
+        assert(false);
+      }
+      buffer_size += NIBBLE_BIT;
     }
-    m_content = part_list(size, 0);
-    size_type i = start_index + length;
-    size_type j = 0;
-    while (i > start_index + HEXADECIMAL_BUFFER_SIZE) {
-      i -= HEXADECIMAL_BUFFER_SIZE;
-      istringstream iss (numerical_string.substr(i, HEXADECIMAL_BUFFER_SIZE));
-      iss >> hex >> m_content[j];
-      ++j;
+    // Shift such that the buffer gap is at the beginning.
+    m_content.back() <<= PART_SIZE - buffer_size;
+    // Reverse parts
+    for (size_type i = 0; i < (m_content.size() - 1) / 2 + 1; ++i) {
+      std::swap(m_content[i], m_content[m_content.size() - 1 - i]);
     }
-    istringstream iss (numerical_string.substr(start_index, i - start_index));
-    iss >> hex >> m_content[j];
+    // Shift away remaining buffer size
+    operator>>=(PART_SIZE - buffer_size);
   }
 
-  inline void LongInt::read_octal(const string& numerical_string, size_type start_index)
+  inline void LongInt::read_octal_nosign(istream& in)
   {
-    arithmetic_assert(numerical_string.length() > start_index);
-    for (string::const_iterator it = numerical_string.begin() + start_index; it < numerical_string.end(); ++it) {
-      PREC(InvalidDigit, *it >= '0' || *it <= '8');
-    }
     PREC(NotImplemented, false);
   }
 
-  inline void LongInt::write_decimal(ostream& out) const
+  inline void LongInt::write_decimal_nosign(ostream& out) const
   {
     LongInt longInt (abs());
     ArrayList<string> parts;
@@ -332,12 +372,12 @@ namespace DataStructures {
     }
   }
 
-  inline void LongInt::write_octal(ostream& out) const
+  inline void LongInt::write_octal_nosign(ostream& out) const
   {
     PREC(NotImplemented, false);
   }
 
-  inline void LongInt::write_hexadecimal(ostream& out) const
+  inline void LongInt::write_hexadecimal_nosign(ostream& out) const
   {
     for (size_type i = m_content.size(); i > 0;) {
       --i;

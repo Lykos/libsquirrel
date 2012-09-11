@@ -11,6 +11,7 @@ TESTS = 1
 ITERATIONS = 1000
 MEASUREMENTS = 5
 USED_MEASUREMENTS = 2
+TEST_DIRECTORY = '../performance_inputs'
 
 class Test
 
@@ -26,6 +27,29 @@ end
 
 class CaseGenerator
 
+  def line(*args)
+    args.collect { |a| sprintf("%s%x", a >= 0 ? "" : "-", a.abs) }.join(" ")
+  end
+
+  def data_method_body(n, *args)
+    File.open(File.join(File.dirname(__FILE__), TEST_DIRECTORY, @name + ".txt"), 'w') do |f|
+      cases = generate_cases(n, *args)
+      f.puts cases.length
+      cases.each { |c| f.puts c }
+    end
+    join_indent(column_declarations) + "\n" +
+      join_indent(["ifstream f (\"#{File.join(TEST_DIRECTORY, @name + ".txt")}\");",
+                   "int lines;",
+                   "f >> lines;",
+                   "f.flags(ios_base::hex);",
+                   "for (int i = 0; i < lines; ++i) {"] +
+                    data_columns[0..-2].collect { |c| INDENTATION + c.typename + " " + c.name + ";" } +
+                  [INDENTATION + "f >> " + data_columns[0..-2].collect { |c| c.name }.join(" >> ") + ";",
+                   INDENTATION + "QTest::newRow(\"#{@name}\") << " + data_columns.collect { |c| c.name }.join(" << ") + ";",
+                   "}",
+                   "f.close();"])
+  end
+
   def test_method_body
     bla = tests.collect { |c| INDENTATION * 2 + c.to_s}
     join_indent(fetching) + "\n\n" +
@@ -33,10 +57,6 @@ class CaseGenerator
       join_indent(construction.collect {|c| INDENTATION * 2 + c}) + "\n" +
       join_indent(bla) +
       join_indent(end_timer)
-  end
-
-  def title
-    self.class
   end
 
   def start_timer
@@ -81,6 +101,7 @@ File.open(File.join(File.dirname(__FILE__), '..', 'PerformanceDataStructures', '
     cpp.puts "#include \"performanceresult.h\""
     cpp.puts "#include \"DataStructures/heap.h\""
     cpp.puts "#include \"comparemilliseconds.h\""
+    cpp.puts "#include <fstream>"
     cpp.puts "#define MEASUREMENTS #{MEASUREMENTS}"
     cpp.puts "#define USED_MEASUREMENTS #{USED_MEASUREMENTS}"
     cpp.puts "#define ITERATIONS #{ITERATIONS}"

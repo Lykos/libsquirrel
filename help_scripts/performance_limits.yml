@@ -1,5 +1,4 @@
 ---
-:string_constructor: 1000000
 :inc_dec: 10000000
 :plus_minus: 5000000
 :times: 20000
@@ -12,4 +11,4 @@
 :right_shift_number: 500000
 :right_shift_offset: 50000
 :left_shift_number: 1000
-:left_shift_offset: 10000
+:left_shift_offset: 1000
