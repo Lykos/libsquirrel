@@ -7,6 +7,7 @@
 #include "assembly.h"
 #include "ring.h"
 #include "shifts.h"
+#include "compare.h"
 #include <cmath>
 #include <sstream>
 #include <string>
@@ -835,7 +836,9 @@ namespace DataStructures {
     size_type part_shift = shift_offset / PART_SIZE;
     if (per_part_shift != 0) {
       part_type keep = shift_left(&m_content[0], &m_content[0] + size(), per_part_shift);
-      m_content.push_back(keep);
+      if (keep != 0) {
+        m_content.push_back(keep);
+      }
     }
     if (part_shift > 0) {
       m_content.insert(m_content.begin(), part_shift, 0);
@@ -984,18 +987,10 @@ namespace DataStructures {
     if (this == &other) {
       return 0;
     }
-    size_type max_index = max(size(), other.size());
-    for (size_type i = max_index + 1; i > 0;) {
-      --i;
-      part_type my = part_at(i);
-      part_type his = other.part_at(i);
-      if (my > his) {
-        return 1;
-      } else if (his > my) {
-        return -1;
-      }
-    }
-    return 0;
+    return LongArithmetic::compare_to(&m_content[0],
+                                      &m_content[0] + size(),
+                                      &other.m_content[0],
+                                      &other.m_content[0] + other.size());
   }
 
   void LongInt::remove_zeros()
