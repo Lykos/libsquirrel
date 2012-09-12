@@ -737,18 +737,18 @@ namespace DataStructures {
     arithmetic_assert(size() > 0);
     if (u_compare_to(other) == -1) {
       pad_zeros(other.size());
-      DataStructures::subtract(&m_content[0],
-                               &m_content[0] + size(),
-                               &other.m_content[0],
-                               &other.m_content[0] + other.size(),
-                               true);
+      arithmetic_assert_nocarry(DataStructures::subtract(&m_content[0],
+                                                         &m_content[0] + size(),
+                                                         &other.m_content[0],
+                                                         &other.m_content[0] + other.size(),
+                                                         true));
       m_positive = !m_positive;
     } else {
-      DataStructures::subtract(&m_content[0],
-                               &m_content[0] + size(),
-                               &other.m_content[0],
-                               &other.m_content[0] + other.size(),
-                               false);
+      arithmetic_assert_nocarry(DataStructures::subtract(&m_content[0],
+                                                         &m_content[0] + size(),
+                                                         &other.m_content[0],
+                                                         &other.m_content[0] + other.size(),
+                                                         false));
     }
     remove_zeros();
     if (size() == 1 && m_content[0] == 0) {
@@ -760,18 +760,22 @@ namespace DataStructures {
   {
     arithmetic_assert(size() > 0);
     size_type space = space_usage(size(), other.size());
-    part_type *c = static_cast<part_type*>(malloc(space * sizeof(part_type)));
+    part_type *c_begin = static_cast<part_type*>(malloc(space * sizeof(part_type)));
     part_type *c_end = multiply(&m_content[0],
                                 &m_content[0] + size(),
                                 &other.m_content[0],
                                 &other.m_content[0] + other.size(),
-                                c,
-                                c + space);
+                                c_begin,
+                                c_begin + space);
+    // Remove padding
+    while (c_end > c_begin + 1 && c_end[-1] == 0) {
+      --c_end;
+    }
     m_content.clear();
-    m_content.insert(m_content.end(), c, c_end);
-    remove_zeros();
-    free(c);
+    m_content.insert(m_content.end(), c_begin, c_end);
+    free(c_begin);
     m_positive = m_positive == other.m_positive;
+    // Zero results in an empty result. Correct this.
     if (size() == 0) {
       m_content.push_back(0);
       m_positive = true;

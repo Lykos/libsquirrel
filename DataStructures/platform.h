@@ -15,8 +15,10 @@
  */
 #ifdef ARITHMETIC_DEBUG
 #define arithmetic_assert(b) assert(b)
+#define arithmetic_assert_nocarry(f) bool carry = f; assert(!carry)
 #else
 #define arithmetic_assert(b)
+#define arithmetic_assert_nocarry(f) f
 #endif
 
 #define LONGINT64

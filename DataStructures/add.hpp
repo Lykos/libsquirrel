@@ -1,6 +1,7 @@
 #ifndef DATASTRUCTURES_LONGARITHMETIC_ADD_HPPPP
 #define DATASTRUCTURES_LONGARITHMETIC_ADD_HPPPP
 
+#include "incdec.h"
 #include "add.h"
 #include "assembly.h"
 #include "platform.h"
@@ -9,19 +10,25 @@ namespace DataStructures {
 
   namespace LongArithmetic {
 
-    void inline add(part_type* tgt_begin,
+    inline bool add(part_type* tgt_begin,
                     part_type* tgt_end,
                     const part_type* src_begin,
                     const part_type* src_end)
     {
-      for (bool keep = false; keep || src_begin < src_end; ++tgt_begin, ++src_begin) {
-        arithmetic_assert(tgt_begin < tgt_end);
-        part_type b_part = (src_begin < src_end ? *src_begin : 0);
+      bool keep = false;
+      while (src_begin < src_end && tgt_begin < tgt_end) {
         if (keep) {
-          ASM_ADD_CARRY_SETCF(*tgt_begin, b_part, keep);
+          ASM_ADD_CARRY_SETCF(*tgt_begin, *src_begin, keep);
         } else {
-          ASM_ADD_SETCF(*tgt_begin, b_part, keep);
+          ASM_ADD_SETCF(*tgt_begin, *src_begin, keep);
         }
+        ++tgt_begin;
+        ++src_begin;
+      }
+      if (keep) {
+        return inc(tgt_begin, tgt_end);
+      } else {
+        return false;
       }
     }
 

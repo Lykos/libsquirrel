@@ -556,7 +556,6 @@ namespace DataStructures {
       if (b_size == 0) {
         return space_begin;
       }
-      part_type *c_begin = space_begin;
       part_type *c_end;
       if (a_size == 1) {
         c_end = simple_multiply(a_begin[0], b_begin[0], space_begin, space_end);
@@ -571,10 +570,13 @@ namespace DataStructures {
       } else {
         c_end = toom3_multiply(a_begin, a_end, b_begin, b_end, space_begin, space_end);
       }
-      size_type c_size = c_end - c_begin;
-      arithmetic_assert(c_size <= a_size + b_size);
-      arithmetic_assert(c_size >= a_size + b_size - 1);
-      return c_end;
+#ifdef ARITHMETIC_DEBUG
+      // Check that the part beyond the expected length is only padding
+      for (const part_type* it = space_begin + a_size + b_size; it < c_end; ++it) {
+        arithmetic_assert(*it == 0);
+      }
+#endif
+      return std::min(c_end, space_begin + a_size + b_size);
     }
 
   } // namespace LongArithmetic

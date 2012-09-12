@@ -2,36 +2,40 @@
 #define DATASTRUCTURES_LONGARITHMETIC_SUBTRACT_HPP
 
 #include "subtract.h"
-#include "longint.h"
 
 // Internal header, clients should not include. Appears in header for inlining.
 namespace DataStructures {
 
   namespace LongArithmetic {
 
-    void inline subtract(LongInt::part_type* a_begin,
-                         LongInt::part_type* const a_end,
-                         const LongInt::part_type* b_begin,
-                         const LongInt::part_type* const b_end,
+    inline bool subtract(part_type* tgt_begin,
+                         part_type* const tgt_end,
+                         const part_type* src_begin,
+                         const part_type* const src_end,
                          bool exchange)
     {
-      arithmetic_assert(a_end >= a_begin);
-      arithmetic_assert(b_end >= b_begin);
-      arithmetic_assert(a_begin >= b_end || b_begin >= a_end);
-      arithmetic_assert(a_end - a_begin >= b_end - b_begin);
-      for (bool keep = false; keep || b_begin < b_end; ++a_begin, ++b_begin) {
-        arithmetic_assert(a_begin < a_end); // Should never happen because a =< b
-        LongInt::part_type left = *a_begin;
-        LongInt::part_type right = b_begin < b_end ? *b_begin : 0;
-        if (exchange) {
-          std::swap(left, right);
-        }
+      // Valid ranges
+      arithmetic_assert(tgt_end >= tgt_begin);
+      arithmetic_assert(src_end >= src_begin);
+      // No aliasing
+      arithmetic_assert(tgt_begin >= src_end || src_begin >= tgt_end);
+      bool keep = false;
+      while (src_begin < src_end && tgt_begin < tgt_end) {
+        part_type left = exchange ? *src_begin : *tgt_begin;
+        part_type right = exchange ? *tgt_begin : *src_begin;
         if (keep) {
           ASM_SUBTRACT_CARRY_SETCF(left, right, keep);
         } else {
           ASM_SUBTRACT_SETCF(left, right, keep);
         }
-        *a_begin = left;
+        *tgt_begin = left;
+        ++tgt_begin;
+        ++src_begin;
+      }
+      if (keep) {
+        return dec(tgt_begin, tgt_end);
+      } else {
+        return false;
       }
     }
 

@@ -1,4 +1,5 @@
 #include "incdec.h"
+#include "assembly.h"
 
 namespace DataStructures {
 
