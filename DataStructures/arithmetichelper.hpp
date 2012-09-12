@@ -1,8 +1,7 @@
-#ifndef ARITHMETIC_HPP
-#define ARITHMETIC_HPP
+#ifndef DATASTRUCTURES_ARITHMETIC_HPP
+#define DATASTRUCTURES_ARITHMETIC_HPP
 
 #include "arithmetichelper.h"
-#include "assembly.h"
 #include <cstdint>
 
 namespace DataStructures {
@@ -33,18 +32,8 @@ namespace DataStructures {
       return ++x >> 1;
     }
 
-    inline uint64_t log2(uint64_t x)
-    {
-      if (x == 0) {
-        return 0;
-      }
-      uint64_t result;
-      ASM_BIT_SCAN(result, x);
-      return result;
-    }
-
   }
 
 }
 
-#endif // ARITHMETIC_HPP
+#endif // DATASTRUCTURES_ARITHMETIC_HPP

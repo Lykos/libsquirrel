@@ -14,17 +14,10 @@ QMAKE_CXXFLAGS += -std=c++11 -O2
 DEFINES += DATASTRUCTURES_LIBRARY
 
 SOURCES += \
-    longint.cpp \
     infiniterandom.cpp \
-    uniformlongintdistribution.cpp \
-    longintconverter.cpp \
-    divide.cpp \
-    multiply.cpp \
-    preconditionviolation.cpp \
-    algebraicstructure.cpp
+    preconditionviolation.cpp
 
 HEADERS += \
-    longint.h \
     infiniterandom.h \
     treap.h \
     treapnode.h \
@@ -40,38 +33,19 @@ HEADERS += \
     avltree.h \
     avlnode.h \
     fibonacciheap.h \
-    finitefield.h \
-    finiteelement.h \
-    polynomial.h \
     arithmetichelper.h \
-    uniformlongintdistribution.h \
-    algebrahelper.h \
     heaparithmetic.h \
-    longintconverter.h \
-    divide.h \
-    multiply.h \
-    add.h \
-    subtract.h \
-    assembly.h \
-    platform.h \
     preconditionviolation.h \
     conditiontype.h \
-    ring.h \
-    algebraicstructure.h \
     fibonaccinode.h \
     treenode.hpp \
     treeiterator.hpp \
     treapnode.hpp \
     treap.hpp \
-    subtract.hpp \
-    ring.hpp \
     queue.hpp \
-    polynomial.hpp \
     listiterator.hpp \
     heaparithmetic.hpp \
     heap.hpp \
-    finitefield.hpp \
-    finiteelement.hpp \
     fibonacciheap.hpp \
     basetree.hpp \
     baselist.hpp \
@@ -80,21 +54,10 @@ HEADERS += \
     avlnode.hpp \
     arraylist.hpp \
     arithmetichelper.hpp \
-    algebrahelper.hpp \
-    add.hpp \
-    uniformlongintdistribution.hpp \
     fibonaccinode.hpp \
-    field.hpp \
-    field.h \
     less.hpp \
     less.h \
-    shifts.h \
-    shifts.hpp \
-    compare.h \
-    compare.hpp \
-    thresholds.h \
-    incdec.hpp \
-    incdec.h
+    prec_macro.h
 
 header_files.files = $$HEADERS
 header_files.path = /usr/local/include/DataStructures

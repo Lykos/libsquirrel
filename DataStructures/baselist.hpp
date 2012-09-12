@@ -3,11 +3,11 @@
 
 #include "baselist.h"
 #include "arithmetichelper.h"
-#include "conditiontype.h"
-#include "preconditionviolation.h"
+#include "prec_macro.h"
 #include <climits>
 #include <algorithm>
 #include <ostream>
+#include <cassert>
 
 #define PREC_INDEX_LIST(index) PREC(OutOfRange, index < BaseList<T>::size())
 #define PREC_EMPTY() PREC(EmptyList, !BaseList<T>::empty())

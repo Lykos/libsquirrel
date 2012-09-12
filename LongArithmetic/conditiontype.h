@@ -1,11 +1,9 @@
-#ifndef DATASTRUCTURES_CONDITIONTYPE_H
-#define DATASTRUCTURES_CONDITIONTYPE_H
+#ifndef LONG_ARITHMETIC_CONDITIONTYPE_H
+#define LONG_ARITHMETIC_CONDITIONTYPE_H
 
-namespace DataStructures {
+namespace LongArithmetic {
 
   enum ConditionType {
-    OutOfRange,
-    EmptyList,
     NumberLength,
     InvalidInputIterator,
     InvalidRange,
@@ -20,11 +18,9 @@ namespace DataStructures {
     InfinityConversion,
     NegativeExponent,
     NegationOverflow,
-    NoField,
-    SelfMerge,
-    InvalidNode
+    NoField
   };
 
 }
 
-#endif // DATASTRUCTURES_CONDITIONTYPE_H
+#endif // LONG_ARITHMETIC_CONDITIONTYPE_H

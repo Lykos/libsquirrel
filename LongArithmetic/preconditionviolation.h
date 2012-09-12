@@ -1,9 +1,10 @@
-#ifndef DATASTRUCTURES_PRECONDITIONVIOLATION_H
-#define DATASTRUCTURES_PRECONDITIONVIOLATION_H
+#ifndef LONGARITHMETIC_PRECONDITIONVIOLATION_H
+#define LONGARITHMETIC_PRECONDITIONVIOLATION_H
+
 #include "conditiontype.h"
 #include <stdexcept>
 
-namespace DataStructures {
+namespace LongArithmetic {
 
   class PreconditionViolation : public std::exception
   {
@@ -21,6 +22,6 @@ namespace DataStructures {
 
   };
 
-} // namespace DataStructures
+} // namespace LongArithmetic
 
-#endif // DATASTRUCTURES_PRECONDITIONVIOLATION_H
+#endif // LONGARITHMETIC_PRECONDITIONVIOLATION_H
