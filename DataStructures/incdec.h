@@ -18,14 +18,13 @@ namespace DataStructures {
 
     /**
      * Interprets a memory chunk as a number and decrements it by one. This
-     * is not intended for direct use by clients.
+     * is not intended for direct use by clients. Is not allowed to overflow.
      *
      * @brief inc Decrements a number
      * @param begin Pointer to the start of a number
      * @param end Pointer to the end of a number.
-     * @return Carry bit after end
      */
-    inline bool dec(part_type* begin, part_type* const end);
+    inline void dec(part_type* begin, part_type* const end);
 
   } // namespace LongArithmetic
 

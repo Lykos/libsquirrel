@@ -8,7 +8,7 @@ namespace DataStructures {
 
   namespace LongArithmetic {
 
-    inline bool subtract(part_type* tgt_begin,
+    inline void subtract(part_type* tgt_begin,
                          part_type* const tgt_end,
                          const part_type* src_begin,
                          const part_type* const src_end,
@@ -33,9 +33,7 @@ namespace DataStructures {
         ++src_begin;
       }
       if (keep) {
-        return dec(tgt_begin, tgt_end);
-      } else {
-        return false;
+        dec(tgt_begin, tgt_end);
       }
     }
 

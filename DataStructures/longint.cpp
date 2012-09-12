@@ -671,8 +671,7 @@ namespace DataStructures {
   // Decrements without looking at the sign
   void inline LongInt::dec()
   {
-    bool carry = LongArithmetic::dec(&m_content[0], &m_content[0] + size());
-    arithmetic_assert(!carry);
+    LongArithmetic::dec(&m_content[0], &m_content[0] + size());
   }
 
   int_fast8_t LongInt::compare_to(const LongInt& other) const
@@ -737,18 +736,18 @@ namespace DataStructures {
     arithmetic_assert(size() > 0);
     if (u_compare_to(other) == -1) {
       pad_zeros(other.size());
-      arithmetic_assert_nocarry(DataStructures::subtract(&m_content[0],
+      LongArithmetic::subtract(&m_content[0],
                                                          &m_content[0] + size(),
                                                          &other.m_content[0],
                                                          &other.m_content[0] + other.size(),
-                                                         true));
+                                                         true);
       m_positive = !m_positive;
     } else {
-      arithmetic_assert_nocarry(DataStructures::subtract(&m_content[0],
+      LongArithmetic::subtract(&m_content[0],
                                                          &m_content[0] + size(),
                                                          &other.m_content[0],
                                                          &other.m_content[0] + other.size(),
-                                                         false));
+                                                         false);
     }
     remove_zeros();
     if (size() == 1 && m_content[0] == 0) {

@@ -7,21 +7,21 @@ namespace DataStructures {
     
     inline bool inc(part_type* begin, part_type* const end)
     {
-      bool keep = true;
-      for (; keep && begin < end; ++begin) {
-        ASM_INC_SETCF(*begin, keep);
+      bool carry = true;
+      for (; carry && begin < end; ++begin) {
+        ASM_INC_SETCF(*begin, carry);
       }
-      return keep;
+      return carry;
     }
 
-    inline bool dec(part_type* begin, part_type* const end)
+    inline void dec(part_type* begin, part_type* const end)
     {
-      bool keep = true;
-      for (; keep && begin < end; ++begin) {
+      bool carry = true;
+      for (; carry && begin < end; ++begin) {
         arithmetic_assert(begin < end);
-        ASM_DEC_SETCF(*begin, keep);
+        ASM_DEC_SETCF(*begin, carry);
       }
-      return keep;
+      arithmetic_assert(!carry);
     }
     
   } // namespace LongArithmetic

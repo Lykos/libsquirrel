@@ -56,7 +56,7 @@ File.open(File.join(File.dirname(__FILE__), '..', 'TestDataStructures', 'longint
      UNARY_MINUS,
      BIT_NEGATE
     ].each do |generator|
-      cpp.puts generator.generate(N, [-1, 1], [200, 1 << 33, 1 << 200], [0, 1, 2])
+      cpp.puts generator.generate(N, [-1, 1], [200, 1 << 33, 1 << 200], [0, 1])
       cpp.puts
       h.puts generator.test_method_header
       h.puts
@@ -65,7 +65,7 @@ File.open(File.join(File.dirname(__FILE__), '..', 'TestDataStructures', 'longint
     end
 
     [RIGHT_SHIFT, LEFT_SHIFT].each do |generator|
-      cpp.puts generator.generate(N, [-1, 1], [1], [200, 1 << 200], [200], [0, 1, 2], [0, 1, 2, 32])
+      cpp.puts generator.generate(N, [-1, 1], [1], [1 << 64, 1 << 64], [32], [0, 1], [0, 1, 2, 32])
       cpp.puts
       h.puts generator.test_method_header
       h.puts
@@ -73,15 +73,8 @@ File.open(File.join(File.dirname(__FILE__), '..', 'TestDataStructures', 'longint
       h.puts
     end
 
-    cpp.puts TIMES.generate(5, [-1, 1], [-1, 1], [1 << 64 * 3, 1 << 64 * 4], [1 << 64 * 3, 1 << 64 * 4], [0, 1], [0, 1])
-    cpp.puts
-    h.puts TIMES.test_method_header
-    h.puts
-    h.puts TIMES.data_method_header
-    h.puts
-
-    [PLUS, MINUS, COMPARE, BIT_OR, BIT_XOR, BIT_AND].each do |generator|
-      cpp.puts generator.generate(N, [-1, 1], [-1, 1], [200, 1 << 200], [200, 1 << 200], [0, 1, 2], [0, 1, 2])
+    [PLUS, MINUS, TIMES, COMPARE, BIT_OR, BIT_XOR, BIT_AND].each do |generator|
+      cpp.puts generator.generate(N, [-1, 1], [-1, 1], [1 << 64, 1 << 64 * 3], [1 << 64, 1 << 64], [0, 1], [0, 1])
       cpp.puts
       h.puts generator.test_method_header
       h.puts
@@ -90,7 +83,7 @@ File.open(File.join(File.dirname(__FILE__), '..', 'TestDataStructures', 'longint
     end
 
     [MODULO, DIVIDED].each do |generator|
-      cpp.puts generator.generate(N, [-1, 1], [-1, 1], [200, 1 << 200], [200, 1 << 200], [0, 1, 2], [1, 2])
+      cpp.puts generator.generate(N, [-1, 1], [-1, 1], [1 << 64, 1 << 64], [1 << 64, 1 << 64], [0, 1], [1])
       cpp.puts
       h.puts generator.test_method_header
       h.puts
@@ -98,7 +91,7 @@ File.open(File.join(File.dirname(__FILE__), '..', 'TestDataStructures', 'longint
       h.puts
     end
 
-    cpp.puts POWER.generate(1, [-1, 1], [1], [200, 1 << 100], [100], [0, 1, 2], [0, 1, 2])
+    cpp.puts POWER.generate(1, [-1, 1], [1], [200, 1 << 100], [100], [0, 1], [0, 1])
     cpp.puts
     h.puts POWER.test_method_header
     h.puts

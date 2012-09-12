@@ -14,10 +14,12 @@ namespace DataStructures {
      * Interprets two ranges of memory as unsigned long numbers and adds the
      * source number to the target number.
      *
-     * If the source number is larger than the target number, the result is invalid.
+     * If the source number is larger than the target number, the behaviour is undefined.
      * Note that the source range may be larger than the target range and the
      * result is still valid, if the upper part of the source range only consists
      * of zeroes.
+     *
+     * Not intended for direct use by clients.
      *
      * @brief add Adds two memory chunks as unsigned integers.
      * @param tgt_begin Pointer the start of the target range
@@ -26,7 +28,7 @@ namespace DataStructures {
      * @param src_end Pointer to the end of the source chunk
      * @return Carry bit after the end of the target range.
      */
-    inline bool add(part_type* tgt_begin,
+    inline void add(part_type* tgt_begin,
                     part_type* tgt_end,
                     const part_type* src_begin,
                     const part_type* src_end);
