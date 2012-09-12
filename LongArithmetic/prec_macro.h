@@ -5,7 +5,7 @@
 #undef PREC
 #define PREC(type, cond) \
   if (!(cond)) { \
-    throw LongArithmetic::PreconditionViolation(ConditionType::type, #type ": " #cond " is violated."); \
+    throw PreconditionViolation(ConditionType::type, #type ": " #cond " is violated."); \
   }
 
 #endif // LONGARITHMETIC_PREC_MACRO_H

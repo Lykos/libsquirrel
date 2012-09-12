@@ -8,14 +8,14 @@ namespace DataStructures {
   class PreconditionViolation : public std::exception
   {
   public:
-    PreconditionViolation(ConditionType type, const char* message);
+    PreconditionViolation(DataStructures::ConditionType type, const char* message);
 
-    ConditionType type() const { return m_type; }
+    DataStructures::ConditionType type() const { return m_type; }
 
     virtual const char* what() const throw() { return m_message; }
 
   private:
-    ConditionType m_type;
+    DataStructures::ConditionType m_type;
 
     const char* m_message;
 

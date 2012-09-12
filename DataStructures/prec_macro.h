@@ -5,7 +5,7 @@
 
 #define PREC(type, cond) \
   if (!(cond)) { \
-    throw DataStructures::PreconditionViolation(ConditionType::type, #type ": " #cond " is violated."); \
+    throw PreconditionViolation(ConditionType::type, #type ": " #cond " is violated."); \
   }
 
 #endif // DATASTRUCTURES_PREC_MACRO_H

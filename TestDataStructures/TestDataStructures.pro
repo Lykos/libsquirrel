@@ -19,10 +19,7 @@ SOURCES += \
     infiniterandomtest.cpp \
     heaptest.cpp \
     datastructurestests.cpp \
-    polynomialtest.cpp \
-    finiteelementtest.cpp \
     arithmetichelpertest.cpp \
-    longinttest.cpp \
     heaparithmetictest.cpp \
     queuetest.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
@@ -33,14 +30,11 @@ INCLUDEPATH += $$PWD/..
 DEPENDPATH += $$PWD/..
 
 HEADERS += \
-    longinttest.h \
     infiniterandomtest.h \
     heaptest.h \
     treetest.h \
     treaptest.h \
     avltreetest.h \
-    polynomialtest.h \
-    finiteelementtest.h \
     arithmetichelpertest.h \
     comparemacros.h \
     heaparithmetictest.h \

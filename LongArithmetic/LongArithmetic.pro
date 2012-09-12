@@ -9,7 +9,7 @@ QT       -= core gui
 TARGET = LongArithmetic
 TEMPLATE = lib
 CONFIG += warn_on
-QMAKE_CXXFLAGS += -std=c++11 -O2
+QMAKE_CXXFLAGS += -std=c++11
 
 DEFINES += LONGARITHMETIC_LIBRARY
 

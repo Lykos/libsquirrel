@@ -1,13 +1,12 @@
-#include "DataStructures/polynomial.h"
-#include "DataStructures/longint.h"
 #include "polynomialtest.h"
-#include "DataStructures/arraylist.h"
-#include "DataStructures/ring.h"
+#include "LongArithmetic/polynomial.h"
+#include "LongArithmetic/longint.h"
+#include "LongArithmetic/ring.h"
 #include <iostream>
 #include <climits>
 #include <ostream>
 
-using namespace DataStructures;
+using namespace LongArithmetic;
 
 typedef Polynomial<LongInt> Poly;
 

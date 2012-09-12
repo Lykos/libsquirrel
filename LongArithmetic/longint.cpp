@@ -339,7 +339,7 @@ namespace LongArithmetic {
     // Shift such that the buffer gap is at the beginning.
     m_content.back() <<= PART_SIZE - buffer_size;
     // Reverse parts
-    for (size_type i = 0; i < (m_content.size() - 1) / 2 + 1; ++i) {
+    for (size_type i = 0; i < m_content.size() / 2; ++i) {
       std::swap(m_content[i], m_content[m_content.size() - 1 - i]);
     }
     // Shift away remaining buffer size

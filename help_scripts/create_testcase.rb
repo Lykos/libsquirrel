@@ -8,8 +8,8 @@ include Generators
 
 N = 1
 
-File.open(File.join(File.dirname(__FILE__), '..', 'TestDataStructures', 'longinttest.h'), 'w') do |h|
-  File.open(File.join(File.dirname(__FILE__), '..', 'TestDataStructures', 'longinttest.cpp'), 'w') do |cpp|
+File.open(File.join(File.dirname(__FILE__), '..', 'TestLongArithmetic', 'longinttest.h'), 'w') do |h|
+  File.open(File.join(File.dirname(__FILE__), '..', 'TestLongArithmetic', 'longinttest.cpp'), 'w') do |cpp|
     cpp.puts CPP_HEADER
     h.puts H_HEADER
 

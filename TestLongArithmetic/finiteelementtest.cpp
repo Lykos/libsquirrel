@@ -1,11 +1,11 @@
 #include "finiteelementtest.h"
-#include "DataStructures/longint.h"
-#include "DataStructures/finitefield.h"
-#include "DataStructures/finiteelement.h"
+#include "LongArithmetic/longint.h"
+#include "LongArithmetic/finitefield.h"
+#include "LongArithmetic/finiteelement.h"
 #include <iostream>
 
 using namespace std;
-using namespace DataStructures;
+using namespace LongArithmetic;
 
 typedef LongInt LongInt;
 typedef FiniteElement<LongInt> FE;
