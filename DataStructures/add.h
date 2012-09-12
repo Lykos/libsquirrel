@@ -1,8 +1,8 @@
 #ifndef DATASTRUCTURES_LONGARITHMETIC_ADD_H
 #define DATASTRUCTURES_LONGARITHMETIC_ADD_H
 
-/*
- * Internal header, clients should not include.
+/**
+ * Internal header file which should not be included by users directly.
  */
 namespace DataStructures {
 

@@ -73,7 +73,14 @@ File.open(File.join(File.dirname(__FILE__), '..', 'TestDataStructures', 'longint
       h.puts
     end
 
-    [PLUS, MINUS, TIMES, COMPARE, BIT_OR, BIT_XOR, BIT_AND].each do |generator|
+    cpp.puts TIMES.generate(5, [-1, 1], [-1, 1], [1 << 64 * 3, 1 << 64 * 4], [1 << 64 * 3, 1 << 64 * 4], [0, 1], [0, 1])
+    cpp.puts
+    h.puts TIMES.test_method_header
+    h.puts
+    h.puts TIMES.data_method_header
+    h.puts
+
+    [PLUS, MINUS, COMPARE, BIT_OR, BIT_XOR, BIT_AND].each do |generator|
       cpp.puts generator.generate(N, [-1, 1], [-1, 1], [200, 1 << 200], [200, 1 << 200], [0, 1, 2], [0, 1, 2])
       cpp.puts
       h.puts generator.test_method_header

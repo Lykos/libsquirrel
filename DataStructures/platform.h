@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <climits>
 #include <cstddef>
+#include <cassert>
 
 #define ARITHMETIC_DEBUG
 

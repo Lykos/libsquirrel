@@ -2,5 +2,6 @@
 #define THRESHOLDS_H
 
 #define KARATSUBA_THRESHOLD 3
+#define TOOM3_THRESHOLD 3
 
 #endif // THRESHOLDS_H

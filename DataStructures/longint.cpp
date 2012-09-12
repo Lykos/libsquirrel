@@ -8,6 +8,7 @@
 #include "ring.h"
 #include "shifts.h"
 #include "compare.h"
+#include "incdec.h"
 #include <cmath>
 #include <sstream>
 #include <string>
@@ -641,10 +642,7 @@ namespace DataStructures {
   // Increments without looking at the sign
   void inline LongInt::inc()
   {
-    bool keep = true;
-    for (part_list::iterator it = m_content.begin(); keep && it < m_content.end(); ++it) {
-      ASM_INC_SETCF(*it, keep);
-    }
+    bool keep = LongArithmetic::inc(&m_content[0], &m_content[0] + size());
     if (keep) {
       m_content.push_back(1);
     }
@@ -673,10 +671,8 @@ namespace DataStructures {
   // Decrements without looking at the sign
   void inline LongInt::dec()
   {
-    bool keep = true;
-    for (part_list::iterator it = m_content.begin(); keep; ++it) {
-      ASM_DEC_SETCF(*it, keep);
-    }
+    bool carry = LongArithmetic::dec(&m_content[0], &m_content[0] + size());
+    arithmetic_assert(!carry);
   }
 
   int_fast8_t LongInt::compare_to(const LongInt& other) const
@@ -773,6 +769,7 @@ namespace DataStructures {
                                 c + space);
     m_content.clear();
     m_content.insert(m_content.end(), c, c_end);
+    remove_zeros();
     free(c);
     m_positive = m_positive == other.m_positive;
     if (size() == 0) {

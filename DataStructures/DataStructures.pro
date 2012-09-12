@@ -9,7 +9,7 @@ QT       -= core gui
 TARGET = DataStructures
 TEMPLATE = lib
 CONFIG += warn_on
-QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS += -std=c++11 -O2
 
 DEFINES += DATASTRUCTURES_LIBRARY
 
@@ -92,7 +92,9 @@ HEADERS += \
     shifts.hpp \
     compare.h \
     compare.hpp \
-    thresholds.h
+    thresholds.h \
+    incdec.hpp \
+    incdec.h
 
 header_files.files = $$HEADERS
 header_files.path = /usr/local/include/DataStructures

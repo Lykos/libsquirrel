@@ -14,10 +14,9 @@ namespace DataStructures {
                     const part_type* src_begin,
                     const part_type* src_end)
     {
-      arithmetic_assert(tgt_end - tgt_begin >= src_end - src_begin);
-      for (bool keep = 0; keep == 1 || src_begin < src_end; ++tgt_begin, ++src_begin) {
+      for (bool keep = false; keep || src_begin < src_end; ++tgt_begin, ++src_begin) {
         arithmetic_assert(tgt_begin < tgt_end);
-        LongInt::part_type b_part = (src_begin < src_end ? *src_begin : 0);
+        part_type b_part = (src_begin < src_end ? *src_begin : 0);
         if (keep) {
           ASM_ADD_CARRY_SETCF(*tgt_begin, b_part, keep);
         } else {

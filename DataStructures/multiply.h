@@ -1,24 +1,24 @@
 #ifndef DATASTRUCTURES_LONGARITHMETIC_MULTIPLY_H
 #define DATASTRUCTURES_LONGARITHMETIC_MULTIPLY_H
 
-#include "longint.h"
+#include "platform.h"
 
 namespace DataStructures {
 
   namespace LongArithmetic {
 
-    LongInt::part_type* simple_multiply(const LongInt::part_type a,
-                                        const LongInt::part_type b,
-                                        LongInt::part_type* c);
+    part_type* simple_multiply(const part_type a,
+                                        const part_type b,
+                                        part_type* c);
 
-    LongInt::part_type* multiply(const LongInt::part_type* a_begin,
-                                 const LongInt::part_type* a_end,
-                                 const LongInt::part_type* b_begin,
-                                 const LongInt::part_type* b_end,
-                                 LongInt::part_type* c_begin,
-                                 LongInt::part_type* c_end);
+    part_type* multiply(const part_type* a_begin,
+                                 const part_type* a_end,
+                                 const part_type* b_begin,
+                                 const part_type* b_end,
+                                 part_type* c_begin,
+                                 part_type* c_end);
 
-    LongInt::size_type space_usage(LongInt::size_type size_a, LongInt::size_type size_b);
+    size_type space_usage(size_type size_a, size_type size_b);
 
   } // namespace LongArithmetic
 
