@@ -6,42 +6,14 @@
 #include "shifts.h"
 #include "thresholds.h"
 #include "incdec.h"
+#include "debug.h"
 #include <cstring>
-
-#ifdef ARITHMETIC_DEBUG
-#include <iostream>
-using namespace std;
-#include <gmpxx.h>
-#endif
 
 namespace LongArithmetic {
 
   namespace Operations {
 
     static const part_type INV_3 = 0xAAAAAAAAAAAAAAAB; // TODO make this depending on the size of part_type
-
-#ifdef ARITHMETIC_DEBUG
-    inline void printit(const char* name, bool positive, const part_type* begin, const part_type* end)
-    {
-      cout << name << " " << (positive ? "" : "-");
-      while (end > begin) {
-        --end;
-        cout << *end << " ";
-      }
-      cout << endl;
-    }
-
-    inline mpz_class to_mpz(const part_type* begin, const part_type* end)
-    {
-      mpz_class mpz (0);
-      while (end > begin) {
-        --end;
-        mpz <<= PART_SIZE;
-        mpz += *end;
-      }
-      return mpz;
-    }
-#endif
 
     inline void zero_out(part_type* begin, part_type* end)
     {
@@ -233,103 +205,96 @@ namespace LongArithmetic {
       return space_end[-1] ? space_end : space_end - 1;
     }
 
-    inline void karatsuba_xy2(const part_type* const xy0_begin,
-                              const part_type* const xy0_end,
-                              const part_type* const xy1_begin,
-                              const part_type* const xy1_end,
-                              part_type* const xy2_begin,
-                              part_type* const xy2_end)
-    {
-      size_type part_size = xy0_end - xy0_begin;
-      // Valid ranges
-      arithmetic_assert(xy0_begin <= xy0_end);
-      arithmetic_assert(xy1_begin <= xy1_end);
-      arithmetic_assert(xy2_begin <= xy2_end);
-      // len(xy1) <= len(xy0)
-      arithmetic_assert(size_type(xy1_end - xy1_begin) <= part_size);
-      size_type space = xy2_end - xy2_begin;
-      // space for len(xy0) + 1
-      arithmetic_assert(space >= part_size + 1);
-      for (size_type i = 0; i < part_size; ++i) {
-        xy2_begin[i] = xy0_begin[i];
-      }
-      xy2_begin[part_size] = 0;
-      arithmetic_assert(xy2_end - xy2_begin >= xy1_end - xy1_begin);
-      add(xy2_begin, xy2_end, xy1_begin, xy1_end);
-    }
-
-    inline part_type* karatsuba_multiply(const part_type* const x_begin,
-                                         const part_type* const x_end,
-                                         const part_type* const y_begin,
-                                         const part_type* const y_end,
+    inline part_type* karatsuba_multiply(const part_type* const a_begin,
+                                         const part_type* const a_end,
+                                         const part_type* const b_begin,
+                                         const part_type* const b_end,
                                          part_type* const space_begin,
                                          part_type* const space_end)
 
     {
       // Assume len(x) >= len(y) >= ceil(len(x) / 2)
-      arithmetic_assert(x_end >= x_begin);
-      arithmetic_assert(y_end >= y_begin);
-      size_type x_size = x_end - x_begin;
-      size_type y_size = y_end - y_begin;
-      size_type part_size = x_size - x_size / 2;
-      arithmetic_assert(x_size >= y_size);
-      arithmetic_assert(y_size >= part_size);
+      arithmetic_assert(a_end >= a_begin);
+      arithmetic_assert(b_end >= b_begin);
+      size_type a_size = a_end - a_begin;
+      size_type b_size = b_end - b_begin;
+      size_type part_size = a_size - a_size / 2;
+      arithmetic_assert(a_size >= b_size);
+      arithmetic_assert(b_size >= part_size);
       // Termination relies on this
       arithmetic_assert(part_size >= 1);
       // Don't allow aliasing with output pointer
-      arithmetic_assert(x_end <= space_begin || space_end <= x_begin);
-      arithmetic_assert(y_end <= space_begin || space_end <= y_begin);
+      arithmetic_assert(a_end <= space_begin || space_end <= a_begin);
+      arithmetic_assert(b_end <= space_begin || space_end <= b_begin);
       // Used space without recursion
       arithmetic_assert(space_begin + 6 * part_size + 2 < space_end);
 
       // Define aliases to make later code more clear
-      const part_type* const x0_begin (x_begin);
-      const part_type* const x0_end (x_begin + part_size);
-      const part_type* const x1_begin (x0_end);
-      const part_type* const x1_end (x_end);
-      const part_type* const y0_begin (y_begin);
-      const part_type* const y0_end (y_begin + part_size);
-      const part_type* const y1_begin (y0_end);
-      const part_type* const y1_end (y_end);
+      const part_type* const a0_begin (a_begin);
+      const part_type* const a0_end (a_begin + part_size);
+      const part_type* const a1_begin (a0_end);
+      const part_type* const a1_end (a_end);
+      // printit("p0", true, a0_begin, a0_end);
+      // printit("p1", true, a1_begin, a1_end);
 
-      // z0 = x0 * y0
-      part_type* const z0_begin (space_begin); // Is the first part of the actual result
-      part_type* const z0_end = multiply(x0_begin, x0_end, y0_begin, y0_end, z0_begin, space_end); // z0 = x0 * y0
+      const part_type* const b0_begin (b_begin);
+      const part_type* const b0_end (b_begin + part_size);
+      const part_type* const b1_begin (b0_end);
+      const part_type* const b1_end (b_end);
+      // printit("p0", true, b0_begin, b0_end);
+      // printit("p1", true, b1_begin, b1_end);
 
+      // Pointwise multiply at 0
+      part_type* const r0_begin (space_begin);
+      part_type* const r0_end = multiply(a0_begin, a0_end, b0_begin, b0_end, r0_begin, space_end);
+      // printit("r(0)", true, r0_begin, r0_end);
 
-      // z0 has to be padded with 0s because it is part of the result and the additions won't work otherwise.
-      for (part_type *it = z0_end; it < z0_begin + 2 * part_size; ++it) {
-        *it = 0;
+      // pointwise multiply at infty
+      part_type* const rinf_begin (space_begin + 2 * part_size);
+      part_type* const rinf_end = multiply(a1_begin, a1_end, b1_begin, b1_end, rinf_begin, space_end);
+      // printit("r(inf)", true, rinf_begin, rinf_end);
+
+      // Prepare the result range and set the gaps to 0.
+      part_type* const c_end = space_begin + a_size + b_size;
+      zero_out(r0_end, rinf_begin);
+      if (c_end > rinf_end) {
+        // If rinf is empty, this is not necessary and not valid, because rinf is outside the result range.
+        zero_out(rinf_end, c_end);
       }
 
-      // z2 = x1 * y1
-      part_type* const z2_begin (space_begin + 2 * part_size); // Is the second part of the actual result
-      part_type* const z2_end = multiply(x1_begin, x1_end, y1_begin, y1_end, z2_begin, space_end);
+      // Aliases for the evaluatoin points
+      part_type* const p_1_begin = c_end;
+      part_type* const p_1_end = p_1_begin + part_size;
 
-      // x2 = x0 + x1
-      part_type* const x2_begin = z2_end;
-      part_type* const x2_end = x2_begin + part_size + 1;
-      karatsuba_xy2(x0_begin, x0_end, x1_begin, x1_end, x2_begin, x2_end);
+      part_type* const q_1_begin = p_1_end;
+      part_type* const q_1_end = q_1_begin + part_size;
 
-      // y2 = y0 + y1
-      part_type* const y2_begin = x2_end;
-      part_type* const y2_end = y2_begin + part_size + 1;
-      karatsuba_xy2(y0_begin, y0_end, y1_begin, y1_end, y2_begin, y2_end);
+      // Evaluate the polynomials
+      copy_pad_part(p_1_begin, p_1_end, a0_begin, a0_end);
+      bool p_1_positive = signed_sub(true, p_1_begin, p_1_end, true, a1_begin, a1_end, false);
+      // printit("p(-1)", p_1_positive, p_1_begin, p_1_end);
 
-      // z1 = x2 * y2 - z0 - z2
-      //   z1 = x2 * y2
-      part_type* const z1_begin = y2_end;
-      part_type* const z1_end = multiply(x2_begin, x2_end, y2_begin, y2_end, z1_begin, space_end);
+      copy_pad_part(q_1_begin, q_1_end, b0_begin, b0_end);
+      bool q_1_positive = signed_sub(true, q_1_begin, q_1_end, true, b1_begin, b1_end, false);
+      // printit("q(-1)", q_1_positive, q_1_begin, q_1_end);
 
-      //   z1 -= z0
-      subtract(z1_begin, z1_end, z0_begin, z0_end, false);
+      // Pointwise multiply
+      part_type* const r_1_begin (q_1_end);
+      part_type* r_1_end = multiply(p_1_begin, p_1_end, q_1_begin, q_1_end, r_1_begin, space_end);
+      bool r_1_positive = p_1_positive ^ q_1_positive;
+      zero_out(r_1_end, r_1_begin + 2 * part_size + 1);
+      r_1_end = r_1_begin + 2 * part_size + 1;
+      // printit("r(-1)", r_1_positive, r_1_begin, r_1_end);
 
-      //   z1 -= z2
-      subtract(z1_begin, z1_end, z2_begin, z2_end, false);
+      // Interpolate
+      r_1_positive = signed_add(r_1_positive, r_1_begin, r_1_end, true, r0_begin, r0_end);
+      r_1_positive = signed_add(r_1_positive, r_1_begin, r_1_end, true, rinf_begin, rinf_end);
+      // printit("r1", r_1_positive, r_1_begin, r_1_end);
 
-      // Put result together. Note that for mathematical reasons, there can be no carry, so the space for z2 suffices.
-      add(z0_begin + part_size, z2_end + 1, z1_begin, z1_end);
-      return z2_end;
+      // Recompose result
+      signed_add(true, space_begin + part_size, c_end, r_1_positive, r_1_begin, r_1_end);
+      // printit("c", true, space_begin, c_end);
+      return c_end;
     }
 
     part_type* toom3_multiply(const part_type* a_begin,
@@ -381,7 +346,7 @@ namespace LongArithmetic {
 
       // Prepare the result range and set the gaps to 0.
       part_type* const c_end = space_begin + a_size + b_size;
-      zero_out(r0_end, space_begin + 4 * part_size);
+      zero_out(r0_end, rinf_begin);
       if (c_end > rinf_end) {
         // If rinf is empty, this is not necessary and not valid, because rinf is outside the result range.
         zero_out(rinf_end, c_end);
@@ -615,9 +580,9 @@ namespace LongArithmetic {
         arithmetic_assert(*it == 0);
       }
       if (to_mpz(a_begin, a_end) * to_mpz(b_begin, b_end) != to_mpz(space_begin, c_end)) {
-        printit("a", true, a_begin, a_end);
-        printit("b", true, b_begin, b_end);
-        printit("a * b", true, space_begin, c_end);
+        // printit("a", true, a_begin, a_end);
+        // printit("b", true, b_begin, b_end);
+        // printit("a * b", true, space_begin, c_end);
         cout << "mpz(a * b) " << to_mpz(space_begin, c_end) << endl;
         cout << "mpz(a) * mpz(b) " << to_mpz(a_begin, a_end) * to_mpz(b_begin, b_end) << endl;
         assert(false);

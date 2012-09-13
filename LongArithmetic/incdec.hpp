@@ -1,5 +1,6 @@
 #include "incdec.h"
 #include "assembly.h"
+#include "debug.h"
 
 namespace LongArithmetic {
 

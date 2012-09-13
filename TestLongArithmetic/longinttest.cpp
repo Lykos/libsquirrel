@@ -1251,6 +1251,7 @@ void LongIntTest::test_minus()
 
 void LongIntTest::test_times_data()
 {
+  cout.flags(ios::hex);
   QTest::addColumn<LongInt>("left");
   QTest::addColumn<LongInt>("right");
   QTest::addColumn<LongInt>("result");

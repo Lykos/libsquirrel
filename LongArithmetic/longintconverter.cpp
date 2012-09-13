@@ -3,6 +3,7 @@
 #include "arithmetichelper.h"
 #include "conditiontype.h"
 #include "preconditionviolation.h"
+#include "debug.h"
 #include <climits>
 #include <string>
 

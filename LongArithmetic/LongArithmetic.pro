@@ -13,6 +13,7 @@ QMAKE_CXXFLAGS += -std=c++11
 CONFIG(release, debug|release) QMAKE_CXXFLAGS += -O3
 
 DEFINES += LONGARITHMETIC_LIBRARY
+CONFIG(debug, debug|release) DEFINES += ARITHMETIC_DEBUG
 
 SOURCES += \
     uniformlongintdistribution.cpp \
@@ -60,7 +61,8 @@ HEADERS += \
     arithmetichelper.h \
     conditiontype.h \
     prec_macro.h \
-    preconditionviolation.h
+    preconditionviolation.h \
+    debug.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

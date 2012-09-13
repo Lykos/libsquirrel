@@ -6,19 +6,6 @@
 #include <cstddef>
 #include <cassert>
 
-/**
- * Assertions for internal consistency checks.
- * May be very inefficient and hence they are usually disabled, but
- * they can be turned on to help to track down bugs faster.
- */
-#ifdef ARITHMETIC_DEBUG
-#define arithmetic_assert(b) assert(b)
-#define arithmetic_assert_nocarry(f) bool carry = f; assert(!carry)
-#else
-#define arithmetic_assert(b)
-#define arithmetic_assert_nocarry(f) f
-#endif
-
 #define LONGINT64
 #define USE_ASSEMBLY
 

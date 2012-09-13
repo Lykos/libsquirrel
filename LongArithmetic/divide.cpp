@@ -4,6 +4,7 @@
 #include "assembly.h"
 #include "conditiontype.h"
 #include "preconditionviolation.h"
+#include "debug.h"
 
 namespace LongArithmetic {
 
