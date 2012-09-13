@@ -9,7 +9,8 @@ QT       -= core gui
 TARGET = LongArithmetic
 TEMPLATE = lib
 CONFIG += warn_on
-QMAKE_CXXFLAGS += -std=c++11 -O2
+QMAKE_CXXFLAGS += -std=c++11
+CONFIG(release, debug|release) QMAKE_CXXFLAGS += -O3
 
 DEFINES += LONGARITHMETIC_LIBRARY
 
@@ -81,9 +82,10 @@ unix:!symbian {
 }
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Release/release/ -lDataStructures
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Release/debug/ -lDataStructures
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/debug/ -lDataStructures
 else:symbian: LIBS += -lDataStructures
-else:unix: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Release/ -lDataStructures
+else:unix:CONFIG(release, debug|release): LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Release/ -lDataStructures
+else:unix:CONFIG(debug, debug|release): LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
 
 INCLUDEPATH += $$PWD/../
 DEPENDPATH += $$PWD/../

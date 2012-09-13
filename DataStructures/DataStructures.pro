@@ -9,7 +9,8 @@ QT       -= core gui
 TARGET = DataStructures
 TEMPLATE = lib
 CONFIG += warn_on
-QMAKE_CXXFLAGS += -std=c++11 -O2
+QMAKE_CXXFLAGS += -std=c++11
+CONFIG(release, debug|release) QMAKE_CXXFLAGS += -O3
 
 DEFINES += DATASTRUCTURES_LIBRARY
 
@@ -82,4 +83,4 @@ unix:!symbian {
     INSTALLS += target
 }
 
-unix|win32: LIBS += -lboost_random -lgmp -lgmpxx
+unix|win32: LIBS += -lgmp -lgmpxx

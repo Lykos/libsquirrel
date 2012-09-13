@@ -29,18 +29,12 @@ HEADERS += \
     finiteelementtest.h \
     comparemacros.h
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/release/ -lDataStructures
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/debug/ -lDataStructures
-else:symbian: LIBS += -lDataStructures
-else:unix: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
+symbian: LIBS += -lDataStructures
+else:unix|win32: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
 
-INCLUDEPATH += $$PWD/../
-DEPENDPATH += $$PWD/../
+symbian: LIBS += -lLongArithmetic
+else:unix|win32: LIBS += -L$$PWD/../LongArithmetic-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lLongArithmetic
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../LongArithmetic-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/release/ -lLongArithmetic
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../LongArithmetic-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/debug/ -lLongArithmetic
-else:symbian: LIBS += -lLongArithmetic
-else:unix: LIBS += -L$$PWD/../LongArithmetic-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lLongArithmetic
 
 INCLUDEPATH += $$PWD/../
 DEPENDPATH += $$PWD/../

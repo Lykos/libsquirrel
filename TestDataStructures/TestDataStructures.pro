@@ -24,11 +24,6 @@ SOURCES += \
     queuetest.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
-unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
-
-INCLUDEPATH += $$PWD/..
-DEPENDPATH += $$PWD/..
-
 HEADERS += \
     infiniterandomtest.h \
     heaptest.h \
@@ -43,3 +38,9 @@ HEADERS += \
     listtest.hpp \
     treetest.hpp \
     queuetest.h
+
+symbian: LIBS += -lDataStructures
+else:unix|win32: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
+
+INCLUDEPATH += $$PWD/../
+DEPENDPATH += $$PWD/../
