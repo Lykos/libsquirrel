@@ -40,7 +40,6 @@ void LongIntTest::test_char_constructor()
 
   LongInt constructed ((char)input);
 
-  cout << constructed << " " << result << endl;
   QCOMPARE(constructed, result);
 }
 

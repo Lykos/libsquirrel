@@ -665,13 +665,13 @@ module Generators
 
   CPP_HEADER = <<EOS
 #include "longinttest.h"
-#include "DataStructures/longint.h"
+#include "LongArithmetic/longint.h"
 #include "comparemacros.h"
 #include <sstream>
 #include <string>
 #include <iostream>
 
-using namespace DataStructures;
+using namespace LongArithmetic;
 using namespace std;
 
 typedef LongInt::part_type part_type;

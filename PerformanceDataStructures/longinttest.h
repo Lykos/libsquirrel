@@ -3,7 +3,7 @@
 #include <QtTest/QtTest>
 #include <QElapsedTimer>
 #include <string>
-#include "DataStructures/longint.h"
+#include "LongArithmetic/longint.h"
 #include "performancetest.h"
 
 class LongIntTest : public PerformanceTest
@@ -16,6 +16,9 @@ public:
   }
 
 private Q_SLOTS:
+  void test_times_data();
+  void test_times();
+private:
   void test_right_shift_data();
   void test_right_shift();
   void test_left_shift_data();
@@ -28,8 +31,6 @@ private Q_SLOTS:
   void test_plus();
   void test_minus_data();
   void test_minus();
-  void test_times_data();
-  void test_times();
   void test_modulo_data();
   void test_modulo();
   void test_divided_data();

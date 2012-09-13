@@ -8,8 +8,8 @@ require 'yaml'
 include Generators
 
 TESTS = 2
-ITERATIONS = 100
-MEASUREMENTS = 5
+ITERATIONS = 10
+MEASUREMENTS = 10
 USED_MEASUREMENTS = 2
 TEST_DIRECTORY = '../performance_inputs'
 
@@ -106,6 +106,7 @@ File.open(File.join(File.dirname(__FILE__), '..', 'PerformanceDataStructures', '
     cpp.puts "#define USED_MEASUREMENTS #{USED_MEASUREMENTS}"
     cpp.puts "#define ITERATIONS #{ITERATIONS}"
     cpp.puts CPP_HEADER
+    cpp.puts "using namespace DataStructures;"
 
     puts "Created header" if verbose
 
@@ -141,8 +142,8 @@ File.open(File.join(File.dirname(__FILE__), '..', 'PerformanceDataStructures', '
     cpp.puts
     puts "Created #{DIVIDED.name}" if verbose
 
-    cpp.puts POWER.generate_nospecial(TESTS, 1 << limits[:power_base], limits[:power_exponent])
-    cpp.puts
-    puts "Created #{POWER.name}" if verbose
+    # cpp.puts POWER.generate_nospecial(TESTS, 1 << limits[:power_base], limits[:power_exponent])
+    # cpp.puts
+    # puts "Created #{POWER.name}" if verbose
   end
 end

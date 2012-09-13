@@ -23,11 +23,6 @@ SOURCES += \
     longinttest.cpp \
     comparemilliseconds.cpp
 
-unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
-
-INCLUDEPATH += $$PWD/..
-DEPENDPATH += $$PWD/..
-
 HEADERS += \
     compositeperformanceresult.h \
     performanceresult.h \
@@ -35,3 +30,21 @@ HEADERS += \
     performancetest.h \
     comparemacros.h \
     comparemilliseconds.h
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Release/release/ -lDataStructures
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Release/debug/ -lDataStructures
+else:symbian: LIBS += -lDataStructures
+else:unix: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Release/ -lDataStructures
+
+INCLUDEPATH += $$PWD/../
+DEPENDPATH += $$PWD/../
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../LongArithmetic-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/release/ -lLongArithmetic
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../LongArithmetic-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/debug/ -lLongArithmetic
+else:symbian: LIBS += -lLongArithmetic
+else:unix: LIBS += -L$$PWD/../LongArithmetic-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lLongArithmetic
+
+INCLUDEPATH += $$PWD/../
+DEPENDPATH += $$PWD/../
+
+LIBS += -lgmp -lgmpxx

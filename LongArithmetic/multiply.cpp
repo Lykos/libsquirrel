@@ -8,11 +8,40 @@
 #include "incdec.h"
 #include <cstring>
 
+#ifdef ARITHMETIC_DEBUG
+#include <iostream>
+using namespace std;
+#include <gmpxx.h>
+#endif
+
 namespace LongArithmetic {
 
   namespace Operations {
 
     static const part_type INV_3 = 0xAAAAAAAAAAAAAAAB; // TODO make this depending on the size of part_type
+
+#ifdef ARITHMETIC_DEBUG
+    inline void printit(const char* name, bool positive, const part_type* begin, const part_type* end)
+    {
+      cout << name << " " << (positive ? "" : "-");
+      while (end > begin) {
+        --end;
+        cout << *end << " ";
+      }
+      cout << endl;
+    }
+
+    inline mpz_class to_mpz(const part_type* begin, const part_type* end)
+    {
+      mpz_class mpz (0);
+      while (end > begin) {
+        --end;
+        mpz <<= PART_SIZE;
+        mpz += *end;
+      }
+      return mpz;
+    }
+#endif
 
     inline void zero_out(part_type* begin, part_type* end)
     {
@@ -24,7 +53,7 @@ namespace LongArithmetic {
     {
       part_type carry = 0;
       for (; begin < end; ++begin) {
-        // Note that I want this to be modulo 1 << PART_SIZE, so * is fine.
+        // Note that we want this to be modulo 1 << PART_SIZE, so * is fine.
         *begin = ((*begin) - carry) * INV_3;
         part_type dummy;
         ASM_MUL(dummy, carry, *begin, 3);
@@ -332,8 +361,7 @@ namespace LongArithmetic {
       const part_type* const a1_end (a1_begin + part_size);
       const part_type* const a2_begin (a1_end);
       const part_type* const a2_end (a_end);
-      // cout.flags(ios::hex);
-      // cout << "a " << *a0_begin << " " << *a1_begin << " " << *a2_begin << endl;
+      // printit("a", true, a_begin, a_end);
 
       const part_type* const b0_begin (b_begin);
       const part_type* const b0_end (b_begin + part_size);
@@ -341,16 +369,23 @@ namespace LongArithmetic {
       const part_type* const b1_end (std::min(b1_begin + part_size, b_end));
       const part_type* const b2_begin (b1_end);
       const part_type* const b2_end (b_end);
-      // cout << "b " <<  *b0_begin << " " << *b1_begin << " " << *b2_begin << endl;
+      // printit("b", true, b_begin, b_end);
 
-      // Pointwise multiply at 0 and infty
+      // Pointwise multiply at 0
       part_type* const r0_begin (space_begin);
       part_type* const r0_end = multiply(a0_begin, a0_end, b0_begin, b0_end, r0_begin, space_end);
 
+      // pointwise multiply at infty
       part_type* const rinf_begin (space_begin + 4 * part_size);
-      // Pad Set the gap in the result to 0.
-      zero_out(r0_end, rinf_begin);
       part_type* const rinf_end = multiply(a2_begin, a2_end, b2_begin, b2_end, rinf_begin, space_end);
+
+      // Prepare the result range and set the gaps to 0.
+      part_type* const c_end = space_begin + a_size + b_size;
+      zero_out(r0_end, space_begin + 4 * part_size);
+      if (c_end > rinf_end) {
+        // If rinf is empty, this is not necessary and not valid, because rinf is outside the result range.
+        zero_out(rinf_end, c_end);
+      }
 
       // Aliases for the evaluation points
       part_type* const p1_begin (space_begin + 6 * part_size);
@@ -377,9 +412,9 @@ namespace LongArithmetic {
       bool p_2_positive = signed_add(p_1_positive, p_2_begin, p_2_end, true, a2_begin, a2_end);
       shift_left(p_2_begin, p_2_end, 1);
       p_2_positive = signed_sub(p_2_positive, p_2_begin, p_2_end, true, a0_begin, a0_end, false);
-      // cout << "p(1) " << p1_begin[1] << " " << p1_begin[0] << endl;
-      // cout << "p(-1) " << (p_1_positive ? "" : "-") << p_1_begin[1] << " " << p_1_begin[0] << endl;
-      // cout << "p(-2) " << (p_2_positive ? "" : "-") << p_2_begin[1] << " " << p_2_begin[0] << endl;
+      // printit("p(1)", true, p1_begin, p1_end);
+      // printit("p(-1)", p_1_positive, p_1_begin, p_1_end);
+      // printit("p(-2)", p_2_positive, p_2_begin, p_2_end);
 
       copy_pad_part(q1_begin, q1_end, b0_begin, b0_end);
       add(q1_begin, q1_end, b2_begin, b2_end);
@@ -390,9 +425,9 @@ namespace LongArithmetic {
       bool q_2_positive = signed_add(q_1_positive, q_2_begin, q_2_end, true, b2_begin, b2_end);
       shift_left(q_2_begin, q_2_end, 1);
       q_2_positive = signed_sub(q_2_positive, q_2_begin, q_2_end, true, b0_begin, b0_end, false);
-      // cout << "q(1) " << q1_begin[1] << " " << q1_begin[0] << endl;
-      // cout << "q(-1) " << (q_1_positive ? "" : "-") << q_1_begin[1] << " " << q_1_begin[0] << endl;
-      // cout << "q(-2) " << (q_2_positive ? "" : "-") << q_2_begin[1] << " " << q_2_begin[0] << endl;
+      // printit("q(1)", true, q1_begin, q1_end);
+      // printit("q(-1)", q_1_positive, q_1_begin, q_1_end);
+      // printit("q(-2)", q_2_positive, q_2_begin, q_2_end);
 
 
       // Pointwise multiply the rest
@@ -413,65 +448,69 @@ namespace LongArithmetic {
       zero_out(r_2_end, r_2_begin + 2 * part_size + 2);
       r_2_end = r_2_begin + 2 * part_size + 2;
 
-      // cout << "r(0) " << r0_begin[1] << " " << r0_begin[0] << endl;
-      // cout << "r(1) " << r1_begin[2] << " " << r1_begin[1] << " " << r1_begin[0] << endl;
-      // cout << "r(-1) " << (r_1_positive ? "" : "-") << r_1_begin[2] << " " << r_1_begin[1] << " " << r_1_begin[0] << endl;
-      // cout << "r(-2) " << (r_2_positive ? "" : "-") << r_2_begin[2] << " " << r_2_begin[1] << " " << r_2_begin[0] << endl;
-      // cout << "r(inf) " << rinf_begin[1] << " " << rinf_begin[0] << endl;
+      // printit("r(0)", true, r0_begin, r0_end);
+      // printit("r(1)", true, r1_begin, r1_end);
+      // printit("r(-1)", r_1_positive, r_1_begin, r_1_end);
+      // printit("r(-2)", r_2_positive, r_2_begin, r_2_end);
+      // printit("r(inf)", true, rinf_begin, rinf_end);
 
       // Interpolate
       part_type* const r3_begin (r_2_begin);
       part_type* const r3_end (r_2_begin + 2 * part_size + 2);
       zero_out(r_2_end, r3_end);
       bool r3_positive = signed_sub(r_2_positive, r3_begin, r3_end, true, r1_begin, r1_end, false);
-      // cout << "r3 " << (r3_positive ? "" : "-") << r3_begin[2] << " " << r3_begin[1] << " " << r3_begin[0] << endl;
+      // printit("r3", r3_positive, r3_begin, r3_end);
       div_exact_3(r3_begin, r3_end);
-      // cout << "r3 " << (r3_positive ? "" : "-") << r3_begin[2] << " " << r3_begin[1] << " " << r3_begin[0] << endl;
+      // printit("r3", r3_positive, r3_begin, r3_end);
       // We reuse the variable: r1 is now the coefficient r1, not r(1) any more.
       bool r1_positive = signed_sub(true, r1_begin, r1_end, r_1_positive, r_1_begin, r_1_end, false);
+      // printit("r1", r1_positive, r1_begin, r1_end);
       arithmetic_assert(!(*r1_begin & 1));
       shift_right(r1_begin, r1_end, 1);
+      // printit("r1", r1_positive, r1_begin, r1_end);
       part_type* const r2_begin (r_1_begin);
       part_type* const r2_end (r_1_begin + 2 * part_size + 2);
       zero_out(r_1_end, r2_end);
       bool r2_positive = signed_sub(r_1_positive, r2_begin, r2_end, true, r0_begin, r0_end, false);
+      // printit("r2", r2_positive, r2_begin, r2_end);
       r3_positive = signed_sub(r3_positive, r3_begin, r3_end, r2_positive, r2_begin, r2_end, true);
-      // cout << "r3 " << (r3_positive ? "" : "-") << r3_begin[2] << " " << r3_begin[1] << " " << r3_begin[0] << endl;
+      // printit("r3 = r2 - r3", r3_positive, r3_begin, r3_end);
       // Instead of shifting r_inf, we shift one mor than we want and shift back afterwards
       arithmetic_assert(!(*r3_begin & 1));
       part_type r3_bit = (*r3_begin >> 1) & 1;
       shift_right(r3_begin, r3_end, 2);
       // Two complement trick
       if (r3_bit && !r3_positive) {
-        bool carry = inc(r3_begin, r3_end);
-        arithmetic_assert(!carry);
+        arithmetic_assert_nocarry(inc(r3_begin, r3_end));
       }
-      // cout << "r3 " << (r3_positive ? "" : "-") << r3_begin[2] << " " << r3_begin[1] << " " << r3_begin[0] << endl;
+      // printit("r3 >>= 2", r3_positive, r3_begin, r3_end);
       r3_positive = signed_add(r3_positive, r3_begin, r3_end, true, rinf_begin, rinf_end);
-      // cout << "r3 " << (r3_positive ? "" : "-") << r3_begin[2] << " " << r3_begin[1] << " " << r3_begin[0] << endl;
+      // printit("r3 += rinf", r3_positive, r3_begin, r3_end);
       shift_left(r3_begin, r3_end, 1);
       *r3_begin |= r3_bit;
+      // printit("r3 <<= 1", r3_positive, r3_begin, r3_end);
       r2_positive = signed_add(r2_positive, r2_begin, r2_end, r1_positive, r1_begin, r1_end);
+      // printit("r2", r2_positive, r2_begin, r2_end);
       r2_positive = signed_sub(r2_positive, r2_begin, r2_end, true, rinf_begin, rinf_end, false);
+      // printit("r2", r2_positive, r2_begin, r2_end);
       r1_positive = signed_sub(r1_positive, r1_begin, r1_end, r3_positive, r3_begin, r3_end, false);
-      // cout << "r0 " << r0_begin[1] << " " << r0_begin[0] << endl;
-      // cout << "r1 " << (r1_positive ? "" : "-") << r1_begin[2] << " " << r1_begin[1] << " " << r1_begin[0] << endl;
-      // cout << "r2 " << (r2_positive ? "" : "-") << r2_begin[2] << " " << r2_begin[1] << " " << r2_begin[0] << endl;
-      // cout << "r3 " << (r3_positive ? "" : "-") << r3_begin[2] << " " << r3_begin[1] << " " << r3_begin[0] << endl;
-      // cout << "r4 " << rinf_begin[1] << " " << rinf_begin[0] << endl;
+      // printit("r0", true, r0_begin, r0_end);
+      // printit("r1", r1_positive, r1_begin, r1_end);
+      // printit("r2", r2_positive, r2_begin, r2_end);
+      // printit("r3", r3_positive, r3_begin, r3_end);
+      // printit("r4", true, rinf_begin, rinf_end);
 
       // Recompose the result
-      // Note: We use wrong end of target to trick the space assertions
-      // in the arithmetic operation, but really our result fits into r,
-      // so this is a valid trick.
       bool check = true;
-      check = signed_add(true, r0_begin + part_size, r1_begin, r1_positive, r1_begin, r1_end);
+      check = signed_add(true, r0_begin + part_size, c_end, r1_positive, r1_begin, r1_end);
       arithmetic_assert(check);
-      check = signed_add(true, r0_begin + 2 * part_size, r2_begin, r2_positive, r2_begin, r2_end);
+      check = signed_add(true, r0_begin + 2 * part_size, c_end, r2_positive, r2_begin, r2_end);
       arithmetic_assert(check);
-      check = signed_add(true, r0_begin + 3 * part_size, r3_begin, r3_positive, r3_begin, r3_end);
+      check = signed_add(true, r0_begin + 3 * part_size, c_end, r3_positive, r3_begin, r3_end);
       arithmetic_assert(check);
-      return rinf_end;
+      // cout << a_size + b_size << " " << *c_end << endl;
+      // printit("c", true, space_begin, c_end);
+      return c_end;
     }
 
     inline size_type unbalanced_space_usage(size_type size_a, size_type size_b)
@@ -574,6 +613,14 @@ namespace LongArithmetic {
       // Check that the part beyond the expected length is only padding
       for (const part_type* it = space_begin + a_size + b_size; it < c_end; ++it) {
         arithmetic_assert(*it == 0);
+      }
+      if (to_mpz(a_begin, a_end) * to_mpz(b_begin, b_end) != to_mpz(space_begin, c_end)) {
+        printit("a", true, a_begin, a_end);
+        printit("b", true, b_begin, b_end);
+        printit("a * b", true, space_begin, c_end);
+        cout << "mpz(a * b) " << to_mpz(space_begin, c_end) << endl;
+        cout << "mpz(a) * mpz(b) " << to_mpz(a_begin, a_end) * to_mpz(b_begin, b_end) << endl;
+        assert(false);
       }
 #endif
       return std::min(c_end, space_begin + a_size + b_size);

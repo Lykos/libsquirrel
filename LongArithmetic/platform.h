@@ -6,9 +6,7 @@
 #include <cstddef>
 #include <cassert>
 
-#define ARITHMETIC_DEBUG
-
-/*
+/**
  * Assertions for internal consistency checks.
  * May be very inefficient and hence they are usually disabled, but
  * they can be turned on to help to track down bugs faster.
@@ -24,7 +22,6 @@
 #define LONGINT64
 #define USE_ASSEMBLY
 
-// Internal header for platform dependent typedefs and constants
 namespace LongArithmetic {
 
 #ifdef LONGINT64
@@ -47,15 +44,15 @@ namespace LongArithmetic {
 
   typedef size_t size_type;
 
-#define PART_SIZE sizeof(part_type) * CHAR_BIT
+#define PART_SIZE (sizeof(part_type) * CHAR_BIT)
 
 #define FLOAT_MANTISSA 23
 
 #define DOUBLE_MANTISSA 53
 
-#define FLOAT_EXPONENT 32 - FLOAT_MANTISSA - 1
+#define FLOAT_EXPONENT (32 - FLOAT_MANTISSA - 1)
 
-#define DOUBLE_EXPONENT 64 - DOUBLE_MANTISSA - 1
+#define DOUBLE_EXPONENT (64 - DOUBLE_MANTISSA - 1)
 
 #define FLOAT_BIAS 127
 
