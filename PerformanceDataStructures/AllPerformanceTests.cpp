@@ -25,9 +25,9 @@ int main(int argc, char *argv[])
   timeinfo = localtime(&rawtime);
 
   // description
-  string version_name ("Toom_3_threshold_benchmarking_O3");
+  string version_name ("Karatsuba_threshold_benchmarking");
   ostringstream oss;
-  oss << version_name << " " << TOOM3_THRESHOLD << " " << hostname << " " << (1900 + timeinfo->tm_year) << "-" << timeinfo->tm_mon << "-"
+  oss << version_name << " " << KARATSUBA_THRESHOLD << " " << hostname << " " << (1900 + timeinfo->tm_year) << "-" << timeinfo->tm_mon << "-"
       << timeinfo->tm_mday << " " << timeinfo->tm_hour << ":" << timeinfo->tm_min << ":" << timeinfo->tm_sec;
   string description = oss.str();
 
@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 
   // Write result to file
   ostringstream oss2;
-  oss2 << "../performance_results/" << version_name << "_" << TOOM3_THRESHOLD << "_" << hostname << "_" << (1900 + timeinfo->tm_year) << "-" << timeinfo->tm_mon << "-"
+  oss2 << "../performance_results/" << version_name << "_" << KARATSUBA_THRESHOLD << "_" << hostname << "_" << (1900 + timeinfo->tm_year) << "-" << timeinfo->tm_mon << "-"
       << timeinfo->tm_mday << "_" << timeinfo->tm_hour << ":" << timeinfo->tm_min << ":" << timeinfo->tm_sec;
   string file_name = oss2.str();
   ofstream result_file (file_name.c_str());
