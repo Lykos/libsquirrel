@@ -225,7 +225,6 @@ namespace LongArithmetic {
       size_type b_size = b_end - b_begin;
       size_type part_size = a_size - a_size / 2;
       arithmetic_assert(a_size >= b_size);
-      arithmetic_assert(b_size >= part_size);
       // Termination relies on this
       arithmetic_assert(part_size >= 1);
       // Don't allow aliasing with output pointer
@@ -243,7 +242,7 @@ namespace LongArithmetic {
       // printit("p1", true, a1_begin, a1_end);
 
       const part_type* const b0_begin (b_begin);
-      const part_type* const b0_end (b_begin + part_size);
+      const part_type* const b0_end (std::min(b_begin + part_size, b_end));
       const part_type* const b1_begin (b0_end);
       const part_type* const b1_end (b_end);
       // printit("p0", true, b0_begin, b0_end);
@@ -323,8 +322,6 @@ namespace LongArithmetic {
       // Otherwise dividing into 3 pieces is not useful
       arithmetic_assert(a_size >= 3);
       arithmetic_assert(a_size >= b_size);
-      // Use unbalanced multiply for the other part
-      arithmetic_assert(b_size >= part_size);
 
       // Define aliases to make later code more clear
       const part_type* const a0_begin (a_begin);
@@ -336,7 +333,7 @@ namespace LongArithmetic {
       // printit("a", true, a_begin, a_end);
 
       const part_type* const b0_begin (b_begin);
-      const part_type* const b0_end (b_begin + part_size);
+      const part_type* const b0_end (std::min(b0_begin + part_size, b_end));
       const part_type* const b1_begin (b0_end);
       const part_type* const b1_end (std::min(b1_begin + part_size, b_end));
       const part_type* const b2_begin (b1_end);
@@ -501,8 +498,6 @@ namespace LongArithmetic {
       // Otherwise dividing into 4 pieces is not useful
       arithmetic_assert(a_size >= 4);
       arithmetic_assert(a_size >= b_size);
-      // Use unbalanced multiply for the other part
-      arithmetic_assert(b_size >= part_size);
 
       // Define aliases to make later code more clear
       const part_type* const a0_begin (a_begin);
@@ -516,7 +511,7 @@ namespace LongArithmetic {
       // printit("a", true, a_begin, a_end);
 
       const part_type* const b0_begin (b_begin);
-      const part_type* const b0_end (b_begin + part_size);
+      const part_type* const b0_end (std::min(b0_begin + part_size, b_end));
       const part_type* const b1_begin (b0_end);
       const part_type* const b1_end (std::min(b1_begin + part_size, b_end));
       const part_type* const b2_begin (b1_end);
@@ -917,20 +912,20 @@ namespace LongArithmetic {
       return size_a + size_b;
     }
 
-    size_type karatsuba_space_usage(size_type size_a, size_type size_b)
+    inline size_type karatsuba_space_usage(size_type size_a, size_type size_b)
     {
       size_type part_size = size_a - size_a / 2;
       return space_usage(part_size, part_size) + size_a + size_b + 2 * part_size + 1;
     }
 
-    size_type toom3_space_usage(size_type size_a, size_type size_b)
+    inline size_type toom3_space_usage(size_type size_a, size_type size_b)
     {
       arithmetic_assert(size_a >= 3);
       size_type part_size = size_a - 2 * size_a / 3;
       return space_usage(part_size + 1, part_size + 1) + size_a + size_b + 12 * part_size + 12;
     }
 
-    size_type toom4_space_usage(size_type size_a, size_type size_b)
+    inline size_type toom4_space_usage(size_type size_a, size_type size_b)
     {
       arithmetic_assert(size_a >= 3);
       size_type part_size = size_a - 3 * size_a / 4;

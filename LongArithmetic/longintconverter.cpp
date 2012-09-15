@@ -94,6 +94,7 @@ namespace LongArithmetic {
 
   LongInt LongIntConverter::from_mpz(const mpz_class& mpz) const
   {
+    // TODO Work in progress
     LongInt number;
     number.m_content = LongInt::part_list (mpz.get_mpz_t()->_mp_size * sizeof(mp_limb_t) / sizeof(part_type));
     mpz_export(&number.m_content[0], NULL, -1, sizeof(part_type), 0, 0, mpz.get_mpz_t());
@@ -102,6 +103,7 @@ namespace LongArithmetic {
 
   mpz_class LongIntConverter::to_mpz(const LongInt& number) const
   {
+    // TODO Work in progress
     mpz_t c;
     mpz_import(c, number.size(), -1, sizeof(part_type), 0, 0, &number.m_content[0]);
     return mpz_class(c);
