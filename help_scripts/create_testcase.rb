@@ -73,7 +73,7 @@ File.open(File.join(File.dirname(__FILE__), '..', 'TestLongArithmetic', 'longint
       h.puts
     end
 
-    [PLUS, MINUS, TIMES, COMPARE, BIT_OR, BIT_XOR, BIT_AND].each do |generator|
+    [PLUS, MINUS, COMPARE, BIT_OR, BIT_XOR, BIT_AND].each do |generator|
       cpp.puts generator.generate(N, [-1, 1], [-1, 1], [1 << 64, 1 << 64 * 3], [1 << 64, 1 << 64], [0, 1], [0, 1])
       cpp.puts
       h.puts generator.test_method_header
@@ -90,6 +90,14 @@ File.open(File.join(File.dirname(__FILE__), '..', 'TestLongArithmetic', 'longint
       h.puts generator.data_method_header
       h.puts
     end
+
+    times_limits = (1..10).map { |i| 1 << 64 * i }
+    cpp.puts TIMES.generate(1, [-1, 1], [-1, 1], times_limits, times_limits, [0, 1], [0, 1])
+    cpp.puts
+    h.puts TIMES.test_method_header
+    h.puts
+    h.puts TIMES.data_method_header
+    h.puts
 
     cpp.puts POWER.generate(1, [-1, 1], [1], [200, 1 << 100], [100], [0, 1], [0, 1])
     cpp.puts

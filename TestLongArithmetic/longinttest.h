@@ -157,10 +157,6 @@ private Q_SLOTS:
 
   void test_minus_data();
 
-  void test_times();
-
-  void test_times_data();
-
   void test_compare_to();
 
   void test_compare_to_data();
@@ -184,6 +180,10 @@ private Q_SLOTS:
   void test_divided();
 
   void test_divided_data();
+
+  void test_times();
+
+  void test_times_data();
 
   void test_pow();
 

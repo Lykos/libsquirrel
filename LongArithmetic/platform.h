@@ -20,11 +20,7 @@ namespace LongArithmetic {
 #ifdef LONGINT16
   typedef uint16_t part_type;
 #else
-#ifdef LONGINT8
-  typedef uint8_t part_type;
-#else
-#error One of LONGINT64 LONGINT32 LONGINT16 or LONGINT8 has to be defined.
-#endif
+#error One of LONGINT64, LONGINT32 or LONGINT16 has to be defined.
 #endif
 #endif
 #endif

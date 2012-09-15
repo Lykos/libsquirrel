@@ -1,6 +1,8 @@
+require 'mathn'
+
 class Poly
 
-  K = 3
+  K = 4
 
   # Sucks, but ok for a debugging script
   def self.part_size=(part_size)
@@ -27,7 +29,7 @@ class Poly
   attr_reader :coeffs
 
   def [](x)
-    @coeffs.reverse.inject(0) { |a, b| a * x + b }
+    @coeffs.reverse.inject(0) { |a, b| a * x + b } * x.denominator ** (deg > K - 1 ? 2 * (K - 1) : K - 1) # Because we only use p, q, r this hack works
   end
 
   def deg
@@ -55,3 +57,5 @@ def num(s)
   end
   s.split(" ").collect { |e| e.to_i(16) }.inject(0) { |a, b| (a << 64) + b } * sign
 end
+
+A = Matrix.columns((0..6).map { |i| [(i == 0 ? 1 : 0), 2**(6-i), (-2)**(6-i), 1**i, (-1)**i, 2**i, (i == 6 ? 1 : 0)] })
