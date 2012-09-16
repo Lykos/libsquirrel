@@ -940,10 +940,11 @@ namespace LongArithmetic {
       if (size_b == 0) {
         return 0;
       }
+      // We cannot take unbalanced into account here because the size of the number
+      // might shrink because of leading zeroes and than the alternative algorithm may not
+      // have enough space.
       if (size_b == 1) {
         return size_a + 1;
-      } else if (size_b <= size_a - size_a / 2) {
-        return unbalanced_space_usage(size_a, size_b);
       } else if (size_a < KARATSUBA_THRESHOLD) {
         return school_space_usage(size_a, size_b);
       } else if (size_a < TOOM3_THRESHOLD) {
@@ -992,16 +993,27 @@ namespace LongArithmetic {
         c_end = simple_multiply(a_begin[0], b_begin[0], space_begin, space_end);
       } else if (b_size == 1) {
         c_end = scalar_multiply(a_begin, a_end, b_begin[0], space_begin, space_end);
-      } else if (b_size <= a_size - a_size / 2) {
-        c_end = unbalanced_multiply(a_begin, a_end, b_begin, b_end, space_begin, space_end);
       } else if (a_size < KARATSUBA_THRESHOLD) {
         c_end = school_multiply(a_begin, a_end, b_begin, b_end, space_begin, space_end);
       } else if (a_size < TOOM3_THRESHOLD) {
-        c_end = karatsuba_multiply(a_begin, a_end, b_begin, b_end, space_begin, space_end);
+        if (b_size <= a_size - a_size / 2) {
+          c_end = unbalanced_multiply(a_begin, a_end, b_begin, b_end, space_begin, space_end);
+        } else {
+          c_end = karatsuba_multiply(a_begin, a_end, b_begin, b_end, space_begin, space_end);
+        }
       } else if (a_size < TOOM4_THRESHOLD) {
-        c_end = toom3_multiply(a_begin, a_end, b_begin, b_end, space_begin, space_end);
+        if (b_size <= a_size - 2 * a_size / 3) {
+          c_end = unbalanced_multiply(a_begin, a_end, b_begin, b_end, space_begin, space_end);
+        } else {
+          c_end = toom3_multiply(a_begin, a_end, b_begin, b_end, space_begin, space_end);
+        }
       } else {
-        c_end = toom4_multiply(a_begin, a_end, b_begin, b_end, space_begin, space_end);
+        if (b_size <= a_size - 3 * a_size / 4) {
+          c_end = unbalanced_multiply(a_begin, a_end, b_begin, b_end, space_begin, space_end);
+        } else {
+          c_end = toom4_multiply(a_begin, a_end, b_begin, b_end, space_begin, space_end);
+
+        }
       }
 #ifdef ARITHMETIC_DEBUG
       // Check that the part beyond the expected length is only padding
