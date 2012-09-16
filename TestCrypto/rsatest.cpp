@@ -2,13 +2,13 @@
 #include "Crypto/rsa_keygenerator.h"
 #include "Crypto/rsa_encrypter.h"
 #include "Crypto/rsa_decrypter.h"
-#include "DataStructures/uniformlongintdistribution.h"
+#include "LongArithmetic/uniformlongintdistribution.h"
 #include <boost/random/mersenne_twister.hpp>
 #include <QtTest/QtTest>
 #include <iostream>
 
 using namespace Crypto::RSA;
-using namespace DataStructures;
+using namespace LongArithmetic;
 
 void RSATest::init()
 {
@@ -23,7 +23,7 @@ void RSATest::init()
   m_cipher_text = 368;
 }
 
-static const DataStructures::LongInt ONE = 1;
+static const LongArithmetic::LongInt ONE = 1;
 
 void RSATest::test_key_generation()
 {

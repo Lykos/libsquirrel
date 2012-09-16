@@ -72,10 +72,10 @@ namespace Crypto {
       sha256_word_t words[n_rounds];
       for (message_size_t i = 0; i < chunk_words; ++i) {
         string word_string = padded_message.substr(j * chunk_length + word_length * i, 4);
-        words[i] = (sha256_word_t(word_string[0]) << 3 * CHAR_BIT)
-            + (sha256_word_t(word_string[1]) << 2 * CHAR_BIT)
-            + (sha256_word_t(word_string[2]) << CHAR_BIT)
-            + (sha256_word_t(word_string[3]));
+        words[i] = (sha256_word_t((unsigned char)(word_string[0])) << 3 * CHAR_BIT)
+            + (sha256_word_t((unsigned char)(word_string[1])) << 2 * CHAR_BIT)
+            + (sha256_word_t((unsigned char)(word_string[2])) << CHAR_BIT)
+            + (sha256_word_t((unsigned char)(word_string[3])));
       }
       for (message_size_t i = chunk_words; i < n_rounds; ++i) {
         words[i] = words[i - 16] + s0(words[i - 15]) + words[i - 7] + s1(words[i - 2]);

@@ -3,8 +3,8 @@
 
 #include "types.h"
 #include "elgamal_types.h"
-#include "DataStructures/uniformlongintdistribution.h"
-#include "DataStructures/longintconverter.h"
+#include "LongArithmetic/uniformlongintdistribution.h"
+#include "LongArithmetic/longintconverter.h"
 #include "sha2hasher.h"
 #include <boost/random/random_device.hpp>
 
@@ -50,11 +50,11 @@ namespace Crypto {
 
       boost::random::random_device m_random_generator;
 
-      DataStructures::UniformLongIntDistribution m_k_distribution;
+      LongArithmetic::UniformLongIntDistribution m_k_distribution;
 
       number_size_t m_r_length, m_s_length, m_signature_length;
 
-      DataStructures::LongIntConverter m_converter;
+      LongArithmetic::LongIntConverter m_converter;
 
       SHA2Hasher m_hasher;
 

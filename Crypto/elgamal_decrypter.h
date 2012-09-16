@@ -2,7 +2,7 @@
 #define CRYPTO_ELGAMAL_DECRYPTER_H
 
 #include "elgamal_types.h"
-#include "DataStructures/longintconverter.h"
+#include "LongArithmetic/longintconverter.h"
 #include <string>
 
 namespace Crypto {
@@ -33,7 +33,7 @@ namespace Crypto {
       // the key part, which also has to be sent
       number_size_t m_plain_length, m_key_part_length, m_cipher_part_length, m_cipher_length;
 
-      DataStructures::LongIntConverter m_converter;
+      LongArithmetic::LongIntConverter m_converter;
 
     };
     

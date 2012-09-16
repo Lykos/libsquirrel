@@ -1,16 +1,16 @@
 #ifndef CRYPTO_RSA_TYPES_H
 #define CRYPTO_RSA_TYPES_H
 
-#include "DataStructures/longint.h"
+#include "LongArithmetic/longint.h"
 #include "keypair.h"
 
 namespace Crypto {
 
   namespace RSA {
 
-    typedef DataStructures::LongInt number_t;
+    typedef LongArithmetic::LongInt number_t;
 
-    typedef DataStructures::LongInt exponent_t;
+    typedef LongArithmetic::LongInt exponent_t;
 
     typedef number_t plain_text_t;
 

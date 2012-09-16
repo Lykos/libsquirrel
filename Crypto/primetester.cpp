@@ -1,10 +1,10 @@
 #include "primetester.h"
-#include "DataStructures/algebrahelper.h"
+#include "LongArithmetic/algebrahelper.h"
 #include <boost/random/mersenne_twister.hpp>
 
 namespace Crypto {
 
-  using namespace DataStructures;
+  using namespace LongArithmetic;
 
   using namespace AlgebraHelper;
 

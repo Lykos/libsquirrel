@@ -27,7 +27,7 @@ void SHA2Test::test_fixed()
                        char(0x2d), char(0x03), char(0xdc), char(0x78), char(0x84), char(0x07), char(0xa9), char(0x59),
                        char(0x09), char(0x53), char(0xcb), char(0x9b), char(0x09), char(0xd9), char(0x4e), char(0xb5),
                        char(0x81), char(0xc6), char(0xd4), char(0x73), char(0xa6), char(0x09), char(0x19), char(0x2e)});
-  SHA2Hasher hasher;
+  SHA2Hasher hasher (256);
   string digest = hasher.hash(message);
   string digest2 = hasher.hash(message2);
   QCOMPARE(digest, real_digest);

@@ -1,8 +1,8 @@
 #include "elgamal_signer.h"
 #include "elgamal_types.h"
 #include "elgamal_converter.h"
-#include "DataStructures/algebrahelper.h"
-#include "DataStructures/longint.h"
+#include "LongArithmetic/algebrahelper.h"
+#include "LongArithmetic/longint.h"
 #include "sha2hasher.h"
 #include <string>
 
@@ -12,7 +12,7 @@ namespace Crypto {
 
   namespace Elgamal {
 
-    using namespace DataStructures;
+    using namespace LongArithmetic;
 
     using namespace AlgebraHelper;
 

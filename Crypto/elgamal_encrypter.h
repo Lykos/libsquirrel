@@ -3,8 +3,8 @@
 
 #include "types.h"
 #include "elgamal_types.h"
-#include "DataStructures/uniformlongintdistribution.h"
-#include "DataStructures/longintconverter.h"
+#include "LongArithmetic/uniformlongintdistribution.h"
+#include "LongArithmetic/longintconverter.h"
 #include <boost/random/random_device.hpp>
 
 namespace Crypto {
@@ -45,7 +45,7 @@ namespace Crypto {
     private:
       number_t m_modulus, m_generator, m_gen_power;
 
-      DataStructures::UniformLongIntDistribution m_exponent_distribution;
+      LongArithmetic::UniformLongIntDistribution m_exponent_distribution;
 
       boost::random::random_device m_random_generator;
 
@@ -53,7 +53,7 @@ namespace Crypto {
       // the key part, which also has to be sent
       number_size_t m_plain_length, m_key_part_length, m_cipher_part_length, m_cipher_length;
 
-      DataStructures::LongIntConverter m_converter;
+      LongArithmetic::LongIntConverter m_converter;
 
     };
     

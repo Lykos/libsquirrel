@@ -996,19 +996,22 @@ namespace LongArithmetic {
       } else if (a_size < KARATSUBA_THRESHOLD) {
         c_end = school_multiply(a_begin, a_end, b_begin, b_end, space_begin, space_end);
       } else if (a_size < TOOM3_THRESHOLD) {
-        if (b_size <= a_size - a_size / 2) {
+        size_type part_size = a_size - a_size / 2;
+        if (b_size <= part_size) {
           c_end = unbalanced_multiply(a_begin, a_end, b_begin, b_end, space_begin, space_end);
         } else {
           c_end = karatsuba_multiply(a_begin, a_end, b_begin, b_end, space_begin, space_end);
         }
       } else if (a_size < TOOM4_THRESHOLD) {
-        if (b_size <= a_size - 2 * a_size / 3) {
+        size_type part_size = a_size - 2 * a_size / 3;
+        if (b_size <= part_size) {
           c_end = unbalanced_multiply(a_begin, a_end, b_begin, b_end, space_begin, space_end);
         } else {
           c_end = toom3_multiply(a_begin, a_end, b_begin, b_end, space_begin, space_end);
         }
       } else {
-        if (b_size <= a_size - 3 * a_size / 4) {
+        size_type part_size = a_size - 3 * a_size / 4;
+        if (b_size <= part_size) {
           c_end = unbalanced_multiply(a_begin, a_end, b_begin, b_end, space_begin, space_end);
         } else {
           c_end = toom4_multiply(a_begin, a_end, b_begin, b_end, space_begin, space_end);

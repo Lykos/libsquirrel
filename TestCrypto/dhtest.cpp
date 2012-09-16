@@ -1,12 +1,12 @@
 #include "dhtest.h"
 #include "Crypto/dh_constants.h"
 #include "Crypto/primetester.h"
-#include "DataStructures/longint.h"
+#include "LongArithmetic/longint.h"
 #include <QtTest/QTest>
 
 using namespace Crypto;
 using namespace DH;
-using namespace DataStructures;
+using namespace LongArithmetic;
 
 void DHTest::test_constants()
 {

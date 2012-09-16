@@ -3,8 +3,8 @@
 
 #include "rsa_types.h"
 #include "primetester.h"
-#include "DataStructures/uniformlongintdistribution.h"
-#include "DataStructures/arithmetichelper.h"
+#include "LongArithmetic/uniformlongintdistribution.h"
+#include "LongArithmetic/algebrahelper.h"
 
 namespace Crypto {
 
@@ -28,8 +28,8 @@ namespace Crypto {
     key_pair_t KeyGenerator::generate(Engine& engine, number_size_t number_bits)
     {
       static const number_t ONE = 1;
-      DataStructures::LongInt min = ++(ONE << (number_bits - 1));
-      DataStructures::LongInt max = --(ONE << number_bits);
+      LongArithmetic::LongInt min = ++(ONE << (number_bits - 1));
+      LongArithmetic::LongInt max = --(ONE << number_bits);
       number_t p = m_prime_tester.random_prime(engine, min, max, std::max(number_size_t(20), number_bits + 10));
       number_t q;
       do {
@@ -39,9 +39,9 @@ namespace Crypto {
       number_t phi_n = (p - ONE) * (q - ONE);
       exponent_t e;
       do {
-        DataStructures::UniformLongIntDistribution dist (0, phi_n - ONE);
+        LongArithmetic::UniformLongIntDistribution dist (0, phi_n - ONE);
         e = dist(engine);
-      } while (DataStructures::AlgebraHelper::gcd(phi_n, e) != ONE);
+      } while (LongArithmetic::AlgebraHelper::gcd(phi_n, e) != ONE);
       exponent_t d = e.mult_inv_mod(phi_n);
       private_key_t private_key {modulus, e, p, q, true};
       public_key_t public_key {modulus, d};

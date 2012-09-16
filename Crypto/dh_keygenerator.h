@@ -1,7 +1,7 @@
 #ifndef CRYPTO_DH_KEYGENERATOR_H
 #define CRYPTO_DH_KEYGENERATOR_H
 
-#include "DataStructures/uniformlongintdistribution.h"
+#include "LongArithmetic/uniformlongintdistribution.h"
 #include "dh_types.h"
 
 namespace Crypto {
@@ -28,7 +28,7 @@ namespace Crypto {
       const number_t& modulus = group.modulus;
       const number_t& generator = group.generator;
       number_t p = modulus >> 1;
-      DataStructures::UniformLongIntDistribution e_dist (ZERO, p - ONE);
+      LongArithmetic::UniformLongIntDistribution e_dist (ZERO, p - ONE);
       exponent_t exponent = e_dist(engine);
       number_t gen_power = generator.pow_mod(exponent, modulus);
       return {gen_power, exponent};

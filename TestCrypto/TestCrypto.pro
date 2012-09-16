@@ -34,12 +34,16 @@ HEADERS += \
     dhtest.h \
     sha2test.h
 
-unix:!macx:!symbian: LIBS += -L$$PWD/../Crypto-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lCrypto
+symbian: LIBS += -lDataStructures
+else:unix|win32: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Release/ -lDataStructures
 
-INCLUDEPATH += $$PWD/..
-DEPENDPATH += $$PWD/..
+symbian: LIBS += -lLongArithmetic
+else:unix|win32: LIBS += -L$$PWD/../LongArithmetic-build-desktop-Qt_4_8_0_in_Pfad__System__Release/ -lLongArithmetic
 
-unix:!macx:!symbian: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
+symbian: LIBS += -lCrypto
+else:unix|win32: LIBS += -L$$PWD/../Crypto-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lCrypto
 
-INCLUDEPATH += $$PWD/..
-DEPENDPATH += $$PWD/..
+unix|win32: LIBS += -lgmp -lgmpxx -lboost_random
+
+INCLUDEPATH += $$PWD/../
+DEPENDPATH += $$PWD/../

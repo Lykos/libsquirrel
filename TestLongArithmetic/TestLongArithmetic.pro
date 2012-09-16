@@ -30,13 +30,12 @@ HEADERS += \
     comparemacros.h
 
 symbian: LIBS += -lDataStructures
-else:unix|win32: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures
+else:unix|win32: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Release/ -lDataStructures
 
 symbian: LIBS += -lLongArithmetic
 else:unix|win32: LIBS += -L$$PWD/../LongArithmetic-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lLongArithmetic
 
 unix|win32: LIBS += -lgmp -lgmpxx
-
 
 INCLUDEPATH += $$PWD/../
 DEPENDPATH += $$PWD/../

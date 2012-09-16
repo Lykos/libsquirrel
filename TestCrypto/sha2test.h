@@ -9,6 +9,7 @@ class SHA2Test : public QObject
 
 private Q_SLOTS:
   void test_fixed();
+
 };
 
 #endif // SHA2TEST_H

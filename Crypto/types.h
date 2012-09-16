@@ -1,7 +1,7 @@
 #ifndef CRYPTO_TYPES_H
 #define CRYPTO_TYPES_H
 
-#include "DataStructures/longint.h"
+#include "LongArithmetic/longint.h"
 #include <cstdint>
 
 namespace Crypto {
@@ -15,9 +15,9 @@ namespace Crypto {
   // Used for lengths of payload messages
   typedef uint64_t message_size_t;
 
-  typedef DataStructures::LongInt number_t;
+  typedef LongArithmetic::LongInt number_t;
 
-  typedef DataStructures::LongInt exponent_t;
+  typedef LongArithmetic::LongInt exponent_t;
 
 }
 

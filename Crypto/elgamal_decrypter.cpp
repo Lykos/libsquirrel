@@ -1,13 +1,13 @@
 #include "elgamal_decrypter.h"
-#include "DataStructures/arithmetichelper.h"
+#include "LongArithmetic/arithmetichelper.h"
 #include "elgamal_converter.h"
-#include "DataStructures/longintconverter.h"
+#include "LongArithmetic/longintconverter.h"
 #include "preconditionviolation.h"
 #include "conditiontype.h"
 #include <string>
 
 using namespace std;
-using namespace DataStructures;
+using namespace LongArithmetic;
 
 namespace Crypto {
 

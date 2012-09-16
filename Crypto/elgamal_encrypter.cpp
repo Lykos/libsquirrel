@@ -2,7 +2,7 @@
 #include "elgamal_converter.h"
 #include "preconditionviolation.h"
 #include "conditiontype.h"
-#include "DataStructures/longintconverter.h"
+#include "LongArithmetic/longintconverter.h"
 #include <string>
 
 using namespace std;
@@ -11,7 +11,7 @@ namespace Crypto {
 
   namespace Elgamal {
     
-    using namespace DataStructures;
+    using namespace LongArithmetic;
 
     static const number_t ZERO = 0;
 

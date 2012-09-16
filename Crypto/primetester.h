@@ -1,9 +1,9 @@
 #ifndef CRYPTO_PRIMETESTER_H
 #define CRYPTO_PRIMETESTER_H
 
-#include "DataStructures/longint.h"
+#include "LongArithmetic/longint.h"
 #include "DataStructures/arraylist.h"
-#include "DataStructures/uniformlongintdistribution.h"
+#include "LongArithmetic/uniformlongintdistribution.h"
 #include "primes.h"
 #include "DataStructures/treap.h"
 
@@ -14,10 +14,10 @@ namespace Crypto {
   public:
   // The probability that a non-prime is mistaken for a prime is 2^-security
     template <typename Engine>
-    DataStructures::LongInt random_prime(Engine& engine, DataStructures::LongInt min, DataStructures::LongInt max, number_size_t security);
+    LongArithmetic::LongInt random_prime(Engine& engine, LongArithmetic::LongInt min, LongArithmetic::LongInt max, number_size_t security);
 
   // The probability that a non-prime is mistaken for a prime is 2^-security
-    bool is_prime(const DataStructures::LongInt& number, number_size_t security);
+    bool is_prime(const LongArithmetic::LongInt& number, number_size_t security);
 
   private:
     // For security reasons, this generator is only used for the primality test, not to choose the primes itself.
@@ -26,24 +26,24 @@ namespace Crypto {
   };
 
 static const ulong SIEVE_RANGE = 1 << 24;
-static const DataStructures::LongInt LONGINT_SIEVE_RANGE = SIEVE_RANGE;
+static const LongArithmetic::LongInt LONGINT_SIEVE_RANGE = SIEVE_RANGE;
 
   template <typename Engine>
-  DataStructures::LongInt PrimeTester::random_prime(Engine& engine, DataStructures::LongInt min, DataStructures::LongInt max, number_size_t security)
+  LongArithmetic::LongInt PrimeTester::random_prime(Engine& engine, LongArithmetic::LongInt min, LongArithmetic::LongInt max, number_size_t security)
   {
-    static const DataStructures::LongInt ONE = 1;
-    DataStructures::UniformLongIntDistribution point_dist (min, max);
-    DataStructures::LongInt candidate;
+    static const LongArithmetic::LongInt ONE = 1;
+    LongArithmetic::UniformLongIntDistribution point_dist (min, max);
+    LongArithmetic::LongInt candidate;
     bool not_found = true;
     ulong sieve_length = std::min(LONGINT_SIEVE_RANGE, max + ONE - min);
     bool *sieve = new bool[sieve_length];
     while (not_found) {
       // Sample one point in the available range and construct a range of length SIEVE_RANGE (truncate near the ends)
-      DataStructures::LongInt point = point_dist(engine);
-      DataStructures::LongInt start = std::max(min, point - point % LONGINT_SIEVE_RANGE);
+      LongArithmetic::LongInt point = point_dist(engine);
+      LongArithmetic::LongInt start = std::max(min, point - point % LONGINT_SIEVE_RANGE);
       number_size_t length = std::min(max + ONE - start, LONGINT_SIEVE_RANGE);
-      assert(length < sieve_length);
-      DataStructures::LongInt number = start;
+      assert(length <= sieve_length);
+      LongArithmetic::LongInt number = start;
       for (ulong i = 0; i < length; ++i, ++number) {
         sieve[i] = false;
       }

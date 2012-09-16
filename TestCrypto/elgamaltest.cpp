@@ -6,7 +6,7 @@
 #include "Crypto/elgamal_verifier.h"
 #include "Crypto/dh_constants.h"
 #include "Crypto/primetester.h"
-#include "DataStructures/uniformlongintdistribution.h"
+#include "LongArithmetic/uniformlongintdistribution.h"
 #include <boost/random/mersenne_twister.hpp>
 #include <QtTest/QtTest>
 #include <iostream>
@@ -16,7 +16,7 @@
 using namespace std;
 using namespace Crypto;
 using namespace Elgamal;
-using namespace DataStructures;
+using namespace LongArithmetic;
 
 static void printit(const uchar* bla, ulong length)
 {

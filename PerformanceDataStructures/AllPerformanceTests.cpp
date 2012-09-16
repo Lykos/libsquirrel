@@ -25,10 +25,13 @@ int main(int argc, char *argv[])
   timeinfo = localtime(&rawtime);
 
   // description
-  string version_name ("Debug new unbalanced strategy");
+  string version_name ("Benchmark_new_unbalanced_strategy");
   ostringstream oss;
-  oss << version_name << " " << TOOM4_THRESHOLD << " " << hostname << " " << (1900 + timeinfo->tm_year) << "-" << timeinfo->tm_mon << "-"
-      << timeinfo->tm_mday << " " << timeinfo->tm_hour << ":" << timeinfo->tm_min << ":" << timeinfo->tm_sec;
+  oss << version_name << " " << hostname << " " << (1900 + timeinfo->tm_year) << "-" << timeinfo->tm_mon << "-"
+      << timeinfo->tm_mday << " " << timeinfo->tm_hour << ":" << timeinfo->tm_min << ":" << timeinfo->tm_sec << endl;
+  oss << "Karatsuba Threshold " << KARATSUBA_THRESHOLD << endl;
+  oss << "Toom-3 Threshold " << TOOM3_THRESHOLD << endl;
+  oss << "Toom-4 Threshold " << TOOM4_THRESHOLD << endl;
   string description = oss.str();
 
   typedef CompositePerformanceResult<PerformanceResult> ClassResult;
@@ -41,7 +44,7 @@ int main(int argc, char *argv[])
 
   // Write result to file
   ostringstream oss2;
-  oss2 << "../performance_results/" << version_name << "_" << TOOM4_THRESHOLD << "_" << hostname << "_" << (1900 + timeinfo->tm_year) << "-" << timeinfo->tm_mon << "-"
+  oss2 << "../performance_results/" << version_name << "_" << hostname << "_" << (1900 + timeinfo->tm_year) << "-" << timeinfo->tm_mon << "-"
       << timeinfo->tm_mday << "_" << timeinfo->tm_hour << ":" << timeinfo->tm_min << ":" << timeinfo->tm_sec;
   string file_name = oss2.str();
   ofstream result_file (file_name.c_str());
