@@ -64,6 +64,10 @@ HEADERS += \
     preconditionviolation.h \
     debug.h
 
+header_files.files = $$HEADERS
+header_files.path = /usr/local/include/LongArithmetic
+INSTALLS += header_files
+
 symbian {
     MMP_RULES += EXPORTUNFROZEN
     TARGET.UID3 = 0xE1E3FF27

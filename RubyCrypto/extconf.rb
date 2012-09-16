@@ -7,6 +7,7 @@ dir_config(extension_name)
 
 raise "could not find boost_random library" unless have_library("boost_random")
 raise "could not find DataStructures library" unless have_library("DataStructures")
+raise "could not find LongArithmetic library" unless have_library("LongArithmetic")
 raise "could not find Crypto library" unless have_library("Crypto")
 raise "could not find rice library" unless have_library("rice")
 raise "could not find gmp library" unless have_library("gmp")
