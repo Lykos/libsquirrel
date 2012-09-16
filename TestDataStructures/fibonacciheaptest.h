@@ -1,10 +1,10 @@
-#ifndef HEAPTEST_H
-#define HEAPTEST_H
+#ifndef FIBONACCIHEAPTEST_H
+#define FIBONACCIHEAPTEST_H
 
+#include "DataStructures/fibonacciheap.h"
 #include <QObject>
-#include "DataStructures/heap.h"
 
-class HeapTest : public QObject
+class FibonacciHeapTest : public QObject
 {
   Q_OBJECT
 
@@ -15,7 +15,9 @@ private Q_SLOTS:
 
   void test_copy_constructor();
 
-  void test_push_all();
+  void test_remove();
+
+  void test_decrease_key();
 
   void test_push();
 
@@ -27,4 +29,4 @@ private Q_SLOTS:
 
 };
 
-#endif // HEAPTEST_H
+#endif // FIBONACCIHEAPTEST_H

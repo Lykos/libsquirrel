@@ -19,7 +19,7 @@ namespace DataStructures {
   template <typename T, typename Node, typename Tree>
   inline TreeIterator<T, Node, Tree>::TreeIterator(Tree* tree, size_type index):
     BaseIt (tree, index),
-    m_current (NULL),
+    m_current (nullptr),
     m_left_size (0)
   {
     local_search();
@@ -105,7 +105,7 @@ namespace DataStructures {
   {
     PREC_INDEX_TREE_IT(BaseIt::m_index);
     // Should only happen if the user does funny things while iterating
-    PREC(InvalidInputIterator, m_current != NULL);
+    PREC(InvalidInputIterator, m_current != nullptr);
     return m_current->element;
   }
 
@@ -126,9 +126,9 @@ namespace DataStructures {
   inline void TreeIterator<T, Node, Tree>::local_search()
   {
     if (BaseIt::m_index >= BaseIt::m_container->size()) {
-      m_current = NULL;
+      m_current = nullptr;
       return;
-    } else if (m_current == NULL) {
+    } else if (m_current == nullptr) {
       m_current = BaseIt::m_container->m_root;
       m_left_size = 0;
     }
@@ -142,15 +142,15 @@ namespace DataStructures {
     }
     size_type current_index = m_left_size + m_current->dir_size(TREE_LEFT);
     while (current_index != BaseIt::m_index) {
-      PREC(InvalidInputIterator, m_current != NULL);
+      PREC(InvalidInputIterator, m_current != nullptr);
       PREC(InvalidInputIterator, (BaseIt::m_index >= m_left_size));
       PREC(InvalidInputIterator, (BaseIt::m_index < m_left_size + m_current->size));
       if (current_index > BaseIt::m_index) {
-        PREC(InvalidInputIterator, m_current->children[TREE_LEFT] != NULL);
+        PREC(InvalidInputIterator, m_current->children[TREE_LEFT] != nullptr);
         m_current = m_current->children[TREE_LEFT];
       } else {
         PREC(InvalidInputIterator, (current_index < BaseIt::m_index));
-        PREC(InvalidInputIterator, m_current->children[TREE_RIGHT] != NULL);
+        PREC(InvalidInputIterator, m_current->children[TREE_RIGHT] != nullptr);
         m_left_size = current_index + 1;
         m_current = m_current->children[TREE_RIGHT];
       }

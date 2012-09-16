@@ -11,7 +11,7 @@ typedef LongInt LongInt;
 typedef FiniteElement<LongInt> FE;
 typedef FiniteField<LongInt> FF;
 struct FEP {
-  FEP(): fe (NULL) {}
+  FEP(): fe (nullptr) {}
   FEP(FE* e): fe (e) {}
   FE* fe;
 };

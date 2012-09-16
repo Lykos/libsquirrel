@@ -44,7 +44,7 @@ namespace DataStructures {
     TreapNode<T>* current = BaseTree<T, TreapNode<T>, Compare>::internal_insert(element);
     TreapNode<T>* parent = current->parent;
     direction parent_direction = current->parent_direction;
-    while (parent != NULL && current->randomness < parent->randomness) {
+    while (parent != nullptr && current->randomness < parent->randomness) {
       BaseTree<T, TreapNode<T>, Compare>::rotate(parent, parent_direction);
       parent = current->parent;
       parent_direction = current->parent_direction;
@@ -55,7 +55,7 @@ namespace DataStructures {
   inline bool Treap<T, Compare>::remove(const T &element)
   {
     TreapNode<T>* current = BaseTree<T, TreapNode<T>, Compare>::m_root;
-    while (current != NULL) {
+    while (current != nullptr) {
       if (current->element == element) {
         while (current->is_inner()) {
           direction dir = current->min_size_direction();

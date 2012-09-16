@@ -17,9 +17,9 @@ namespace DataStructures {
   inline typename TreapNode<T>::direction TreapNode<T>::min_rand_direction() const
   {
     assert((!TreeNode<T, TreapNode<T> >::is_leaf()));
-    if (TreeNode<T, TreapNode<T> >::m_children[TREE_LEFT] == NULL) {
+    if (TreeNode<T, TreapNode<T> >::m_children[TREE_LEFT] == nullptr) {
       return TREE_RIGHT;
-    } else if (TreeNode<T, TreapNode<T> >::m_children[TREE_RIGHT] == NULL) {
+    } else if (TreeNode<T, TreapNode<T> >::m_children[TREE_RIGHT] == nullptr) {
       return TREE_LEFT;
     } else {
       return TreeNode<T, TreapNode<T> >::m_children[TREE_LEFT]->m_randomness < TreeNode<T, TreapNode<T> >::m_children[TREE_RIGHT]->m_randomness ? TREE_LEFT : TREE_RIGHT;

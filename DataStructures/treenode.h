@@ -19,7 +19,7 @@ namespace DataStructures {
 
     typedef ptrdiff_t difference_type;
 
-    inline TreeNode(const T& new_element, Node* new_parent = NULL, direction new_parent_direction = TREE_INVALID);
+    inline TreeNode(const T& new_element, Node* new_parent = nullptr, direction new_parent_direction = TREE_INVALID);
 
     inline direction min_size_direction() const;
 
@@ -43,7 +43,7 @@ namespace DataStructures {
 
     direction parent_direction;
 
-    Node* children[2] = {NULL, NULL};
+    Node* children[2] = {nullptr, nullptr};
 
   };
 

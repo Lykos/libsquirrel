@@ -14,14 +14,13 @@ namespace DataStructures {
   class FibonacciHeap
   {
   public:
-    typedef FibonacciNode<T>* node_pointer;
+    typedef FibonacciNode<T, Compare>* node_pointer;
 
-    typedef typename Node<T>::size_type size_type;
+    typedef typename FibonacciNode<T, Compare>::size_type size_type;
 
-    template <typename T, typename Compare>
     inline FibonacciHeap(std::initializer_list<T> list);
 
-    inline explicit FibonacciHeap(const Compare& compare = compare());
+    inline explicit FibonacciHeap(const Compare& compare = Compare());
 
     inline FibonacciHeap(const FibonacciHeap<T, Compare>& other);
 
@@ -34,13 +33,25 @@ namespace DataStructures {
     inline FibonacciHeap& operator=(FibonacciHeap<T, Compare>&& other);
 
     template <typename InputIterator>
-    inline FibonacciHeap(InputIterator begin, InputIterator end, const Compare& compare = compare());
+    inline FibonacciHeap(InputIterator begin, InputIterator end, const Compare& compare = Compare());
 
+    /**
+     * @brief decrease_key Takes a node handle and changes its key.
+     * @param node
+     * @param element
+     */
+    inline void decrease_key(node_pointer node, const T& element);
+
+    /**
+     * Notifies the heap that the value of a key has changed.
+     * @brief decrease_key
+     * @param node
+     */
     inline void decrease_key(node_pointer node);
 
     inline node_pointer push(const T& element);
 
-    inline void remove(const T& element);
+    inline void remove(node_pointer element);
 
     inline const T& top() const;
 
@@ -52,8 +63,12 @@ namespace DataStructures {
 
     inline void merge(FibonacciHeap<T, Compare>&& other);
 
+    inline size_type size() const;
+
+    inline bool empty() const;
+
   private:
-    node_pointer m_root = NULL;
+    node_pointer m_root = nullptr;
 
     size_type m_size = 0;
 
@@ -73,7 +88,7 @@ namespace DataStructures {
 
     inline void connect_self(node_pointer node);
 
-    inline void traverse(void (*operation)(node_pointer node));
+    inline void traverse(void (*operation)(node_pointer node)) const;
 
   };
   

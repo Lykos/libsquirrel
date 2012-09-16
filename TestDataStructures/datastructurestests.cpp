@@ -8,6 +8,7 @@
 #include "arithmetichelpertest.h"
 #include "heaparithmetictest.h"
 #include "heaptest.h"
+#include "fibonacciheaptest.h"
 
 int main(int argc, char** argv) {
   ArrayListTest array_list_test;
@@ -26,5 +27,7 @@ int main(int argc, char** argv) {
   QTest::qExec(&heap_arithmetic_test, argc, argv);
   HeapTest heap_test;
   QTest::qExec(&heap_test, argc, argv);
+  FibonacciHeapTest fib_heap_test;
+  QTest::qExec(&fib_heap_test, argc, argv);
   return EXIT_SUCCESS;
 }

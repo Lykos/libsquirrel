@@ -23,7 +23,7 @@ namespace DataStructures {
 
   template <typename T>
   inline BaseList<T>::BaseList():
-    m_content (NULL),
+    m_content (nullptr),
     m_size (0),
     m_min_capacity (DEFAULT_MIN_CAPACITY),
     m_is_shrinkable (false)
@@ -33,7 +33,7 @@ namespace DataStructures {
 
   template <typename T>
   BaseList<T>::BaseList(size_type initial_size, const T& element):
-    m_content (NULL),
+    m_content (nullptr),
     m_size (initial_size),
     m_min_capacity (DEFAULT_MIN_CAPACITY),
     m_is_shrinkable (false)
@@ -47,7 +47,7 @@ namespace DataStructures {
   template <typename T>
   template <typename InputIterator>
   BaseList<T>::BaseList(InputIterator begin, InputIterator end):
-    m_content (NULL),
+    m_content (nullptr),
     m_size (end - begin),
     m_min_capacity (DEFAULT_MIN_CAPACITY),
     m_is_shrinkable (false)
@@ -67,14 +67,14 @@ namespace DataStructures {
     m_min_capacity (other.m_min_capacity),
     m_is_shrinkable (other.m_is_shrinkable)
   {
-    other.m_content = NULL;
+    other.m_content = nullptr;
     other.m_size = 0;
     assert(m_min_capacity > 0);
   }*/
 
   template <typename T>
   BaseList<T>::BaseList(const BaseList<T>& other):
-    m_content (NULL),
+    m_content (nullptr),
     m_size (other.m_size),
     m_min_capacity (other.m_min_capacity),
     m_is_shrinkable (other.m_is_shrinkable)
@@ -148,7 +148,7 @@ namespace DataStructures {
     m_size = other.m_size;
     m_min_capacity = other.m_min_capacity;
     m_is_shrinkable = other.m_is_shrinkable;
-    other.m_content = NULL;
+    other.m_content = nullptr;
     other.m_size = 0;
     return *this;
   }*/

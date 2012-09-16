@@ -8,9 +8,9 @@
 #define assert_size(node) \
   assert(node->size == node->calculated_size())
 #define assert_parent(node) \
-  assert(node == NULL || node->parent == NULL || node->parent->children[node->parent_direction] == node)
+  assert(node == nullptr || node->parent == nullptr || node->parent->children[node->parent_direction] == node)
 #define assert_child(node, dir) \
-  assert(node == NULL || node->children[dir] == NULL || (node->children[dir]->parent == node && node->children[dir]->parent_direction == dir))
+  assert(node == nullptr || node->children[dir] == nullptr || (node->children[dir]->parent == node && node->children[dir]->parent_direction == dir))
 #define assert_children(node) \
   assert_child(node, TREE_LEFT); \
   assert_child(node, TREE_RIGHT)
@@ -44,7 +44,7 @@ namespace DataStructures {
   inline bool BaseTree<T, Node, Compare>::search(const T& element) const
   {
     Node* current = m_root;
-    while (current != NULL) {
+    while (current != nullptr) {
       if (current->element == element) {
         return true;
       }
@@ -79,7 +79,7 @@ namespace DataStructures {
     PREC_INDEX_TREE(index);
     Node* current = m_root;
     while (true) {
-      assert(current != NULL);
+      assert(current != nullptr);
       assert(index < current->size);
       size_type left = current->dir_size(TREE_LEFT);
       if (index < left) {
@@ -99,7 +99,7 @@ namespace DataStructures {
     PREC_INDEX_TREE(index);
     Node* current = m_root;
     while (true) {
-      assert(current != NULL);
+      assert(current != nullptr);
       assert(index < current->size);
       size_type left = current->dir_size(TREE_LEFT);
       if (index < left) {
@@ -115,13 +115,13 @@ namespace DataStructures {
 
   template <typename T, typename Node, typename Compare>
   inline BaseTree<T, Node, Compare>::BaseTree(const Compare& compare):
-    m_root (NULL),
+    m_root (nullptr),
     m_compare (compare)
   {}
 
   template <typename T, typename Node, typename Compare>
   inline BaseTree<T, Node, Compare>::BaseTree(const BaseTree<T, Node, Compare>& other):
-    m_root (NULL),
+    m_root (nullptr),
     m_compare (other.m_compare)
   {
     insert_all(other.begin(), other.end());
@@ -130,7 +130,7 @@ namespace DataStructures {
   template <typename T, typename Node, typename Compare>
   template <typename InputIterator>
   inline BaseTree<T, Node, Compare>::BaseTree(InputIterator begin, InputIterator end, const Compare& compare):
-    m_root (NULL),
+    m_root (nullptr),
     m_compare (compare)
   {
     insert_all(begin, end);
@@ -181,35 +181,35 @@ namespace DataStructures {
   template <typename T, typename Node, typename Compare>
   inline void BaseTree<T, Node, Compare>::clear()
   {
-    if (m_root == NULL) {
+    if (m_root == nullptr) {
       return;
     }
     Node* current = m_root;
     while (!(current->is_root() && current->is_leaf())) {
       if (current->is_leaf()) {
         assert(current != m_root);
-        assert(current->parent != NULL);
+        assert(current->parent != nullptr);
         assert(current->parent_direction == TREE_LEFT || current->parent_direction == TREE_RIGHT);
         direction dir = current->parent_direction;
         current = current->parent;
         delete current->children[dir];
-        current->children[dir] = NULL;
+        current->children[dir] = nullptr;
       } else {
-        if (current->children[TREE_LEFT] != NULL) {
+        if (current->children[TREE_LEFT] != nullptr) {
           current = current->children[TREE_LEFT];
         } else {
-          assert(current->children[TREE_RIGHT] != NULL);
+          assert(current->children[TREE_RIGHT] != nullptr);
           current = current->children[TREE_RIGHT];
         }
       }
     }
     delete m_root;
-    m_root = NULL;
+    m_root = nullptr;
   }
   template <typename T, typename Node, typename Compare>
   inline Node* BaseTree<T, Node, Compare>::internal_insert(const T& element)
   {
-    if (m_root == NULL) {
+    if (m_root == nullptr) {
       Node* new_node = new Node(element);
       m_root = new_node;
       return new_node;
@@ -217,7 +217,7 @@ namespace DataStructures {
     Node* current = m_root;
     direction dir = BaseTree<T, Node, Compare>::element_direction(m_root, element);
     ++(current->size);
-    while (current->children[dir] != NULL) {
+    while (current->children[dir] != nullptr) {
       current = current->children[dir];
       dir = element_direction(current, element);
       ++(current->size);
@@ -242,7 +242,7 @@ namespace DataStructures {
     Node* current = m_root;
     size_type correct_index = size();
     size_type left_size = 0;
-    while (current != NULL) {
+    while (current != nullptr) {
       if (m_compare(current->element, element)) {
         left_size += 1 + current->dir_size(TREE_LEFT);
         current = current->children[TREE_RIGHT];
@@ -260,7 +260,7 @@ namespace DataStructures {
     Node* current = m_root;
     size_type correct_index = size();
     size_type left_size = 0;
-    while (current != NULL) {
+    while (current != nullptr) {
       if (m_compare(current->element, element)) {
         left_size += 1 + current->dir_size(TREE_LEFT);
         current = current->children[TREE_RIGHT];
@@ -278,7 +278,7 @@ namespace DataStructures {
     Node* current = m_root;
     size_type correct_index = size();
     size_type left_size = 0;
-    while (current != NULL) {
+    while (current != nullptr) {
       if (current->element <= element) {
         left_size += 1 + current->dir_size(TREE_LEFT);
         current = current->children[TREE_RIGHT];
@@ -296,7 +296,7 @@ namespace DataStructures {
     Node* current = m_root;
     size_type correct_index = size();
     size_type left_size = 0;
-    while (current != NULL) {
+    while (current != nullptr) {
       if (current->element <= element) {
         left_size += 1 + current->dir_size(TREE_LEFT);
         current = current->children[TREE_RIGHT];
@@ -333,7 +333,7 @@ namespace DataStructures {
   inline bool BaseTree<T, Node, Compare>::remove(const T& element)
   {
     Node* current = m_root;
-    while (current != NULL) {
+    while (current != nullptr) {
       if (current->element == element) {
         while (current->is_inner()) {
           direction dir = current->min_size_direction();
@@ -351,31 +351,31 @@ namespace DataStructures {
   template <typename T, typename Node, typename Compare>
   inline void BaseTree<T, Node, Compare>::non_inner_remove(Node* node)
   {
-    assert(node != NULL);
+    assert(node != nullptr);
     assert(!(node->is_inner()));
     Node* parent = node->parent;
     direction dir = node->parent_direction;
-    Node* child = NULL;
+    Node* child = nullptr;
     if (!node->is_leaf()) {
-      if (node->children[TREE_LEFT] == NULL) {
+      if (node->children[TREE_LEFT] == nullptr) {
         child = node->children[TREE_RIGHT];
       } else {
-        assert(node->children[TREE_RIGHT] == NULL);
+        assert(node->children[TREE_RIGHT] == nullptr);
         child = node->children[TREE_LEFT];
       }
-      assert(child != NULL);
+      assert(child != nullptr);
       child->parent = parent;
       child->parent_direction = dir;
     }
     delete node;
-    if (parent == NULL) {
+    if (parent == nullptr) {
       m_root = child;
     } else {
       parent->children[dir] = child;
     }
     assert_pointers(parent);
     assert_pointers(child);
-    while (parent != NULL) {
+    while (parent != nullptr) {
       --(parent->size);
       parent = parent->parent;
     }
@@ -385,8 +385,8 @@ namespace DataStructures {
   inline void BaseTree<T, Node, Compare>::rotate(Node* node, direction dir)
   {
     // Precondition
-    assert(node != NULL);
-    assert(node->children[dir] != NULL);
+    assert(node != nullptr);
+    assert(node->children[dir] != nullptr);
 
     // Define a few aliases
     Node* parent = node->parent;
@@ -407,7 +407,7 @@ namespace DataStructures {
     node->children[dir] = new_node_child;
     node->parent = new_node;
     node->parent_direction = 1 - dir;
-    if (new_node_child != NULL) {
+    if (new_node_child != nullptr) {
       new_node_child->parent = node;
       new_node_child->parent_direction = dir;
     }
@@ -426,13 +426,13 @@ namespace DataStructures {
   template <typename T, typename Node, typename Compare>
   inline typename BaseTree<T, Node, Compare>::size_type BaseTree<T, Node, Compare>::size() const
   {
-    return m_root == NULL ? 0 : m_root->size;
+    return m_root == nullptr ? 0 : m_root->size;
   }
 
   template <typename T, typename Node, typename Compare>
   inline bool BaseTree<T, Node, Compare>::is_empty() const
   {
-    return m_root == NULL;
+    return m_root == nullptr;
   }
 
   template <typename T, typename Node, typename Compare>

@@ -35,9 +35,9 @@ namespace DataStructures {
 
     T m_element;
 
-    FibonacciNode* m_parent = NULL;
+    FibonacciNode* m_parent = nullptr;
 
-    FibonacciNode* m_child = NULL;
+    FibonacciNode* m_child = nullptr;
 
     FibonacciNode* m_left;
 

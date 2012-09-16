@@ -12,7 +12,7 @@ namespace DataStructures {
 
     typedef typename TreeNode<T, AVLNode<T> >::direction direction;
 
-    inline AVLNode(const T& new_element, AVLNode<T>* new_parent = NULL, direction new_parent_direction = TREE_INVALID);
+    inline AVLNode(const T& new_element, AVLNode<T>* new_parent = nullptr, direction new_parent_direction = TREE_INVALID);
 
     balance_t balance;
 

@@ -17,11 +17,12 @@ TEMPLATE = app
 
 SOURCES += \
     infiniterandomtest.cpp \
-    heaptest.cpp \
     datastructurestests.cpp \
     arithmetichelpertest.cpp \
     heaparithmetictest.cpp \
-    queuetest.cpp
+    queuetest.cpp \
+    heaptest.cpp \
+    fibonacciheaptest.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 HEADERS += \
@@ -37,7 +38,8 @@ HEADERS += \
     listtest.h \
     listtest.hpp \
     treetest.hpp \
-    queuetest.h
+    queuetest.h \
+    fibonacciheaptest.h
 
 symbian: LIBS += -lDataStructures
 else:unix|win32: LIBS += -L$$PWD/../DataStructures-build-desktop-Qt_4_8_0_in_Pfad__System__Debug/ -lDataStructures

@@ -28,8 +28,8 @@ namespace LongArithmetic {
 
     typedef Ring< Polynomial< T, Structure > > ring_type;
 
-    // TODO Remove = NULL, this is invalid and only a hack for the tests.
-    inline explicit Polynomial(const Structure *structure = NULL,
+    // TODO Remove = nullptr, this is invalid and only a hack for the tests.
+    inline explicit Polynomial(const Structure *structure = nullptr,
                                const T& element = T(),
                                size_type degree = 0);
 

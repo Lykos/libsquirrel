@@ -4,6 +4,10 @@
 #include "arithmetichelper.h"
 #include <cstdint>
 
+// TODO Find a good place for this
+#define ASM_BIT_SCAN(n, offset) \
+asm ("\tbsrq %1, %0;\n" : "=r"(result) : "r" (x) : "cc")
+
 namespace DataStructures {
 
   namespace ArithmeticHelper {
@@ -32,8 +36,20 @@ namespace DataStructures {
       return ++x >> 1;
     }
 
+    inline uint64_t log2(uint64_t x)
+    {
+      if (x == 0) {
+        return 0;
+      }
+      uint64_t result;
+      ASM_BIT_SCAN(result, x);
+      return result;
+    }
+
   }
 
 }
+
+#undef ASM_BIT_SCAN
 
 #endif // DATASTRUCTURES_ARITHMETIC_HPP

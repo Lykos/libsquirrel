@@ -16,25 +16,25 @@ namespace DataStructures {
   template <typename T, typename Node>
   inline typename TreeNode<T, Node>::size_type TreeNode<T, Node>::dir_size(direction dir) const
   {
-    return children[dir] == NULL ? 0 : children[dir]->size;
+    return children[dir] == nullptr ? 0 : children[dir]->size;
   }
 
   template <typename T, typename Node>
   inline bool TreeNode<T, Node>::is_inner() const
   {
-    return children[TREE_LEFT] != NULL && children[TREE_RIGHT] != NULL;
+    return children[TREE_LEFT] != nullptr && children[TREE_RIGHT] != nullptr;
   }
 
   template <typename T, typename Node>
   inline bool TreeNode<T, Node>::is_leaf() const
   {
-    return children[TREE_LEFT] == NULL && children[TREE_RIGHT] == NULL;
+    return children[TREE_LEFT] == nullptr && children[TREE_RIGHT] == nullptr;
   }
 
   template <typename T, typename Node>
   inline bool TreeNode<T, Node>::is_root() const
   {
-    return parent == NULL;
+    return parent == nullptr;
   }
 
   template <typename T, typename Node>

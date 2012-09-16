@@ -22,7 +22,8 @@ namespace DataStructures {
     NegationOverflow,
     NoField,
     SelfMerge,
-    InvalidNode
+    InvalidNode,
+    NotDecreased
   };
 
 }

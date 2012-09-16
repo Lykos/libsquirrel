@@ -11,7 +11,7 @@ namespace DataStructures {
   {
     typedef typename TreeNode<T, TreapNode<T> >::direction direction;
 
-    inline TreapNode(const T& new_element, TreapNode<T>* new_parent = NULL, direction new_parent_direction = TREE_INVALID);
+    inline TreapNode(const T& new_element, TreapNode<T>* new_parent = nullptr, direction new_parent_direction = TREE_INVALID);
 
     InfiniteRandom randomness;
 
