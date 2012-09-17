@@ -6,29 +6,35 @@ namespace LongArithmetic {
 
     inline part_type shift_left(part_type* begin, part_type* end, size_type offset)
     {
+      if (offset == 0) {
+        return 0;
+      }
       arithmetic_assert(offset < PART_SIZE);
-      part_type keep = 0;
+      part_type carry = 0;
       for (; begin < end; ++begin) {
         // Or works because exactly the space needed for keep gets shifted away.
-        part_type shifted = (*begin << offset) | keep;
-        keep = *begin >> (PART_SIZE - offset);
+        part_type shifted = (*begin << offset) | carry;
+        carry = *begin >> (PART_SIZE - offset);
         *begin = shifted;
       }
-      return keep;
+      return carry;
     }
 
     inline part_type shift_right(part_type* begin, part_type* end, size_type offset)
     {
+      if (offset == 0) {
+        return 0;
+      }
       arithmetic_assert(offset < PART_SIZE);
-      part_type keep = 0;
+      part_type carry = 0;
       for (; end > begin;) {
         --end;
         // Or works because exactly the space needed for keep gets shifted away.
-        part_type shifted = (*end >> offset) | keep;
-        keep = *end << (PART_SIZE - offset);
+        part_type shifted = (*end >> offset) | carry;
+        carry = *end << (PART_SIZE - offset);
         *end = shifted;
       }
-      return keep;
+      return carry;
     }
     
   } // namespace LongArithmetic

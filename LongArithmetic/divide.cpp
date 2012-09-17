@@ -7,6 +7,7 @@
 #include "arithmetichelper.h"
 #include "debug.h"
 #include "multiply.h"
+#include "shifts.h"
 
 namespace LongArithmetic {
 
@@ -28,13 +29,16 @@ namespace LongArithmetic {
       part_type divisor_first_digit = divisor.m_content[divisor.size() - 1];
       arithmetic_assert(divisor_first_digit > 0);
       size_type scale_shift = PART_SIZE - 1 - ArithmeticHelper::log2(divisor_first_digit);
-      divisor <<= scale_shift;
-      dividend <<= scale_shift;
+      arithmetic_assert_nocarry(shift_left(&divisor.m_content[0], &divisor.m_content[0] + divisor.size(), scale_shift));
+      part_type carry = shift_left(&dividend.m_content[0], &dividend.m_content[0] + dividend.size(), scale_shift);
+      if (carry > 0) {
+        dividend.m_content.push_back(carry);
+      }
       divisor_first_digit = divisor.m_content[divisor.size() - 1];
       arithmetic_assert(divisor_first_digit >= (1ul << 63));
       LongInt::size_type divisor_size = divisor.size();
-      const part_type* divisor_begin = &divisor.m_content[0];
-      const part_type* divisor_end = &divisor.m_content[0] + divisor.size();
+      const part_type* divisor_begin = divisor.m_content.data();
+      const part_type* divisor_end = divisor.m_content.data() + divisor.size();
       size_type space_needed = space_usage(divisor.size(), 1);
       part_type* space_begin = static_cast<part_type*>(malloc(space_needed * sizeof(part_type)));
       part_type* space_end = space_begin + space_needed;
@@ -48,7 +52,7 @@ namespace LongArithmetic {
         if (remainder.size() >= divisor_size) {
           // Guess according to the first one or two parts of the active part and the first digit of the divisor,
           // how many times the divisor fits into the active part. This guess can never be too low and because
-          // of our scaling factor, it can be at most 2 to high (according to a proof of Knuth)
+          // of our scaling, it can be at most 2 to high (according to a proof of Knuth)
           part_type guess;
           ASM_DIVIDE(remainder.m_content[divisor_size - 1], remainder.part_at(divisor_size), divisor_first_digit, guess);
           part_type* result_end = multiply(divisor_begin, divisor_end, &guess, &guess + 1, space_begin, space_end);
@@ -74,7 +78,7 @@ namespace LongArithmetic {
       }
       free(space_begin);
       if (remainder_needed) {
-        remainder >>= scale_shift;
+        arithmetic_assert_nocarry(shift_right(&remainder.m_content[0], &remainder.m_content[0] + remainder.size(), scale_shift));
         remainder.remove_zeros();
       }
       quotient.remove_zeros();
