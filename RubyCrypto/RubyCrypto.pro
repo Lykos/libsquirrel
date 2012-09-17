@@ -16,7 +16,6 @@ SOURCES += \
     RubyCrypto.c \
     cryptoexception.cpp \
     crypto.cpp \
-    longint.cpp \
     sha2hasher.cpp \
     elgamalsigner.cpp \
     elgamalverifier.cpp \
@@ -24,13 +23,13 @@ SOURCES += \
     cbcdecrypter.cpp \
     cbcmac.cpp \
     dhkeyexchange.cpp \
-    elgamalkeygenerator.cpp
+    elgamalkeygenerator.cpp \
+    treap.cpp
 
 HEADERS +=\
     RubyCrypto.h \
     cryptoexception.h \
     crypto.h \
-    longint.h \
     sha2hasher.h \
     elgamalsigner.h \
     elgamalverifier.h \
@@ -38,7 +37,8 @@ HEADERS +=\
     cbcdecrypter.h \
     cbcmac.h \
     dhkeyexchange.h \
-    elgamalkeygenerator.h
+    elgamalkeygenerator.h \
+    treap.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

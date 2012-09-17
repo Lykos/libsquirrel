@@ -8,6 +8,7 @@
 #include "cbcmac.h"
 #include "elgamalkeygenerator.h"
 #include "dhkeyexchange.h"
+#include "treap.h"
 
 using namespace Rice;
 
@@ -25,4 +26,5 @@ extern "C" void Init_Crypto()
   Init_CBCMAC();
   Init_ElgamalKeyGenerator();
   Init_DHKeyExchange();
+  Init_Treap();
 }
