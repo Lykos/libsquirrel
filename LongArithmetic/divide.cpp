@@ -5,6 +5,7 @@
 #include "conditiontype.h"
 #include "preconditionviolation.h"
 #include "debug.h"
+#include "multiply.h"
 
 namespace LongArithmetic {
 
@@ -23,6 +24,7 @@ namespace LongArithmetic {
         quotient = ZERO;
         return;
       }
+      // TODO Replace the scaling by a shift.
       // Maximal factor we can multiply the divisor with without increasing its size.
       part_type scale_factor = 1;
       part_type divisor_first_digit = divisor.m_content[divisor.size() - 1];
@@ -41,6 +43,11 @@ namespace LongArithmetic {
       divisor_first_digit = divisor.m_content[divisor.size() - 1];
       arithmetic_assert(divisor_first_digit >= (1ul << 63));
       LongInt::size_type divisor_size = divisor.size();
+      const part_type* divisor_begin = &divisor.m_content[0];
+      const part_type* divisor_end = &divisor.m_content[0] + divisor.size();
+      size_type space_needed = space_usage(divisor.size(), 1);
+      part_type* space_begin = static_cast<part_type*>(malloc(space_needed * sizeof(part_type)));
+      part_type* space_end = space_begin + space_needed;
       // Initialize the results
       quotient = ZERO;
       remainder = ZERO;
@@ -54,7 +61,12 @@ namespace LongArithmetic {
           // of our scaling factor, it can be at most 2 to high (according to a proof of Knuth)
           part_type guess;
           ASM_DIVIDE(remainder.m_content[divisor_size - 1], remainder.part_at(divisor_size), divisor_first_digit, guess);
-           LongInt back_calculated (divisor * LongInt(guess));
+          part_type* result_end = multiply(divisor_begin, divisor_end, &guess, &guess + 1, space_begin, space_end);
+          LongInt back_calculated;
+          back_calculated.m_content = LongInt::part_list(space_begin, result_end);
+          if (back_calculated.m_content.empty()) {
+            back_calculated.m_content.push_back(0);
+          }
 #ifdef ARITHMETIC_DEBUG
           LongInt::size_type old_guess = guess;
 #endif
@@ -70,6 +82,7 @@ namespace LongArithmetic {
           quotient.m_content[i] = guess;
         }
       }
+      free(space_begin);
       if (remainder_needed) {
         if (scale_factor != 1) {
           // We have to take back the scale_factor
