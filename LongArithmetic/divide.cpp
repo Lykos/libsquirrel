@@ -4,6 +4,7 @@
 #include "assembly.h"
 #include "conditiontype.h"
 #include "preconditionviolation.h"
+#include "arithmetichelper.h"
 #include "debug.h"
 #include "multiply.h"
 
@@ -24,22 +25,11 @@ namespace LongArithmetic {
         quotient = ZERO;
         return;
       }
-      // TODO Replace the scaling by a shift.
-      // Maximal factor we can multiply the divisor with without increasing its size.
-      part_type scale_factor = 1;
       part_type divisor_first_digit = divisor.m_content[divisor.size() - 1];
-      arithmetic_assert(divisor_first_digit != 0);
-      if (divisor_first_digit + 1 != 0) {
-        // (1 << 64) / (divisor_last_digit + 1)
-        ASM_CALC_SCALE(divisor_first_digit + 1, scale_factor);
-      }
-      // This scaling does not change the result because it crosses out,
-      // but it ensures that the first digit of the divisor is at least 1 << 63.
-      if (scale_factor > 1) {
-        LongInt scale = scale_factor;
-        dividend *= scale;
-        divisor *= scale;
-      }
+      arithmetic_assert(divisor_first_digit > 0);
+      size_type scale_shift = PART_SIZE - 1 - ArithmeticHelper::log2(divisor_first_digit);
+      divisor <<= scale_shift;
+      dividend <<= scale_shift;
       divisor_first_digit = divisor.m_content[divisor.size() - 1];
       arithmetic_assert(divisor_first_digit >= (1ul << 63));
       LongInt::size_type divisor_size = divisor.size();
@@ -84,21 +74,7 @@ namespace LongArithmetic {
       }
       free(space_begin);
       if (remainder_needed) {
-        if (scale_factor != 1) {
-          // We have to take back the scale_factor
-          part_type upper = 0, lower = 0;
-          LongInt old_remainder (std::move(remainder));
-          remainder = ZERO;
-          for (LongInt::size_type i = old_remainder.size(); i > 0;) {
-            --i;
-            lower = old_remainder.m_content[i];
-            remainder.pad_zeros(i + 1);
-            // upper:lower / scale_factor, store remainder into upper
-            ASM_DIVIDE_REMAINDER(lower, upper, scale_factor, remainder.m_content[i], upper);
-          }
-          // The division has to work without remainder
-          arithmetic_assert(upper == 0);
-        }
+        remainder >>= scale_shift;
         remainder.remove_zeros();
       }
       quotient.remove_zeros();
