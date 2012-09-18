@@ -3,8 +3,8 @@
 performance_inputs
 performance_results
 *-build-desktop-Qt_4_8_0_in_Pfad__System__*
-TestDataStructures/longinttest.h
-TestDataStructures/longinttest.cpp
+TestLongArithmetic/longinttest.h
+TestLongArithmetic/longinttest.cpp
 PerformanceDataStructures/longinttest.cpp
 \#*
 *~
