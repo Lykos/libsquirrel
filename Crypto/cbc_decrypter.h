@@ -120,7 +120,7 @@ namespace Crypto {
       while (remaining_length > 0 && m_block[remaining_length] == 0) {
         --remaining_length;
       }
-      PREC(MessagePadding, (byte_t)m_block[remaining_length] == 0x80);
+      PREC(MessagePadding, static_cast<byte_t>(m_block[remaining_length]) == 0x80);
       plain.replace((blocks - 1) * m_plain_block_size, m_plain_block_size, m_block.substr(0, remaining_length));
       m_valid = true;
       return plain;

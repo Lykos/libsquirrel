@@ -91,6 +91,7 @@ namespace Crypto {
       assert(m_group_chosen);
       m_key_ready = false;
       partial_key_pair_t key_pair = m_key_generator.generate(engine, m_group);
+      m_own_gen_power = key_pair.gen_power;
       m_exponent = key_pair.exponent;
       m_own_part_chosen = true;
       if (m_other_part_set) {
